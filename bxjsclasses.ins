@@ -1,0 +1,11 @@
+%% bxjsclasses.ins : installer file for bxjsclasses.dtx
+\def\batchfile{bxjsclasses.ins}
+\input docstrip.tex
+\keepsilent
+\generateFile{bxjsarticle.cls}{f}{\from{bxjsclasses.dtx}{article}}
+\generateFile{bxjsreport.cls}{f}{\from{bxjsclasses.dtx}{report}}
+\generateFile{bxjsptex.def}{f}{\from{bxjsclasses.dtx}{ptex}}
+% classes below are not yet completed....
+%\generateFile{bxjsbook.cls}{f}{\from{bxjsclasses.dtx}{book}}
+%\generateFile{bxjsslide.cls}{f}{\from{bxjsclasses.dtx}{slide}}
+%% EOF

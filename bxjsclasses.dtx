@@ -1,0 +1,4937 @@
+% ^^A -*- japanese-latex -*-
+% \iffalse meta-comment
+%
+%  BXJS ドキュメントクラス
+%
+%  本ソフトウェアは奥村晴彦氏による「pLaTeX2ε新ドキュメントクラス」を
+%  「ZR」が改変したものである。
+%  本ソフトウェアは修正 BSD ライセンスの下で配布される。
+%
+%  以下に原版についての原版著者による情報を示す：
+%---------------------------------------
+%
+%  pLaTeX2ε新ドキュメントクラス
+%
+%  これは LaTeX3 Project の classes.dtx と株式会社アスキーの jclasses.dtx
+%  に基づいて奥村 <okumura@edu.mie-u.ac.jp> が改変したものです。
+%  奥村の改変部分については何の権利も主張しません。
+%  オリジナルの著作権の許す範囲で自由にご利用ください。
+%
+%  [2002-12-19] いろいろなものに収録していただく際にライセンスを明確にする
+%  必要が生じてきました。アスキーのものが最近はmodified BSDライセンスになっ
+%  ていますので，私のものもそれに準じてmodified BSDとすることにします。
+%
+%  Copyright 1993 1994 1995 1996 1997 1998 1999
+%  The LaTeX3 Project and any individual authors listed elsewhere
+%  in this file. 
+%
+%  Copyright 1995-1999 ASCII Corporation.
+%
+% \fi
+% \CheckSum{0}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%
+% \iffalse
+%
+%    \begin{macrocode}
+%<article|report|book|slide>\NeedsTeXFormat{LaTeX2e}
+%<article>\ProvidesClass{bxjsarticle}
+%<report>\ProvidesClass{bxjsreport}
+%<book>\ProvidesClass{bxjsbook}
+%<slide>\ProvidesClass{bxjsslide}
+%<ptex>\ProvidesFile{bxjsptex.def}
+%<*driver>
+\ProvidesFile{bxjsclasses.dtx}
+%</driver>
+  [2012/05/01 v0.3a BXJS document classes]
+%<*driver>
+\documentclass{jsarticle} % このドキュメント自身は jsarticle を使う
+\usepackage{doc}
+\newenvironment{ZRnote}
+  {\StartZRnote}{\EndZRnote}
+\newcommand*{\ZRnoteline}[1]{
+  \par\noindent\makebox[0pt][l]{\rule[.5ex]{\linewidth}{.4pt}}%
+  \makebox{\hspace{.05\linewidth}\rule[#1ex]{.9\linewidth}{.2pt}}\par}
+\newcommand*{\StartZRnote}{\ZRnoteline{.1}}
+\newcommand*{\EndZRnote}{\ZRnoteline{.9}}
+\newcommand*{\zrWDash}{\char\jis"2141\relax}% WAVE DASH
+\newcommand*{\zrNote}[1]{［#1］}
+\addtolength{\textwidth}{-1in}
+\addtolength{\evensidemargin}{1in}
+\addtolength{\oddsidemargin}{1in}
+\addtolength{\marginparwidth}{1in}
+\setlength\marginparpush{0pt}
+% \OnlyDescription
+\DisableCrossrefs
+\setcounter{StandardModuleDepth}{1}
+\GetFileInfo{bxjsclasses.dtx}
+\begin{document}
+  \DocInput{bxjsclasses.dtx}
+\end{document}
+%</driver>
+%    \end{macrocode}
+%
+% \fi
+%
+% \title{BXJS ドキュメントクラス}
+% \author{ZR}
+% \date{\fileversion\quad[\filedate]}
+% \maketitle
+%
+% \MakeShortVerb{\|}
+%
+% \section{はじめに}
+%
+% \begin{ZRnote}
+% この文書は「BXJSドキュメントクラス」のDocStrip形式のソースである。
+% インストール時のモジュール指定は以下のようである。
+% \begin{quote}
+%   \begin{tabular}{lll}
+%     $\langle$\textsf{article}$\rangle$ & \texttt{bxjsarticle.cls}
+%      & 短いレポート（章なし） \\
+%     $\langle$\textsf{report}$\rangle$ & \texttt{bxjsreport.cls}
+%      & 長いレポート（章あり） \\
+%     $\langle$\textsf{book}$\rangle$    & \texttt{bxjsbook.cls}
+%      & 書籍用 \\
+%     $\langle$\textsf{slide}$\rangle$   & \texttt{bxjsslide.cls}
+%      & スライド用 \\
+%   \end{tabular}
+% \end{quote}
+%
+% 本ドキュメントクラスは奥村晴彦氏の「p\LaTeXe 新ドキュメントクラス」
+% に改変を加えたものである。
+% 本ドキュメントクラスに関する説明は全てこの形式の枠の中に記す。
+% 枠の外にあるものは奥村氏による原版に対する解説である。
+% \end{ZRnote}
+%
+% これは\LaTeX3 Projectの \texttt{classes.dtx} と
+% 株式会社アスキーの \texttt{jclasses.dtx} に基づいて
+% 奥村が改変したものです。
+% 権利については両者のものに従います。
+% 奥村は何の権利も主張しません。
+%
+% [2009-02-22] 田中琢爾氏によるup\LaTeX 対応パッチを取り込みました。
+%
+% \iffalse
+% ここでは次のドキュメントクラス（スタイルファイル）を作ります。
+% \begin{quote}
+%   \begin{tabular}{lll}
+%     $\langle$\textsf{article}$\rangle$ & \texttt{jsarticle.cls}  & 論文・レポート用 \\
+%     $\langle$\textsf{book}$\rangle$    & \texttt{jsbook.cls}     & 書籍用 \\
+%     $\langle$\textsf{jspf}$\rangle$    & \texttt{jspf.cls}       & 某学会誌用 \\
+%     $\langle$\textsf{kiyou}$\rangle$   & \texttt{kiyou.cls}      & 某紀要用
+%   \end{tabular}
+% \end{quote}
+%
+% \LaTeXe あるいは\pLaTeXe 標準のドキュメントクラスとの違いを説明してお
+% きます。
+%
+% \paragraph{JISフォントメトリックの使用}
+%
+% ここでは和文TFM（\TeX フォントメトリック）として東京書籍印刷の小林肇さ
+% んの作られたJISフォントメトリック \texttt{jis.tfm}，\texttt{jisg.tfm}
+% を標準で使います。従来のフォントメトリック \texttt{min10.tfm}，
+% \texttt{goth10.tfm} の類を使うには
+% \begin{quote}
+%   |\documentclass[mingoth]{jsarticle}|
+% \end{quote}
+% のように \texttt{mingoth} オプションを付けます。
+%
+% \paragraph{サイズオプションの扱いが違う}
+%
+% 標準のドキュメントクラスでは本文のポイント数を指定するオプションがあり
+% ましたが，ポイント数は10，11，12しかなく，それぞれ別のクラスオプション
+% ファイルを読み込むようになっていました。しかも，標準の10ポイント以外で
+% は多少フォントのバランスが崩れることがあり，あまり便利ではありませんで
+% した。ここでは文字サイズを増すとページを小さくし，\TeX の |\mag| プリ
+% ミティブで全体的に拡大するという手を使って，9ポイントや21，25，30，36，
+% 43ポイント，12Q，14Qの指定を可能にしています。
+% \fi
+%
+% \StopEventually{}
+%
+% 以下では実際のコードに即して説明します。
+%
+% \paragraph{BXJSクラス特有の設定 ☆}
+%
+%    \begin{macrocode}
+%<*!ptex>
+\RequirePackage{calc}
+\RequirePackage{keyval}
+%    \end{macrocode}
+% \begin{ZRnote}
+% エンジン（{\TeX}の種類）の判定。
+% |\bxis@engine| の値：
+% |n|＝8ビット欧文\TeX、
+% |j|＝{\pTeX}またはu{\pTeX}、
+% |J|＝NTT j{\TeX}、
+% |x|＝XeTeX、
+% |p|＝pdf{\TeX}、
+% |l|＝Lua{\TeX}。
+% {\pTeX}かu{\pTeX}の判別はスイッチ |\if@jsc@uplatex| で表される。
+% \end{ZRnote}
+%    \begin{macrocode}
+\let\bxjs@engine=n
+% 念のためプリミティブテストに変えた
+\def\bxjs@test@engine#1#2{%
+  \edef\bxjs@tmpa{\string#1}%
+  \edef\bxjs@tmpb{\meaning#1}%
+  \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
+\bxjs@test@engine\kanjiskip{\let\bxjs@engine=j}
+\bxjs@test@engine\jintercharskip{\let\bxjs@engine=J}
+\bxjs@test@engine\XeTeXversion{\let\bxjs@engine=x}
+\bxjs@test@engine\pdftexversion{\let\bxjs@engine=p}
+\bxjs@test@engine\luatexversion{\let\bxjs@engine=l}
+\newif\if@jsc@uplatex
+% 内部Unicode動作の時だけupTeXとみなす
+\ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
+  \@jsc@uplatextrue
+\fi\fi
+\let\jsArticle=a
+\let\jsBook=b
+\let\jsReport=r
+\let\jsSlide=s
+%<article>\let\jsDocClass\jsArticle
+%<article>\def\bxjs@clsname{bxjsarticle}
+%<book>\let\jsDocClass\jsBook
+%<book>\def\bxjs@clsname{bxjsbook}
+%<report>\let\jsDocClass\jsReport
+%<report>\def\bxjs@clsname{bxjsreport}
+%<slide>\let\jsDocClass\jsSlide
+%<slide>\def\bxjs@clsname{bxjsslide}
+%    \end{macrocode}
+% \begin{ZRnote}
+% Lua\TeX の場合、原版のコード中のコントロールワード中に現れる
+% 日本語文字のカテゴリコードを11に変更する。
+% （元は12。）
+% ただし、読込終了時点で元に戻しているので、日本語文字のコントロール
+% ワードのマクロはそのままでは使える状態になっていない。
+% \end{ZRnote}
+%    \begin{macrocode}
+\@onlypreamble\bxjs@restore@jltrcc
+\let\bxjs@restore@jltrcc\@empty
+\if l\bxjs@engine
+\def\bxjs@change@jltrcc#1{%
+  \xdef\bxjs@restore@jltrcc{%
+    \bxjs@restore@jltrcc
+    \catcode`#1=\the\catcode`#1\relax}%
+  \catcode`#1=11\relax}
+\@tfor\bxjs@x:=西暦\do
+  {\expandafter\bxjs@change@jltrcc\bxjs@x}
+\fi
+%    \end{macrocode}
+% \begin{ZRnote}
+% |\jsInhibitGlue| は |\inhibitglue| が定義されていればそれを
+% 実行し、未定義ならば何もしない。
+% \end{ZRnote}
+%    \begin{macrocode}
+\DeclareRobustCommand*{\jsInhibitGlue}{%
+  \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
+%    \end{macrocode}
+%
+% \section{オプション}
+%
+% これらのクラスは |\documentclass{jsarticle}|
+% あるいは |\documentclass[オプション]{jsarticle}|
+% のように呼び出します。
+%
+% まず，オプションに関連するいくつかのコマンドやスイッチ（論理変数）を定
+% 義します。
+%
+% \begin{macro}{\if@restonecol}
+%
+% 段組のときに真になる論理変数です。
+%
+%    \begin{macrocode}
+\newif\if@restonecol
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@titlepage}
+%
+% これを真にすると表題，概要を独立したページに出力します。
+%
+%    \begin{macrocode}
+\newif\if@titlepage
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@openright}
+%
+% |\chapter|，|\part| を奇数ページ起こしにするかどうかです。
+% 書籍では真が標準です。
+%
+%    \begin{macrocode}
+%<book|report>\newif\if@openright
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@mainmatter}
+%
+% 真なら本文，偽なら前付け・後付けです。
+% 偽なら |\chapter| で章番号が出ません。
+%
+%    \begin{macrocode}
+%<book|report>\newif\if@mainmatter \@mainmattertrue
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@enablejfam}
+%
+% 和文フォントを数式フォントとして登録するかどうかを示すスイッチです。
+%
+%    \begin{macrocode}
+\newif\if@enablejfam \@enablejfamtrue
+%    \end{macrocode}
+% \end{macro}
+%
+% 以下で各オプションを宣言します。
+%
+% \paragraph{用紙サイズ}
+%
+% JISやISOのA0判は面積 $1\,\mathrm{m}^2$，縦横比 $1:\sqrt{2}$
+% の長方形の辺の長さを mm 単位に切り捨てたものです。
+% これを基準として順に半截しては mm 単位に切り捨てたものがA1，A2，…です。
+%
+% B判はJISとISOで定義が異なります。
+% JISではB0判の面積が $1.5\,\mathrm{mm}^2$ ですが，
+% ISOではB1判の辺の長さがA0判とA1判の辺の長さの幾何平均です。
+% したがってISOのB0判は $1000\,\mathrm{mm} \times 1414\,\mathrm{mm}$ です。
+% このため，\LaTeXe の \texttt{b5paper}
+% は $250\,\mathrm{mm} \times 176\,\mathrm{mm}$ ですが，
+% \pLaTeXe の \texttt{b5paper}
+% は $257\,\mathrm{mm} \times 182\,\mathrm{mm}$ になっています。
+% ここでは\pLaTeXe にならってJISに従いました。
+% 
+% デフォルトは \texttt{a4paper} です。
+%
+% \texttt{b5var}（B5変形，182mm×230mm），
+% \texttt{a4var}（A4変形，210mm×283mm）を追加しました。
+%
+% \begin{ZRnote}
+% BXJSクラスではページレイアウト設定に |geometry| パッケージを用いる。
+% 用紙サイズ設定は |geometry| に渡すオプションの指定と扱われる。
+% \end{ZRnote}
+%    \begin{macrocode}
+\def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
+\DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
+\DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
+\DeclareOption{a5paper}{\bxjs@setpaper{a5paper}}
+\DeclareOption{a6paper}{\bxjs@setpaper{a6paper}}
+\DeclareOption{b4paper}{\bxjs@setpaper{{257truemm}{364truemm}}}
+\DeclareOption{b5paper}{\bxjs@setpaper{{182truemm}{257truemm}}}
+\DeclareOption{b6paper}{\bxjs@setpaper{{128truemm}{182truemm}}}
+\DeclareOption{a4j}{\bxjs@setpaper{a4paper}}
+\DeclareOption{a5j}{\bxjs@setpaper{a5paper}}
+\DeclareOption{b4j}{\bxjs@setpaper{{257truemm}{364truemm}}}
+\DeclareOption{b5j}{\bxjs@setpaper{{182truemm}{257truemm}}}
+\DeclareOption{a4var}{\bxjs@setpaper{{210truemm}{283truemm}}}
+\DeclareOption{b5var}{\bxjs@setpaper{{182truemm}{230truemm}}}
+\DeclareOption{letterpaper}{\bxjs@setpaper{letterpaper}}
+\DeclareOption{legalpaper}{\bxjs@setpaper{legalpaper}}
+\DeclareOption{executivepaper}{\bxjs@setpaper{executivepaper}}
+%    \end{macrocode}
+%
+% \paragraph{横置き}
+%
+% 用紙の縦と横の長さを入れ換えます。
+%
+%    \begin{macrocode}
+\newif\if@landscape
+\@landscapefalse
+\DeclareOption{landscape}{\@landscapetrue}
+%    \end{macrocode}
+%
+% \paragraph{slide}
+%
+% オプション \texttt{slide} を新設しました。
+%
+%    \begin{macrocode}
+\newif\if@slide
+%<!slide>\@slidefalse
+%<slide>\@slidetrue
+%    \end{macrocode}
+%
+% \paragraph{サイズオプション}
+%
+% 10pt，11pt，12pt のほかに，8pt，9pt，14pt，17pt，21pt，25pt，30pt，36pt，43pt を追加しました。
+% これは等比数列になるように選んだものです（従来の 20pt も残しました）。
+% |\@ptsize| の定義が変だったのでご迷惑をおかけしましたが，
+% 標準的なドキュメントクラスと同様にポイント数から10を引いたものに直しました。
+%
+% [2003-03-22] 14Qオプションを追加しました。
+%
+% [2003-04-18] 12Qオプションを追加しました。
+%
+% \begin{ZRnote}
+% |\@ptsize| は |10pt|, |11pt|, |12pt| が指定された時のみ従来と同じ値とし、
+% それ以外は |\jsUnusualPtSize|（= $-20$）にする。
+% \end{ZRnote}
+%    \begin{macrocode}
+\newcommand{\@ptsize}{0}
+\def\bxjs@param@basefontsize{10pt}
+\def\jsUnusualPtSize{-20}
+\def\bxjs@setbasefontsize#1{%
+  \setlength\@tempdima{#1}%
+  \edef\bxjs@param@basefontsize{\the\@tempdima}%
+  \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
+  \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
+  \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
+  \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
+\DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
+\DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
+\DeclareOption{10pt}{\bxjs@setbasefontsize{10pt}}
+\DeclareOption{11pt}{\bxjs@setbasefontsize{10.95pt}}
+\DeclareOption{12pt}{\bxjs@setbasefontsize{12pt}}
+\DeclareOption{14pt}{\bxjs@setbasefontsize{14.4pt}}
+\DeclareOption{17pt}{\bxjs@setbasefontsize{17.28pt}}
+\DeclareOption{20pt}{\bxjs@setbasefontsize{20pt}}
+\DeclareOption{21pt}{\bxjs@setbasefontsize{20.74pt}}
+\DeclareOption{25pt}{\bxjs@setbasefontsize{24.88pt}}
+\DeclareOption{30pt}{\bxjs@setbasefontsize{29.86pt}}
+\DeclareOption{36pt}{\bxjs@setbasefontsize{35.83pt}}
+\DeclareOption{43pt}{\bxjs@setbasefontsize{43pt}}
+\DeclareOption{12Q}{\bxjs@setbasefontsize{3mm}}
+\DeclareOption{14Q}{\bxjs@setbasefontsize{3.5mm}}
+%    \end{macrocode}
+%
+% \paragraph{トンボオプション}
+% \mbox{}
+% \begin{ZRnote}
+% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
+% \end{ZRnote}
+%
+% \paragraph{面付け}
+% \mbox{}
+% \begin{ZRnote}
+% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
+% \end{ZRnote}
+%
+% \paragraph{両面，片面オプション}
+%
+% \texttt{twoside} で奇数ページ・偶数ページのレイアウトが変わります。
+%
+% [2003-04-29] \texttt{vartwoside} でどちらのページも傍注が右側になります。
+%
+%    \begin{macrocode}
+\DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
+\DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
+\DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
+%    \end{macrocode}
+%
+% \paragraph{二段組}
+%
+% \texttt{twocolumn} で二段組になります。
+%
+%    \begin{macrocode}
+\DeclareOption{onecolumn}{\@twocolumnfalse}
+\DeclareOption{twocolumn}{\@twocolumntrue}
+%    \end{macrocode}
+%
+% \paragraph{表題ページ}
+%
+% \texttt{titlepage} で表題・概要を独立したページに出力します。
+%
+%    \begin{macrocode}
+\DeclareOption{titlepage}{\@titlepagetrue}
+\DeclareOption{notitlepage}{\@titlepagefalse}
+%    \end{macrocode}
+%
+% \paragraph{右左起こし}
+%
+% 書籍では章は通常は奇数ページ起こしになりますが，
+% \texttt{openany} で偶数ページからでも始まるようになります。
+%
+%    \begin{macrocode}
+%<book|report>\DeclareOption{openright}{\@openrighttrue}
+%<book|report>\DeclareOption{openany}{\@openrightfalse}
+%    \end{macrocode}
+%
+% \paragraph{eqnarray環境と数式の位置}
+%
+% 森本さんのご教示にしたがって前に移動しました。
+%
+% \begin{environment}{eqnarray}
+%
+%    \LaTeX の |eqnarray| 環境では |&| でできるアキが大きすぎる
+%    ようですので，少し小さくします。
+%    また，中央の要素も |\displaystyle| にします。
+%
+%    \begin{macrocode}
+\def\eqnarray{%
+   \stepcounter{equation}%
+   \def\@currentlabel{\p@equation\theequation}%
+   \global\@eqnswtrue
+   \m@th
+   \global\@eqcnt\z@
+   \tabskip\@centering
+   \let\\\@eqncr
+   $$\everycr{}\halign to\displaywidth\bgroup
+       \hskip\@centering$\displaystyle\tabskip\z@skip{##}$\@eqnsel
+      &\global\@eqcnt\@ne \hfil$\displaystyle{{}##{}}$\hfil
+      &\global\@eqcnt\tw@ $\displaystyle{##}$\hfil\tabskip\@centering
+      &\global\@eqcnt\thr@@ \hb@xt@\z@\bgroup\hss##\egroup
+         \tabskip\z@skip
+      \cr}
+%    \end{macrocode}
+% \end{environment}
+%
+% \texttt{leqno} で数式番号が左側になります。
+% \texttt{fleqn} で数式が本文左端から一定距離のところに出力されます。
+% 森本さんにしたがって訂正しました。
+%
+%    \begin{macrocode}
+\DeclareOption{leqno}{\input{leqno.clo}}
+\DeclareOption{fleqn}{\input{fleqn.clo}%
+% fleqn用のeqnarray環境の再定義
+  \def\eqnarray{%
+    \stepcounter{equation}%
+    \def\@currentlabel{\p@equation\theequation}%
+    \global\@eqnswtrue\m@th
+    \global\@eqcnt\z@
+    \tabskip\mathindent
+    \let\\=\@eqncr
+    \setlength\abovedisplayskip{\topsep}%
+    \ifvmode
+      \addtolength\abovedisplayskip{\partopsep}%
+    \fi
+    \addtolength\abovedisplayskip{\parskip}%
+    \setlength\belowdisplayskip{\abovedisplayskip}%
+    \setlength\belowdisplayshortskip{\abovedisplayskip}%
+    \setlength\abovedisplayshortskip{\abovedisplayskip}%
+    $$\everycr{}\halign to\linewidth% $$
+    \bgroup
+      \hskip\@centering$\displaystyle\tabskip\z@skip{##}$\@eqnsel
+      &\global\@eqcnt\@ne \hfil$\displaystyle{{}##{}}$\hfil
+      &\global\@eqcnt\tw@
+        $\displaystyle{##}$\hfil \tabskip\@centering
+      &\global\@eqcnt\thr@@ \hb@xt@\z@\bgroup\hss##\egroup
+    \tabskip\z@skip\cr
+    }}
+%    \end{macrocode}
+%
+% \paragraph{文献リスト}
+%
+% 文献リストをopen形式（著者名や書名の後に改行が入る）で出力します。
+% これは使われることはないのでコメントアウトしてあります。
+%
+%    \begin{macrocode}
+% \DeclareOption{openbib}{%
+%   \AtEndOfPackage{%
+%    \renewcommand\@openbib@code{%
+%       \advance\leftmargin\bibindent
+%       \itemindent -\bibindent
+%       \listparindent \itemindent
+%       \parsep \z@}%
+%    \renewcommand\newblock{\par}}}
+%    \end{macrocode}
+%
+% \paragraph{数式フォントとして和文フォントを登録しないオプション}
+% \mbox{}
+% \begin{ZRnote}
+% ここは和文処理コンポーネントの管轄。
+% \end{ZRnote}
+%
+% \paragraph{ドラフト}
+%
+% \texttt{draft} でoverfull boxの起きた行末に5ptの罫線を引きます。
+%
+%    \begin{macrocode}
+\newif\ifdraft
+\DeclareOption{draft}{\drafttrue \setlength\overfullrule{5pt}}
+\DeclareOption{final}{\draftfalse \setlength\overfullrule{0pt}}
+%    \end{macrocode}
+%
+% \paragraph{和文フォントメトリックの選択}
+% \mbox{}
+% \begin{ZRnote}
+% ここは和文処理コンポーネントの管轄。
+% \end{ZRnote}
+%
+% \paragraph{papersizeスペシャルの利用}
+% \mbox{}
+% \begin{ZRnote}
+% |geometry| パッケージが行う。
+% \end{ZRnote}
+%
+% \paragraph{英語化}
+%
+% オプション \texttt{english} を新設しました。
+%
+%    \begin{macrocode}
+\newif\if@english
+\@englishfalse
+\DeclareOption{english}{\@englishtrue}
+%    \end{macrocode}
+%
+% \paragraph{jsreport相当}
+%
+% オプション \texttt{report} を新設しました。
+%
+% \begin{ZRnote}
+% BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
+% \end{ZRnote}
+%
+% \paragraph{BXJS特有のオプション ☆}
+% \mbox{}
+% \begin{ZRnote}
+% \begin{itemize}
+% \item |base=|\meta{dimen} ： 基底フォントサイズを直接指定する。
+%   （|xxpt| オプションの代用なので、既定値は10\,ptである。）
+% \item |scale=|\meta{real} ： 和文フォントのスケールを表すマクロ |\jsScale|
+%   の値を設定する。
+%   もちろんこの値を何らかの方法で和文処理モジュールに渡さないと意味を成さない。
+%   既定値は 0.924715（= 13\,Q/10\,pt）。
+% \item |mag=|\meta{int} ： |\mag| 値の直接設定。既定は |base| から算出する。
+% \item |paper={|\meta{dimen:width}|}{|\meta{dimen:height}|}| ： 用紙サイズ設定。
+%   用紙サイズオプションの代用で、既定値は |a4paper| 相当。
+% \item |platex|, |uplatex| ： (u){\pTeX}用の連携モジュールを読み込む。
+% \end{itemize}
+%
+% |\bxjs@invscale| は{\TeX}における「長さのスケール」の逆関数を求めるもの。
+% 例えば |\bxjs@invscale\dimX{1.3}| は |\dimX=1.3\dimX| の
+% 逆の演算を行う。
+% \end{ZRnote}
+%    \begin{macrocode}
+\mathchardef\bxjs@csta=259
+\def\bxjs@invscale#1#2{%
+  \bgroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
+    \@tempcnta\@tempdima \multiply\@tempcnta\@cclvi
+    \divide\@tempcnta\@tempdimb \multiply\@tempcnta\@cclvi
+    \@tempcntb\p@ \divide\@tempcntb\@tempdimb
+    \advance\@tempcnta-\@tempcntb \advance\@tempcnta-\tw@
+    \@tempdimb\@tempcnta\@ne
+    \advance\@tempcnta\@tempcntb \advance\@tempcnta\@tempcntb
+    \advance\@tempcnta\bxjs@csta \@tempdimc\@tempcnta\@ne
+    \@whiledim\@tempdimb<\@tempdimc\do{%
+      \@tempcntb\@tempdimb \advance\@tempcntb\@tempdimc
+      \advance\@tempcntb\@ne \divide\@tempcntb\tw@
+      \ifdim #2\@tempcntb>\@tempdima
+        \advance\@tempcntb\m@ne \@tempdimc=\@tempcntb\@ne
+      \else \@tempdimb=\@tempcntb\@ne \fi}%
+    \xdef\bxjs@gtmpa{\the\@tempdimb}%
+  \egroup #1=\bxjs@gtmpa\relax}
+% platex、uplatexオプション
+\newif\ifbxjs@ptexmodule
+\DeclareOption{platex}{%
+  \@tempswafalse
+  \if j\bxjs@engine \if@jsc@uplatex\else \@tempswatrue \fi\fi
+  \bxjs@opt@platex}
+\DeclareOption{uplatex}{%
+  \@tempswafalse
+  \if j\bxjs@engine \if@jsc@uplatex \@tempswatrue \fi\fi
+  \bxjs@opt@platex}
+\def\bxjs@opt@platex{%
+  \if@tempswa
+    \bxjs@ptexmoduletrue
+  \else
+    \ClassError\bxjs@clsname%
+    {Option `\CurrentOption' used on wrong engine}\@ehc
+  \fi}
+% keyval型のオプションの処理。
+\def\bxjs@setkey{%
+  \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
+\def\bxjs@setkey@a{\setkeys{bxjs}}
+\define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
+\def\jsScale{0.924715}
+% scaleとの順序依存を消すため、jbaseの実行を遅延させる
+\let\bxjs@do@opt@jbase\relax
+\define@key{bxjs}{jbase}{%
+  \def\bxjs@do@opt@jbase{\bxjs@opt@jbase{#1}}}
+\def\bxjs@opt@jbase#1{%
+  \setlength\@tempdima{#1}%
+  \bxjs@invscale\@tempdima\jsScale
+  \bxjs@setbasefontsize{\@tempdima}}
+\define@key{bxjs}{scale}{\edef\jsScale{#1}}
+\let\bxjs@param@mag\relax
+\define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
+\define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
+\DeclareOption*{\bxjs@setkey}
+%    \end{macrocode}
+%
+% \paragraph{オプションの実行}
+%
+% デフォルトのオプションを実行し，|dvi| ファイルの先頭にdvipsのpapersize
+% specialを書き込みます。このspecialはdvipsや最近のdvioutが対応しています。
+% |multicols| や |url| を |\RequirePackage| するのはやめました。
+%
+%    \begin{macrocode}
+%<article>\ExecuteOptions{a4paper,oneside,onecolumn,notitlepage,final}
+%<report>\ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
+%<book>\ExecuteOptions{a4paper,twoside,onecolumn,titlepage,openright,final}
+%<slide>\ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
+\ProcessOptions\relax
+\bxjs@do@opt@jbase
+%    \end{macrocode}
+%
+% 後処理
+%
+%    \begin{macrocode}
+\if@slide
+  \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
+\fi
+\if@landscape
+  \setlength\@tempdima  {\paperheight}
+  \setlength\paperheight{\paperwidth}
+  \setlength\paperwidth {\@tempdima}
+\fi
+%    \end{macrocode}
+%
+% \paragraph{papersizeスペシャルの出力}
+% \mbox{}
+% \begin{ZRnote}
+% |geometry| パッケージが行う。
+% \end{ZRnote}
+%
+% \paragraph{基準となる行送り}
+%
+% \begin{macro}{\n@baseline}
+%
+% 基準となる行送りをポイント単位で表したものです。
+%
+%    \begin{macrocode}
+%<slide>\def\n@baseline{13}%
+%<!slide>\ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
+%<!slide>\else \def\n@baseline{16}\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{拡大率の設定}
+%
+% サイズの変更は\TeX のプリミティブ |\mag| を使って行います。
+% 9ポイントについては行送りも若干縮めました。
+% サイズについては全面的に見直しました。
+%
+% [2008-12-26] 1000 / |\mag| に相当する |\inv@mag| を定義しました。
+% |truein| を使っていたところを |\inv@mag in| に直しましたので，
+% |geometry| パッケージと共存できると思います。
+% なお，新ドキュメントクラス側で |10pt| 以外にする場合の注意：
+% \begin{itemize}
+% \item |geometry| 側でオプション |truedimen| を指定してください。
+% \item |geometry| 側でオプション |mag| は使えません。
+% \end{itemize}
+%
+% \begin{ZRnote}
+% 設定すべき |\mag| 値を (基底サイズ)/(10\,pt) $\times$ 1000 と算出。
+% BXJSクラスでは、|\mag| を直接指定したい場合は、|geometry| 側では
+% なくクラスのオプションで行うものとする。
+% \end{ZRnote}
+%    \begin{macrocode}
+\ifx\bxjs@param@mag\relax
+  \@tempdima=\bxjs@param@basefontsize
+  \advance\@tempdima.001pt \multiply\@tempdima25
+  \divide\@tempdima16384\relax \@tempcnta\@tempdima\relax
+  \edef\bxjs@param@mag{\the\@tempcnta}
+\else
+  \let\c@bxjs@cnta\@tempcnta
+  \setcounter{bxjs@cnta}{\bxjs@param@mag}
+  \ifnum\@tempcnta<\z@ \@tempcnta=\z@ \fi
+% 有効なmag値の範囲は1--32768
+  \edef\bxjs@param@mag{\the\@tempcnta}
+  \advance\@tempcnta100000
+  \def\bxjs@tmpa#1#2#3#4#5\@nil{\@tempdima=#2#3#4.#5\p@}
+  \expandafter\bxjs@tmpa\the\@tempcnta\@nil
+  \edef\bxjs@param@basefontsize{\the\@tempdima}
+\fi
+\let\jsBaseFontSize\bxjs@param@basefontsize
+%\typeout{\string\jsDocClass: \meaning\jsDocClass}
+%\typeout{\string\bxjs@engine: \meaning\bxjs@engine}
+%\typeout{\string\jsBaseFontSize: \jsBaseFontSize}
+%\typeout{\string\bxjs@param@mag: \bxjs@param@mag}
+%    \end{macrocode}
+% 
+% \begin{ZRnote}
+% ここで{p\TeX}のzwに相当する単位として用いる長さ変数 |\jsZw| を作成する。
+% 約束により、これは |\jsScale| $\times$ (指定フォントサイズ) に等しい。
+% \end{ZRnote}
+%    \begin{macrocode}
+\newdimen\jsZw
+\jsZw=10pt \jsZw=\jsScale\jsZw
+%    \end{macrocode}
+%
+% \paragraph{pagesizeスペシャルの出力}
+% \mbox{}
+% \begin{ZRnote}
+% 削除。
+% \end{ZRnote}
+%
+% \section{和文フォントの変更}
+%
+% \begin{ZRnote}
+% 和文フォントの設定は和文処理モジュールの管轄。
+% \end{ZRnote}
+%
+% \begin{macro}{\@}
+%
+% 欧文といえば，\LaTeX の |\def\@{\spacefactor\@m}| という定義（|\@m| は1000）
+% では |I watch TV\@.| と書くと V とピリオドのペアカーニングが効かなくなります。
+% そこで，次のような定義に直し，|I watch TV.\@| と書くことにします。
+%
+%    \begin{macrocode}
+\chardef\bxjs@periodchar=`\.
+\def\@{\spacefactor\sfcode\bxjs@periodchar}
+%    \end{macrocode}
+% \end{macro}
+%
+% \section{フォントサイズ}
+%
+% フォントサイズを変える命令（|\normalsize|，|\small| など）
+% の実際の挙動の設定は，三つの引数をとる命令 |\@setfontsize| を使って，
+% たとえば
+% \begin{quote}
+%   |\@setfontsize{\normalsize}{10}{16}|
+% \end{quote}
+% のようにして行います。これは
+% \begin{quote}
+%   |\normalsize| は10ポイントのフォントを使い，行送りは16ポイントである
+% \end{quote}
+% という意味です。
+% ただし，処理を速くするため，
+% 以下では10と同義の\LaTeX の内部命令 |\@xpt| を使っています。
+% この |\@xpt| の類は次のものがあり，\LaTeX 本体で定義されています。
+%\begin{verbatim}
+%   \@vpt      5         \@vipt    6      \@viipt   7
+%   \@viiipt   8         \@ixpt    9      \@xpt    10
+%   \@xipt    10.95      \@xiipt  12      \@xivpt  14.4
+%\end{verbatim}
+%
+% \begin{macro}{\@setfontsize}
+%
+% ここでは |\@setfontsize| の定義を少々変更して，
+% 段落の字下げ |\parindent|，
+% 和文文字間のスペース |\kanjiskip|，
+% 和文・欧文間のスペース |\xkanjiskip| を変更しています。
+%
+% |\kanjiskip| は\pLaTeXe で |0pt plus .4pt minus .5pt| に設定していますが，
+% これはそもそも文字サイズの変更に応じて変わるべきものです。
+% それに，プラスになったりマイナスになったりするのは，
+% 追い出しと追い込みの混在が生じ，統一性を欠きます。
+% なるべく追い出しになるようにプラスの値だけにしたいところですが，
+% ごくわずかなマイナスは許すことにしました。
+%
+% |\xkanjiskip| については，四分つまり全角の1/4を標準として，
+% 追い出すために三分あるいは二分まで延ばすのが一般的ですが，
+% ここではTimesやPalatinoのスペースがほぼ四分であることに着目して，
+% これに一致させています。これなら書くときにスペースを空けても
+% 空けなくても同じ出力になります。
+%
+% |\parindent| については，0（以下）でなければ全角幅（1zw）に直します。
+%
+% [2008-02-18] |english| オプションで |\parindent| を 1em にしました。
+%
+% \begin{ZRnote}
+% |\@setfontsize| の中で |\jsZw| を再設定している。
+% またユーザ定義用のフック |\jsResetDimen| を用意した。
+% \end{ZRnote}
+%
+%    \begin{macrocode}
+\def\@setfontsize#1#2#3{%
+% \@nomath#1%
+  \ifx\protect\@typeset@protect
+    \let\@currsize#1%
+  \fi
+  \fontsize{#2}{#3}\selectfont
+  \jsZw=\f@size pt\relax
+  \jsZw=\jsScale \jsZw\relax
+  \ifdim\parindent>\z@
+    \if@english \parindent=1em
+    \else       \parindent=1\jsZw
+    \fi
+  \fi\relax
+  \jsResetDimen}
+\def\jsResetDimen{}
+%    \end{macrocode}
+% \end{macro}
+%
+% これらのグルーをもってしても行分割ができない場合は，
+% |\emergencystretch| に訴えます。
+%
+% \begin{ZRnote}
+% これはフォントサイズ非依存なので |\Cwd| で書くのが適当だが、
+% |\Cwd| はまだ定義されていない。
+% \end{ZRnote}
+%    \begin{macrocode}
+\emergencystretch 3\jsZw
+%    \end{macrocode}
+%
+% \begin{macro}{\ifnarrowbaselines}
+% \begin{macro}{\narrowbaselines}
+% \begin{macro}{\widebaselines}
+%
+% 欧文用に行間を狭くする論理変数と，それを真・偽にするためのコマンドです。
+%
+% [2003-06-30] 数式に入るところで |\narrowbaselines|
+% を実行しているので |\abovedisplayskip| 等が初期化
+% されてしまうというshintokさんのご指摘に対して，
+% しっぽ愛好家さんが次の修正を教えてくださいました。
+%
+% [2008-02-18] |english| オプションで最初の段落のインデントをしないようにしました。
+%
+%    \begin{macrocode}
+\newif\ifnarrowbaselines
+\if@english
+  \narrowbaselinestrue
+\fi
+\def\narrowbaselines{%
+  \narrowbaselinestrue
+  \skip0=\abovedisplayskip
+  \skip2=\abovedisplayshortskip
+  \skip4=\belowdisplayskip
+  \skip6=\belowdisplayshortskip
+  \@currsize\selectfont
+  \abovedisplayskip=\skip0
+  \abovedisplayshortskip=\skip2
+  \belowdisplayskip=\skip4
+  \belowdisplayshortskip=\skip6\relax}
+\def\widebaselines{\narrowbaselinesfalse\@currsize\selectfont}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\normalsize}
+%
+% 標準のフォントサイズと行送りを選ぶコマンドです。
+%
+% 本文10ポイントのときの行送りは，
+% 欧文の標準クラスファイルでは12ポイント，
+% アスキーの和文クラスファイルでは15ポイントになっていますが，
+% ここでは16ポイントにしました。
+% ただし |\narrowbaselines| で欧文用の12ポイントになります。
+%
+% 公称10ポイントの和文フォントが約9.25ポイント
+% （アスキーのものの0.961倍）であることもあり，
+% 行送りがかなりゆったりとしたと思います。
+% 実際，$16/9.25 \approx 1.73$ であり，
+% 和文の推奨値の一つ「二分四分」（1.75）
+% に近づきました。
+%
+%    \begin{macrocode}
+\renewcommand{\normalsize}{%
+  \ifnarrowbaselines
+    \@setfontsize\normalsize\@xpt\@xiipt
+  \else
+    \@setfontsize\normalsize\@xpt{\n@baseline}%
+  \fi
+%    \end{macrocode}
+%
+% 数式の上のアキ（|\abovedisplayskip|），
+% 短い数式の上のアキ（|\abovedisplayshortskip|），
+% 数式の下のアキ（|\belowdisplayshortskip|）の設定です。
+%
+% [2003-02-16] ちょっと変えました。
+%
+%    \begin{macrocode}
+  \abovedisplayskip 10\p@ \@plus3\p@ \@minus4\p@
+  \abovedisplayshortskip \z@ \@plus3\p@
+  \belowdisplayskip \abovedisplayskip
+  \belowdisplayshortskip \belowdisplayskip
+%    \end{macrocode}
+%
+% 最後に，リスト環境のトップレベルのパラメータ |\@listI| を，
+% |\@listi| にコピーしておきます。|\@listI| の設定は後で出てきます。
+%
+%    \begin{macrocode}
+  \let\@listi\@listI}
+%    \end{macrocode}
+%
+% ここで実際に標準フォントサイズで初期化します。
+%
+%    \begin{macrocode}
+\normalsize
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\Cht}
+% \begin{macro}{\Cdp}
+% \begin{macro}{\Cwd}
+% \begin{macro}{\Cvs}
+% \begin{macro}{\Chs}
+%
+% 基準となる長さの設定をします。
+% \pLaTeXe カーネル（\texttt{plfonts.dtx}）で宣言されている
+% パラメータに実際の値を設定します。
+% たとえば |\Cwd| は |\normalfont| の全角幅（1zw）です。
+%
+% \begin{ZRnote}
+% まず |\Cwd| 等の変数を定義する。
+% \end{ZRnote}
+%    \begin{macrocode}
+\ifx\Cht\@undefined \newdimen\Cht \fi
+\ifx\Cdp\@undefined \newdimen\Cdp \fi
+\ifx\Cwd\@undefined \newdimen\Cwd \fi
+\ifx\Cvs\@undefined \newdimen\Cvs \fi
+\ifx\Chs\@undefined \newdimen\Chs \fi
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% 規約上、現在の |\jsZw| の値が |\Cwd| である。
+% |\Cht| と |\Cdp| は単純に |\Cwd| の88\%と12\%の値とする。
+% \end{ZRnote}
+%    \begin{macrocode}
+\setlength\Cht{0.88\jsZw}
+\setlength\Cdp{0.12\jsZw}
+\setlength\Cwd{1\jsZw}
+\setlength\Cvs{\baselineskip}
+\setlength\Chs{1\jsZw}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\small}
+%
+% |\small| も |\normalsize| と同様に設定します。
+% 行送りは，|\normalsize| が16ポイントなら，
+% 割合からすれば $16 \times 0.9 = 14.4$ ポイントになりますが，
+% |\small| の使われ方を考えて，ここでは和文13ポイント，
+% 欧文11ポイントとします。
+% また，|\topsep| と |\parsep| は，元はそれぞれ $4 \pm 2$，$2 \pm 1$
+% ポイントでしたが，ここではゼロ（|\z@|）にしました。
+%
+%    \begin{macrocode}
+\newcommand{\small}{%
+  \ifnarrowbaselines
+%<!kiyou>    \@setfontsize\small\@ixpt{11}%
+%<kiyou>    \@setfontsize\small{8.8888}{11}%
+  \else
+%<!kiyou>    \@setfontsize\small\@ixpt{13}%
+%<kiyou>    \@setfontsize\small{8.8888}{13.2418}%
+  \fi
+  \abovedisplayskip 9\p@ \@plus3\p@ \@minus4\p@
+  \abovedisplayshortskip  \z@ \@plus3\p@
+  \belowdisplayskip \abovedisplayskip
+  \belowdisplayshortskip \belowdisplayskip
+  \def\@listi{\leftmargin\leftmargini
+              \topsep \z@
+              \parsep \z@
+              \itemsep \parsep}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\footnotesize}
+%
+% |\footnotesize| も同様です。
+% |\topsep| と |\parsep| は，元はそれぞれ $3 \pm 1$，$2 \pm 1$
+% ポイントでしたが，ここではゼロ（|\z@|）にしました。
+%
+%    \begin{macrocode}
+\newcommand{\footnotesize}{%
+  \ifnarrowbaselines
+%<!kiyou>    \@setfontsize\footnotesize\@viiipt{9.5}%
+%<kiyou>    \@setfontsize\footnotesize{8.8888}{11}%
+  \else
+%<!kiyou>    \@setfontsize\footnotesize\@viiipt{11}%
+%<kiyou>    \@setfontsize\footnotesize{8.8888}{13.2418}%
+  \fi
+  \abovedisplayskip 6\p@ \@plus2\p@ \@minus3\p@
+  \abovedisplayshortskip  \z@ \@plus2\p@
+  \belowdisplayskip \abovedisplayskip
+  \belowdisplayshortskip \belowdisplayskip
+  \def\@listi{\leftmargin\leftmargini
+              \topsep \z@
+              \parsep \z@
+              \itemsep \parsep}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\scriptsize}
+% \begin{macro}{\tiny}
+% \begin{macro}{\large}
+% \begin{macro}{\Large}
+% \begin{macro}{\LARGE}
+% \begin{macro}{\huge}
+% \begin{macro}{\Huge}
+% \begin{macro}{\HUGE}
+%
+% それ以外のサイズは，本文に使うことがないので，
+% 単にフォントサイズと行送りだけ変更します。
+% 特に注意すべきは |\large| で，
+% これは二段組のときに節見出しのフォントとして使い，
+% 行送りを |\normalsize| と同じにすることによって，
+% 節見出しが複数行にわたっても段間で行が揃うようにします。
+%
+% [2004-11-03] |\HUGE| を追加。
+%
+%    \begin{macrocode}
+\newcommand{\scriptsize}{\@setfontsize\scriptsize\@viipt\@viiipt}
+\newcommand{\tiny}{\@setfontsize\tiny\@vpt\@vipt}
+\if@twocolumn
+%<!kiyou>  \newcommand{\large}{\@setfontsize\large\@xiipt{\n@baseline}}
+%<kiyou>  \newcommand{\large}{\@setfontsize\large{11.111}{\n@baseline}}
+\else
+%<!kiyou>  \newcommand{\large}{\@setfontsize\large\@xiipt{17}}
+%<kiyou>  \newcommand{\large}{\@setfontsize\large{11.111}{17}}
+\fi
+%<!kiyou>\newcommand{\Large}{\@setfontsize\Large\@xivpt{21}}
+%<kiyou>\newcommand{\Large}{\@setfontsize\Large{12.222}{21}}
+\newcommand{\LARGE}{\@setfontsize\LARGE\@xviipt{25}}
+\newcommand{\huge}{\@setfontsize\huge\@xxpt{28}}
+\newcommand{\Huge}{\@setfontsize\Huge\@xxvpt{33}}
+\newcommand{\HUGE}{\@setfontsize\HUGE{30}{40}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% 別行立て数式の中では |\narrowbaselines| にします。
+% 和文の行送りのままでは，行列や場合分けの行送り，
+% 連分数の高さなどが不釣合いに大きくなるためです。
+%
+% 本文中の数式の中では |\narrowbaselines| にしていません。
+% 本文中ではなるべく行送りが変わるような大きいものを使わず，
+% 行列は |amsmath| の |smallmatrix| 環境を使うのがいいでしょう。
+%
+%    \begin{macrocode}
+\everydisplay=\expandafter{\the\everydisplay \narrowbaselines}
+%    \end{macrocode}
+%
+% しかし，このおかげで別行数式の上下のスペースが少し違ってしまいました。
+% とりあえず |amsmath| の |equation| 関係は |okumacro| のほうで逃げていますが，
+% もっとうまい逃げ道があればお教えください。
+%
+% 見出し用のフォントは |\bfseries| 固定ではなく，|\headfont|
+% という命令で定めることにします。
+% これは太ゴシックが使えるときは |\sffamily| |\bfseries|
+% でいいと思いますが，通常の中ゴシックでは単に |\sffamily|
+% だけのほうがよさそうです。
+% 『p\LaTeXe 美文書作成入門』（1997年）では |\sffamily|
+% |\fontseries{sbc}| として新ゴMと合わせましたが，
+% |\fontseries{sbc}| はちょっと幅が狭いように感じました。
+%
+%    \begin{macrocode}
+% \newcommand{\headfont}{\bfseries}
+\newcommand{\headfont}{\sffamily}
+% \newcommand{\headfont}{\sffamily\fontseries{sbc}\selectfont}
+%    \end{macrocode}
+%
+% \section{レイアウト}
+%
+% \paragraph{二段組}
+%
+% \begin{macro}{\columnsep}
+% \begin{macro}{\columnseprule}
+%
+% |\columnsep| は二段組のときの左右の段間の幅です。
+% 元は10ptでしたが，2zwにしました。
+% このスペースの中央に |\columnseprule| の幅の罫線が引かれます。
+%
+%    \begin{macrocode}
+%<!kiyou>\setlength\columnsep{2\Cwd}
+%<kiyou>\setlength\columnsep{28truebp}
+\setlength\columnseprule{0\p@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{段落}
+%
+% \begin{macro}{\lineskip}
+% \begin{macro}{\normallineskip}
+% \begin{macro}{\lineskiplimit}
+% \begin{macro}{\normallineskiplimit}
+%
+% 上下の行の文字が |\lineskiplimit| より接近したら，
+% |\lineskip| より近づかないようにします。
+% 元は0ptでしたが1ptに変更しました。
+% \texttt{normal...} の付いた方は保存用です。
+%
+%    \begin{macrocode}
+\setlength\lineskip{1\p@}
+\setlength\normallineskip{1\p@}
+\setlength\lineskiplimit{1\p@}
+\setlength\normallineskiplimit{1\p@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\baselinestretch}
+%
+% 実際の行送りが |\baselineskip| の何倍かを表すマクロです。たとえば
+% \begin{quote}
+%   |\renewcommand{\baselinestretch}{2}|
+% \end{quote}
+% とすると，行送りが通常の2倍になります。ただし，
+% これを設定すると，たとえ |\baselineskip| が伸縮するように
+% 設定しても，行送りの伸縮ができなくなります。
+% 行送りの伸縮はしないのが一般的です。
+%
+%    \begin{macrocode}
+\renewcommand{\baselinestretch}{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\parskip}
+% \begin{macro}{\parindent}
+%
+% |\parskip| は段落間の追加スペースです。
+% 元は 0pt plus 1pt になっていましたが，ここではゼロにしました。
+% |\parindent| は段落の先頭の字下げ幅です。
+%
+%    \begin{macrocode}
+\setlength\parskip{0\p@}
+\if@slide
+  \setlength\parindent{0\p@}
+\else
+  \setlength\parindent{1\Cwd}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@lowpenalty}
+% \begin{macro}{\@medpenalty}
+% \begin{macro}{\@highpenalty}
+%
+% |\nopagebreak|，|\nolinebreak| は引数に応じて次のペナルティ値
+% のうちどれかを選ぶようになっています。
+% ここはオリジナル通りです。
+%
+%    \begin{macrocode}
+\@lowpenalty   51
+\@medpenalty  151
+\@highpenalty 301
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\interlinepenalty}
+%
+% 段落中の改ページのペナルティです。デフォルトは 0 です。
+%
+%    \begin{macrocode}
+% \interlinepenalty 0
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\brokenpenalty}
+%
+% ページの最後の行がハイフンで終わる際のペナルティです。
+% デフォルトは 100 です。
+%
+%    \begin{macrocode}
+% \brokenpenalty 100
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{ページレイアウト}
+%
+% |geometry| パッケージに任せる。
+%
+% \begin{ZRnote}
+% 現状ではここで |\mag| を設定している。\par
+% |\topskip| も指定する。
+% \end{ZRnote}
+%    \begin{macrocode}
+\mag=\bxjs@param@mag
+\setlength{\topskip}{10pt}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |\bxjs@param@paper| が長さ指定（|{W}{H}|）の場合、
+% |geometry| の形式（|papersize={W,H}|）に変換する。
+% \end{ZRnote}
+%    \begin{macrocode}
+\def\bxjs@read@a{\futurelet\bxjs@tmpa\bxjs@read@b}
+\def\bxjs@read@b{%
+  \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@read@c
+  \else \expandafter\bxjs@read@d \fi}
+\def\bxjs@read@c#1#2#3\@nil{\def\bxjs@param@paper{papersize={#1,#2}}}
+\def\bxjs@read@d#1\@nil{}
+\expandafter\bxjs@read@a\bxjs@param@paper\@nil
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |\bxjs@layout@paper| は |geometry| の用紙設定のオプション。
+% \end{ZRnote}
+%    \begin{macrocode}
+\edef\bxjs@layout@paper{%
+  truedimen,\if@landscape landscape,\fi \bxjs@param@paper}
+%    \end{macrocode}
+%
+%
+% \begin{ZRnote}
+% |\bxjs@layout| は |geometry| のページレイアウトのオプション
+% 列であり、文書クラス毎に異なる。
+% \end{ZRnote}
+%    \begin{macrocode}
+%<*article|report>
+\def\bxjs@layout{%
+  headheight=\topskip,footskip=0.03367\paperheight,%
+  headsep=\footskip-\topskip,includeheadfoot,%
+  hscale=0.76,,hmarginratio=1:1,%
+  vscale=0.83,vmarginratio=1:1,%
+}
+%</article|report>
+%<*book>
+\def\bxjs@layout{%
+  headheight=\topskip,headsep=6mm,nofoot,includeheadfoot,%
+  hmargin=36mm,hmarginratio=1:1,%
+  vscale=0.83%,vmarginratio=1:1,%
+}
+%</book>
+%<*slide>
+\def\bxjs@layout{%
+  noheadfoot,%
+  hscale=0.9,hmarginratio=1:1,%
+  vscale=0.95,vmarginratio=1:1,%%
+}
+%</slide>
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |geometry| の後処理。
+% \end{ZRnote}
+%    \begin{macrocode}
+\newdimen\fullwidth
+\def\bxjs@postproc@layout{%
+% textwidth 調整
+  \@tempdimb=\textwidth
+  \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
+  \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
+  \advance\@tempdimb-\textwidth
+  \advance\oddsidemargin 0.5\@tempdimb
+  \advance\evensidemargin 0.5\@tempdimb
+% textheight 調整
+  \@tempdimb=\textheight
+  \advance\textheight-\topskip
+  \divide\textheight\baselineskip \multiply\textheight\baselineskip
+  \advance\textheight\topskip
+  \advance\@tempdimb-\textheight
+  \advance\topmargin0.5\@tempdimb
+% headheight 調整
+  \@tempdima=\topskip
+  \advance\headheight\@tempdima
+  \advance\topmargin-\@tempdima
+% marginpar 設定
+  \setlength\marginparsep{\columnsep}
+  \setlength\marginparpush{\baselineskip}
+  \setlength\marginparwidth{\evensidemargin-1truein-\marginparsep}
+  \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
+% 連動する変数
+  \maxdepth=.5\topskip
+  \fullwidth=\textwidth
+}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% ここで |geometry| を読み込む。
+% |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
+% ようにする自動調整を行うが、これをどうするかは未検討。
+% 今のところ、単純に回避（無効化）している。
+% \end{ZRnote}
+%    \begin{macrocode}
+\@onlypreamble\bxjs@revert
+\let\bxjs@revert\@empty
+\edef\bxjs@tmpa{\the\ht\strutbox}
+\ht\strutbox=10pt
+\g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
+%    \end{macrocode}
+% \begin{ZRnote}
+% エンジンが XeTeX である場合の処理。
+% \begin{itemize}
+% \item |geometry| 4.2版の場合：\ 
+%   {\TeX} Liveの一部の版に用意されている設定ファイル |geometry.cfg|
+%   では、|geometry| のドライバ自動検出の処理を乗っ取って、
+%   強制的に |pdftex| を使用するようになっている。
+%   ところが、XeTeXでは |\pdfhorigin| など未サポートのpdf{\TeX}%
+%   プリミティブがあり、|\mag| $\neq 1000$ の場合にエラーになる。
+%   そこで、|geometry.cfg| の読込の箇所にフックをかけて、|geometry.cfg|
+%   での処理をさらに乗っ取ることにする。
+%   \begin{itemize}
+%   \item XeTeXが |\pdfpagewidth| をサポートする場合は、ダミーの\ 
+%     |\pdfhorigin|、|\pdfvorigin| を用意してドライバを |pdftex|
+%     に強制的に変更する。
+%   \item そうでない場合は、ドライバを |dvipdfm| に強制的に変更する。
+%   \end{itemize}
+% \item |geometry| 5.x版の場合：\ 
+%   この版の |geometry| はXeTeXに正式に対応（ドライバ名 |xetex|）
+%   していて、またXeTeXで実行した場合にドライバ自動検出の結果は\ 
+%   |xetex| となる。
+%   従って、特に何もする必要がない。
+%   さらに、ドライバ自動検出処理のマクロ名を4.2版のもの
+%   （|\Gm@checkdrivers|）から変えているので、上述の |geometry.cfg|
+%   のフックおよびここで行っているフックはともに無力化されている。
+% \end{itemize}
+% \end{ZRnote}
+%    \begin{macrocode}
+\if x\bxjs@engine
+  \ifx\pdfpagewidth\@undefined
+    \def\bxjs@Gm@driver{dvipdfm}
+  \else
+    \def\bxjs@Gm@driver{pdftex}
+    \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
+    \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
+  \fi
+  \let\bxjs@InputIfFileExists\InputIfFileExists
+  \g@addto@macro\bxjs@revert{\let\InputIfFileExists\bxjs@InputIfFileExists}
+  \def\InputIfFileExists#1#2#3{%
+    \bxjs@InputIfFileExists{#1}{#2}{#3}%
+    \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
+\fi
+\edef\bxjs@nxt{%
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+\bxjs@nxt \bxjs@revert
+\bxjs@postproc@layout
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% \begin{itemize}
+% \item |\setpagelayout{|\meta{text}|}| ： 現在の geometry の設定の
+% 一部を修正する。
+% \item |\setpagelayout*{|\meta{text}|}| ： 用紙以外の設定をリセットして、
+% 改めて設定を行う。
+% \end{itemize}
+% どちらも設定の後で後処理 |\bxjs@postproc@layout| を実行する。
+% \end{ZRnote}
+%    \begin{macrocode}
+\def\setpagelayout{\@ifstar
+  {\bxjs@reset@layout}{\bxjs@modify@layout}}
+\def\bxjs@modify@layout#1{%
+  \edef\bxjs@nxt{\noexpand\geometry{#1,truedimen}}%
+  \bxjs@nxt\bxjs@postproc@layout}
+\def\bxjs@reset@layout#1{%
+  \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
+  \bxjs@nxt\bxjs@postproc@layout}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% ここからのコードは以下の点を除いて JS クラスのものを踏襲する。
+% \begin{itemize}
+% \item zw の代わりに |\jsZw| を用いる。
+% \item article/report/book/slide の切り分けの処理が異なる。
+% \end{itemize}
+% \end{ZRnote}
+%
+% \paragraph{脚注}
+%
+% \begin{macro}{\footnotesep}
+%
+% 各脚注の頭に入る支柱（strut）の高さです。
+% 脚注間に余分のアキが入らないように，
+% |\footnotesize| の支柱の高さ（行送りの0.7倍）に等しくします。
+%
+%    \begin{macrocode}
+{\footnotesize\global\setlength\footnotesep{\baselineskip}}
+\setlength\footnotesep{0.7\footnotesep}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\footins}
+%
+% |\skip\footins| は本文の最終行と最初の脚注との間の距離です。
+% 標準の10ポイントクラスでは 9 plus 4 minus 2 ポイントになっていますが，
+% 和文の行送りを考えてもうちょっと大きくします。
+%
+%    \begin{macrocode}
+\setlength{\skip\footins}{16\p@ \@plus 5\p@ \@minus 2\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{フロート関連}
+%
+% フロート（図，表）関連のパラメータは\LaTeXe 本体で定義されていますが，
+% ここで設定変更します。本文ページ（本文とフロートが共存するページ）
+% ちなみに，カウンタは内部では |\c@| を名前に冠したマクロになっています。
+% とフロートだけのページで設定が異なります。
+%
+% \begin{macro}{\c@topnumber}
+%
+% |topnumber| カウンタは本文ページ上部のフロートの最大数です。
+%
+% [2003-08-23] ちょっと増やしました。
+%
+%    \begin{macrocode}
+\setcounter{topnumber}{9}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\topfraction}
+%
+% 本文ページ上部のフロートが占有できる最大の割合です。
+% フロートが入りやすいように，元の値 0.7 を 0.8 [2003-08-23: 0.85] に変えてあります。
+%
+%    \begin{macrocode}
+\renewcommand{\topfraction}{.85}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c@bottomnumber}
+%
+% |bottomnumber| カウンタは本文ページ下部のフロートの最大数です。
+%
+% [2003-08-23] ちょっと増やしました。
+%
+%    \begin{macrocode}
+\setcounter{bottomnumber}{9}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bottomfraction}
+%
+% 本文ページ下部のフロートが占有できる最大の割合です。元は 0.3 でした。
+%
+%    \begin{macrocode}
+\renewcommand{\bottomfraction}{.8}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c@totalnumber}
+%
+% |totalnumber| カウンタは本文ページに入りうるフロートの最大数です。
+%
+% [2003-08-23] ちょっと増やしました。
+%
+%    \begin{macrocode}
+\setcounter{totalnumber}{20}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\textfraction}
+%
+% 本文ページに最低限入らなければならない本文の割合です。
+% フロートが入りやすいように元の 0.2 を 0.1 に変えました。
+%
+%    \begin{macrocode}
+\renewcommand{\textfraction}{.1}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\floatpagefraction}
+%
+% フロートだけのページでのフロートの最小割合です。
+% これも 0.5 を 0.8 に変えてあります。
+%
+%    \begin{macrocode}
+\renewcommand{\floatpagefraction}{.8}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c@dbltopnumber}
+%
+% 二段組のとき本文ページ上部に出力できる
+% 段抜きフロートの最大数です。
+%
+% [2003-08-23] ちょっと増やしました。
+%
+%    \begin{macrocode}
+\setcounter{dbltopnumber}{9}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dbltopfraction}
+%
+% 二段組のとき本文ページ上部に出力できる
+% 段抜きフロートが占めうる最大の割合です。
+% 0.7 を 0.8 に変えてあります。
+%
+%    \begin{macrocode}
+\renewcommand{\dbltopfraction}{.8}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dblfloatpagefraction}
+%
+% 二段組のときフロートだけのページに入るべき
+% 段抜きフロートの最小割合です。
+% 0.5 を 0.8 に変えてあります。
+%
+%    \begin{macrocode}
+\renewcommand{\dblfloatpagefraction}{.8}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\floatsep}
+% \begin{macro}{\textfloatsep}
+% \begin{macro}{\intextsep}
+%
+% |\floatsep| はページ上部・下部のフロート間の距離です。
+% |\textfloatsep| はページ上部・下部のフロートと本文との距離です。
+% |\intextsep| は本文の途中に出力されるフロートと本文との距離です。
+%
+%    \begin{macrocode}
+\setlength\floatsep    {12\p@ \@plus 2\p@ \@minus 2\p@}
+\setlength\textfloatsep{20\p@ \@plus 2\p@ \@minus 4\p@}
+\setlength\intextsep   {12\p@ \@plus 2\p@ \@minus 2\p@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\dblfloatsep}
+% \begin{macro}{\dbltextfloatsep}
+%
+% 二段組のときの段抜きのフロートについての値です。
+%
+%    \begin{macrocode}
+\setlength\dblfloatsep    {12\p@ \@plus 2\p@ \@minus 2\p@}
+\setlength\dbltextfloatsep{20\p@ \@plus 2\p@ \@minus 4\p@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@fptop}
+% \begin{macro}{\@fpsep}
+% \begin{macro}{\@fpbot}
+%
+% フロートだけのページに入るグルーです。
+% |\@fptop| はページ上部，
+% |\@fpbot| はページ下部，
+% |\@fpsep| はフロート間に入ります。
+%
+%    \begin{macrocode}
+\setlength\@fptop{0\p@ \@plus 1fil}
+\setlength\@fpsep{8\p@ \@plus 2fil}
+\setlength\@fpbot{0\p@ \@plus 1fil}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@dblfptop}
+% \begin{macro}{\@dblfpsep}
+% \begin{macro}{\@dblfpbot}
+%
+% 段抜きフロートについての値です。
+%
+%    \begin{macrocode}
+\setlength\@dblfptop{0\p@ \@plus 1fil}
+\setlength\@dblfpsep{8\p@ \@plus 2fil}
+\setlength\@dblfpbot{0\p@ \@plus 1fil}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \section{ページスタイル}\label{sec:pagestyle}
+%
+% ページスタイルとして，\LaTeXe （欧文版）の標準クラス
+% では |empty|，|plain|，|headings|，|myheadings| があります。
+% このうち |empty|，|plain| スタイルは\LaTeXe 本体
+% で定義されています。 
+%
+% アスキーのクラスファイルでは |headnombre|，|footnombre|，
+% |bothstyle|，|jpl@in| が追加されていますが，
+% ここでは欧文標準のものだけにしました。
+%
+% ページスタイルは |\ps@...| の形のマクロで定義されています。
+%
+% \begin{macro}{\@evenhead}
+% \begin{macro}{\@oddhead}
+% \begin{macro}{\@evenfoot}
+% \begin{macro}{\@oddfoot}
+%
+% |\@oddhead|，|\@oddfoot|，|\@evenhead|，|\@evenfoot| は
+% 偶数・奇数ページの柱（ヘッダ，フッタ）を出力する命令です。
+% これらは |\fullwidth| 幅の |\hbox| の中で呼び出されます。
+% |\ps@...| の中で定義しておきます。
+%
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% 柱の内容は，|\chapter| が呼び出す |\chaptermark{何々}|，
+% |\section| が呼び出す |\sectionmark{何々}| で設定します。
+% 柱を扱う命令には次のものがあります。
+%
+% \begin{quote}
+%   \begin{tabbing}
+%     |\markboth{左}{右} | \= 両方の柱を設定します。\\
+%     |\markright{右}|     \> 右の柱を設定します。\\
+%     |\leftmark|          \> 左の柱を出力します。\\
+%     |\rightmark|         \> 右の柱を出力します。
+%   \end{tabbing}
+% \end{quote}
+%
+% 柱を設定する命令は，右の柱が左の柱の下位にある場合は十分まともに
+% 動作します。たとえば左マークを |\chapter|，右マークを |\section|
+% で変更する場合がこれにあたります。
+% しかし，同一ページに複数の |\markboth| があると，
+% おかしな結果になることがあります。
+%
+% |\tableofcontents| のような命令で使われる |\@mkboth| は，
+% |\ps@...| コマンド中で |\markboth| か |\@gobbletwo|（何もしない）
+% に |\let| されます。
+%
+% \begin{macro}{\ps@empty}
+%
+% |empty| ページスタイルの定義です。
+% \LaTeX 本体で定義されているものをコメントアウトした形で
+% 載せておきます。
+%
+%    \begin{macrocode}
+% \def\ps@empty{%
+%   \let\@mkboth\@gobbletwo
+%   \let\@oddhead\@empty
+%   \let\@oddfoot\@empty
+%   \let\@evenhead\@empty
+%   \let\@evenfoot\@empty}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ps@plainhead}
+% \begin{macro}{\ps@plainfoot}
+% \begin{macro}{\ps@plain}
+%
+% |plainhead| はシンプルなヘッダだけのページスタイルです。
+%
+% |plainfoot| はシンプルなフッタだけのページスタイルです。
+%
+% |plain| は |book| では |plainhead|，それ以外では |plainfoot| になります。
+%
+%    \begin{macrocode}
+\def\ps@plainfoot{%
+  \let\@mkboth\@gobbletwo
+  \let\@oddhead\@empty
+  \def\@oddfoot{\normalfont\hfil\thepage\hfil}%
+  \let\@evenhead\@empty
+  \let\@evenfoot\@oddfoot}
+\def\ps@plainhead{%
+  \let\@mkboth\@gobbletwo
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@empty
+  \def\@evenhead{%
+    \if@mparswitch \hss \fi
+    \hbox to \fullwidth{\textbf{\thepage}\hfil}%
+    \if@mparswitch\else \hss \fi}%
+  \def\@oddhead{%
+    \hbox to \fullwidth{\hfil\textbf{\thepage}}\hss}}
+%<book>\let\ps@plain\ps@plainhead
+%<!book>\let\ps@plain\ps@plainfoot
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\ps@headings}
+%
+% |headings| スタイルはヘッダに見出しとページ番号を出力します。
+% ここではヘッダにアンダーラインを引くようにしてみました。
+%
+% まず article の場合です。
+%
+%    \begin{macrocode}
+%<*article|slide>
+\if@twoside
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \let\@evenfoot\@empty
+    \def\@evenhead{\if@mparswitch \hss \fi
+      \underline{\hbox to \fullwidth{\textbf{\thepage}\hfil\leftmark}}%
+      \if@mparswitch\else \hss \fi}%
+    \def\@oddhead{%
+      \underline{%
+        \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
+    \let\@mkboth\markboth
+    \def\sectionmark##1{\markboth{%
+       \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+       ##1}{}}%
+    \def\subsectionmark##1{\markright{%
+       \ifnum \c@secnumdepth >\@ne \thesubsection \hskip1\jsZw\fi
+       ##1}}%
+  }
+\else % if not twoside
+  \def\ps@headings{%
+    \let\@oddfoot\@empty
+    \def\@oddhead{%
+      \underline{%
+        \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
+    \let\@mkboth\markboth
+    \def\sectionmark##1{\markright{%
+        \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+        ##1}}}
+\fi
+%</article|slide>
+%    \end{macrocode}
+%
+% 次は book の場合です。
+%
+%    \begin{macrocode}
+%<*book|report>
+\def\ps@headings{%
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@empty
+  \def\@evenhead{%
+    \if@mparswitch \hss \fi
+    \underline{\hbox to \fullwidth{\autoxspacing
+        \textbf{\thepage}\hfil\leftmark}}%
+    \if@mparswitch\else \hss \fi}%
+  \def\@oddhead{\underline{\hbox to \fullwidth{\autoxspacing
+        {\if@twoside\rightmark\else\leftmark\fi}\hfil\textbf{\thepage}}}\hss}%
+  \let\@mkboth\markboth
+  \def\chaptermark##1{\markboth{%
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \@chapapp\thechapter\@chappos\hskip1\jsZw
+      \fi
+    \fi
+    ##1}{}}%
+  \def\sectionmark##1{\markright{%
+    \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+    ##1}}}%
+%</book|report>
+%    \end{macrocode}
+%
+% 最後は学会誌の場合です。
+%
+%    \begin{macrocode}
+%<*jspf>
+\def\ps@headings{%
+  \def\@oddfoot{\normalfont\hfil\thepage\hfil}
+  \def\@evenfoot{\normalfont\hfil\thepage\hfil}
+  \def\@oddhead{\normalfont\hfil \@title \hfil}
+  \def\@evenhead{\normalfont\hfil プラズマ・核融合学会誌\hfil}}
+%</jspf>
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\ps@myheadings}
+%
+% |myheadings| ページスタイルではユーザが |\markboth| や |\markright| で
+% 柱を設定するため，ここでの定義は非常に簡単です。
+%
+% [2004-01-17] 渡辺徹さんのパッチを適用しました。
+%
+%    \begin{macrocode}
+\def\ps@myheadings{%
+  \let\@oddfoot\@empty\let\@evenfoot\@empty
+  \def\@evenhead{%
+    \if@mparswitch \hss \fi%
+    \hbox to \fullwidth{\thepage\hfil\leftmark}%
+    \if@mparswitch\else \hss \fi}%
+  \def\@oddhead{%
+    \hbox to \fullwidth{\rightmark\hfil\thepage}\hss}%
+  \let\@mkboth\@gobbletwo
+%<book|report>  \let\chaptermark\@gobble
+  \let\sectionmark\@gobble
+%<!book&!report>  \let\subsectionmark\@gobble
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \section{文書のマークアップ}
+%
+% \subsection{表題}
+%
+% \begin{macro}{\title}
+% \begin{macro}{\author}
+% \begin{macro}{\date}
+%
+%    これらは\LaTeX 本体で次のように定義されています。
+%    ここではコメントアウトした形で示します。
+%
+%    \begin{macrocode}
+% \newcommand*{\title}[1]{\gdef\@title{#1}}
+% \newcommand*{\author}[1]{\gdef\@author{#1}}
+% \newcommand*{\date}[1]{\gdef\@date{#1}}
+% \date{\today}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\etitle}
+% \begin{macro}{\eauthor}
+% \begin{macro}{\keywords}
+%
+% 某学会誌スタイルで使う英語のタイトル，英語の著者名，キーワード，メールアドレスです。
+%
+%    \begin{macrocode}
+%<*jspf>
+\newcommand*{\etitle}[1]{\gdef\@etitle{#1}}
+\newcommand*{\eauthor}[1]{\gdef\@eauthor{#1}}
+\newcommand*{\keywords}[1]{\gdef\@keywords{#1}}
+\newcommand*{\email}[1]{\gdef\authors@mail{#1}}
+\newcommand*{\AuthorsEmail}[1]{\gdef\authors@mail{author's e-mail:\ #1}}
+%</jspf>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\plainifnotempty}
+%
+% 従来の標準クラスでは，文書全体のページスタイルを |empty| に
+% しても表題のあるページだけ |plain| になってしまうことが
+% ありました。これは |\maketitle| の定義中
+% に |\thispagestyle|\hspace{0pt}|{plain}| が入っている
+% ためです。この問題を解決するために，
+% 「全体のページスタイルが |empty| でないなら
+% このページのスタイルを |plain| にする」という次の
+% 命令を作ることにします。
+%
+%    \begin{macrocode}
+\def\plainifnotempty{%
+  \ifx \@oddhead \@empty
+    \ifx \@oddfoot \@empty
+    \else
+      \thispagestyle{plainfoot}%
+    \fi
+  \else
+    \thispagestyle{plainhead}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\maketitle}
+%
+% 表題を出力します。
+% 著者名を出力する部分は，欧文の標準クラスファイルでは |\large|，
+% 和文のものでは |\Large| になっていましたが，ここでは |\large|
+% にしました。
+%
+%    \begin{macrocode}
+%<*article|book|report|slide>
+\if@titlepage
+  \newcommand{\maketitle}{%
+    \begin{titlepage}%
+      \let\footnotesize\small
+      \let\footnoterule\relax
+      \let\footnote\thanks
+      \null\vfil
+      \if@slide
+        {\footnotesize \@date}%
+        \begin{center}
+          \mbox{} \\[1\jsZw]
+          \large
+          {\maybeblue\hrule height0pt depth2pt\relax}\par
+          \smallskip
+          \@title
+          \smallskip
+          {\maybeblue\hrule height0pt depth2pt\relax}\par
+          \vfill
+          {\small \@author}%
+        \end{center}
+      \else
+      \vskip 60\p@
+      \begin{center}%
+        {\LARGE \@title \par}%
+        \vskip 3em%
+        {\large
+          \lineskip .75em
+          \begin{tabular}[t]{c}%
+            \@author
+          \end{tabular}\par}%
+        \vskip 1.5em
+        {\large \@date \par}%
+      \end{center}%
+      \fi
+      \par
+      \@thanks\vfil\null
+    \end{titlepage}%
+    \setcounter{footnote}{0}%
+    \global\let\thanks\relax
+    \global\let\maketitle\relax
+    \global\let\@thanks\@empty
+    \global\let\@author\@empty
+    \global\let\@date\@empty
+    \global\let\@title\@empty
+    \global\let\title\relax
+    \global\let\author\relax
+    \global\let\date\relax
+    \global\let\and\relax
+  }%
+\else
+  \newcommand{\maketitle}{\par
+    \begingroup
+      \renewcommand\thefootnote{\@fnsymbol\c@footnote}%
+      \def\@makefnmark{\rlap{\@textsuperscript{\normalfont\@thefnmark}}}%
+      \long\def\@makefntext##1{\advance\leftskip 3\jsZw
+        \parindent 1\jsZw\noindent
+        \llap{\@textsuperscript{\normalfont\@thefnmark}\hskip0.3\jsZw}##1}%
+      \if@twocolumn
+        \ifnum \col@number=\@ne
+          \@maketitle
+        \else
+          \twocolumn[\@maketitle]%
+        \fi
+      \else
+        \newpage
+        \global\@topnum\z@  % Prevents figures from going at top of page.
+        \@maketitle
+      \fi
+      \plainifnotempty
+      \@thanks
+    \endgroup
+    \setcounter{footnote}{0}%
+    \global\let\thanks\relax
+    \global\let\maketitle\relax
+    \global\let\@thanks\@empty
+    \global\let\@author\@empty
+    \global\let\@date\@empty
+    \global\let\@title\@empty
+    \global\let\title\relax
+    \global\let\author\relax
+    \global\let\date\relax
+    \global\let\and\relax
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@maketitle}
+%
+% 独立した表題ページを作らない場合の表題の出力形式です。
+%
+%    \begin{macrocode}
+  \def\@maketitle{%
+    \newpage\null
+    \vskip 2em
+    \begin{center}%
+      \let\footnote\thanks
+      {\LARGE \@title \par}%
+      \vskip 1.5em
+      {\large
+        \lineskip .5em
+        \begin{tabular}[t]{c}%
+          \@author
+        \end{tabular}\par}%
+      \vskip 1em
+      {\large \@date}%
+    \end{center}%
+    \par\vskip 1.5em
+%<article|slide>    \ifvoid\@abstractbox\else\centerline{\box\@abstractbox}\vskip1.5em\fi
+  }
+\fi
+%</article|book|report|slide>
+%<*jspf>
+\newcommand{\maketitle}{\par
+  \begingroup
+    \renewcommand\thefootnote{\@fnsymbol\c@footnote}%
+    \def\@makefnmark{\rlap{\@textsuperscript{\normalfont\@thefnmark}}}%
+    \long\def\@makefntext##1{\advance\leftskip 3\jsZw
+      \parindent 1\jsZw\noindent
+      \llap{\@textsuperscript{\normalfont\@thefnmark}\hskip0.3\jsZw}##1}%
+      \twocolumn[\@maketitle]%
+    \plainifnotempty
+    \@thanks
+  \endgroup
+  \setcounter{footnote}{0}%
+  \global\let\thanks\relax
+  \global\let\maketitle\relax
+  \global\let\@thanks\@empty
+  \global\let\@author\@empty
+  \global\let\@date\@empty
+% \global\let\@title\@empty % \@title は柱に使う
+  \global\let\title\relax
+  \global\let\author\relax
+  \global\let\date\relax
+  \global\let\and\relax
+  \ifx\authors@mail\@undefined\else{%
+    \def\@makefntext{\advance\leftskip 3\jsZw \parindent -3\jsZw}%
+    \footnotetext[0]{\itshape\authors@mail}%
+  }\fi
+  \global\let\authors@mail\@undefined}
+\def\@maketitle{%
+  \newpage\null
+  \vskip 6em % used to be 2em
+  \begin{center}
+    \let\footnote\thanks
+    \ifx\@title\@undefined\else{\LARGE\headfont\@title\par}\fi
+    \lineskip .5em
+    \ifx\@author\@undefined\else
+      \vskip 1em
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par
+    \fi
+    \ifx\@etitle\@undefined\else
+      \vskip 1em
+      {\large \@etitle \par}%
+    \fi
+    \ifx\@eauthor\@undefined\else
+      \vskip 1em
+      \begin{tabular}[t]{c}%
+        \@eauthor
+      \end{tabular}\par
+    \fi
+    \vskip 1em
+    \@date
+  \end{center}
+  \vskip 1.5em
+  \centerline{\box\@abstractbox}
+  \ifx\@keywords\@undefined\else
+    \vskip 1.5em
+    \centerline{\parbox{157mm}{\textsf{Keywords:}\\ \small\@keywords}}
+  \fi
+  \vskip 1.5em}
+%</jspf>
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{章・節}
+%
+% \paragraph{構成要素}
+%
+% |\@startsection| マクロは6個の必須引数と，オプションとして |*| と
+% 1個のオプション引数と1個の必須引数をとります。
+%
+% \begin{quote}
+% |\@startsection{名}{レベル}{字下げ}{前アキ}{後アキ}{スタイル}| \\
+% |              *[別見出し]{見出し}|
+% \end{quote}
+%
+% それぞれの引数の意味は次の通りです。
+%
+% \begin{description}
+% \item[名] ユーザレベルコマンドの名前です（例: section）。
+% \item[レベル] 見出しの深さを示す数値です
+%    （chapter=1, section=2, \ldots ）。
+%    この数値が |secnumdepth| 以下のとき見出し番号を出力します。
+% \item[字下げ] 見出しの字下げ量です。
+% \item[前アキ] この値の絶対値が見出し上側の空きです。
+%    負の場合は，見出し直後の段落をインデントしません。
+% \item[後アキ] 正の場合は，見出しの下の空きです。
+%    負の場合は，絶対値が見出しの右の空きです
+%    （見出しと同じ行から本文を始めます）。
+% \item[スタイル] 見出しの文字スタイルの設定です。
+% \item[\texttt{*}] この \texttt{*} 印がないと，見出し番号を付け，
+%    見出し番号のカウンタに1を加算します。
+% \item[別見出し] 目次や柱に出力する見出しです。
+% \item[見出し] 見出しです。
+% \end{description}
+%
+% 見出しの命令は通常 |\@startsection| とその最初の6個の引数として
+% 定義されます。
+%
+% 次は |\@startsection| の定義です。
+% 情報処理学会論文誌スタイルファイル（\texttt{ipsjcommon.sty}）
+% を参考にさせていただきましたが，完全に行送りが |\baselineskip|
+% の整数倍にならなくてもいいから前の行と重ならないようにしました。
+%
+%    \begin{macrocode}
+\def\@startsection#1#2#3#4#5#6{%
+  \if@noskipsec \leavevmode \fi
+  \par
+% 見出し上の空きを \@tempskipa にセットする
+  \@tempskipa #4\relax
+% \@afterindent は見出し直後の段落を字下げするかどうかを表すスイッチ
+  \if@english \@afterindentfalse \else \@afterindenttrue \fi
+% 見出し上の空きが負なら見出し直後の段落を字下げしない
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+  \if@nobreak
+%   \everypar{\everyparhook}% これは間違い
+    \everypar{}%
+  \else
+    \addpenalty\@secpenalty
+% 次の行は削除
+%   \addvspace\@tempskipa
+% 次の \noindent まで追加
+    \ifdim \@tempskipa >\z@
+      \if@slide\else
+        \null
+        \vspace*{-\baselineskip}%
+      \fi
+      \vskip\@tempskipa
+    \fi
+  \fi
+  \noindent
+% 追加終わり
+  \@ifstar
+    {\@ssect{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+%    \end{macrocode}
+%
+% |\@sect| と |\@xsect| は，
+% 前のアキがちょうどゼロの場合にもうまくいくように，多少変えてあります。
+% |\everyparhook| も挿入しています。
+%
+%    \begin{macrocode}
+\def\@sect#1#2#3#4#5#6[#7]#8{%
+  \ifnum #2>\c@secnumdepth
+    \let\@svsec\@empty
+  \else
+    \refstepcounter{#1}%
+    \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+  \fi
+% 見出し後の空きを \@tempskipa にセット
+  \@tempskipa #5\relax
+% 条件判断の順序を入れ換えました
+  \ifdim \@tempskipa<\z@
+    \def\@svsechd{%
+      #6{\hskip #3\relax
+      \@svsec #8}%
+      \csname #1mark\endcsname{#7}%
+      \addcontentsline{toc}{#1}{%
+        \ifnum #2>\c@secnumdepth \else
+          \protect\numberline{\csname the#1\endcsname}%
+        \fi
+        #7}}% 目次にフルネームを載せるなら #8
+  \else
+    \begingroup
+      \interlinepenalty \@M % 下から移動
+      #6{%
+        \@hangfrom{\hskip #3\relax\@svsec}%
+%       \interlinepenalty \@M % 上に移動
+        #8\@@par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}%
+    \addcontentsline{toc}{#1}{%
+      \ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}%
+      \fi
+      #7}% 目次にフルネームを載せるならここは #8
+  \fi
+  \@xsect{#5}}
+%    \end{macrocode}
+%
+% 二つ挿入した |\everyparhook| のうち後者が |\paragraph| 類の後で2回実行され，
+% それ以降は前者が実行されます。
+%
+%    \begin{macrocode}
+\def\@xsect#1{%
+% 見出しの後ろの空きを \@tempskipa にセット
+  \@tempskipa #1\relax
+% 条件判断の順序を変えました
+  \ifdim \@tempskipa<\z@
+    \@nobreakfalse
+    \global\@noskipsectrue
+    \everypar{%
+      \if@noskipsec
+        \global\@noskipsecfalse
+       {\setbox\z@\lastbox}%
+        \clubpenalty\@M
+        \begingroup \@svsechd \endgroup
+        \unskip
+        \@tempskipa #1\relax
+        \hskip -\@tempskipa
+      \else
+        \clubpenalty \@clubpenalty
+        \everypar{\everyparhook}%
+      \fi\everyparhook}%
+  \else
+    \par \nobreak
+    \vskip \@tempskipa
+    \@afterheading
+  \fi
+  \if@slide
+    {\vskip-6pt\maybeblue\hrule height0pt depth1pt\vskip7pt\relax}%
+  \fi
+  \par  % 2000-12-18
+  \ignorespaces}
+\def\@ssect#1#2#3#4#5{%
+  \@tempskipa #3\relax
+  \ifdim \@tempskipa<\z@
+    \def\@svsechd{#4{\hskip #1\relax #5}}%
+  \else
+    \begingroup
+      #4{%
+        \@hangfrom{\hskip #1}%
+          \interlinepenalty \@M #5\@@par}%
+    \endgroup
+  \fi
+  \@xsect{#3}}
+%    \end{macrocode}
+%
+% \paragraph{柱関係の命令}
+%
+% \begin{macro}{\chaptermark}
+% \begin{macro}{\sectionmark}
+% \begin{macro}{\subsectionmark}
+% \begin{macro}{\subsubsectionmark}
+% \begin{macro}{\paragraphmark}
+% \begin{macro}{\subparagraphmark}
+%
+% |\...mark| の形の命令を初期化します（第\ref{sec:pagestyle}節参照）。
+% |\chaptermark| 以外は\LaTeX 本体で定義済みです。
+%
+%    \begin{macrocode}
+\newcommand*\chaptermark[1]{}
+% \newcommand*{\sectionmark}[1]{}
+% \newcommand*{\subsectionmark}[1]{}
+% \newcommand*{\subsubsectionmark}[1]{}
+% \newcommand*{\paragraphmark}[1]{}
+% \newcommand*{\subparagraphmark}[1]{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{カウンタの定義}
+%
+% \begin{macro}{\c@secnumdepth}
+%
+% |secnumdepth| は第何レベルの見出しまで
+% 番号を付けるかを決めるカウンタです。
+%
+%    \begin{macrocode}
+%<!book&!report>\setcounter{secnumdepth}{3}
+%<book|report>\setcounter{secnumdepth}{2}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c@chapter}
+% \begin{macro}{\c@section}
+% \begin{macro}{\c@subsection}
+% \begin{macro}{\c@subsubsection}
+% \begin{macro}{\c@paragraph}
+% \begin{macro}{\c@subparagraph}
+%
+% 見出し番号のカウンタです。
+% |\newcounter| の第1引数が新たに作るカウンタです。
+% これは第2引数が増加するたびに 0 に戻されます。
+% 第2引数は定義済みのカウンタです。
+%
+%    \begin{macrocode}
+\newcounter{part}
+%<book|report>\newcounter{chapter}
+%<book|report>\newcounter{section}[chapter]
+%<!book&!report>\newcounter{section}
+\newcounter{subsection}[section]
+\newcounter{subsubsection}[subsection]
+\newcounter{paragraph}[subsubsection]
+\newcounter{subparagraph}[paragraph]
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\thepart}
+% \begin{macro}{\thechapter}
+% \begin{macro}{\thesection}
+% \begin{macro}{\thesubsection}
+% \begin{macro}{\thesubsubsection}
+% \begin{macro}{\theparagraph}
+% \begin{macro}{\thesubparagraph}
+%
+% カウンタの値を出力する命令 |\the何々| を定義します。
+%
+% カウンタを出力するコマンドには次のものがあります。
+%
+% \begin{quote}
+%   |\arabic{COUNTER}   | 1, 2, 3, \ldots \\
+%   |\roman{COUNTER}    | i, ii, iii, \ldots \\
+%   |\Roman{COUNTER}    | I, II, III, \ldots \\
+%   |\alph{COUNTER}     | a, b, c, \ldots \\
+%   |\Alph{COUNTER}     | A, B, C, \ldots \\
+%   |\kansuji{COUNTER}  | 一, 二, 三, \ldots
+% \end{quote}
+%
+% 以下ではスペース節約のため |@| の付いた内部表現を多用しています。
+%
+%    \begin{macrocode}
+\renewcommand{\thepart}{\@Roman\c@part}
+%<!book&!report>% \renewcommand{\thesection}{\@arabic\c@section}
+%<!book&!report>\renewcommand{\thesection}{\presectionname\@arabic\c@section\postsectionname}
+%<!book&!report>\renewcommand{\thesubsection}{\@arabic\c@section.\@arabic\c@subsection}
+%<*book|report>
+\renewcommand{\thechapter}{\@arabic\c@chapter}
+\renewcommand{\thesection}{\thechapter.\@arabic\c@section}
+\renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+%</book|report>
+\renewcommand{\thesubsubsection}{%
+   \thesubsection.\@arabic\c@subsubsection}
+\renewcommand{\theparagraph}{%
+   \thesubsubsection.\@arabic\c@paragraph}
+\renewcommand{\thesubparagraph}{%
+   \theparagraph.\@arabic\c@subparagraph}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@chapapp}
+% \begin{macro}{\@chappos}
+%
+% |\@chapapp| の初期値は |\prechaptername|（第）です。
+%
+% |\@chappos| の初期値は |\postchaptername|（章）です。
+%
+% |\appendix| は |\@chapapp| を |\appendixname| に，
+% |\@chappos| を空に再定義します。
+%
+% [2003-03-02] |\@secapp| は外しました。
+%
+%    \begin{macrocode}
+%<book|report>\newcommand{\@chapapp}{\prechaptername}
+%<book|report>\newcommand{\@chappos}{\postchaptername}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{前付，本文，後付}
+%
+% 本のうち章番号があるのが「本文」，
+% それ以外が「前付」「後付」です。
+%
+% \begin{macro}{\frontmatter}
+%
+% ページ番号をローマ数字にし，章番号を付けないようにします。
+%
+%    \begin{macrocode}
+%<*book|report>
+\newcommand\frontmatter{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+  \@mainmatterfalse
+  \pagenumbering{roman}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\mainmatter}
+%
+% ページ番号を算用数字にし，章番号を付けるようにします。
+%
+%    \begin{macrocode}
+\newcommand\mainmatter{%
+% \if@openright
+    \cleardoublepage
+% \else
+%   \clearpage
+% \fi
+  \@mainmattertrue
+  \pagenumbering{arabic}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\backmatter}
+%
+% 章番号を付けないようにします。ページ番号の付け方は変わりません。
+%
+%    \begin{macrocode}
+\newcommand\backmatter{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+  \@mainmatterfalse}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{部}
+%
+% \begin{macro}{\part}
+%
+% 新しい部を始めます。
+%
+% |\secdef| を使って見出しを定義しています。
+% このマクロは二つの引数をとります。
+%
+% \begin{quote}
+% |\secdef{星なし}{星あり}|
+% \end{quote}
+%
+% \begin{description}
+% \item[星なし] \texttt{*} のない形の定義です。
+% \item[星あり] \texttt{*} のある形の定義です。
+% \end{description}
+%
+% |\secdef| は次のようにして使います。
+%
+%\begin{verbatim}
+%   \def\chapter { ... \secdef \CMDA \CMDB }
+%   \def\CMDA    [#1]#2{....} % \chapter[...]{...} の定義
+%   \def\CMDB    #1{....}     % \chapter*{...} の定義
+%\end{verbatim}
+%
+% まず |book| クラス以外です。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\newcommand\part{%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \addvspace{4ex}%
+  \if@english \@afterindentfalse \else \@afterindenttrue \fi
+  \secdef\@part\@spart}
+%</!book&!report>
+%    \end{macrocode}
+%
+% |book| スタイルの場合は，少し複雑です。
+%
+%    \begin{macrocode}
+%<*book|report>
+\newcommand\part{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+  \thispagestyle{empty}% 欧文用標準スタイルでは plain
+  \if@twocolumn
+    \onecolumn
+    \@restonecoltrue
+  \else
+    \@restonecolfalse
+  \fi
+  \null\vfil
+  \secdef\@part\@spart}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@part}
+%
+% 部の見出しを出力します。
+% |\bfseries| を |\headfont| に変えました。
+%
+% |book| クラス以外では |secnumdepth| が $-1$ より大きいとき
+% 部番号を付けます。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\def\@part[#1]#2{%
+  \ifnum \c@secnumdepth >\m@ne
+    \refstepcounter{part}%
+    \addcontentsline{toc}{part}{%
+      \prepartname\thepart\postpartname\hspace{1\jsZw}#1}%
+  \else
+    \addcontentsline{toc}{part}{#1}%
+  \fi
+  \markboth{}{}%
+  {\parindent\z@
+    \raggedright
+    \interlinepenalty \@M
+    \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \Large\headfont\prepartname\thepart\postpartname
+      \par\nobreak
+    \fi
+    \huge \headfont #2%
+    \markboth{}{}\par}%
+  \nobreak
+  \vskip 3ex
+  \@afterheading}
+%</!book&!report>
+%    \end{macrocode}
+%
+% |book| クラスでは |secnumdepth| が $-2$ より大きいとき部番号を付けます。
+%
+%    \begin{macrocode}
+%<*book|report>
+\def\@part[#1]#2{%
+  \ifnum \c@secnumdepth >-2\relax
+    \refstepcounter{part}%
+    \addcontentsline{toc}{part}{%
+      \prepartname\thepart\postpartname\hspace{1\jsZw}#1}%
+  \else
+    \addcontentsline{toc}{part}{#1}%
+  \fi
+  \markboth{}{}%
+  {\centering
+    \interlinepenalty \@M
+    \normalfont
+    \ifnum \c@secnumdepth >-2\relax
+      \huge\headfont \prepartname\thepart\postpartname
+      \par\vskip20\p@
+    \fi
+    \Huge \headfont #2\par}%
+  \@endpart}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@spart}
+%
+% 番号を付けない部です。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\def\@spart#1{{%
+    \parindent \z@ \raggedright
+    \interlinepenalty \@M
+    \normalfont
+    \huge \headfont #1\par}%
+  \nobreak
+  \vskip 3ex
+  \@afterheading}
+%</!book&!report>
+%<*book|report>
+\def\@spart#1{{%
+    \centering
+    \interlinepenalty \@M
+    \normalfont
+    \Huge \headfont #1\par}%
+  \@endpart}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@endpart}
+%
+% |\@part| と |\@spart| の最後で実行されるマクロです。
+% 両面印刷のときは白ページを追加します。
+% 二段組のときには，二段組に戻します。
+%
+%    \begin{macrocode}
+%<*book|report>
+\def\@endpart{\vfil\newpage
+  \if@twoside
+    \null
+    \thispagestyle{empty}%
+    \newpage
+  \fi
+  \if@restonecol
+    \twocolumn
+  \fi}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{章}
+%
+% \begin{macro}{\chapter}
+%
+%    章の最初のページスタイルは，全体が |empty| でなければ |plain| に
+%    します。
+%    また，|\@topnum| を 0 にして，
+%    章見出しの上に図や表が来ないようにします。
+%
+%    \begin{macrocode}
+%<*book|report>
+\newcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \plainifnotempty % 元: \thispagestyle{plain}
+  \global\@topnum\z@
+  \if@english \@afterindentfalse \else \@afterindenttrue \fi
+  \secdef\@chapter\@schapter}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@chapter}
+%
+% 章見出しを出力します。
+% |secnumdepth| が0以上かつ |\@mainmatter| が真のとき章番号を出力します。
+%
+%    \begin{macrocode}
+\def\@chapter[#1]#2{%
+  \ifnum \c@secnumdepth >\m@ne
+    \if@mainmatter
+      \refstepcounter{chapter}%
+      \typeout{\@chapapp\thechapter\@chappos}%
+      \addcontentsline{toc}{chapter}%
+        {\protect\numberline
+        {\if@english\thechapter\else\@chapapp\thechapter\@chappos\fi}%
+        #1}%
+    \else\addcontentsline{toc}{chapter}{#1}\fi
+  \else
+    \addcontentsline{toc}{chapter}{#1}%
+  \fi
+  \chaptermark{#1}%
+  \addtocontents{lof}{\protect\addvspace{10\p@}}%
+  \addtocontents{lot}{\protect\addvspace{10\p@}}%
+  \if@twocolumn
+    \@topnewpage[\@makechapterhead{#2}]%
+  \else
+    \@makechapterhead{#2}%
+    \@afterheading
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@makechapterhead}
+%
+%    実際に章見出しを組み立てます。
+%    |\bfseries| を |\headfont| に変えました。
+%
+%    \begin{macrocode}
+\def\@makechapterhead#1{%
+  \vspace*{2\Cvs}% 欧文は50pt
+  {\parindent \z@ \raggedright \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \huge\headfont \@chapapp\thechapter\@chappos
+        \par\nobreak
+        \vskip \Cvs % 欧文は20pt
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \Huge \headfont #1\par\nobreak
+    \vskip 3\Cvs}} % 欧文は40pt
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@schapter}
+%
+% |\chapter*{...}| コマンドの本体です。
+% |\chaptermark| を補いました。
+%
+%    \begin{macrocode}
+\def\@schapter#1{%
+  \chaptermark{#1}%
+  \if@twocolumn
+    \@topnewpage[\@makeschapterhead{#1}]%
+  \else
+    \@makeschapterhead{#1}\@afterheading
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@makeschapterhead}
+%
+% 番号なしの章見出しです。
+%
+%    \begin{macrocode}
+\def\@makeschapterhead#1{%
+  \vspace*{2\Cvs}% 欧文は50pt
+  {\parindent \z@ \raggedright
+    \normalfont
+    \interlinepenalty\@M
+    \Huge \headfont #1\par\nobreak
+    \vskip 3\Cvs}} % 欧文は40pt
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{下位レベルの見出し}
+%
+% \begin{macro}{\section}
+%
+% 欧文版では |\@startsection| の第4引数を負にして最初の段落の
+% 字下げを禁止していますが，
+% 和文版では正にして字下げするようにしています。
+%
+% 段組のときはなるべく左右の段が狂わないように工夫しています。
+%
+%    \begin{macrocode}
+\if@twocolumn
+  \newcommand{\section}{%
+%<jspf>\ifx\maketitle\relax\else\maketitle\fi
+    \@startsection{section}{1}{\z@}%
+%<!kiyou>    {0.6\Cvs}{0.4\Cvs}%
+%<kiyou>    {\Cvs}{0.5\Cvs}%
+%   {\normalfont\large\headfont\@secapp}}
+    {\normalfont\large\headfont\raggedright}}
+\else
+  \newcommand{\section}{%
+    \if@slide\clearpage\fi
+    \@startsection{section}{1}{\z@}%
+    {\Cvs \@plus.5\Cdp \@minus.2\Cdp}% 前アキ
+    {.5\Cvs \@plus.3\Cdp}% 後アキ
+%   {\normalfont\Large\headfont\@secapp}}
+    {\normalfont\Large\headfont\raggedright}}
+\fi
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\subsection}
+%
+% 同上です。
+%
+%    \begin{macrocode}
+\if@twocolumn
+  \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+    {\z@}{\z@}%
+    {\normalfont\normalsize\headfont}}
+\else
+  \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+    {\Cvs \@plus.5\Cdp \@minus.2\Cdp}% 前アキ
+    {.5\Cvs \@plus.3\Cdp}% 後アキ
+    {\normalfont\large\headfont}}
+\fi
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\subsubsection}
+%    \begin{macrocode}
+\if@twocolumn
+  \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+    {\z@}{\z@}%
+    {\normalfont\normalsize\headfont}}
+\else
+  \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+    {\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
+    {\z@}%
+    {\normalfont\normalsize\headfont}}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\paragraph}
+%
+%    見出しの後ろで改行されません。
+%
+%    \begin{macrocode}
+\if@twocolumn
+  \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
+    {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
+%<jspf>    {\normalfont\normalsize\headfont}}
+%<!jspf>    {\normalfont\normalsize\headfont ■}}
+\else
+  \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
+    {0.5\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
+    {-1\jsZw}% 改行せず 1\jsZw のアキ
+%<jspf>    {\normalfont\normalsize\headfont}}
+%<!jspf>    {\normalfont\normalsize\headfont ■}}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\subparagraph}
+%
+%    見出しの後ろで改行されません。
+%
+%    \begin{macrocode}
+\newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
+   {\z@}{-1\jsZw}%
+   {\normalfont\normalsize\headfont}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{リスト環境}
+%
+% 第 $k$ レベルのリストの初期化をするのが |\@list|$k$ です
+% （$k = \mathtt{i}, \mathtt{ii}, \mathtt{iii}, \mathtt{iv}$）。
+% |\@list|$k$ は |\leftmargin| を |\leftmargin|$k$ に設定します。
+%
+% \begin{macro}{\leftmargini}
+%
+% 二段組であるかないかに応じてそれぞれ 2em，2.5em でしたが，
+% ここでは全角幅の2倍にしました。
+%
+% [2002-05-11] 3zw に変更しました。
+%
+% [2005-03-19] 二段組は 2zw に戻しました。
+%
+%    \begin{macrocode}
+\if@slide
+  \setlength\leftmargini{1\jsZw}
+\else
+  \if@twocolumn
+    \setlength\leftmargini{2\jsZw}
+  \else
+    \setlength\leftmargini{3\jsZw}
+  \fi
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\leftmarginii}
+% \begin{macro}{\leftmarginiii}
+% \begin{macro}{\leftmarginiv}
+% \begin{macro}{\leftmarginv}
+% \begin{macro}{\leftmarginvi}
+%
+%    |ii|，|iii|，|iv| は |\labelsep| と
+%    それぞれ `(m)'，`vii.'，`M.' の幅との和より大きくする
+%    ことになっています。ここでは全角幅の整数倍に丸めました。
+%
+%    \begin{macrocode}
+\if@slide
+  \setlength\leftmarginii {1\jsZw}
+  \setlength\leftmarginiii{1\jsZw}
+  \setlength\leftmarginiv {1\jsZw}
+  \setlength\leftmarginv  {1\jsZw}
+  \setlength\leftmarginvi {1\jsZw}
+\else
+  \setlength\leftmarginii {2\jsZw}
+  \setlength\leftmarginiii{2\jsZw}
+  \setlength\leftmarginiv {2\jsZw}
+  \setlength\leftmarginv  {1\jsZw}
+  \setlength\leftmarginvi {1\jsZw}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\labelsep}
+% \begin{macro}{\labelwidth}
+%
+%    |\labelsep| はラベルと本文の間の距離です。
+%    |\labelwidth| はラベルの幅です。
+%    これは二分に変えました。
+%
+%    \begin{macrocode}
+\setlength  \labelsep  {0.5\jsZw} % .5em
+\setlength  \labelwidth{\leftmargini}
+\addtolength\labelwidth{-\labelsep}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\partopsep}
+%
+%    リスト環境の前に空行がある場合，
+%    |\parskip| と |\topsep| に |\partopsep| を
+%    加えた値だけ縦方向の空白ができます。
+%    0 に改変しました。
+%
+%    \begin{macrocode}
+\setlength\partopsep{\z@} % {2\p@ \@plus 1\p@ \@minus 1\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@beginparpenalty}
+% \begin{macro}{\@endparpenalty}
+% \begin{macro}{\@itempenalty}
+%
+%    リストや段落環境の前後，リスト項目間に挿入されるペナルティです。
+%
+%    \begin{macrocode}
+\@beginparpenalty -\@lowpenalty
+\@endparpenalty   -\@lowpenalty
+\@itempenalty     -\@lowpenalty
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@listi}
+% \begin{macro}{\@listI}
+%
+%    |\@listi| は |\leftmargin|，|\parsep|，|\topsep|，|\itemsep| などの
+%    トップレベルの定義をします。
+%    この定義は，フォントサイズコマンドによって変更されます
+%    （たとえば |\small| の中では小さい値に設定されます）。
+%    このため，|\normalsize| がすべてのパラメータを戻せるように，
+%    |\@listI| で |\@listi| のコピーを保存します。
+%    元の値はかなり複雑ですが，ここでは簡素化してしまいました。
+%    特に最初と最後に行送りの半分の空きが入るようにしてあります。
+%    アスキーの標準スタイルでは
+%    トップレベルの |itemize|，|enumerate| 環境でだけ
+%    最初と最後に行送りの半分の空きが入るようになっていました。
+%
+%    [2004-09-27] |\topsep| のグルー $_{-0.1}^{+0.2}$ |\baselineskip|
+%    を思い切って外しました。
+%
+%    \begin{macrocode}
+\def\@listi{\leftmargin\leftmargini
+  \parsep \z@
+  \topsep 0.5\baselineskip
+  \itemsep \z@ \relax}
+\let\@listI\@listi
+%    \end{macrocode}
+%
+%    念のためパラメータを初期化します（実際には不要のようです）。
+%
+%    \begin{macrocode}
+\@listi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@listii}
+% \begin{macro}{\@listiii}
+% \begin{macro}{\@listiv}
+% \begin{macro}{\@listv}
+% \begin{macro}{\@listvi}
+%
+%    第2\zrWDash6レベルのリスト環境のパラメータの設定です。
+%
+%    \begin{macrocode}
+\def\@listii{\leftmargin\leftmarginii
+  \labelwidth\leftmarginii \advance\labelwidth-\labelsep
+  \topsep \z@
+  \parsep \z@
+  \itemsep\parsep}
+\def\@listiii{\leftmargin\leftmarginiii
+  \labelwidth\leftmarginiii \advance\labelwidth-\labelsep
+  \topsep \z@
+  \parsep \z@
+  \itemsep\parsep}
+\def\@listiv {\leftmargin\leftmarginiv
+              \labelwidth\leftmarginiv
+              \advance\labelwidth-\labelsep}
+\def\@listv  {\leftmargin\leftmarginv
+              \labelwidth\leftmarginv
+              \advance\labelwidth-\labelsep}
+\def\@listvi {\leftmargin\leftmarginvi
+              \labelwidth\leftmarginvi
+              \advance\labelwidth-\labelsep}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{enumerate環境}
+%
+% |enumerate| 環境はカウンタ |enumi|，|enumii|，|enumiii|，
+% |enumiv| を使います。|enum|$n$ は第 $n$ レベルの番号です。
+%
+% \begin{macro}{\theenumi}
+% \begin{macro}{\theenumii}
+% \begin{macro}{\theenumiii}
+% \begin{macro}{\theenumiv}
+%
+%    出力する番号の書式を設定します。
+%    これらは\LaTeX 本体（\texttt{ltlists.dtx} 参照）で定義済みですが，
+%    ここでは表し方を変えています。
+%    |\@arabic|，|\@alph|，|\@roman|，|\@Alph| はそれぞれ
+%    算用数字，小文字アルファベット，小文字ローマ数字，大文字アルファベット
+%    で番号を出力する命令です。
+%
+%    \begin{macrocode}
+\renewcommand{\theenumi}{\@arabic\c@enumi}
+\renewcommand{\theenumii}{\@alph\c@enumii}
+\renewcommand{\theenumiii}{\@roman\c@enumiii}
+\renewcommand{\theenumiv}{\@Alph\c@enumiv}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\labelenumi}
+% \begin{macro}{\labelenumii}
+% \begin{macro}{\labelenumiii}
+% \begin{macro}{\labelenumiv}
+%
+%    |enumerate| 環境の番号を出力する命令です。
+%    第2レベル以外は最後に欧文のピリオドが付きますが，
+%    これは好みに応じて取り払ってください。
+%    第2レベルの番号のかっこは和文用に換え，
+%    その両側に入る余分なグルーを |\jsInhibitGlue| で
+%    取り除いています。
+%
+%    \begin{macrocode}
+\newcommand{\labelenumi}{\theenumi.}
+\newcommand{\labelenumii}{\jsInhibitGlue（\theenumii）\jsInhibitGlue}
+\newcommand{\labelenumiii}{\theenumiii.}
+\newcommand{\labelenumiv}{\theenumiv.}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\p@enumii}
+% \begin{macro}{\p@enumiii}
+% \begin{macro}{\p@enumiv}
+%
+%    |\p@enum|$n$ は |\ref| コマンドで |enumerate| 環境の第 $n$ レベルの
+%    項目が参照されるときの書式です。
+%    これも第2レベルは和文用かっこにしました。
+%
+%    \begin{macrocode}
+\renewcommand{\p@enumii}{\theenumi}
+\renewcommand{\p@enumiii}{\theenumi\jsInhibitGlue（\theenumii）}
+\renewcommand{\p@enumiv}{\p@enumiii\theenumiii}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{itemize環境}
+%
+% \begin{macro}{\labelitemi}
+% \begin{macro}{\labelitemii}
+% \begin{macro}{\labelitemiii}
+% \begin{macro}{\labelitemiv}
+%    |itemize| 環境の第 $n$ レベルのラベルを作るコマンドです。
+%    \begin{macrocode}
+\newcommand\labelitemi{\textbullet}
+\newcommand\labelitemii{\normalfont\bfseries \textendash}
+\newcommand\labelitemiii{\textasteriskcentered}
+\newcommand\labelitemiv{\textperiodcentered}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{description環境}
+%
+% \begin{environment}{description}
+%
+% 本来の |description| 環境では，項目名が短いと，説明部分の頭が
+% それに引きずられて左に出てしまいます。
+% これを解決した新しい |description| の実装です。
+%
+%    \begin{macrocode}
+\newenvironment{description}{%
+  \list{}{%
+    \labelwidth=\leftmargin
+    \labelsep=1\jsZw
+    \advance \labelwidth by -\labelsep
+    \let \makelabel=\descriptionlabel}}{\endlist}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{macro}{\descriptionlabel}
+%
+%    |description| 環境のラベルを出力するコマンドです。
+%    好みに応じて |#1| の前に適当な空き
+%    （たとえば |\hspace{1\jsZw}|）を入れるのもいいと思います。
+%
+%    \begin{macrocode}
+\newcommand*\descriptionlabel[1]{\normalfont\headfont #1\hfil}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{概要}
+%
+% \begin{environment}{abstract}
+%
+% 概要（要旨，梗概）を出力する環境です。
+% |book| クラスでは各章の初めにちょっとしたことを書くのに使います。
+% |titlepage| オプション付きの |article| クラスでは，
+% 独立したページに出力されます。
+% |abstract| 環境は元は |quotation| 環境で作られていましたが，
+% |quotation| 環境の右マージンをゼロにしたので，
+% |list| 環境で作り直しました。
+%
+% JSPFスタイルでは実際の出力は |\maketitle| で行われます。
+%
+%    \begin{macrocode}
+%<*book|report>
+\newenvironment{abstract}{%
+  \begin{list}{}{%
+    \listparindent=1\jsZw
+    \itemindent=\listparindent
+    \rightmargin=0pt
+    \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
+%</book|report>
+%<*article|slide>
+\newbox\@abstractbox
+\if@titlepage
+  \newenvironment{abstract}{%
+    \titlepage
+    \null\vfil
+    \@beginparpenalty\@lowpenalty
+    \begin{center}%
+      \headfont \abstractname
+      \@endparpenalty\@M
+    \end{center}}%
+  {\par\vfil\null\endtitlepage}
+\else
+  \newenvironment{abstract}{%
+    \if@twocolumn
+      \ifx\maketitle\relax
+        \section*{\abstractname}%
+      \else
+        \global\setbox\@abstractbox\hbox\bgroup
+        \begin{minipage}[b]{\textwidth}
+          \small\parindent1\jsZw
+          \begin{center}%
+            {\headfont \abstractname\vspace{-.5em}\vspace{\z@}}%
+          \end{center}%
+          \list{}{%
+            \listparindent\parindent
+            \itemindent \listparindent
+            \rightmargin \leftmargin}%
+          \item\relax
+      \fi
+    \else
+      \small
+      \begin{center}%
+        {\headfont \abstractname\vspace{-.5em}\vspace{\z@}}%
+      \end{center}%
+      \list{}{%
+        \listparindent\parindent
+        \itemindent \listparindent
+        \rightmargin \leftmargin}%
+      \item\relax
+    \fi}{\if@twocolumn
+      \ifx\maketitle\relax
+      \else
+        \endlist\end{minipage}\egroup
+      \fi
+    \else
+      \endlist
+    \fi}
+\fi
+%</article|slide>
+%<*jspf>
+\newbox\@abstractbox
+\newenvironment{abstract}{%
+  \global\setbox\@abstractbox\hbox\bgroup
+  \begin{minipage}[b]{157mm}{\sffamily Abstract}\par
+    \small
+    \if@english \parindent6mm \else \parindent1\jsZw \fi}%
+  {\end{minipage}\egroup}
+%</jspf>
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{キーワード}
+%
+% \begin{environment}{keywords}
+%
+% キーワードを準備する環境です。
+% 実際の出力は |\maketitle| で行われます。
+%
+%    \begin{macrocode}
+%<*jspf>
+%\newbox\@keywordsbox
+%\newenvironment{keywords}{%
+%  \global\setbox\@keywordsbox\hbox\bgroup
+%  \begin{minipage}[b]{157mm}{\sffamily Keywords:}\par
+%    \small\parindent0\jsZw}%
+%  {\end{minipage}\egroup}
+%</jspf>
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{verse環境}
+%
+% \begin{environment}{verse}
+%
+% 詩のための |verse| 環境です。
+%
+%    \begin{macrocode}
+\newenvironment{verse}{%
+  \let \\=\@centercr
+  \list{}{%
+    \itemsep \z@
+    \itemindent -2\jsZw % 元: -1.5em
+    \listparindent\itemindent
+    \rightmargin \z@
+    \advance\leftmargin 2\jsZw}% 元: 1.5em
+  \item\relax}{\endlist}
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{quotation環境}
+%
+% \begin{environment}{quotation}
+%
+% 段落の頭の字下げ量を1.5emから |\parindent| に変えました。
+% また，右マージンを 0 にしました。
+%
+%    \begin{macrocode}
+\newenvironment{quotation}{%
+  \list{}{%
+    \listparindent\parindent
+    \itemindent\listparindent
+    \rightmargin \z@}%
+  \item\relax}{\endlist}
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{quote環境}
+%
+% \begin{environment}{quote}
+%
+% |quote| 環境は，段落がインデントされないことを除き，
+% |quotation| 環境と同じです。
+%
+%    \begin{macrocode}
+\newenvironment{quote}%
+  {\list{}{\rightmargin\z@}\item\relax}{\endlist}
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{定理など}
+%
+% |ltthm.dtx| 参照。たとえば次のように定義します。
+%\begin{verbatim}
+%  \newtheorem{definition}{定義}
+%  \newtheorem{axiom}{公理}
+%  \newtheorem{theorem}{定理}
+%\end{verbatim}
+%
+% [2001-04-26] 定理の中はイタリック体になりましたが，
+% これでは和文がゴシック体になってしまうので，
+% |\itshape| を削除しました。
+%
+%    \begin{macrocode}
+\def\@begintheorem#1#2{\trivlist
+   \item[\hskip \labelsep{\bfseries #1\ #2}]}
+\def\@opargbegintheorem#1#2#3{\trivlist
+      \item[\hskip \labelsep{\bfseries #1\ #2\ (#3)}]}
+%    \end{macrocode}
+%
+% \begin{environment}{titlepage}
+%
+% タイトルを独立のページに出力するのに使われます。
+%
+%    \begin{macrocode}
+\newenvironment{titlepage}{%
+%<book|report>    \cleardoublepage
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse\newpage
+    \fi
+    \thispagestyle{empty}%
+    \setcounter{page}\@ne
+  }%
+  {\if@restonecol\twocolumn \else \newpage \fi
+    \if@twoside\else
+      \setcounter{page}\@ne
+    \fi}
+%    \end{macrocode}
+% \end{environment}
+%
+% \paragraph{付録}
+%
+% \begin{macro}{\appendix}
+%
+% 本文と付録を分離するコマンドです。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\newcommand{\appendix}{\par
+  \setcounter{section}{0}%
+  \setcounter{subsection}{0}%
+  \gdef\presectionname{\appendixname}%
+  \gdef\postsectionname{}%
+% \gdef\thesection{\@Alph\c@section}% [2003-03-02]
+  \gdef\thesection{\presectionname\@Alph\c@section\postsectionname}%
+  \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}}
+%</!book&!report>
+%<*book|report>
+\newcommand{\appendix}{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\@chappos{}%
+  \gdef\thechapter{\@Alph\c@chapter}}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{パラメータの設定}
+%
+% \paragraph{arrayとtabular環境}
+%
+% \begin{macro}{\arraycolsep}
+%
+% |array| 環境の列間には |\arraycolsep| の2倍の幅の空きが入ります。
+%
+%    \begin{macrocode}
+\setlength\arraycolsep{5\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\tabcolsep}
+%
+% |tabular| 環境の列間には |\tabcolsep| の2倍の幅の空きが入ります。
+%
+%    \begin{macrocode}
+\setlength\tabcolsep{6\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\arrayrulewidth}
+%
+% |array|，|tabular| 環境内の罫線の幅です。
+%
+%    \begin{macrocode}
+\setlength\arrayrulewidth{.4\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\doublerulesep}
+%
+% |array|，|tabular| 環境での二重罫線間のアキです。
+%
+%    \begin{macrocode}
+\setlength\doublerulesep{2\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{tabbing環境}
+%
+% \begin{macro}{\tabbingsep}
+%
+% |\'| コマンドで入るアキです。
+%
+%    \begin{macrocode}
+\setlength\tabbingsep{\labelsep}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{minipage環境}
+%
+% \begin{macro}{\@mpfootins}
+%
+% |minipage| 環境の脚注の |\skip|\hspace{0pt}|\@mpfootins|
+% は通常のページの |\skip|\hspace{0pt}|\footins|
+% と同じ働きをします。
+%
+%    \begin{macrocode}
+\skip\@mpfootins = \skip\footins
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{framebox環境}
+%
+% \begin{macro}{\fboxsep}
+%
+% |\fbox|，|\framebox| で内側のテキストと枠との間の空きです。
+%
+% \begin{macro}{\fboxrule}
+%
+% |\fbox|，|\framebox| の罫線の幅です。
+%
+%    \begin{macrocode}
+\setlength\fboxsep{3\p@}
+\setlength\fboxrule{.4\p@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{equationとeqnarray環境}
+%
+% \begin{macro}{\theequation}
+%
+% 数式番号を出力するコマンドです。
+%
+%    \begin{macrocode}
+%<!book&!report>\renewcommand \theequation {\@arabic\c@equation}
+%<*book|report>
+\@addtoreset{equation}{chapter}
+\renewcommand\theequation
+  {\ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@equation}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jot}
+%
+%    |eqnarray| の行間に余分に入るアキです。
+%    デフォルトの値をコメントアウトして示しておきます。
+%
+%    \begin{macrocode}
+% \setlength\jot{3pt}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@eqnnum}
+%
+%    数式番号の形式です。
+%    デフォルトの値をコメントアウトして示しておきます。
+%
+%    |\jsInhibitGlue（\theequation）\jsInhibitGlue| のように和文かっこ
+%    を使うことも可能です。
+%
+%    \begin{macrocode}
+% \def\@eqnnum{(\theequation)}
+%    \end{macrocode}
+% \end{macro}
+%
+%    |amsmath| パッケージを使う場合は |\tagform@| を次のように修正します。
+%
+%    \begin{macrocode}
+% \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip\@@italiccorr）}}
+%    \end{macrocode}
+%
+% \subsection{フロート}
+%
+% タイプ \texttt{TYPE} のフロートオブジェクトを
+% 扱うには，次のマクロを定義します。
+% \begin{description}
+% \item[\texttt{\bslash fps@TYPE}]
+%   フロートを置く位置（float placement specifier）です。
+% \item[\texttt{\bslash ftype@TYPE}]
+%   フロートの番号です。2の累乗（1，2，4，\ldots ）でなければなりません。
+% \item[\texttt{\bslash ext@TYPE}]
+%   フロートの目次を出力するファイルの拡張子です。
+% \item[\texttt{\bslash fnum@TYPE}]
+%   キャプション用の番号を生成するマクロです。
+% \item[\texttt{\bslash @makecaption}{\meta{num}}{\meta{text}}]
+%   キャプションを出力するマクロです。
+%   \meta{num} は |\fnum@...| の生成する番号，
+%   \meta{text} はキャプションのテキストです。
+%   テキストは適当な幅の |\parbox| に入ります。
+% \end{description}
+%
+% \paragraph{figure環境}
+%
+% \begin{macro}{\c@figure}
+%
+% 図番号のカウンタです。
+%
+% \begin{macro}{\thefigure}
+%
+% 図番号を出力するコマンドです。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\newcounter{figure}
+\renewcommand \thefigure {\@arabic\c@figure}
+%</!book&!report>
+%<*book|report>
+\newcounter{figure}[chapter]
+\renewcommand \thefigure
+     {\ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@figure}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\fps@figure}
+% \begin{macro}{\ftype@figure}
+% \begin{macro}{\ext@figure}
+% \begin{macro}{\fnum@figure}
+%
+%    |figure| のパラメータです。
+%    |\figurename| の直後に |~| が入っていましたが，
+%    ここでは外しました。
+%
+%    \begin{macrocode}
+\def\fps@figure{tbp}
+\def\ftype@figure{1}
+\def\ext@figure{lof}
+\def\fnum@figure{\figurename\nobreak\thefigure}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{environment}{figure}
+% \begin{environment}{figure*}
+%
+% |*| 形式は段抜きのフロートです。
+%
+%    \begin{macrocode}
+\newenvironment{figure}%
+               {\@float{figure}}%
+               {\end@float}
+\newenvironment{figure*}%
+               {\@dblfloat{figure}}%
+               {\end@dblfloat}
+%    \end{macrocode}
+% \end{environment}
+% \end{environment}
+%
+% \paragraph{table環境}
+%
+% \begin{macro}{\c@table}
+% \begin{macro}{\thetable}
+%
+% 表番号カウンタと表番号を出力するコマンドです。
+% アスキー版では |\thechapter.| が |\thechapter{}・| になっていますが，
+% ここではオリジナルのままにしています。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\newcounter{table}
+\renewcommand\thetable{\@arabic\c@table}
+%</!book&!report>
+%<*book|report>
+\newcounter{table}[chapter]
+\renewcommand \thetable
+     {\ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@table}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\fps@table}
+% \begin{macro}{\ftype@table}
+% \begin{macro}{\ext@table}
+% \begin{macro}{\fnum@table}
+%
+% |table| のパラメータです。
+% |\tablename| の直後に |~| が入っていましたが，
+% ここでは外しました。
+%
+%    \begin{macrocode}
+\def\fps@table{tbp}
+\def\ftype@table{2}
+\def\ext@table{lot}
+\def\fnum@table{\tablename\nobreak\thetable}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{environment}{table}
+% \begin{environment}{table*}
+%
+% |*| は段抜きのフロートです。
+%
+%    \begin{macrocode}
+\newenvironment{table}%
+               {\@float{table}}%
+               {\end@float}
+\newenvironment{table*}%
+               {\@dblfloat{table}}%
+               {\end@dblfloat}
+%    \end{macrocode}
+% \end{environment}
+% \end{environment}
+%
+% \subsection{キャプション}
+%
+% \begin{macro}{\@makecaption}
+%
+% |\caption| コマンドにより呼び出され，
+% 実際にキャプションを出力するコマンドです。
+% 第1引数はフロートの番号，
+% 第2引数はテキストです。
+%
+% \begin{macro}{\abovecaptionskip}
+% \begin{macro}{\belowcaptionskip}
+%
+% それぞれキャプションの前後に挿入されるスペースです。
+% |\belowcaptionskip| が0になっていましたので，
+% キャプションを表の上につけた場合にキャプションと表が
+% くっついてしまうのを直しました。
+%
+%    \begin{macrocode}
+\newlength\abovecaptionskip
+\newlength\belowcaptionskip
+\setlength\abovecaptionskip{5\p@} % 元: 10\p@
+\setlength\belowcaptionskip{5\p@} % 元: 0\p@
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% 実際のキャプションを出力します。
+% オリジナルと異なり，文字サイズを |\small| にし，
+% キャプションの幅を2cm狭くしました。
+%
+% [2003-11-05] ロジックを少し変えてみました。
+%
+%    \begin{macrocode}
+%<*!jspf>
+% \long\def\@makecaption#1#2{{\small
+%   \advance\leftskip1cm
+%   \advance\rightskip1cm
+%   \vskip\abovecaptionskip
+%   \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
+%   \ifdim \wd\@tempboxa >\hsize
+%     #1\hskip1\jsZw\relax #2\par
+%   \else
+%     \global \@minipagefalse
+%     \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+%   \fi
+%   \vskip\belowcaptionskip}}
+\long\def\@makecaption#1#2{{\small
+  \advance\leftskip .0628\linewidth
+  \advance\rightskip .0628\linewidth
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
+  \ifdim \wd\@tempboxa <\hsize \centering \fi
+  #1\hskip1\jsZw\relax #2\par
+  \vskip\belowcaptionskip}}
+%</!jspf>
+%<*jspf>
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{\small\sffamily #1\quad #2}%
+  \ifdim \wd\@tempboxa >\hsize
+    {\small\sffamily
+      \list{#1}{%
+        \renewcommand{\makelabel}[1]{##1\hfil}
+        \itemsep    \z@
+        \itemindent \z@
+        \labelsep   \z@
+        \labelwidth 11mm
+        \listparindent\z@
+        \leftmargin 11mm}\item\relax #2\endlist}
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+%</jspf>
+%    \end{macrocode}
+% \end{macro}
+%
+% \section{フォントコマンド}
+%
+% ここでは\LaTeX~2.09で使われていたコマンドを定義します。
+% これらはテキストモードと数式モードのどちらでも動作します。
+% これらは互換性のためのもので，
+% できるだけ |\text...| と |\math...| を使ってください。
+%
+% \begin{macro}{\mc}
+% \begin{macro}{\gt}
+% \begin{macro}{\rm}
+% \begin{macro}{\sf}
+% \begin{macro}{\tt}
+%
+% フォントファミリを変更します。
+%
+%    \begin{macrocode}
+\DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
+\DeclareOldFontCommand{\gt}{\normalfont\gtfamily}{\mathgt}
+\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
+\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
+\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\bf}
+%
+% ボールドシリーズにします。通常のミーディアムシリーズに戻す
+% コマンドは |\mdseries| です。
+%
+%    \begin{macrocode}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\it}
+% \begin{macro}{\sl}
+% \begin{macro}{\sc}
+%
+% フォントシェイプを変えるコマンドです。
+% 斜体とスモールキャップスは数式中では何もしません
+% （警告メッセージを出力します）。
+% 通常のアップライト体に戻すコマンドは |\upshape| です。
+%
+%    \begin{macrocode}
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
+\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
+\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\cal}
+% \begin{macro}{\mit}
+%
+% 数式モード以外では何もしません（警告を出します）。
+%
+%    \begin{macrocode}
+\DeclareRobustCommand*{\cal}{\@fontswitch\relax\mathcal}
+\DeclareRobustCommand*{\mit}{\@fontswitch\relax\mathnormal}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \section{相互参照}
+%
+% \subsection{目次の類}
+%
+% |\section| コマンドは |.toc| ファイルに次のような行を出力します。
+% \begin{quote}
+%   |\contentsline{section}{タイトル}{ページ}|
+% \end{quote}
+% たとえば |\section| に見出し番号が付く場合，上の「タイトル」は
+% \begin{quote}
+%   |\numberline{番号}{見出し}|
+% \end{quote}
+% となります。
+% この「番号」は |\thesection| コマンドで生成された見出し番号です。
+%
+% |figure| 環境の |\caption| コマンドは |.lof| ファイルに
+% 次のような行を出力します。
+% \begin{quote}
+% |\contentsline{figure}{\numberline{番号}{キャプション}{ページ}|
+% \end{quote}
+% この「番号」は |\thefigure| コマンドで生成された図番号です。
+%
+% |table| 環境も同様です。
+%
+% |\contentsline{...}| は |\l@...| というコマンドを実行するので，
+% あらかじめ |\l@chapter|，|\l@section|，|\l@figure| などを
+% 定義しておかなければなりません。
+% これらの多くは |\@dottedtocline| コマンドを使って定義します。
+% これは
+% \begin{quote}
+%   |\@dottedtocline{レベル}{インデント}{幅}{タイトル}{ページ}|
+% \end{quote}
+% という書式です。
+% \begin{description}
+% \item[レベル] この値が |tocdepth| 以下のときだけ出力されます。
+%   |\chapter| はレベル0，|\section| はレベル1，等々です。
+% \item[インデント] 左側の字下げ量です。
+% \item[幅] 「タイトル」に |\numberline| コマンドが含まれる場合，
+%   節番号が入る箱の幅です。
+% \end{description}
+%
+% \begin{macro}{\@pnumwidth}
+%
+% ページ番号の入る箱の幅です。
+%
+% \begin{macro}{\@tocrmarg}
+%
+% 右マージンです。
+% |\@tocrmarg| $\ge$ |\@pnumwidth| とします。
+%
+% \begin{macro}{\@dotsep}
+%
+% 点の間隔です（単位 mu）。
+%
+% \begin{macro}{\c@tocdepth}
+%
+% 目次ページに出力する見出しレベルです。
+% 元は \texttt{article} で3，その他で2でしたが，
+% ここでは一つずつ減らしています。
+%
+%    \begin{macrocode}
+\newcommand\@pnumwidth{1.55em}
+\newcommand\@tocrmarg{2.55em}
+\newcommand\@dotsep{4.5}
+%<!book&!report>\setcounter{tocdepth}{2}
+%<book|report>\setcounter{tocdepth}{1}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{目次}
+%
+% \begin{macro}{\tableofcontents}
+%
+% 目次を生成します。
+%
+%    \begin{macrocode}
+\newcommand{\tableofcontents}{%
+%<*book|report>
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse
+  \fi
+  \chapter*{\contentsname}%
+  \@mkboth{\contentsname}{}%
+%</book|report>
+%<*!book&!report>
+  \section*{\contentsname}%
+  \@mkboth{\contentsname}{\contentsname}%
+%</!book&!report>
+  \@starttoc{toc}%
+%<book|report>  \if@restonecol\twocolumn\fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@part}
+%
+% 部の目次です。
+%
+%    \begin{macrocode}
+\newcommand*{\l@part}[2]{%
+  \ifnum \c@tocdepth >-2\relax
+%<!book&!report>    \addpenalty\@secpenalty
+%<book|report>    \addpenalty{-\@highpenalty}%
+    \addvspace{2.25em \@plus\p@}%
+    \begingroup
+      \parindent \z@
+%     \@pnumwidth should be \@tocrmarg
+%     \rightskip \@pnumwidth
+      \rightskip \@tocrmarg
+      \parfillskip -\rightskip
+      {\leavevmode
+        \large \headfont
+        \setlength\@lnumwidth{4\jsZw}%
+        #1\hfil \hb@xt@\@pnumwidth{\hss #2}}\par
+      \nobreak
+%<book|report>    \global\@nobreaktrue
+%<book|report>    \everypar{\global\@nobreakfalse\everypar{}}%
+    \endgroup
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@chapter}
+%
+% 章の目次です。|\@lnumwidth| を4.683zwに増やしました。
+%
+%    \begin{macrocode}
+%<*book|report>
+\newcommand*{\l@chapter}[2]{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    \addvspace{1.0em \@plus\p@}
+%   \vskip 1.0em \@plus\p@   % book.clsでは↑がこうなっている
+    \begingroup
+      \parindent\z@
+%     \rightskip\@pnumwidth
+      \rightskip\@tocrmarg
+      \parfillskip-\rightskip
+      \leavevmode\headfont
+      \if@english\setlength\@lnumwidth{5.5em}\else\setlength\@lnumwidth{4.683\jsZw}\fi
+      \advance\leftskip\@lnumwidth \hskip-\leftskip
+      #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@section}
+%
+% 節の目次です。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+\newcommand*{\l@section}[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty{\@secpenalty}%
+    \addvspace{1.0em \@plus\p@}%
+    \begingroup
+      \parindent\z@
+%     \rightskip\@pnumwidth
+      \rightskip\@tocrmarg
+      \parfillskip-\rightskip
+      \leavevmode\headfont
+      \setlength\@lnumwidth{4\jsZw}% 元1.5em [2003-03-02]
+      \advance\leftskip\@lnumwidth \hskip-\leftskip
+      #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
+    \endgroup
+  \fi}
+%</!book&!report>
+%    \end{macrocode}
+%
+% インデントと幅はそれぞれ1.5em，2.3emでしたが，
+% 1zw，3.683zwに変えました。
+%
+%    \begin{macrocode}
+%<book|report>\newcommand*{\l@section}{\@dottedtocline{1}{1\jsZw}{3.683\jsZw}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@subsection}
+% \begin{macro}{\l@subsubsection}
+% \begin{macro}{\l@paragraph}
+% \begin{macro}{\l@subparagraph}
+%
+% さらに下位レベルの目次項目の体裁です。
+% あまり使ったことがありませんので，要修正かもしれません。
+%
+%    \begin{macrocode}
+%<*!book&!report>
+% \newcommand*{\l@subsection}   {\@dottedtocline{2}{1.5em}{2.3em}}
+\newcommand*{\l@subsection}   {\@dottedtocline{2}{1\jsZw}{3\jsZw}}
+% \newcommand*{\l@subsubsection}{\@dottedtocline{3}{3.8em}{3.2em}}
+\newcommand*{\l@subsubsection}{\@dottedtocline{3}{2\jsZw}{3\jsZw}}
+% \newcommand*{\l@paragraph}    {\@dottedtocline{4}{7.0em}{4.1em}}
+\newcommand*{\l@paragraph}    {\@dottedtocline{4}{3\jsZw}{3\jsZw}}
+% \newcommand*{\l@subparagraph} {\@dottedtocline{5}{10em}{5em}}
+\newcommand*{\l@subparagraph} {\@dottedtocline{5}{4\jsZw}{3\jsZw}}
+%</!book&!report>
+%<*book|report>
+\newcommand*{\l@subsection}   {\@dottedtocline{2}{3.8em}{3.2em}}
+\newcommand*{\l@subsubsection}{\@dottedtocline{3}{7.0em}{4.1em}}
+\newcommand*{\l@paragraph}    {\@dottedtocline{4}{10em}{5em}}
+\newcommand*{\l@subparagraph} {\@dottedtocline{5}{12em}{6em}}
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\numberline}
+% \begin{macro}{\@lnumwidth}
+%
+% 欧文版\LaTeX では |\numberline{...}| は幅 |\@tempdima| の箱に左詰め
+% で出力する命令ですが，
+% アスキー版では |\@tempdima| の代わりに |\@lnumwidth| という変数
+% で幅を決めるように再定義しています。
+% 後続文字が全角か半角かでスペースが変わらないように |\hspace|
+% を入れておきました。
+%
+%    \begin{macrocode}
+\newdimen\@lnumwidth
+\def\numberline#1{\hb@xt@\@lnumwidth{#1\hfil}\hspace{0pt}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@dottedtocline}
+%
+% \LaTeX 本体（\texttt{ltsect.dtx} 参照）での定義と同じですが，
+% |\@tempdima| を |\@lnumwidth| に変えています。
+%
+%    \begin{macrocode}
+\def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
+  \vskip \z@ \@plus.2\p@
+  {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+    \parindent #2\relax\@afterindenttrue
+   \interlinepenalty\@M
+   \leavevmode
+   \@lnumwidth #3\relax
+   \advance\leftskip \@lnumwidth \null\nobreak\hskip -\leftskip
+    {#4}\nobreak
+    \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep 
+       mu$}\hfill \nobreak\hb@xt@\@pnumwidth{%
+         \hfil\normalfont \normalcolor #5}\par}\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{図目次と表目次}
+%
+% \begin{macro}{\listoffigures}
+%
+% 図目次を出力します。
+%
+%    \begin{macrocode}
+\newcommand{\listoffigures}{%
+%<*book|report>
+  \if@twocolumn\@restonecoltrue\onecolumn
+  \else\@restonecolfalse\fi
+  \chapter*{\listfigurename}%
+  \@mkboth{\listfigurename}{}%
+%</book|report>
+%<*!book&!report>
+  \section*{\listfigurename}%
+  \@mkboth{\listfigurename}{\listfigurename}%
+%</!book&!report>
+  \@starttoc{lof}%
+%<book|report>  \if@restonecol\twocolumn\fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@figure}
+%
+% 図目次の項目を出力します。
+%
+%    \begin{macrocode}
+\newcommand*{\l@figure}{\@dottedtocline{1}{1\jsZw}{3.683\jsZw}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\listoftables}
+%
+% 表目次を出力します。
+%
+%    \begin{macrocode}
+\newcommand{\listoftables}{%
+%<*book|report>
+  \if@twocolumn\@restonecoltrue\onecolumn
+  \else\@restonecolfalse\fi
+  \chapter*{\listtablename}%
+  \@mkboth{\listtablename}{}%
+%</book|report>
+%<*!book&!report>
+  \section*{\listtablename}%
+  \@mkboth{\listtablename}{\listtablename}%
+%</!book&!report>
+  \@starttoc{lot}%
+%<book|report>  \if@restonecol\twocolumn\fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\l@table}
+%
+% 表目次は図目次と同じです。
+%
+%    \begin{macrocode}
+\let\l@table\l@figure
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{参考文献}
+%
+% \begin{macro}{\bibindent}
+%
+% オープンスタイルの参考文献で使うインデント幅です。
+% 元は 1.5em でした。
+%
+%    \begin{macrocode}
+\newdimen\bibindent
+\setlength\bibindent{2\jsZw}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{environment}{thebibliography}
+%
+% 参考文献リストを出力します。
+%
+%    \begin{macrocode}
+\newenvironment{thebibliography}[1]{%
+  \global\let\presectionname\relax
+  \global\let\postsectionname\relax
+%<article|slide>  \section*{\refname}\@mkboth{\refname}{\refname}%
+%<*kiyou>
+  \vspace{1.5\baselineskip}
+  \subsubsection*{\refname}\@mkboth{\refname}{\refname}%
+  \vspace{0.5\baselineskip}
+%</kiyou>
+%<book|report>  \chapter*{\bibname}\@mkboth{\bibname}{}%
+%<book|report>  \addcontentsline{toc}{chapter}{\bibname}%
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}%
+         \leftmargin\labelwidth
+         \advance\leftmargin\labelsep
+         \@openbib@code
+         \usecounter{enumiv}%
+         \let\p@enumiv\@empty
+         \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+%<kiyou>   \small
+   \sloppy
+   \clubpenalty4000
+   \@clubpenalty\clubpenalty
+   \widowpenalty4000%
+   \sfcode`\.\@m}
+  {\def\@noitemerr
+    {\@latex@warning{Empty `thebibliography' environment}}%
+   \endlist}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{macro}{\newblock}
+%
+% |\newblock| はデフォルトでは小さなスペースを生成します。
+%
+%    \begin{macrocode}
+\newcommand{\newblock}{\hskip .11em\@plus.33em\@minus.07em}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@openbib@code}
+%
+% |\@openbib@code| はデフォルトでは何もしません。
+% この定義は |openbib| オプションによって変更されます。
+%
+%    \begin{macrocode}
+\let\@openbib@code\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@biblabel}
+%
+% |\bibitem[...]| のラベルを作ります。
+% \texttt{ltbibl.dtx} の定義の半角 [] を全角［］に変え，
+% 余分なスペースが入らないように |\jsInhibitGlue| ではさみました。
+% とりあえずコメントアウトしておきますので，必要に応じて生かしてください。
+%
+%    \begin{macrocode}
+% \def\@biblabel#1{\jsInhibitGlue［#1］\jsInhibitGlue}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cite}
+% \begin{macro}{\@cite}
+% \begin{macro}{\@citex}
+%
+% 文献の番号を出力する部分は \texttt{ltbibl.dtx} で定義されていますが，
+% コンマとかっこを和文フォントにするには次のようにします。
+% とりあえずコメントアウトしておきましたので，必要に応じて生かしてください。
+% かっこの前後に入るグルーを |\jsInhibitGlue| で取っていますので，
+% オリジナル同様，\verb*+Knuth~\cite{knu} + のように半角空白
+% で囲んでください。
+%
+%    \begin{macrocode}
+% \def\@citex[#1]#2{%
+%   \let\@citea\@empty
+%   \@cite{\@for\@citeb:=#2\do
+%     {\@citea\def\@citea{，\jsInhibitGlue\penalty\@m\ }%
+%      \edef\@citeb{\expandafter\@firstofone\@citeb}%
+%      \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
+%      \@ifundefined{b@\@citeb}{\mbox{\normalfont\bfseries ?}%
+%        \G@refundefinedtrue
+%        \@latex@warning
+%          {Citation `\@citeb' on page \thepage \space undefined}}%
+%        {\hbox{\csname b@\@citeb\endcsname}}}}{#1}}
+% \def\@cite#1#2{\jsInhibitGlue［{#1\if@tempswa ，#2\fi}］\jsInhibitGlue}
+%    \end{macrocode}
+%
+% 引用番号を上ツキの 1）のようなスタイルにするには次のようにします。
+% |\cite| の先頭に |\unskip| を付けて先行のスペース（\verb|~| も）
+% を帳消しにしています。
+%
+%    \begin{macrocode}
+% \DeclareRobustCommand\cite{\unskip
+%   \@ifnextchar [{\@tempswatrue\@citex}{\@tempswafalse\@citex[]}}
+% \def\@cite#1#2{$^{\hbox{\scriptsize{#1\if@tempswa
+%   ，\jsInhibitGlue\ #2\fi}）}}$}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{索引}
+%
+% \begin{environment}{theindex}
+%
+% 2\zrWDash3段組の索引を作成します。
+% 最後が偶数ページのときにマージンがずれる現象を直しました（Thanks: 藤村さん）。
+%
+%    \begin{macrocode}
+\newenvironment{theindex}{% 索引を3段組で出力する環境
+    \if@twocolumn
+      \onecolumn\@restonecolfalse
+    \else
+      \clearpage\@restonecoltrue
+    \fi
+    \columnseprule.4pt \columnsep 2\jsZw
+    \ifx\multicols\@undefined
+%<book|report>      \twocolumn[\@makeschapterhead{\indexname}%
+%<book|report>      \addcontentsline{toc}{chapter}{\indexname}]%
+%<!book&!report>      \def\presectionname{}\def\postsectionname{}%
+%<!book&!report>      \twocolumn[\section*{\indexname}]%
+    \else
+      \ifdim\textwidth<\fullwidth
+        \setlength{\evensidemargin}{\oddsidemargin}
+        \setlength{\textwidth}{\fullwidth}
+        \setlength{\linewidth}{\fullwidth}
+%<book|report>        \begin{multicols}{3}[\chapter*{\indexname}%
+%<book|report>        \addcontentsline{toc}{chapter}{\indexname}]%
+%<!book&!report>        \def\presectionname{}\def\postsectionname{}%
+%<!book&!report>        \begin{multicols}{3}[\section*{\indexname}]%
+      \else
+%<book|report>        \begin{multicols}{2}[\chapter*{\indexname}%
+%<book|report>        \addcontentsline{toc}{chapter}{\indexname}]%
+%<!book&!report>        \def\presectionname{}\def\postsectionname{}%
+%<!book&!report>        \begin{multicols}{2}[\section*{\indexname}]%
+      \fi
+    \fi
+%<book|report>    \@mkboth{\indexname}{}%
+%<!book&!report>    \@mkboth{\indexname}{\indexname}%
+    \plainifnotempty % \thispagestyle{plain}
+    \parindent\z@
+    \parskip\z@ \@plus .3\p@\relax
+    \let\item\@idxitem
+    \raggedright
+    \footnotesize\narrowbaselines
+  }{
+    \ifx\multicols\@undefined
+      \if@restonecol\onecolumn\fi
+    \else
+      \end{multicols}
+    \fi
+    \clearpage
+  }
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{macro}{\@idxitem}
+% \begin{macro}{\subitem}
+% \begin{macro}{\subsubitem}
+%
+% 索引項目の字下げ幅です。|\@idxitem| は |\item| の項目の字下げ幅です。
+%
+%    \begin{macrocode}
+\newcommand{\@idxitem}{\par\hangindent 4\jsZw} % 元 40pt
+\newcommand{\subitem}{\@idxitem \hspace*{2\jsZw}} % 元 20pt
+\newcommand{\subsubitem}{\@idxitem \hspace*{3\jsZw}} % 元 30pt
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\indexspace}
+%
+% 索引で先頭文字ごとのブロックの間に入るスペースです。
+%
+%    \begin{macrocode}
+\newcommand{\indexspace}{\par \vskip 10\p@ \@plus5\p@ \@minus3\p@\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\seename}
+% \begin{macro}{\alsoname}
+%
+% 索引の |\see|，|\seealso| コマンドで出力されるものです。
+% デフォルトはそれぞれ \emph{see}，\emph{see also} という英語ですが，
+% ここではとりあえず両方とも「→」に変えました。
+% $\Rightarrow$（|$\Rightarrow$|）などでもいいでしょう。
+%
+%    \begin{macrocode}
+\newcommand\seename{\if@english see\else →\fi}
+\newcommand\alsoname{\if@english see also\else →\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{脚注}
+%
+% \begin{macro}{\footnote}
+% \begin{macro}{\footnotemark}
+%
+% 和文の句読点・閉じかっこ類の直後で用いた際に
+% 余分なアキが入るのを防ぐため，
+% |\jsInhibitGlue| を入れることにします。
+%
+%    \begin{macrocode}
+\let\footnotes@ve=\footnote
+\def\footnote{\jsInhibitGlue\footnotes@ve}
+\let\footnotemarks@ve=\footnotemark
+\def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\@makefnmark}
+%
+% 脚注番号を付ける命令です。
+% ここでは脚注番号の前に記号 $*$ を付けています。
+% 「注1」の形式にするには |\textasteriskcentered|
+%  を |注\kern0.1em| にしてください。
+% |\@xfootnotenext| と合わせて，
+% もし脚注番号が空なら記号も出力しないようにしてあります。
+%
+% [2002-04-09] インプリメントの仕方を変えたため消しました。
+%
+%    \begin{macrocode}
+% \def\@makefnmark{\hbox{\@textsuperscript{\normalfont
+%       \ifx\@thefnmark\@empty\else
+%         \textasteriskcentered
+%       \fi
+%       \@thefnmark}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\thefootnote}
+%
+% 脚注番号に * 印が付くようにしました。
+% ただし，番号がゼロのときは * 印も脚注番号も付きません。
+%
+% [2003-08-15] |\textasteriskcentered| ではフォントによって
+% 下がりすぎるので変更しました。
+%
+%    \begin{macrocode}
+\def\thefootnote{\ifnum\c@footnote>\z@\leavevmode\lower.5ex\hbox{*}\@arabic\c@footnote\fi}
+%    \end{macrocode}
+%
+% 「注1」の形式にするには次のようにしてください。
+%
+%    \begin{macrocode}
+% \def\thefootnote{\ifnum\c@footnote>\z@注\kern0.1\jsZw\@arabic\c@footnote\fi}
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\footnoterule}
+%
+% 本文と脚注の間の罫線です。
+%
+%    \begin{macrocode}
+\renewcommand{\footnoterule}{%
+  \kern-3\p@
+  \hrule width .4\columnwidth
+  \kern 2.6\p@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\c@footnote}
+%
+% 脚注番号は章ごとにリセットされます。
+%
+%    \begin{macrocode}
+%<book|report>\@addtoreset{footnote}{chapter}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@footnotetext}
+%
+% 脚注で |\verb| が使えるように改変してあります。
+% Jeremy Gibbons, \textit{\TeX\ and TUG NEWS},
+%  Vol.~2, No.~4 (1993), p.~9）
+%
+%    \begin{macrocode}
+\long\def\@footnotetext{%
+  \insert\footins\bgroup
+    \normalfont\footnotesize
+    \interlinepenalty\interfootnotelinepenalty
+    \splittopskip\footnotesep
+    \splitmaxdepth \dp\strutbox \floatingpenalty \@MM
+    \hsize\columnwidth \@parboxrestore
+    \protected@edef\@currentlabel{%
+       \csname p@footnote\endcsname\@thefnmark
+    }%
+    \color@begingroup
+      \@makefntext{%
+        \rule\z@\footnotesep\ignorespaces}%
+      \futurelet\next\fo@t}
+\def\fo@t{\ifcat\bgroup\noexpand\next \let\next\f@@t
+                                \else \let\next\f@t\fi \next}
+\def\f@@t{\bgroup\aftergroup\@foot\let\next}
+\def\f@t#1{#1\@foot}
+\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@makefntext}
+%
+% 実際に脚注を出力する命令です。
+% |\@makefnmark| は脚注の番号を出力する命令です。
+% ここでは脚注が左端から一定距離に来るようにしてあります。
+%
+%    \begin{macrocode}
+\newcommand\@makefntext[1]{%
+  \advance\leftskip 3\jsZw
+  \parindent 1\jsZw
+  \noindent
+  \llap{\@makefnmark\hskip0.3\jsZw}#1}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@xfootnotenext}
+%
+% 最初の |\footnotetext{...}| は番号が付きません。
+% 著者の所属などを脚注の欄に書くときに便利です。
+%
+% すでに |\footnote| を使った後なら |\footnotetext[0]{...}|
+% とすれば番号を付けない脚注になります。
+% ただし，この場合は脚注番号がリセットされてしまうので，
+% 工夫が必要です。
+%
+% [2002-04-09] インプリメントの仕方を変えたため消しました。
+%
+%    \begin{macrocode}
+% \def\@xfootnotenext[#1]{%
+%   \begingroup
+%      \ifnum#1>\z@
+%        \csname c@\@mpfn\endcsname #1\relax
+%        \unrestored@protected@xdef\@thefnmark{\thempfn}%
+%      \else
+%        \unrestored@protected@xdef\@thefnmark{}%
+%      \fi
+%   \endgroup
+%   \@footnotetext}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{ZRnote}
+% ここまでのコードは JS クラスを踏襲する。
+% \end{ZRnote}
+%
+% \section{段落の頭へのグルー挿入禁止}
+%
+% 段落頭のかぎかっこなどを見かけ1字半下げから全角1字下げに直します。
+%
+%    \begin{macrocode}
+\def\@inhibitglue{%
+  \futurelet\@let@token\@@inhibitglue}
+\def\@@inhibitglue{%
+  \ifx\@let@token「
+    \jsInhibitGlue
+  \else
+    \ifx\@let@token（
+      \jsInhibitGlue
+    \else
+      \ifx\@let@token『
+        \jsInhibitGlue
+      \else
+        \ifx\@let@token［
+          \jsInhibitGlue
+        \fi
+      \fi
+    \fi
+  \fi}
+\def\everyparhook{\jsInhibitGlueAtParTop}
+\let\jsInhibitGlueAtParTop\@inhibitglue
+\AtBeginDocument{\everypar{\everyparhook}}
+%    \end{macrocode}
+%
+% これだけではいけないようです。あちこちに |\everypar| を初期化するコマンドが
+% 隠されていました。
+%
+% まず，環境の直後の段落です。
+%
+%    \begin{macrocode}
+\def\@doendpe{%
+  \@endpetrue
+  \def\par{%
+    \@restorepar\everypar{\everyparhook}\par\@endpefalse}%
+  \everypar{{\setbox\z@\lastbox}\everypar{\everyparhook}\@endpefalse\everyparhook}}
+%    \end{macrocode}
+%
+% |\item| 命令の直後です。
+%
+%    \begin{macrocode}
+\def\@item[#1]{%
+  \if@noparitem
+    \@donoparitem
+  \else
+    \if@inlabel
+      \indent \par
+    \fi
+    \ifhmode
+      \unskip\unskip \par
+    \fi
+    \if@newlist
+      \if@nobreak
+        \@nbitem
+      \else
+        \addpenalty\@beginparpenalty
+        \addvspace\@topsep
+        \addvspace{-\parskip}%
+      \fi
+    \else
+      \addpenalty\@itempenalty
+      \addvspace\itemsep
+    \fi
+    \global\@inlabeltrue
+  \fi
+  \everypar{%
+    \@minipagefalse
+    \global\@newlistfalse
+    \if@inlabel
+      \global\@inlabelfalse
+      {\setbox\z@\lastbox
+       \ifvoid\z@
+         \kern-\itemindent
+       \fi}%
+      \box\@labels
+      \penalty\z@
+    \fi
+    \if@nobreak
+      \@nobreakfalse
+      \clubpenalty \@M
+    \else
+      \clubpenalty \@clubpenalty
+      \everypar{\everyparhook}%
+    \fi\everyparhook}%
+  \if@noitemarg
+    \@noitemargfalse
+    \if@nmbrlist
+      \refstepcounter\@listctr
+    \fi
+  \fi
+  \sbox\@tempboxa{\makelabel{#1}}%
+  \global\setbox\@labels\hbox{%
+    \unhbox\@labels
+    \hskip \itemindent
+    \hskip -\labelwidth
+    \hskip -\labelsep
+    \ifdim \wd\@tempboxa >\labelwidth
+      \box\@tempboxa
+    \else
+      \hbox to\labelwidth {\unhbox\@tempboxa}%
+    \fi
+    \hskip \labelsep}%
+  \ignorespaces}
+%    \end{macrocode}
+%
+% 二つ挿入した |\everyparhook| のうち後者が |\section| 類の直後に2回，
+% 前者が3回目以降に実行されます。
+%
+%    \begin{macrocode}
+\def\@afterheading{%
+  \@nobreaktrue
+  \everypar{%
+    \if@nobreak
+      \@nobreakfalse
+      \clubpenalty \@M
+      \if@afterindent \else
+        {\setbox\z@\lastbox}%
+      \fi
+    \else
+      \clubpenalty \@clubpenalty
+      \everypar{\everyparhook}%
+    \fi\everyparhook}}
+%    \end{macrocode}
+%
+% |\@gnewline| についてはちょっと複雑な心境です。
+% もともとのp\LaTeXe は段落の頭にグルーが入る方で統一されていました。
+% しかし |\\| の直後にはグルーが入らず，不統一でした。
+% そこで |\\| の直後にもグルーを入れるように直していただいた経緯があります。
+% しかし，ここでは逆にグルーを入れない方で統一したいので，
+% また元に戻してしまいました。
+%
+% しかし単に戻すだけでも駄目みたいなので，ここでも最後にグルーを消しておきます。
+%
+%    \begin{macrocode}
+\def\@gnewline #1{%
+  \ifvmode
+    \@nolnerr
+  \else
+    \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
+    \jsInhibitGlue \ignorespaces
+  \fi}
+%    \end{macrocode}
+%
+% \section{いろいろなロゴ}
+%
+% \begin{ZRnote}
+% とりあえず削除。
+% \end{ZRnote}
+%
+% \section{\texttt{amsmath} との衝突の回避}
+%
+% \begin{ZRnote}
+% 最近の |\LaTeX| では該当の問題は対処されているので削除。
+% \end{ZRnote}
+%
+% \section{初期設定}
+%
+% \paragraph{いろいろな語}
+%
+% \begin{macro}{\prepartname}
+% \begin{macro}{\postpartname}
+% \begin{macro}{\prechaptername}
+% \begin{macro}{\postchaptername}
+% \begin{macro}{\presectionname}
+% \begin{macro}{\postsectionname}
+%    \begin{macrocode}
+\newcommand{\prepartname}{\if@english Part~\else 第\fi}
+\newcommand{\postpartname}{\if@english\else 部\fi}
+%<book|report>\newcommand{\prechaptername}{\if@english Chapter~\else 第\fi}
+%<book|report>\newcommand{\postchaptername}{\if@english\else 章\fi}
+\newcommand{\presectionname}{}%  第
+\newcommand{\postsectionname}{}% 節
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\contentsname}
+% \begin{macro}{\listfigurename}
+% \begin{macro}{\listtablename}
+%    \begin{macrocode}
+\newcommand{\contentsname}{\if@english Contents\else 目次\fi}
+\newcommand{\listfigurename}{\if@english List of Figures\else 図目次\fi}
+\newcommand{\listtablename}{\if@english List of Tables\else 表目次\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\refname}
+% \begin{macro}{\bibname}
+% \begin{macro}{\indexname}
+%    \begin{macrocode}
+\newcommand{\refname}{\if@english References\else 参考文献\fi}
+\newcommand{\bibname}{\if@english Bibliography\else 参考文献\fi}
+\newcommand{\indexname}{\if@english Index\else 索引\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\figurename}
+% \begin{macro}{\tablename}
+%    \begin{macrocode}
+\newcommand{\figurename}{\if@english Fig.~\else 図\fi}
+\newcommand{\tablename}{\if@english Table.~\else 表\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\appendixname}
+% \begin{macro}{\abstractname}
+%    \begin{macrocode}
+\newcommand{\appendixname}{\if@english Appendix~\else 付録\fi}
+%<!book&!report>\newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \paragraph{今日の日付}
+%
+% \LaTeX で処理した日付を出力します。
+% |jarticle| などと違って，標準を西暦にし，余分な空白が入らないように改良しました。
+% 和暦にするには |\和暦| と書いてください。
+%
+% \begin{macro}{\today}
+%    \begin{macrocode}
+\newif\if西暦 \西暦true
+\def\西暦{\西暦true}
+\def\和暦{\西暦false}
+\newcount\heisei \heisei\year \advance\heisei-1988\relax
+\def\today{%
+  \if@english
+    \ifcase\month\or
+      January\or February\or March\or April\or May\or June\or
+      July\or August\or September\or October\or November\or December\fi
+      \space\number\day, \number\year
+  \else
+    \if西暦
+      \number\year 年
+      \number\month 月
+      \number\day 日
+    \else
+      平成\number\heisei 年
+      \number\month 月
+      \number\day 日
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{ハイフネーション例外}
+%
+% \TeX のハイフネーションルールの補足です（ペンディング：eng-lish）
+%
+%    \begin{macrocode}
+\hyphenation{ado-be post-script ghost-script phe-nom-e-no-log-i-cal man-u-script}
+%    \end{macrocode}
+%
+% \paragraph{ページ設定}
+%
+% ページ設定の初期化です。
+%
+%    \begin{macrocode}
+%<slide>\pagestyle{empty}%
+%<article|report>\pagestyle{plain}%
+%<book>\pagestyle{headings}%
+\pagenumbering{arabic}
+\if@twocolumn
+  \twocolumn
+  \sloppy
+  \flushbottom
+\else
+  \onecolumn
+  \raggedbottom
+\fi
+%<*slide>
+%  \renewcommand\kanjifamilydefault{\gtdefault}
+  \renewcommand\familydefault{\sfdefault}
+  \raggedright
+%  \xkanjiskip=0.1em\relax
+%</slide>
+%    \end{macrocode}
+%\begin{ZRnote}
+%{(u)\pTeX} 上で動作している場合は、{\pTeX} 用の
+%連携モジュールを読み込む。
+%最後に日本語文字のカテゴリコードを元に戻す。
+%\end{ZRnote}
+%    \begin{macrocode}
+\ifbxjs@ptexmodule
+  \input{bxjsptex.def}
+\fi
+\bxjs@restore@jltrcc
+%</!ptex>
+%    \end{macrocode}
+%
+% 以上です。
+%
+%^^A--------------------------------------------------------
+% \clearpage
+% \appendix
+% \section{連携モジュールの仕様 ☆}
+%
+% \begin{itemize}
+% \item 次の命令がBXJSクラス側で定義される。
+%   \begin{itemize}
+%   \item |\jsDocClass| \zrNote{文字トークンの let}\quad
+%     文書クラスの種類を示し、次のいずれかと一致する
+%     （|\if| で判定可能）。
+%     \begin{quote}\begin{tabular}{l@{\qquad}l}
+%     |\jsArticle|   & |bxjsarticle| クラス\\
+%     |\jsBook|      & |bxjsbook| クラス\\
+%     |\jsReport|    & |bxjsreport| クラス\\
+%     |\jsSlide|     & |bxjsslide| クラス
+%     \end{tabular}\end{quote}
+%   \item |\jsUnusualPtSize| \zrNote{整数定数を表す文字列のマクロ}\quad
+%     基底フォントサイズが |10pt|、|11pt|、|12pt| のいずれでもない
+%     場合の |\@ptsize| の値。
+%     （|\@ptsize| 自体があまり有用でないと思われる。）
+%   \item |\jsScale| \zrNote{実数を表す文字列のマクロ}\quad
+%     和文フォントサイズの要求サイズに対するスケール。
+%     クラスオプション |scale| で指定される。
+%     （既定値は0.924715。）
+%   \item |\jsInhibitGlue| \zrNote{マクロ}\quad
+%     |\inhibitglue| という命令が定義されていればそれを実行し、
+%     そうでなければ何もしない。
+%     JSクラスで |\inhibitglue| を用いている箇所は
+%     全て |\jsInhibitGlue| に置き換えられている。
+%     従って、|\inhibitglue| は未定義でも動作するが、その実装が
+%     ある場合はBXJSクラスはそれを活用する。
+%   \end{itemize}
+% \item 「現在の全角幅」を表す長さ変数 |\jsZw| が用意されていて、
+%   JSクラスでzw単位で設定されている長さパラメタはこの変数を単位と
+%   して設定されている。
+%   この変数の値は実際に用いられる「和文フォント」のメトリックに
+%   基づくのではなく、機械的に\ 
+%   |\jsScale| $\times$（フォントサイズ）
+%   であると定められている
+%   （フォントサイズ変更の度に再設定される）。
+%   従って、「和文コンポーネント」はこの設定と辻褄が合うように
+%   和文フォントサイズを調整する必要がある。
+%   ほとんどの場合、和文フォントをNFSSで規定する際に |\jsScale|
+%   の値をスケール値として与えれば上手くいく。
+% \item フォントサイズが変更された時には |\jsResetDimen| という
+%   マクロが呼び出される。
+%   和文コンポーネントでフォントサイズに依存するパラメタを
+%   ここで設定することができる。
+%   既定の定義は空。
+% \end{itemize}
+%
+% \section{{\pTeX}用の連携モジュール ☆}
+%
+% ここでは、u{\pTeX}用の連携モジュールのコードを示す。
+% 基本的に、JSクラスのコードの中で、「和文コンポーネントの管轄」
+% としてBXJSクラスで除外されている部分に相当するが、
+% 若干の変更が加えられている。
+% このモジュールは、BXJSクラスのオプションとして |platex|
+% または |uplatex| を指定した時に自動的に読み込まれる。
+% オプションと実際のエンジンが一致しているかは
+% 既に検査されている。
+%
+% \paragraph{エンジン依存の定義}
+%
+% 最初にエンジンに依存する定義を行う。
+% |\if@jsc@uplatex| はBXJSにおいて定義されているスイッチで、
+% エンジンがu{\pTeX}であるかを表す。
+%
+% |\jsc@JYn| および |\jsc@JTn| は標準の和文横書きおよび縦書き用
+% エンコーディングを表す。
+%    \begin{macrocode}
+%<*ptex>
+\edef\jsc@JYn{\if@jsc@uplatex JY2\else JY1\fi}
+\edef\jsc@JTn{\if@jsc@uplatex JT2\else JT1\fi}
+\edef\jsc@pfx@{\if@jsc@uplatex u\fi}
+%    \end{macrocode}
+%
+% |\bxjs@declarefontshape| は標準の和文フォント宣言である。
+% 後で |\bxjs@scale| を求めるため一旦マクロにしておく。
+% |\bxjs@sizereference| は全角幅を測定する時に参照するフォント。
+%
+% まずu{\pTeX}の場合の定義を示す。
+% JSクラスの |uplatex| オプション指定時の定義と同じである。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@declarefontshape
+\if@jsc@uplatex
+\def\bxjs@declarefontshape{%
+\DeclareFontShape{JY2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-h}{}%
+\DeclareFontShape{JY2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-h}{}%
+\DeclareFontShape{JT2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-v}{}%
+\DeclareFontShape{JT2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-v}{}%
+}
+\def\bxjs@sizereference{upjisr-h}
+%    \end{macrocode}
+%
+% {\pTeX}の場合の定義を示す。
+% JSクラスのフォント種別オプション非指定時の定義と同じである。
+%    \begin{macrocode}
+\else
+\def\bxjs@declarefontshape{%
+\DeclareFontShape{JY1}{mc}{m}{n}{<->s*[\bxjs@scale]jis}{}%
+\DeclareFontShape{JY1}{gt}{m}{n}{<->s*[\bxjs@scale]jisg}{}%
+\DeclareFontShape{JT1}{mc}{m}{n}{<->s*[\bxjs@scale]tmin10}{}%
+\DeclareFontShape{JT1}{gt}{m}{n}{<->s*[\bxjs@scale]tgoth10}{}%
+}
+\def\bxjs@sizereference{jis}
+\fi
+%    \end{macrocode}
+%
+% 既に使用されている標準和文フォント定義がもしあれば取り消す。
+% （BXJSクラスの中から呼ばれている場合は不要のはずである。）
+	%    \begin{macrocode}
+\@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
+               \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
+  {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined}
+%    \end{macrocode}
+%
+% \paragraph{和文フォントスケールの補正}
+%
+% 実は、{\pTeX}の標準的な和文フォント（JFMのこと、例えば |jis|）
+% では、指定された |\jsScale|（この値を $s$ とする）をそのまま
+% 使って定義すると期待通りの大きさにならない。
+% これらのJFMでは1\,zwの大きさが指定されたサイズではなく
+% 既にスケール（この値を $f$ とする；|jis| では0.962216倍）
+% が掛けられた値になっているからである。
+% そのため、ここでは $s/f$ を求めてその値をマクロ |\bxjs@scale|
+% に保存する。
+%    \begin{macrocode}
+\begingroup
+% 参照用フォント(\bxjs@sizereference)の全角空白の幅を取得
+  \font\bxjs@tmpa=\bxjs@sizereference\space at 10pt
+  \setbox\z@\hbox{\bxjs@tmpa\char\jis"2121\relax}
+% 幅が丁度10ptなら補正は不要
+  \ifdim\wd\z@=10pt
+    \global\let\bxjs@scale\jsScale
+  \else
+% (10*s)/(10*f)として計算、\bxjs@invscaleはBXJSで定義
+    \edef\bxjs@tmpa{\strip@pt\wd\z@}
+    \@tempdima=10pt \@tempdima=\jsScale\@tempdima
+    \bxjs@invscale\@tempdima\bxjs@tmpa
+    \xdef\bxjs@scale{\strip@pt\@tempdima}
+  \fi
+\endgroup
+%\typeout{\string\bxjs@scale : \bxjs@scale}
+%    \end{macrocode}
+%
+% \paragraph{和文フォント関連定義}
+%
+% |\bxjs@scale| が決まったので先に保存した標準和文フォント
+% 宣言を実行する。
+%    \begin{macrocode}
+\bxjs@declarefontshape
+%    \end{macrocode}
+%
+% フォント代替の明示的定義。
+%    \begin{macrocode}
+\DeclareFontShape{\jsc@JYn}{mc}{m}{it}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{m}{sl}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{m}{sc}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{gt}{m}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{gt}{m}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{bx}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{bx}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{it}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{sl}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{sc}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{gt}{m}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{gt}{m}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{bx}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{bx}{sl}{<->ssub*gt/m/n}{}
+%    \end{macrocode}
+%
+% 欧文総称フォント命令で和文フォントが連動するように修正する。
+% その他の和文フォント関係の定義を行う。
+%    \begin{macrocode}
+\DeclareRobustCommand\rmfamily
+  {\not@math@alphabet\rmfamily\mathrm
+   \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}
+\DeclareRobustCommand\sffamily
+  {\not@math@alphabet\sffamily\mathsf
+   \romanfamily\sfdefault\kanjifamily\gtdefault\selectfont}
+\DeclareRobustCommand\ttfamily
+  {\not@math@alphabet\ttfamily\mathtt
+   \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\def\textmc#1{\relax\ifmmode\hbox\fi{\mcfamily #1}}
+\def\textgt#1{\relax\ifmmode\hbox\fi{\gtfamily #1}}
+%    \end{macrocode}
+%
+% \paragraph{パラメタの設定}
+%
+%    \begin{macrocode}
+\prebreakpenalty\jis"2147=10000
+\postbreakpenalty\jis"2148=10000
+\prebreakpenalty\jis"2149=10000
+\inhibitxspcode`〒=2
+\xspcode`+=3
+\xspcode`\%=3
+%    \end{macrocode}
+%
+% |"80|\zrWDash|"FF| の範囲の |\spcode| を3に変更。
+%    \begin{macrocode}
+\@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
+  \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
+%</ptex>
+%    \end{macrocode}
+%
+% 以上で終わり。
+% |\jsResetDimen| は空のままでよい。
+%
+% \Finale
+%
+\endinput

@@ -1,0 +1,112 @@
+%%
+%% This is file `bxjsptex.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjsclasses.dtx  (with options: `ptex')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjsptex.def.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjsclasses.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesFile{bxjsptex.def}
+  [2012/05/01 v0.3a BXJS document classes]
+\edef\jsc@JYn{\if@jsc@uplatex JY2\else JY1\fi}
+\edef\jsc@JTn{\if@jsc@uplatex JT2\else JT1\fi}
+\edef\jsc@pfx@{\if@jsc@uplatex u\fi}
+\@onlypreamble\bxjs@declarefontshape
+\if@jsc@uplatex
+\def\bxjs@declarefontshape{%
+\DeclareFontShape{JY2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-h}{}%
+\DeclareFontShape{JY2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-h}{}%
+\DeclareFontShape{JT2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-v}{}%
+\DeclareFontShape{JT2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-v}{}%
+}
+\def\bxjs@sizereference{upjisr-h}
+\else
+\def\bxjs@declarefontshape{%
+\DeclareFontShape{JY1}{mc}{m}{n}{<->s*[\bxjs@scale]jis}{}%
+\DeclareFontShape{JY1}{gt}{m}{n}{<->s*[\bxjs@scale]jisg}{}%
+\DeclareFontShape{JT1}{mc}{m}{n}{<->s*[\bxjs@scale]tmin10}{}%
+\DeclareFontShape{JT1}{gt}{m}{n}{<->s*[\bxjs@scale]tgoth10}{}%
+}
+\def\bxjs@sizereference{jis}
+\fi
+\@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
+               \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
+  {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined}
+\begingroup
+  \font\bxjs@tmpa=\bxjs@sizereference\space at 10pt
+  \setbox\z@\hbox{\bxjs@tmpa\char\jis"2121\relax}
+  \ifdim\wd\z@=10pt
+    \global\let\bxjs@scale\jsScale
+  \else
+    \edef\bxjs@tmpa{\strip@pt\wd\z@}
+    \@tempdima=10pt \@tempdima=\jsScale\@tempdima
+    \bxjs@invscale\@tempdima\bxjs@tmpa
+    \xdef\bxjs@scale{\strip@pt\@tempdima}
+  \fi
+\endgroup
+\bxjs@declarefontshape
+\DeclareFontShape{\jsc@JYn}{mc}{m}{it}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{m}{sl}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{m}{sc}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JYn}{gt}{m}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{gt}{m}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{bx}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JYn}{mc}{bx}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{it}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{sl}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{m}{sc}{<->ssub*mc/m/n}{}
+\DeclareFontShape{\jsc@JTn}{gt}{m}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{gt}{m}{sl}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{bx}{it}{<->ssub*gt/m/n}{}
+\DeclareFontShape{\jsc@JTn}{mc}{bx}{sl}{<->ssub*gt/m/n}{}
+\DeclareRobustCommand\rmfamily
+  {\not@math@alphabet\rmfamily\mathrm
+   \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}
+\DeclareRobustCommand\sffamily
+  {\not@math@alphabet\sffamily\mathsf
+   \romanfamily\sfdefault\kanjifamily\gtdefault\selectfont}
+\DeclareRobustCommand\ttfamily
+  {\not@math@alphabet\ttfamily\mathtt
+   \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\def\textmc#1{\relax\ifmmode\hbox\fi{\mcfamily #1}}
+\def\textgt#1{\relax\ifmmode\hbox\fi{\gtfamily #1}}
+\prebreakpenalty\jis"2147=10000
+\postbreakpenalty\jis"2148=10000
+\prebreakpenalty\jis"2149=10000
+\inhibitxspcode`〒=2
+\xspcode`+=3
+\xspcode`\%=3
+\@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
+  \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
+\endinput
+%%
+%% End of file `bxjsptex.def'.

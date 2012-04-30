@@ -1,0 +1,77 @@
+==================================================
+== BXjscls バンドル v0.3  <2010/08/15>          ==
+==           by「ZR」（八登 崇之/Takayuki YATO）==
+==                      <zrbabbler@yahoo.co.jp> ==
+==================================================
+(This file is encoded in UTF-8,)
+
+■ 対応環境
+
+    ・UTF-8 直接入力が可能な日本語対応 LaTeX2e であれば、その日本語処理
+      機構と連携するコードを用意することでこのバンドルに含まれる文書クラス
+      を使用できる。現状では、このバンドルの作者により、次の環境に対する
+      連携コードが用意されている。
+      - XeLaTeX 0.997 版以降 + zxjatype 0.3 版以降
+        (連携機構は zxjatype 自身に含まれるので、単に zxjatype の読込を
+        行えば連携される)
+      - pLaTeX (ptexenc 版) または upLaTeX
+        (本バンドルに含まれる bxjsptex モジュールを利用する。方法は、
+        文書クラスのオプションに platex または uplatex を指定する。)
+
+■ 本ソフトウェアの一次配布サイト(作者のサイト)
+
+    En toi Pythmeni tes TeXnopoleos ～電脳世界の奥底にて～
+    http://zrbabbler.hp.infoseek.co.jp/
+
+■ インストール
+
+    本バンドルは DocStrip 形式ファイル bxjsclasses.dtx の形で提供されて
+    いて、ファイル抽出を行うことで文書クラスファイル等を得ることができる。
+    ただし、ユーザの便宜のため、予め抽出したファイルと組版した説明文書を
+    バンドルに同梱したので、実際にはファイル抽出処理は不要である。
+
+    TDS 1.1 に従ったシステムでは、各ファイルを次の場所に移動する。
+    ・*.cls, *.def → $TEXMF/tex/latex/bxjscls/
+
+    W32TeX を C:\usr\local にインストールした場合の例。
+    ・*.cls, *.def
+      → C:\usr\local\share\texmf-local\tex\latex\bxjscls
+
+  ・（参考）ファイル抽出の方法
+
+    以下のコマンドを実行すると
+      bxjsarticle.cls, bxjsreport.cls, bxjsptex.def
+    の各ファイルが抽出される：
+      platex -kanji=utf8 bxjsclasses.dtx
+      または
+      xelatex bxjsclasses.dtx
+
+    以下のコマンドを実行すると解説文書 bxjsclasses.dvi が得られる。
+      platex bxjsclasses.dtx      (2 回実行)
+    ※ 現状では、解説文書は jsarticle クラスで作成しているので組版には
+    pLaTeX が必要である。
+
+--------------------------------------
+
+    まだ解説が書けておりません…。基本的な機能の説明については以下の Web
+    ページで行っていますのでそちらを参照してください。
+
+    BXjscls パッケージ
+    http://zrbabbler.hp.infoseek.co.jp/bxjscls.html
+
+    連携モジュールの仕様については解説文書 bxjsclasses.pdf の付録 A に
+    述べられている。
+
+----------------------------------------
+
+■ 更新履歴
+
+Version 0.3  <2010/08/15>
+  - (u)pLaTeX 用連携モジュールを追加。
+  - jbase クラスオプションを追加。
+  - base, jbase, mag を calc パッケージの数式で記述できるようにした。
+
+Version 0.2  <2009/08/15>
+  - 最初の公開版。
+
+W# EOF
