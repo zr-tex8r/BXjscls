@@ -1,5 +1,5 @@
 ==================================================
-== BXjscls バンドル v0.3  <2010/08/15>          ==
+== BXjscls バンドル v0.3a <2012/05/01>          ==
 ==           by「ZR」（八登 崇之/Takayuki YATO）==
 ==                      <zrbabbler@yahoo.co.jp> ==
 ==================================================
@@ -18,10 +18,10 @@
         (本バンドルに含まれる bxjsptex モジュールを利用する。方法は、
         文書クラスのオプションに platex または uplatex を指定する。)
 
-■ 本ソフトウェアの一次配布サイト(作者のサイト)
+■ 本ソフトウェアの作者のサイト
 
     En toi Pythmeni tes TeXnopoleos ～電脳世界の奥底にて～
-    http://zrbabbler.hp.infoseek.co.jp/
+    http://zrbabbler.sp.land.to/
 
 ■ インストール
 
@@ -57,7 +57,7 @@
     ページで行っていますのでそちらを参照してください。
 
     BXjscls パッケージ
-    http://zrbabbler.hp.infoseek.co.jp/bxjscls.html
+    http://zrbabbler.sp.land.to/bxjscls.html
 
     連携モジュールの仕様については解説文書 bxjsclasses.pdf の付録 A に
     述べられている。
@@ -65,6 +65,10 @@
 ----------------------------------------
 
 ■ 更新履歴
+
+Version 0.3a <2012/05/01>
+  - 一部の用紙サイズオプション（b4paper 等）で、縦と横の長さを逆に
+    指定していたのを修正した。
 
 Version 0.3  <2010/08/15>
   - (u)pLaTeX 用連携モジュールを追加。
