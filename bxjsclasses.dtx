@@ -599,7 +599,8 @@
 % \item |mag=|\meta{int} ： |\mag| 値の直接設定。既定は |base| から算出する。
 % \item |paper={|\meta{dimen:width}|}{|\meta{dimen:height}|}| ： 用紙サイズ設定。
 %   用紙サイズオプションの代用で、既定値は |a4paper| 相当。
-% \item |platex|, |uplatex| ： (u){\pTeX}用の連携モジュールを読み込む。
+% \item |platex|, |uplatex| ： (u){\pTeX}用の連携モジュールを有効化する。
+% \item |CJK| ： CJKパッケージ用の連携モジュールを有効化する。
 % \end{itemize}
 %
 % |\bxjs@invscale| は{\TeX}における「長さのスケール」の逆関数を求めるもの。
@@ -642,11 +643,30 @@
     \ClassError\bxjs@clsname%
     {Option `\CurrentOption' used on wrong engine}\@ehc
   \fi}
+% CJKオプション
+\newif\ifbxjs@usecjk
+\DeclareOption{CJK}{%
+  \@tempswafalse
+  \if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+    \bxjs@usecjktrue
+  \else
+    \ClassError\bxjs@clsname%
+    {Option `\CurrentOption' used on wrong engine}\@ehc
+  \fi}
+% zw/nozwオプション
+\newif\ifbxjs@usezw \bxjs@usezwtrue
+\DeclareOption{nozw}{%
+  \bxjs@usezwfalse
+}
+\DeclareOption{zw}{%
+  \bxjs@usezwtrue
+}
 % keyval型のオプションの処理。
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\setkeys{bxjs}}
 \define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
+\newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
 % scaleとの順序依存を消すため、jbaseの実行を遅延させる
 \let\bxjs@do@opt@jbase\relax
@@ -656,7 +676,9 @@
   \setlength\@tempdima{#1}%
   \bxjs@invscale\@tempdima\jsScale
   \bxjs@setbasefontsize{\@tempdima}}
-\define@key{bxjs}{scale}{\edef\jsScale{#1}}
+\define@key{bxjs}{scale}{%
+  \bxjs@scalesettrue
+  \edef\jsScale{#1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
@@ -675,6 +697,34 @@
 %<book>\ExecuteOptions{a4paper,twoside,onecolumn,titlepage,openright,final}
 %<slide>\ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% CJKパッケージ連携時の処理。
+%    \begin{macrocode}
+\ifbxjs@usecjk
+%    \end{macrocode}
+% CJKパッケージは和文スケールの連携ができないので、
+% |scale| を1に固定する。
+%    \begin{macrocode}
+  \ifbxjs@scaleset\ifdim\jsScale\p@=\p@\else
+    \ClassWarning\bxjs@clsname{'scale' value changed to 1}
+  \fi\fi
+  \def\jsScale{1}
+%    \end{macrocode}
+% CJKパッケージが読み込まれているかを本文開始時に検査する。
+%    \begin{macrocode}
+  \AtBeginDocument{%
+    \@ifpackageloaded{CJK}{}{%
+      \ClassWarning\bxjs@clsname{CJK package is not loaded}%
+    }%
+  }
+\fi
+%    \end{macrocode}
+% \end{ZRnote}
+%
+% |jbase| の処理を実行する。
+%    \begin{macrocode}
 \bxjs@do@opt@jbase
 %    \end{macrocode}
 %
@@ -688,6 +738,19 @@
   \setlength\@tempdima  {\paperheight}
   \setlength\paperheight{\paperwidth}
   \setlength\paperwidth {\@tempdima}
+\fi
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
+% （和文を含むマクロ定義を通用させるため。）
+% \end{ZRnote}
+%    \begin{macrocode}
+\if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+  \@tempcnta="80 \loop \ifnum\@tempcnta<"100
+    \catcode\@tempcnta\active
+    \advance\@tempcnta\@ne
+  \repeat
 \fi
 %    \end{macrocode}
 %
@@ -757,10 +820,15 @@
 % \begin{ZRnote}
 % ここで{p\TeX}のzwに相当する単位として用いる長さ変数 |\jsZw| を作成する。
 % 約束により、これは |\jsScale| $\times$ (指定フォントサイズ) に等しい。
+%
+% |nozw| 非指定時は |\zw| を |\jsZw| と同義にする。
 % \end{ZRnote}
 %    \begin{macrocode}
 \newdimen\jsZw
 \jsZw=10pt \jsZw=\jsScale\jsZw
+\ifbxjs@usezw
+  \providecommand*\zw{\jsZw}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{pagesizeスペシャルの出力}
@@ -4651,26 +4719,59 @@
 %
 % \begin{macro}{\today}
 %    \begin{macrocode}
+\@tempswafalse
+\if p\bxjs@engine \@tempswatrue \fi
+\if n\bxjs@engine \@tempswatrue \fi
+\if@tempswa \expandafter\@firstoftwo
+\else       \expandafter\@secondoftwo
+\fi
+{%
+% 欧文8bitTeXの場合
+\newif\ifjsSeireki \jsSeirekitrue
+\def\西暦{\jsSeirekitrue}
+\def\和暦{\jsSeirekifalse}
+\def\Seireki{\jsSeirekitrue}
+\def\Wareki{\jsSeirekifalse}
+\def\bxjs@if@use@seireki{%
+  \ifjsSeireki \expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo \fi}
+}{%
 \newif\if西暦 \西暦true
 \def\西暦{\西暦true}
 \def\和暦{\西暦false}
+\def\Seireki{\西暦true}
+\def\Wareki{\西暦false}
+\def\bxjs@if@use@seireki{%
+  \if西暦 \expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo \fi}
+}
+% \bxjs@unxp
+\let\bxjs@unxp\@firstofone
+\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
+% \bxjs@iai
+\if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+  \def\bxjs@iai{\noexpand~}
+\else \def\bxjs@iai{}
+\fi
+% \heisei
 \newcount\heisei \heisei\year \advance\heisei-1988\relax
-\def\today{%
+% \today
+\edef\today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \if西暦
-      \number\year 年
-      \number\month 月
-      \number\day 日
-    \else
-      平成\number\heisei 年
-      \number\month 月
-      \number\day 日
-    \fi
+    \noexpand\bxjs@if@use@seireki{%
+      \number\year\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
+      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+    }{%
+      \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
+      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+    }%
   \fi}
 %    \end{macrocode}
 % \end{macro}
@@ -4931,6 +5032,126 @@
 %
 % 以上で終わり。
 % |\jsResetDimen| は空のままでよい。
+%
+% \section{CJKパッケージ用の連携モジュール ☆}
+%
+% \paragraph{準備}
+% |CJKspace| と |CJKpunct| パッケージを読み込む。
+%    \begin{macrocode}
+%<*cjk>
+\RequirePackage{CJKspace}
+\RequirePackage{CJKpunct}
+\RequirePackage{ifpdf}
+%    \end{macrocode}
+%
+% |zhmetrics| パッケージで提供されるファミリの情報を集約する。
+% |\bxjs@CJKfam@list| はファミリ名の |\do|-リスト、
+% |\bxjs@tfm@@|\meta{fam} はファミリに対応するTFM名（の基底）。
+%    \begin{macrocode}
+\let\bxjs@CJKfam@list\@empty
+\def\bxjs@entry#1#2{%
+  \let\do\relax
+  \edef\bxjs@CJKfam@list{\bxjs@CJKfam@list\do{#1}}%
+  \@namedef{bxjs@tfm@@#1}{#2}%
+}
+\bxjs@entry {zhsong} {unisong}
+\bxjs@entry {zhkai}  {unikai}
+\bxjs@entry {zhhei}  {unihei}
+\bxjs@entry {zhfs}   {unifs}
+\bxjs@entry {zhli}   {unili}
+\bxjs@entry {zhyou}  {uniyou}
+\def\bxjs@letcs#1#2{%
+  \expandafter\let\expandafter#1\csname#2\endcsname
+}
+%    \end{macrocode}
+%
+% \paragraph{フォントマップ設定}
+%
+% |\mcdefault| は明朝体用のファミリ名。
+% |\gtdefault| はゴシック体用のファミリ名。
+% （これらの値は変更禁止。）
+%    \begin{macrocode}
+\newcommand*\mcdefault{zhsong}
+\newcommand*\gtdefault{zhhei}
+%    \end{macrocode}
+%
+% |\setCJKfontmap{|\meta{fam}|}{|\meta{fontfile}|}| ：\ 
+% ファミリ \meta{fam} に対する物理フォントを \meta{fontfile} に
+% 設定する。
+%    \begin{macrocode}
+\@onlypreamble\setCJKfontmap
+\newcommand*\setCJKfontmap[2]{%
+  \bxjs@letcs\bxjs@tmpa{bxjs@tfm@@#1}%
+  \ifx\bxjs@tmpa\relax
+    \ClassError\bxjs@clsname
+     {Unknown CJK family '#1'}\@ehc
+  \else
+    \expandafter\xdef\csname bxjs@fontmap@@#1\endcsname{#2}%
+  \fi
+}
+%    \end{macrocode}
+%
+% IPAフォントを既定とする。
+%    \begin{macrocode}
+\setCJKfontmap{\mcdefault}{ipam.ttf}
+\setCJKfontmap{\gtdefault}{ipag.ttf}
+%    \end{macrocode}
+%
+% フォントマップ指定の実装。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@do@onefam
+\def\bxjs@do@onefam#1{%
+  \bxjs@letcs\bxjs@tmpa{bxjs@fontmap@@#1}%
+  \ifx\bxjs@tmpa\relax\else
+    \bxjs@letcs\bxjs@tmpb{bxjs@tfm@@#1}%
+    \ifpdf
+      \pdfmapline{=\bxjs@tmpb@Unicode@ <\bxjs@tmpa}%
+      \pdfmapline{=\bxjs@tmpb sl@Unicode@ <\bxjs@tmpa}%
+    \else
+      \AtBeginDvi{%
+        \special{pdf:mapline \bxjs@tmpb @Unicode@ unicode \bxjs@tmpa}%
+        \special{pdf:mapline \bxjs@tmpb sl@Unicode@ unicode \bxjs@tmpa}}%
+    \fi
+  \fi
+}
+\AtBeginDocument{%
+  \let\do\bxjs@do@onefam
+  \bxjs@CJKfam@list
+}
+%    \end{macrocode}
+%
+% \paragraph{フォント選択命令の修正}
+% 欧文のフォント選択命令について和文を追随させる。
+%    \begin{macrocode}
+\providecommand*\CJKfamilydefault{\mcdefault}
+\DeclareRobustCommand\normalfont{%
+  \CJKfamily{\CJKfamilydefault}%
+  \usefont\encodingdefault\familydefault
+    \seriesdefault\shapedefault\relax
+}
+\let\reset@font\normalfont
+\DeclareRobustCommand\rmfamily{%
+  \not@math@alphabet\rmfamily\mathrm
+  \fontfamily\rmdefault\CJKfamily{\mcdefault}\selectfont
+}
+\DeclareRobustCommand\sffamily{%
+  \not@math@alphabet\sffamily\mathsf
+  \fontfamily\rmdefault\CJKfamily{\gtdefault}\selectfont
+}
+\DeclareRobustCommand\ttfamily{%
+  \not@math@alphabet\ttfamily\mathtt
+  \fontfamily\rmdefault\CJKfamily{\gtdefault}\selectfont
+}
+%    \end{macrocode}
+%
+% \paragraph{全般設定}
+% 本体の全体が自動的に |CJK*| 環境に入るようにする。
+%    \begin{macrocode}
+\AtEndOfPackage{\CJK@makeActive}
+\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKfamilydefault}}
+\AtEndDocument{\clearpage\end{CJK*}}
+%</cjk>
+%    \end{macrocode}
 %
 % \Finale
 %

@@ -215,10 +215,27 @@
     \ClassError\bxjs@clsname%
     {Option `\CurrentOption' used on wrong engine}\@ehc
   \fi}
+\newif\ifbxjs@usecjk
+\DeclareOption{CJK}{%
+  \@tempswafalse
+  \if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+    \bxjs@usecjktrue
+  \else
+    \ClassError\bxjs@clsname%
+    {Option `\CurrentOption' used on wrong engine}\@ehc
+  \fi}
+\newif\ifbxjs@usezw \bxjs@usezwtrue
+\DeclareOption{nozw}{%
+  \bxjs@usezwfalse
+}
+\DeclareOption{zw}{%
+  \bxjs@usezwtrue
+}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\setkeys{bxjs}}
 \define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
+\newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
 \let\bxjs@do@opt@jbase\relax
 \define@key{bxjs}{jbase}{%
@@ -227,13 +244,26 @@
   \setlength\@tempdima{#1}%
   \bxjs@invscale\@tempdima\jsScale
   \bxjs@setbasefontsize{\@tempdima}}
-\define@key{bxjs}{scale}{\edef\jsScale{#1}}
+\define@key{bxjs}{scale}{%
+  \bxjs@scalesettrue
+  \edef\jsScale{#1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
 \DeclareOption*{\bxjs@setkey}
 \ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 \ProcessOptions\relax
+\ifbxjs@usecjk
+  \ifbxjs@scaleset\ifdim\jsScale\p@=\p@\else
+    \ClassWarning\bxjs@clsname{'scale' value changed to 1}
+  \fi\fi
+  \def\jsScale{1}
+  \AtBeginDocument{%
+    \@ifpackageloaded{CJK}{}{%
+      \ClassWarning\bxjs@clsname{CJK package is not loaded}%
+    }%
+  }
+\fi
 \bxjs@do@opt@jbase
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
@@ -242,6 +272,12 @@
   \setlength\@tempdima  {\paperheight}
   \setlength\paperheight{\paperwidth}
   \setlength\paperwidth {\@tempdima}
+\fi
+\if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+  \@tempcnta="80 \loop \ifnum\@tempcnta<"100
+    \catcode\@tempcnta\active
+    \advance\@tempcnta\@ne
+  \repeat
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
@@ -263,6 +299,9 @@
 \let\jsBaseFontSize\bxjs@param@basefontsize
 \newdimen\jsZw
 \jsZw=10pt \jsZw=\jsScale\jsZw
+\ifbxjs@usezw
+  \providecommand*\zw{\jsZw}
+\fi
 \chardef\bxjs@periodchar=`\.
 \def\@{\spacefactor\sfcode\bxjs@periodchar}
 \def\@setfontsize#1#2#3{%
@@ -1410,26 +1449,54 @@
 \newcommand{\figurename}{\if@english Fig.~\else 図\fi}
 \newcommand{\tablename}{\if@english Table.~\else 表\fi}
 \newcommand{\appendixname}{\if@english Appendix~\else 付録\fi}
+\@tempswafalse
+\if p\bxjs@engine \@tempswatrue \fi
+\if n\bxjs@engine \@tempswatrue \fi
+\if@tempswa \expandafter\@firstoftwo
+\else       \expandafter\@secondoftwo
+\fi
+{%
+\newif\ifjsSeireki \jsSeirekitrue
+\def\西暦{\jsSeirekitrue}
+\def\和暦{\jsSeirekifalse}
+\def\Seireki{\jsSeirekitrue}
+\def\Wareki{\jsSeirekifalse}
+\def\bxjs@if@use@seireki{%
+  \ifjsSeireki \expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo \fi}
+}{%
 \newif\if西暦 \西暦true
 \def\西暦{\西暦true}
 \def\和暦{\西暦false}
+\def\Seireki{\西暦true}
+\def\Wareki{\西暦false}
+\def\bxjs@if@use@seireki{%
+  \if西暦 \expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo \fi}
+}
+\let\bxjs@unxp\@firstofone
+\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
+\if \if p\bxjs@engine T\else\if n\bxjs@engine T\else F\fi\fi T
+  \def\bxjs@iai{\noexpand~}
+\else \def\bxjs@iai{}
+\fi
 \newcount\heisei \heisei\year \advance\heisei-1988\relax
-\def\today{%
+\edef\today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \if西暦
-      \number\year 年
-      \number\month 月
-      \number\day 日
-    \else
-      平成\number\heisei 年
-      \number\month 月
-      \number\day 日
-    \fi
+    \noexpand\bxjs@if@use@seireki{%
+      \number\year\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
+      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+    }{%
+      \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
+      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+    }%
   \fi}
 \hyphenation{ado-be post-script ghost-script phe-nom-e-no-log-i-cal man-u-script}
 \pagestyle{plain}%
