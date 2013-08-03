@@ -4809,6 +4809,26 @@
 %</slide>
 %    \end{macrocode}
 %\begin{ZRnote}
+% CJKパッケージ連携時は |\@footnotemark| を調整する。
+%\end{ZRnote}
+%    \begin{macrocode}
+\ifbxjs@usecjk
+\def\@footnotemark{%
+  \leavevmode
+  \ifhmode
+    \edef\@x@sf{\the\spacefactor}%
+    \ifdim\lastkern>\z@\ifdim\lastkern<5sp\relax
+       \unkern\unkern
+       \ifdim\lastskip>\z@ \unskip \fi
+    \fi\fi
+    \nobreak
+  \fi
+  \@makefnmark
+  \ifhmode \spacefactor\@x@sf \fi
+  \relax}
+\fi
+%    \end{macrocode}
+%\begin{ZRnote}
 %{(u)\pTeX} 上で動作している場合は、{\pTeX} 用の
 %連携モジュールを読み込む。
 %最後に日本語文字のカテゴリコードを元に戻す。

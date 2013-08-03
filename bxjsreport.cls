@@ -1509,6 +1509,21 @@
   \onecolumn
   \raggedbottom
 \fi
+\ifbxjs@usecjk
+\def\@footnotemark{%
+  \leavevmode
+  \ifhmode
+    \edef\@x@sf{\the\spacefactor}%
+    \ifdim\lastkern>\z@\ifdim\lastkern<5sp\relax
+       \unkern\unkern
+       \ifdim\lastskip>\z@ \unskip \fi
+    \fi\fi
+    \nobreak
+  \fi
+  \@makefnmark
+  \ifhmode \spacefactor\@x@sf \fi
+  \relax}
+\fi
 \ifbxjs@ptexmodule
   \input{bxjsptex.def}
 \fi
