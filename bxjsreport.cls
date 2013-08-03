@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2012/05/01 v0.3a BXJS document classes]
+  [2013/08/03 v0.4 BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\bxjs@engine=n
