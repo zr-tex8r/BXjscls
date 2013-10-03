@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2013/08/03 v0.4 BXJS document classes]
+  [2013/10/03 v0.4 BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\bxjs@engine=n
@@ -341,9 +341,9 @@
   \else
     \@setfontsize\normalsize\@xpt{\n@baseline}%
   \fi
-  \abovedisplayskip 10\p@ \@plus3\p@ \@minus4\p@
+  \abovedisplayskip 11\p@ \@plus3\p@ \@minus4\p@
   \abovedisplayshortskip \z@ \@plus3\p@
-  \belowdisplayskip \abovedisplayskip
+  \belowdisplayskip 9\p@ \@plus3\p@ \@minus4\p@
   \belowdisplayshortskip \belowdisplayskip
   \let\@listi\@listI}
 \normalsize
@@ -528,6 +528,7 @@
   \def\@oddhead{%
     \hbox to \fullwidth{\hfil\textbf{\thepage}}\hss}}
 \let\ps@plain\ps@plainfoot
++\newif\if@omit@number
 \def\ps@headings{%
   \let\@oddfoot\@empty
   \let\@evenfoot\@empty
@@ -542,7 +543,9 @@
   \def\chaptermark##1{\markboth{%
     \ifnum \c@secnumdepth >\m@ne
       \if@mainmatter
-        \@chapapp\thechapter\@chappos\hskip1\jsZw
+        \if@omit@number\else
+          \@chapapp\thechapter\@chappos\hskip1\jsZw
+        \fi
       \fi
     \fi
     ##1}{}}%
@@ -861,7 +864,9 @@
   \plainifnotempty % 元: \thispagestyle{plain}
   \global\@topnum\z@
   \if@english \@afterindentfalse \else \@afterindenttrue \fi
-  \secdef\@chapter\@schapter}
+  \secdef
+    {\@omit@numberfalse\@chapter}%
+    {\@omit@numbertrue\@schapter}}
 \def\@chapter[#1]#2{%
   \ifnum \c@secnumdepth >\m@ne
     \if@mainmatter
@@ -1056,10 +1061,10 @@
   \item\relax}{\endlist}
 \newenvironment{quote}%
   {\list{}{\rightmargin\z@}\item\relax}{\endlist}
-\def\@begintheorem#1#2{\trivlist
-   \item[\hskip \labelsep{\bfseries #1\ #2}]}
-\def\@opargbegintheorem#1#2#3{\trivlist
-      \item[\hskip \labelsep{\bfseries #1\ #2\ (#3)}]}
+\def\@begintheorem#1#2{\trivlist\labelsep=1\jsZw
+   \item[\hskip \labelsep{\headfont #1\ #2}]}
+\def\@opargbegintheorem#1#2#3{\trivlist\labelsep=1\jsZw
+      \item[\hskip \labelsep{\headfont #1\ #2（#3）}]}
 \newenvironment{titlepage}{%
     \cleardoublepage
     \if@twocolumn

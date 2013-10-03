@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsptex.def}
-  [2013/08/03 v0.4 BXJS document classes]
+  [2013/10/03 v0.4 BXJS document classes]
 \edef\jsc@JYn{\if@jsc@uplatex JY2\else JY1\fi}
 \edef\jsc@JTn{\if@jsc@uplatex JT2\else JT1\fi}
 \edef\jsc@pfx@{\if@jsc@uplatex u\fi}
@@ -102,6 +102,7 @@
 \prebreakpenalty\jis"2147=10000
 \postbreakpenalty\jis"2148=10000
 \prebreakpenalty\jis"2149=10000
+\inhibitxspcode`！=1
 \inhibitxspcode`〒=2
 \xspcode`+=3
 \xspcode`\%=3

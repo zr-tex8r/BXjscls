@@ -57,7 +57,7 @@
 %<*driver>
 \ProvidesFile{bxjsclasses.dtx}
 %</driver>
-  [2013/08/03 v0.4 BXJS document classes]
+  [2013/10/03 v0.4 BXJS document classes]
 %<*driver>
 \documentclass{jsarticle} % このドキュメント自身は jsarticle を使う
 \usepackage{doc}
@@ -308,7 +308,7 @@
 % これを基準として順に半截しては mm 単位に切り捨てたものがA1，A2，…です。
 %
 % B判はJISとISOで定義が異なります。
-% JISではB0判の面積が $1.5\,\mathrm{mm}^2$ ですが，
+% JISではB0判の面積が $1.5\,\mathrm{m}^2$ ですが，
 % ISOではB1判の辺の長さがA0判とA1判の辺の長さの幾何平均です。
 % したがってISOのB0判は $1000\,\mathrm{mm} \times 1414\,\mathrm{mm}$ です。
 % このため，\LaTeXe の \texttt{b5paper}
@@ -949,6 +949,8 @@
 %
 % [2008-02-18] |english| オプションで最初の段落のインデントをしないようにしました。
 %
+% TODO: Hasumiさん [qa:54539] のご指摘は考慮中です。
+%
 %    \begin{macrocode}
 \newif\ifnarrowbaselines
 \if@english
@@ -1003,10 +1005,13 @@
 %
 % [2003-02-16] ちょっと変えました。
 %
+% [2009-08-26] \TeX\ Q\,\&\,A 52569から始まる議論について逡巡して
+% いましたが，結局，微調節してみることにしました。
+%
 %    \begin{macrocode}
-  \abovedisplayskip 10\p@ \@plus3\p@ \@minus4\p@
+  \abovedisplayskip 11\p@ \@plus3\p@ \@minus4\p@
   \abovedisplayshortskip \z@ \@plus3\p@
-  \belowdisplayskip \abovedisplayskip
+  \belowdisplayskip 9\p@ \@plus3\p@ \@minus4\p@
   \belowdisplayshortskip \belowdisplayskip
 %    \end{macrocode}
 %
@@ -1839,9 +1844,12 @@
 %    \end{macrocode}
 %
 % 次は book の場合です。
+% [2011-05-10] しっぽ愛好家さん [qa:6370] のパッチを取り込ませていただきました
+% （北見さん [qa:55896] のご指摘ありがとうございます）。
 %
 %    \begin{macrocode}
 %<*book|report>
++\newif\if@omit@number
 \def\ps@headings{%
   \let\@oddfoot\@empty
   \let\@evenfoot\@empty
@@ -1856,7 +1864,9 @@
   \def\chaptermark##1{\markboth{%
     \ifnum \c@secnumdepth >\m@ne
       \if@mainmatter
-        \@chapapp\thechapter\@chappos\hskip1\jsZw
+        \if@omit@number\else
+          \@chapapp\thechapter\@chappos\hskip1\jsZw
+        \fi
       \fi
     \fi
     ##1}{}}%
@@ -2695,7 +2705,9 @@
   \plainifnotempty % 元: \thispagestyle{plain}
   \global\@topnum\z@
   \if@english \@afterindentfalse \else \@afterindenttrue \fi
-  \secdef\@chapter\@schapter}
+  \secdef
+    {\@omit@numberfalse\@chapter}%
+    {\@omit@numbertrue\@schapter}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3332,11 +3344,14 @@
 % これでは和文がゴシック体になってしまうので，
 % |\itshape| を削除しました。
 %
+% [2009-08-23] |\bfseries| を |\headfont| に直し，
+% |\labelsep| を 1\,zw にし，括弧を全角にしました。
+%
 %    \begin{macrocode}
-\def\@begintheorem#1#2{\trivlist
-   \item[\hskip \labelsep{\bfseries #1\ #2}]}
-\def\@opargbegintheorem#1#2#3{\trivlist
-      \item[\hskip \labelsep{\bfseries #1\ #2\ (#3)}]}
+\def\@begintheorem#1#2{\trivlist\labelsep=1\jsZw
+   \item[\hskip \labelsep{\headfont #1\ #2}]}
+\def\@opargbegintheorem#1#2#3{\trivlist\labelsep=1\jsZw
+      \item[\hskip \labelsep{\headfont #1\ #2（#3）}]}
 %    \end{macrocode}
 %
 % \begin{environment}{titlepage}
@@ -4362,12 +4377,18 @@
 %
 % [2002-04-09] インプリメントの仕方を変えたため消しました。
 %
+% [2013-04-23] 新しい\pTeX では脚注番号のまわりにスペースが入りすぎることを防ぐため，
+% 北川さんのパッチ [qa:57090] を取り込みました。
+%
+% [2013-05-14] plcore.ltx に倣った形に書き直しました（Thanks: 北川さん）。
+%
+% \begin{ZRnote}
+% {\pTeX}依存のコードなので、{\pTeX}連携モジュールに移動。
+% \end{ZRnote}
 %    \begin{macrocode}
-% \def\@makefnmark{\hbox{\@textsuperscript{\normalfont
-%       \ifx\@thefnmark\@empty\else
-%         \textasteriskcentered
-%       \fi
-%       \@thefnmark}}}
+%\renewcommand\@makefnmark{\hbox{}\hbox{%
+%  \ifydir \@textsuperscript{\normalfont\@thefnmark}%
+%  \else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}\fi}\hbox{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -5038,6 +5059,7 @@
 \prebreakpenalty\jis"2147=10000
 \postbreakpenalty\jis"2148=10000
 \prebreakpenalty\jis"2149=10000
+\inhibitxspcode`！=1
 \inhibitxspcode`〒=2
 \xspcode`+=3
 \xspcode`\%=3
@@ -5047,6 +5069,13 @@
 %    \begin{macrocode}
 \@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
+%    \end{macrocode}
+%
+% 新版の{\pTeX}で脚注番号の周囲の空きが過大になる現象への対処。
+%    \begin{macrocode}
+%\renewcommand\@makefnmark{\hbox{}\hbox{%
+%  \ifydir \@textsuperscript{\normalfont\@thefnmark}%
+%  \else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}\fi}\hbox{}}
 %</ptex>
 %    \end{macrocode}
 %
