@@ -1,0 +1,201 @@
+%%
+%% This is file `bxjsja-standard.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjsclasses.dtx  (with options: `drvstandard')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjsja-standard.def.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjsclasses.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesFile{bxjsja-standard.def}
+  [2013/10/03 v0.9pre BXJS document classes]
+\input{bxjsja-minimal.def}
+\ifjsWitheTeX
+  \@tempdima=0.25mm
+  \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
+  \let\jH\jQ
+  \ifbxjs@mag
+    \@tempdima=2.5mm
+    \@tempdimb=\jsBaseFontSize\relax
+    \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
+    \bxjs@invscale\@tempdima\bxjs@tmpa
+    \edef\trueQ{\dimexpr\the\@tempdima\relax}
+  \else \let\trueQ\jQ
+  \fi
+  \let\trueH\trueQ
+  \@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
+  \edef\ascQ{\dimexpr\the\@tempdima\relax}
+\fi
+\def\bxjs@kanjiskip{0pt}
+\newcommand*\setkanjiskip[1]{%
+  \edef\bxjs@kanjiskip{#1}%
+  \bxjs@reset@kanjiskip}
+\newcommand*\getkanjiskip{%
+  \bxjs@kanjiskip}
+\newif\ifbxjs@kanjiskip@enabled \bxjs@kanjiskip@enabledtrue
+\bxjs@robust@def\bxjs@enable@kanjiskip{%
+  \bxjs@kanjiskip@enabledtrue
+  \bxjs@reset@kanjiskip}
+\bxjs@robust@def\bxjs@disable@kanjiskip{%
+  \bxjs@kanjiskip@enabledfalse
+  \bxjs@reset@kanjiskip}
+\bxjs@robust@def\bxjs@reset@kanjiskip{%
+  \ifbxjs@kanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@kanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \bxjs@apply@kanjiskip}
+\def\bxjs@xkanjiskip{0pt}
+\newcommand*\setxkanjiskip[1]{%
+  \edef\bxjs@xkanjiskip{#1}%
+  \bxjs@reset@xkanjiskip}
+\newcommand*\getxkanjiskip{%
+  \bxjs@xkanjiskip}
+\newif\ifbxjs@xkanjiskip@enabled \bxjs@xkanjiskip@enabledtrue
+\bxjs@robust@def\bxjs@enable@xkanjiskip{%
+  \bxjs@xkanjiskip@enabledtrue
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\bxjs@disable@xkanjiskip{%
+  \bxjs@xkanjiskip@enabledfalse
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\bxjs@reset@xkanjiskip{%
+  \ifbxjs@xkanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@xkanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \bxjs@apply@xkanjiskip}
+\g@addto@macro\jsResetDimen{%
+  \bxjs@reset@kanjiskip
+  \bxjs@reset@xkanjiskip}
+\let\bxjs@apply@kanjiskip\relax
+\let\bxjs@apply@xkanjiskip\relax
+\if j\jsEngine
+\def\bxjs@apply@kanjiskip{%
+  \kanjiskip\@tempskipa}
+\def\bxjs@apply@xkanjiskip{%
+  \xkanjiskip\@tempskipa}
+\else\if p\jsEngine
+\RequirePackage[whole,autotilde]{bxcjkjatype}[2013/10/15]
+\bxjs@cjk@loaded
+\newskip\jsKanjiSkip
+\newskip\jsXKanjiSkip
+\ifx\CJKecglue\@undefined
+  \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
+\fi
+\let\autospacing\bxjs@enable@kanjiskip
+\let\noautospacing\bxjs@disable@kanjiskip
+\protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
+\def\bxjs@apply@kanjiskip{%
+  \jsKanjiSkip\@tempskipa
+  \let\CJKglue\bxjs@CJKglue}
+\let\autoxspacing\bxjs@enable@xkanjiskip
+\let\noautoxspacing\bxjs@disable@xkanjiskip
+\protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
+\def\bxjs@apply@xkanjiskip{%
+  \jsXKanjiSkip\@tempskipa
+  \let\CJKecglue\bxjs@CJKecglue}
+\else\if x\jsEngine
+\RequirePackage{zxjatype}
+\ifx\zxJaFamilyName\@undefined
+  \ClassError\bxjs@clsname
+  {xeCJK or zxjatype is too old}\@ehc
+\fi
+\setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
+\setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\newskip\jsKanjiSkip
+\newskip\jsXKanjiSkip
+\ifx\CJKecglue\@undefined
+  \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
+\fi
+\let\autospacing\bxjs@enable@kanjiskip
+\let\noautospacing\bxjs@disable@kanjiskip
+\protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
+\def\bxjs@apply@kanjiskip{%
+  \jsKanjiSkip\@tempskipa
+  \xeCJKsetup{CJKglue={\bxjs@CJKglue}}}
+\let\autoxspacing\bxjs@enable@xkanjiskip
+\let\noautoxspacing\bxjs@disable@xkanjiskip
+\protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
+\def\bxjs@apply@xkanjiskip{%
+  \jsXKanjiSkip\@tempskipa
+  \xeCJKsetup{CJKecglue={\bxjs@CJKecglue}}}
+\else\if l\jsEngine
+\let\zw\@undefined
+\RequirePackage{luatexja}
+\RequirePackage{luatexja-fontspec}
+\ExplSyntaxOn
+\fp_gset:Nn \g_ltj_fontspec_scale_fp { \jsScale }
+\ExplSyntaxOff
+\defaultjfontfeatures{ Kerning=Off }
+\setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
+\setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+\DeclareRobustCommand\rmfamily
+  {\not@math@alphabet\rmfamily\mathrm
+   \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}
+\DeclareRobustCommand\sffamily
+  {\not@math@alphabet\sffamily\mathsf
+   \romanfamily\sfdefault\kanjifamily\gtdefault\selectfont}
+\DeclareRobustCommand\ttfamily
+  {\not@math@alphabet\ttfamily\mathtt
+   \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\AtBeginDocument{%
+  \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
+  \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}}%
+\ltjsetparameter{jaxspmode={`！,1}}
+\ltjsetparameter{jaxspmode={`〒,2}}
+\ltjsetparameter{alxspmode={`+,3}}
+\ltjsetparameter{alxspmode={`\%,3}}
+\protected\def\@inhibitglue{%
+  \directlua{%
+    luatexja.jfmglue.create_beginpar_node()}}
+\let\bxjs@ltj@inhibitglue\@inhibitglue
+\let\jsInhibitGlueAtParTop\@empty
+\let\@@inhibitglue\@undefined
+\protected\def\autospacing{%
+  \ltjsetparameter{autospacing=true}}
+\protected\def\noautospacing{%
+  \ltjsetparameter{autospacing=false}}
+\protected\def\autoxspacing{%
+  \ltjsetparameter{autoxspacing=true}}
+\protected\def\noautoxspacing{%
+  \ltjsetparameter{autoxspacing=false}}
+\def\bxjs@apply@kanjiskip{%
+  \ltjsetparameter{kanjiskip={\@tempskipa}}}
+\def\bxjs@apply@xkanjiskip{%
+  \ltjsetparameter{xkanjiskip={\@tempskipa}}}
+\fi\fi\fi\fi
+\setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
+\ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}
+\else \setxkanjiskip{0.25em plus 0.15em minus 0.06em}
+\fi
+\endinput
+%%
+%% End of file `bxjsja-standard.def'.

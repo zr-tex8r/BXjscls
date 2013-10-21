@@ -1,17 +1,17 @@
 %%
-%% This is file `bxjsptex.def',
+%% This is file `bxjsja-minimal.def',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
-%% bxjsclasses.dtx  (with options: `ptex')
+%% bxjsclasses.dtx  (with options: `drvminimal')
 %% 
 %% IMPORTANT NOTICE:
 %% 
 %% For the copyright see the source file.
 %% 
 %% Any modified versions of this file must be renamed
-%% with new filenames distinct from bxjsptex.def.
+%% with new filenames distinct from bxjsja-minimal.def.
 %% 
 %% For distribution of the original source see the terms
 %% for copying and modification in the file bxjsclasses.dtx.
@@ -35,13 +35,21 @@
 %%   Right bracket \]     Circumflex    \^     Underscore    \_
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
-\ProvidesFile{bxjsptex.def}
-  [2013/10/03 v0.4 BXJS document classes]
-\edef\jsc@JYn{\if@jsc@uplatex JY2\else JY1\fi}
-\edef\jsc@JTn{\if@jsc@uplatex JT2\else JT1\fi}
-\edef\jsc@pfx@{\if@jsc@uplatex u\fi}
+\ProvidesFile{bxjsja-minimal.def}
+  [2013/10/03 v0.9pre BXJS document classes]
+%% このファイルは日本語文字を含みます
+\def\DeclareJaTextFontCommand#1#2{%
+  \DeclareRobustCommand#1[1]{%
+    \relax
+    \ifmmode \expandafter\nfss@text \fi
+    {#2##1}}%
+}
+\ifx j\jsEngine
+\edef\jsc@JYn{\ifjsWithupTeX JY2\else JY1\fi}
+\edef\jsc@JTn{\ifjsWithupTeX JT2\else JT1\fi}
+\edef\jsc@pfx@{\ifjsWithupTeX u\fi}
 \@onlypreamble\bxjs@declarefontshape
-\if@jsc@uplatex
+\ifjsWithupTeX
 \def\bxjs@declarefontshape{%
 \DeclareFontShape{JY2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-h}{}%
 \DeclareFontShape{JY2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-h}{}%
@@ -97,8 +105,9 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
-\def\textmc#1{\relax\ifmmode\hbox\fi{\mcfamily #1}}
-\def\textgt#1{\relax\ifmmode\hbox\fi{\gtfamily #1}}
+\DeclareJaTextFontCommand{\textmc}{\mcfamily}
+\DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\selectfont
 \prebreakpenalty\jis"2147=10000
 \postbreakpenalty\jis"2148=10000
 \prebreakpenalty\jis"2149=10000
@@ -108,6 +117,30 @@
 \xspcode`\%=3
 \@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
+\else\ifx p\jsEngine
+\@onlypreamble\bxjs@cjk@loaded
+\def\bxjs@cjk@loaded{%
+  \def\@footnotemark{%
+    \leavevmode
+    \ifhmode
+      \edef\@x@sf{\the\spacefactor}%
+      \ifdim\lastkern>\z@\ifdim\lastkern<5sp\relax
+         \unkern\unkern
+         \ifdim\lastskip>\z@ \unskip \fi
+      \fi\fi
+      \nobreak
+    \fi
+    \@makefnmark
+    \ifhmode \spacefactor\@x@sf \fi
+    \relax}%
+  \let\bxjs@cjk@loaded\relax
+}
+\AtBeginDocument{%
+  \@ifpackageloaded{CJK}{%
+    \bxjs@cjk@loaded
+  }{}%
+}
+\fi\fi
 \endinput
 %%
-%% End of file `bxjsptex.def'.
+%% End of file `bxjsja-minimal.def'.
