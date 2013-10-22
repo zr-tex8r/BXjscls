@@ -58,7 +58,7 @@
 %<*driver>
 \ProvidesFile{bxjsclasses.dtx}
 %</driver>
-  [2013/10/03 v0.9pre BXJS document classes]
+  [2013/10/23 v0.9 BXJS document classes]
 %<*driver>
 \documentclass{jsarticle} % このドキュメント自身は jsarticle を使う
 \usepackage{doc}
@@ -302,7 +302,7 @@
 % |\jsInhibitGlue| は |\inhibitglue| が定義されていればそれを
 % 実行し、未定義ならば何もしない。
 %    \begin{macrocode}
-\DeclareRobustCommand*{\jsInhibitGlue}{%
+\bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
 %    \end{macrocode}
 % \end{ZRnote}
@@ -2689,6 +2689,14 @@
   \@xsect{#3}}
 %    \end{macrocode}
 %
+% \begin{ZRnote}
+% 上記の定義中の |\bxjs@ltj@inhibitglue| は{Lua\TeX-ja}で
+% 用いられるフック。
+%    \begin{macrocode}
+\let\bxjs@ltj@inhibitglue\@empty
+%    \end{macrocode}
+% \end{ZRnote}
+%
 % \paragraph{柱関係の命令}
 %
 % \begin{macro}{\chaptermark}
@@ -4871,47 +4879,49 @@
 %
 % 段落頭のかぎかっこなどを見かけ1字半下げから全角1字下げに直します。
 %
+% \begin{ZRnote}
+% \begin{macro}{\jsInhibitGlueAtParTop}
+% 「段落頭の括弧の空き補正」の処理を |\jsInhibitGlueAtParTop|
+% という命令にして、これを再定義可能にした。
+%    \begin{macrocode}
+\let\jsInhibitGlueAtParTop\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\everyparhook}
+% 全ての段落の冒頭で実行されるフック。
+% これの初期値を先述の |\jsInhibitGlueAtParTop| とする。
+%    \begin{macrocode}
+\def\everyparhook{\jsInhibitGlueAtParTop}
+\AtBeginDocument{\everypar{\everyparhook}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@inhibitglue}
+% JSクラスでの |\jsInhibitGlueAtParTop| の実装。
 %    \begin{macrocode}
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
 \def\@@inhibitglue{%
-  \ifx\@let@token「
+  \ifx\@let@token「%
     \jsInhibitGlue
   \else
-    \ifx\@let@token（
+    \ifx\@let@token（%
       \jsInhibitGlue
     \else
-      \ifx\@let@token『
+      \ifx\@let@token『%
         \jsInhibitGlue
       \else
-        \ifx\@let@token［
+        \ifx\@let@token［%
           \jsInhibitGlue
         \fi
       \fi
     \fi
   \fi}
 %    \end{macrocode}
-%
-% \begin{ZRnote}
-% \begin{macro}{\jsInhibitGlueAtParTop}
-% \begin{macro}{\bxjs@ltj@inhibitglue}
-% 「段落頭の括弧の空き補正」の処理を |\jsInhibitGlueAtParTop|
-% という命令にして、これを再定義可能にした。
-% 既定値は先に定義した |\@inhibitglue|。
-%
-% Lua{\TeX}-ja ではこの処理の方法が異なるので、
-% |\jsInhibitGlueAtParTop| を空にして、代わりに、
-% |\bxjs@ltj@inhibitglue| （既定では空）を
-% 「LTJSクラスの |\@inhibitglue|」に等置する。
 % \end{macro}
-% \end{macro}
+%
 % \end{ZRnote}
-%    \begin{macrocode}
-\def\everyparhook{\jsInhibitGlueAtParTop}
-\let\jsInhibitGlueAtParTop\@inhibitglue
-\AtBeginDocument{\everypar{\everyparhook}}
-\let\bxjs@ltj@inhibitglue\@empty
-%    \end{macrocode}
 %
 % これだけではいけないようです。あちこちに |\everypar| を初期化するコマンドが
 % 隠されていました。
@@ -5306,6 +5316,8 @@
 %% このファイルは日本語文字を含みます
 %    \end{macrocode}
 %
+% \begin{macro}{\DeclareJaTextFontCommand}
+% 和文書体のための、「余計なこと」をしない |\DeclareTextFontCommand|。
 %    \begin{macrocode}
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -5314,6 +5326,7 @@
     {#2##1}}%
 }
 %    \end{macrocode}
+% \end{macro}
 %
 %
 % \subsection{(u){\pTeX}用の設定}
@@ -5479,6 +5492,11 @@
 %\renewcommand\@makefnmark{\hbox{}\hbox{%
 %  \ifydir \@textsuperscript{\normalfont\@thefnmark}%
 %  \else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}\fi}\hbox{}}
+%    \end{macrocode}
+%
+% |\jsInhibitGlueAtParTop| の定義。
+%    \begin{macrocode}
+\let\jsInhibitGlueAtParTop\@inhibitglue
 %    \end{macrocode}
 %
 % |\jsResetDimen| は空のままでよい。
@@ -5784,6 +5802,12 @@
 \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
 %    \end{macrocode}
 %
+% \paragraph{段落頭でのグルー挿入禁止}
+%
+%    \begin{macrocode}
+\let\jsInhibitGlueAtParTop\@inhibitglue
+%    \end{macrocode}
+%
 % \paragraph{共通命令の実装}
 %
 %    \begin{macrocode}
@@ -5892,7 +5916,6 @@
   \directlua{%
     luatexja.jfmglue.create_beginpar_node()}}
 \let\bxjs@ltj@inhibitglue\@inhibitglue
-\let\jsInhibitGlueAtParTop\@empty
 \let\@@inhibitglue\@undefined
 %    \end{macrocode}
 %

@@ -86,7 +86,7 @@
 \@tfor\bxjs@x:=西暦\do
   {\expandafter\bxjs@change@jltrcc\bxjs@x}
 \fi
-\DeclareRobustCommand*{\jsInhibitGlue}{%
+\bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
 \newif\if@restonecol
 \newif\if@titlepage
@@ -919,6 +919,7 @@
     \endgroup
   \fi
   \@xsect{#3}}
+\let\bxjs@ltj@inhibitglue\@empty
 \newcommand*\chaptermark[1]{}
 \setcounter{secnumdepth}{3}
 \newcounter{part}
@@ -1408,28 +1409,27 @@
   \parindent 1\jsZw
   \noindent
   \llap{\@makefnmark\hskip0.3\jsZw}#1}
+\let\jsInhibitGlueAtParTop\@empty
+\def\everyparhook{\jsInhibitGlueAtParTop}
+\AtBeginDocument{\everypar{\everyparhook}}
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
 \def\@@inhibitglue{%
-  \ifx\@let@token「
+  \ifx\@let@token「%
     \jsInhibitGlue
   \else
-    \ifx\@let@token（
+    \ifx\@let@token（%
       \jsInhibitGlue
     \else
-      \ifx\@let@token『
+      \ifx\@let@token『%
         \jsInhibitGlue
       \else
-        \ifx\@let@token［
+        \ifx\@let@token［%
           \jsInhibitGlue
         \fi
       \fi
     \fi
   \fi}
-\def\everyparhook{\jsInhibitGlueAtParTop}
-\let\jsInhibitGlueAtParTop\@inhibitglue
-\AtBeginDocument{\everypar{\everyparhook}}
-\let\bxjs@ltj@inhibitglue\@empty
 \def\@doendpe{%
   \@endpetrue
   \def\par{%

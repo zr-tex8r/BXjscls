@@ -130,6 +130,7 @@
 \fi
 \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
 \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\let\jsInhibitGlueAtParTop\@inhibitglue
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined
@@ -147,6 +148,10 @@
 \def\bxjs@apply@xkanjiskip{%
   \jsXKanjiSkip\@tempskipa
   \xeCJKsetup{CJKecglue={\bxjs@CJKecglue}}}
+\ifx\mcfamily\@undefined
+  \protected\def\mcfamily{\CJKfamily{\CJKrmdefault}}
+  \protected\def\gtfamily{\CJKfamily{\CJKsfdefault}}
+\fi
 \else\if l\jsEngine
 \let\zw\@undefined
 \RequirePackage{luatexja}
@@ -177,7 +182,6 @@
   \directlua{%
     luatexja.jfmglue.create_beginpar_node()}}
 \let\bxjs@ltj@inhibitglue\@inhibitglue
-\let\jsInhibitGlueAtParTop\@empty
 \let\@@inhibitglue\@undefined
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}
@@ -192,6 +196,8 @@
 \def\bxjs@apply@xkanjiskip{%
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
 \fi\fi\fi\fi
+\DeclareJaTextFontCommand{\textmc}{\mcfamily}
+\DeclareJaTextFontCommand{\textgt}{\gtfamily}
 \setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
 \ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}
 \else \setxkanjiskip{0.25em plus 0.15em minus 0.06em}

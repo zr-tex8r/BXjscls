@@ -117,6 +117,7 @@
 \xspcode`\%=3
 \@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
+\let\jsInhibitGlueAtParTop\@inhibitglue
 \else\ifx p\jsEngine
 \@onlypreamble\bxjs@cjk@loaded
 \def\bxjs@cjk@loaded{%
