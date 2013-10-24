@@ -58,10 +58,16 @@
 %<*driver>
 \ProvidesFile{bxjsclasses.dtx}
 %</driver>
-  [2013/10/23 v0.9 BXJS document classes]
+  [2013/10/03 v0.9pre BXJS document classes]
 %<*driver>
-\documentclass{jsarticle} % このドキュメント自身は jsarticle を使う
+\documentclass[a4paper]{ltjsarticle}
+\usepackage[ipaex]{luatexja-preset}
+\usepackage{metalogo}
 \usepackage{doc}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newcommand{\Means}{~：\quad}
 \newenvironment{ZRnote}
   {\StartZRnote}{\EndZRnote}
 \newcommand*{\ZRnoteline}[1]{
@@ -69,11 +75,14 @@
   \makebox{\hspace{.05\linewidth}\rule[#1ex]{.9\linewidth}{.2pt}}\par}
 \newcommand*{\StartZRnote}{\ZRnoteline{.1}}
 \newcommand*{\EndZRnote}{\ZRnoteline{.9}}
-\newcommand*{\eTeX}{$\varepsilon$-\TeX}
-\newcommand*{\upTeX}{u\pTeX}
-\newcommand*{\XeTeX}{XeTeX}
-\newcommand*{\zrWDash}{\char\jis"2141\relax}% WAVE DASH
+\providecommand*{\eTeX}{$\varepsilon$-\TeX}
+\providecommand*{\upTeX}{u\pTeX}
+\providecommand*{\XeTeX}{XeTeX}
+\newcommand*{\zrWDash}{\symbol{"301C}}% WAVE DASH
 \newcommand*{\zrNote}[1]{［#1］}
+\makeatletter
+\def\meta@font@select{\rmfamily\itshape}
+\makeatother
 \addtolength{\textwidth}{-1in}
 \addtolength{\evensidemargin}{1in}
 \addtolength{\oddsidemargin}{1in}
@@ -91,7 +100,9 @@
 %
 % \fi
 %
-% \title{BXJS ドキュメントクラス}
+%^^A========================================================
+% \title{\Pkg{BXjscls} パッケージ\\
+%  BXJSドキュメントクラス}
 % \author{ZR}
 % \date{\fileversion\quad[\filedate]}
 % \maketitle
@@ -185,7 +196,7 @@
 % |n|＝オリジナル\TeX、
 % |j|＝{\pTeX}またはu{\pTeX}、
 % |J|＝NTT j{\TeX}、
-% |x|＝XeTeX、
+% |x|＝{\XeTeX}、
 % |p|＝pdf{\TeX}（含DVIモード）、
 % |l|＝Lua{\TeX}。
 %
@@ -1785,25 +1796,25 @@
 \g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
 %    \end{macrocode}
 % \begin{ZRnote}
-% エンジンが XeTeX である場合の処理。
+% エンジンが{\XeTeX}である場合の処理。
 % \begin{itemize}
 % \item |geometry| 4.2版の場合：\ 
 %   {\TeX} Liveの一部の版に用意されている設定ファイル |geometry.cfg|
 %   では、|geometry| のドライバ自動検出の処理を乗っ取って、
 %   強制的に |pdftex| を使用するようになっている。
-%   ところが、XeTeXでは |\pdfhorigin| など未サポートのpdf{\TeX}%
+%   ところが、{\XeTeX}では |\pdfhorigin| など未サポートのpdf{\TeX}%
 %   プリミティブがあり、|\mag| $\neq 1000$ の場合にエラーになる。
 %   そこで、|geometry.cfg| の読込の箇所にフックをかけて、|geometry.cfg|
 %   での処理をさらに乗っ取ることにする。
 %   \begin{itemize}
-%   \item XeTeXが |\pdfpagewidth| をサポートする場合は、ダミーの\ 
+%   \item {\XeTeX}が |\pdfpagewidth| をサポートする場合は、ダミーの\ 
 %     |\pdfhorigin|、|\pdfvorigin| を用意してドライバを |pdftex|
 %     に強制的に変更する。
 %   \item そうでない場合は、ドライバを |dvipdfm| に強制的に変更する。
 %   \end{itemize}
 % \item |geometry| 5.x版の場合：\ 
-%   この版の |geometry| はXeTeXに正式に対応（ドライバ名 |xetex|）
-%   していて、またXeTeXで実行した場合にドライバ自動検出の結果は\ 
+%   この版の |geometry| は{\XeTeX}に正式に対応（ドライバ名 |xetex|）
+%   していて、また{\XeTeX}で実行した場合にドライバ自動検出の結果は\ 
 %   |xetex| となる。
 %   従って、特に何もする必要がない。
 %   さらに、ドライバ自動検出処理のマクロ名を4.2版のもの
@@ -5777,7 +5788,7 @@
 %    \end{macrocode}
 % 
 %^^A----------------
-% \subsection{XeTeX用設定： xeCJK + zxjatype}
+% \subsection{{\XeTeX}用設定： xeCJK + zxjatype}
 %
 %    \begin{macrocode}
 \else\if x\jsEngine
