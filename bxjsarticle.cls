@@ -258,6 +258,11 @@
   \bxjs@usezwfalse}
 \DeclareOption{zw}{%
   \bxjs@usezwtrue}
+\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
+\DeclareOption{nojs}{%
+  \bxjs@disguise@jsfalse}
+\DeclareOption{js}{%
+  \bxjs@disguise@jstrue}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\setkeys{bxjs}}
@@ -346,6 +351,10 @@
     \catcode\@tempcnta\active
     \advance\@tempcnta\@ne
   \repeat
+\fi
+\ifbxjs@disguise@js
+\def\bxjs@js@clsname{jsarticle}
+  \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
@@ -628,8 +637,7 @@
 \def\bxjs@reset@layout#1{%
   \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
   \bxjs@nxt\bxjs@postproc@layout}
-{\footnotesize\global\setlength\footnotesep{\baselineskip}}
-\setlength\footnotesep{0.7\footnotesep}
+\footnotesep=11\p@? \footnotesep=0.7\footnotesep
 \setlength{\skip\footins}{16\p@? \@plus 5\p@? \@minus 2\p@?}
 \setcounter{topnumber}{9}
 \renewcommand{\topfraction}{.85}

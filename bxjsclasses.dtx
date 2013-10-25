@@ -767,6 +767,7 @@
 %
 % \begin{macro}{\ifbxjs@usezw}
 % |\jsZw| の同義語として |\zw| を使えるようにするか。
+% 既定は真。
 %    \begin{macrocode}
 \newif\ifbxjs@usezw \bxjs@usezwtrue
 %    \end{macrocode}
@@ -777,6 +778,21 @@
   \bxjs@usezwfalse}
 \DeclareOption{zw}{%
   \bxjs@usezwtrue}
+%    \end{macrocode}
+%
+% \begin{macro}{\ifbxjs@disguise@js}
+% JSクラスの派生クラスのふりをするか。
+% 既定は真。
+%    \begin{macrocode}
+\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareOption{nojs}{%
+  \bxjs@disguise@jsfalse}
+\DeclareOption{js}{%
+  \bxjs@disguise@jstrue}
 %    \end{macrocode}
 %
 % keyval型のオプションの処理。
@@ -987,6 +1003,18 @@
     \catcode\@tempcnta\active
     \advance\@tempcnta\@ne
   \repeat
+\fi
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
+% （和文を含むマクロ定義を通用させるため。）
+% \end{ZRnote}
+%    \begin{macrocode}
+\ifbxjs@disguise@js
+%<book|report>\def\bxjs@js@clsname{jsbook}
+%<!book&!report>\def\bxjs@js@clsname{jsarticle}
+  \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
 %    \end{macrocode}
 %
@@ -1879,9 +1907,19 @@
 % 脚注間に余分のアキが入らないように，
 % |\footnotesize| の支柱の高さ（行送りの0.7倍）に等しくします。
 %
+% \begin{ZRnote}
+% ここは元々は
+%\begin{verbatim}
+%{\footnotesize\global\setlength\footnotesep{\baselineskip}}
+%\end{verbatim}
+% としていたが、そもそも |\global||\setlength|～ は\Pkg{calc}使用時には
+% 有意義な動作をしない。
+% |\global||\footnotesep| だと所望の値が得られるが、
+% 同時に |\footnotesize| のフォントを固定させてしまうという副作用をもつ。
+% なので、実際の設定値を直接使うことにする。
+% \end{ZRnote}
 %    \begin{macrocode}
-{\footnotesize\global\setlength\footnotesep{\baselineskip}}
-\setlength\footnotesep{0.7\footnotesep}
+\footnotesep=11\p@? \footnotesep=0.7\footnotesep
 %    \end{macrocode}
 % \end{macro}
 %
@@ -5397,11 +5435,16 @@
 %    \end{macrocode}
 %
 % 既に使用されている標準和文フォント定義がもしあれば取り消す。
-% （BXJSクラスの中から呼ばれている場合は不要のはずである。）
 %    \begin{macrocode}
+\def\bxjs@tmpa#1/#2/#3/#4/#5\relax{%
+  \def\bxjs@y{#5}}
+\expandafter\expandafter\expandafter\bxjs@tmpa
+ \expandafter\string\the\jfont\relax
+\typeout{\bxjs@y}
 \@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
-  {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined}
+  {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined
+   \expandafter\let\csname\bxjs@x/\bxjs@y\endcsname=\@undefined}
 %    \end{macrocode}
 %
 % \paragraph{和文フォントスケールの補正}
