@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2013/10/03 v0.9pre BXJS document classes]
+  [2015/07/27 v0.9a BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -138,6 +138,10 @@
 \DeclareOption{43pt}{\bxjs@setbasefontsize{43pt}}
 \DeclareOption{12Q}{\bxjs@setjbasefontsize{3mm}}
 \DeclareOption{14Q}{\bxjs@setjbasefontsize{3.5mm}}
+\DeclareOption{10ptj}{\bxjs@setjbasefontsize{10pt}}
+\DeclareOption{10.5ptj}{\bxjs@setjbasefontsize{10.5pt}}
+\DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
+\DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -1253,7 +1257,12 @@
 \newcommand\@tocrmarg{2.55em}
 \newcommand\@dotsep{4.5}
 \setcounter{tocdepth}{2}
+\newdimen\js@tocl@width
 \newcommand{\tableofcontents}{%
+  \settowidth\js@tocl@width{\headfont\presectionname\postsectionname}%
+  \settowidth\@tempdima{\headfont\appendixname}%
+  \ifdim\js@tocl@width<\@tempdima\relax\setlength\js@tocl@width{\@tempdima}\fi
+  \ifdim\js@tocl@width<2zw \divide\js@tocl@width by 2 \advance\js@tocl@width 1zw\fi
   \section*{\contentsname}%
   \@mkboth{\contentsname}{\contentsname}%
   \@starttoc{toc}%
@@ -1282,15 +1291,23 @@
       \rightskip\@tocrmarg
       \parfillskip-\rightskip
       \leavevmode\headfont
-      \setlength\@lnumwidth{4\jsZw}% 元1.5em [2003-03-02]
+      \setlength\@lnumwidth{\js@tocl@width}\advance\@lnumwidth 2\jsZw
       \advance\leftskip\@lnumwidth \hskip-\leftskip
       #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
     \endgroup
   \fi}
-\newcommand*{\l@subsection}   {\@dottedtocline{2}{1\jsZw}{3\jsZw}}
-\newcommand*{\l@subsubsection}{\@dottedtocline{3}{2\jsZw}{3\jsZw}}
-\newcommand*{\l@paragraph}    {\@dottedtocline{4}{3\jsZw}{3\jsZw}}
-\newcommand*{\l@subparagraph} {\@dottedtocline{5}{4\jsZw}{3\jsZw}}
+\newcommand*{\l@subsection}{%
+          \@tempdima\js@tocl@width \advance\@tempdima -1\jsZw
+          \@dottedtocline{2}{\@tempdima}{3\jsZw}}
+\newcommand*{\l@subsubsection}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 0\jsZw
+          \@dottedtocline{3}{\@tempdima}{4\jsZw}}
+\newcommand*{\l@paragraph}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 1\jsZw
+          \@dottedtocline{4}{\@tempdima}{5\jsZw}}
+\newcommand*{\l@subparagraph}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 2\jsZw
+          \@dottedtocline{5}{\@tempdima}{6\jsZw}}
 \newdimen\@lnumwidth
 \def\numberline#1{\hb@xt@\@lnumwidth{#1\hfil}\hspace{0pt}}
 \def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
@@ -1538,8 +1555,8 @@
 \newcommand{\bibname}{\if@english Bibliography\else 参考文献\fi}
 \newcommand{\indexname}{\if@english Index\else 索引\fi}
 \newcommand{\figurename}{\if@english Fig.~\else 図\fi}
-\newcommand{\tablename}{\if@english Table.~\else 表\fi}
-\newcommand{\appendixname}{\if@english Appendix~\else 付録\fi}
+\newcommand{\tablename}{\if@english Table~\else 表\fi}
+\newcommand{\appendixname}{\if@english \else 付録\fi}
 \newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi

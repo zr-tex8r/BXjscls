@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2013/10/03 v0.9pre BXJS document classes]
+  [2015/07/27 v0.9a BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -140,6 +140,10 @@
 \DeclareOption{43pt}{\bxjs@setbasefontsize{43pt}}
 \DeclareOption{12Q}{\bxjs@setjbasefontsize{3mm}}
 \DeclareOption{14Q}{\bxjs@setjbasefontsize{3.5mm}}
+\DeclareOption{10ptj}{\bxjs@setjbasefontsize{10pt}}
+\DeclareOption{10.5ptj}{\bxjs@setjbasefontsize{10.5pt}}
+\DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
+\DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -681,7 +685,7 @@
   \def\@oddhead{%
     \hbox to \fullwidth{\hfil\textbf{\thepage}}\hss}}
 \let\ps@plain\ps@plainfoot
-+\newif\if@omit@number
+\newif\if@omit@number
 \def\ps@headings{%
   \let\@oddfoot\@empty
   \let\@evenfoot\@empty
@@ -1029,7 +1033,7 @@
       \typeout{\@chapapp\thechapter\@chappos}%
       \addcontentsline{toc}{chapter}%
         {\protect\numberline
-        {\if@english\thechapter\else\@chapapp\thechapter\@chappos\fi}%
+        {\@chapapp\thechapter\@chappos}%
         #1}%
     \else\addcontentsline{toc}{chapter}{#1}\fi
   \else
@@ -1304,7 +1308,12 @@
 \newcommand\@tocrmarg{2.55em}
 \newcommand\@dotsep{4.5}
 \setcounter{tocdepth}{1}
+\newdimen\js@tocl@width
 \newcommand{\tableofcontents}{%
+  \settowidth\js@tocl@width{\headfont\prechaptername\postchaptername}%
+  \settowidth\@tempdima{\headfont\appendixname}%
+  \ifdim\js@tocl@width<\@tempdima \setlength\js@tocl@width{\@tempdima}\fi
+  \ifdim\js@tocl@width<2zw \divide\js@tocl@width by 2 \advance\js@tocl@width 1zw\fi
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
@@ -1341,17 +1350,28 @@
       \rightskip\@tocrmarg
       \parfillskip-\rightskip
       \leavevmode\headfont
-      \if@english\setlength\@lnumwidth{5.5em}\else\setlength\@lnumwidth{4.683\jsZw}\fi
+      \setlength\@lnumwidth{\js@tocl@width}\advance\@lnumwidth 2.683\jsZw
       \advance\leftskip\@lnumwidth \hskip-\leftskip
       #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
       \penalty\@highpenalty
     \endgroup
   \fi}
-\newcommand*{\l@section}{\@dottedtocline{1}{1\jsZw}{3.683\jsZw}}
-\newcommand*{\l@subsection}   {\@dottedtocline{2}{3.8em}{3.2em}}
-\newcommand*{\l@subsubsection}{\@dottedtocline{3}{7.0em}{4.1em}}
-\newcommand*{\l@paragraph}    {\@dottedtocline{4}{10em}{5em}}
-\newcommand*{\l@subparagraph} {\@dottedtocline{5}{12em}{6em}}
+ % \newcommand*{\l@section}{\@dottedtocline{1}{1\jsZw}{3.683\jsZw}}
+\newcommand*{\l@section}{%
+          \@tempdima\js@tocl@width \advance\@tempdima -1\jsZw
+          \@dottedtocline{1}{\@tempdima}{3.683\jsZw}}
+\newcommand*{\l@subsection}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 2.683\jsZw
+          \@dottedtocline{2}{\@tempdima}{3.5\jsZw}}
+\newcommand*{\l@subsubsection}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 6.183\jsZw
+          \@dottedtocline{3}{\@tempdima}{4.5\jsZw}}
+\newcommand*{\l@paragraph}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 10.683\jsZw
+          \@dottedtocline{4}{\@tempdima}{5.5\jsZw}}
+\newcommand*{\l@subparagraph}{%
+          \@tempdima\js@tocl@width \advance\@tempdima 16.183\jsZw
+          \@dottedtocline{5}{\@tempdima}{6.5\jsZw}}
 \newdimen\@lnumwidth
 \def\numberline#1{\hb@xt@\@lnumwidth{#1\hfil}\hspace{0pt}}
 \def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
@@ -1609,8 +1629,8 @@
 \newcommand{\bibname}{\if@english Bibliography\else 参考文献\fi}
 \newcommand{\indexname}{\if@english Index\else 索引\fi}
 \newcommand{\figurename}{\if@english Fig.~\else 図\fi}
-\newcommand{\tablename}{\if@english Table.~\else 表\fi}
-\newcommand{\appendixname}{\if@english Appendix~\else 付録\fi}
+\newcommand{\tablename}{\if@english Table~\else 表\fi}
+\newcommand{\appendixname}{\if@english \else 付録\fi}
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi
