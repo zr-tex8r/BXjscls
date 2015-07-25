@@ -97,13 +97,114 @@
   \bxjs@reset@xkanjiskip}
 \let\bxjs@apply@kanjiskip\relax
 \let\bxjs@apply@xkanjiskip\relax
+\@onlypreamble\bxjs@adjust@jafont
+\def\bxjs@adjust@jafont#1{%
+  \ifx\jsJaFont\bxjs@@auto
+    \bxjs@get@kanjiEmbed
+    \ifx\bxjs@kanjiEmbed\relax
+      \let\bxjs@tmpa\@empty
+    \else
+      \let\bxjs@tmpa\bxjs@kanjiEmbed
+    \fi
+  \else
+    \let\bxjs@tmpa\jsJaFont
+  \fi
+  \if f#1\ifx\bxjs@tmpa\bxjs@@noEmbed
+    \ClassWarning\bxjs@clsname
+    {Option 'jafont=noEmbed' is ignored, because no-embed\MessageBreak
+     is not available}%
+    \let\bxjs@tmpa\@empty
+  \fi\fi
+}
+\def\bxjs@@auto{auto}
+\def\bxjs@@noEmbed{noEmbed}
+\let\bxjs@kanjiEmbed\relax
+\@onlypreamble\bxjs@get@kanjiEmbed
+\def\bxjs@get@kanjiEmbed{%
+  \begingroup\setbox\z@=\hbox{%
+    \global\let\bxjs@g@tmpa\relax
+    \endlinechar\m@ne
+    \let\do\@makeother\dospecials
+    \catcode32=10 \catcode12=10 %form-feed
+    \let\bxjs@tmpa\@empty
+    \openin\@inputcheck="|kpsewhich updmap.cfg"\relax
+    \ifeof\@inputcheck\else
+      \read\@inputcheck to\bxjs@tmpa
+      \closein\@inputcheck
+    \fi
+    \ifx\bxjs@tmpa\@empty\else
+      \openin\@inputcheck="\bxjs@tmpa"\relax
+      \@tempswatrue
+      \loop\if@tempswa
+        \read\@inputcheck to\bxjs@tmpa
+        \expandafter\bxjs@get@ke@a\bxjs@tmpa\@nil kanjiEmbed \@nil\@nnil
+        \ifx\bxjs@tmpa\relax\else
+          \global\let\bxjs@g@tmpa\bxjs@tmpa
+          \@tempswafalse
+        \fi
+        \ifeof\@inputcheck \@tempswafalse \fi
+      \repeat
+    \fi
+  }\endgroup
+  \let\bxjs@kanjiEmbed\bxjs@g@tmpa
+}
+\@onlypreamble\bxjs@get@ke@a
+\def\bxjs@get@ke@a#1kanjiEmbed #2\@nil#3\@nnil{%
+  \ifx$#1$\def\bxjs@tmpa{#2}%
+  \else \let\bxjs@tmpa\relax
+  \fi}
 \if j\jsEngine
 \def\bxjs@apply@kanjiskip{%
   \kanjiskip\@tempskipa}
 \def\bxjs@apply@xkanjiskip{%
   \xkanjiskip\@tempskipa}
+\let\bxjs@tmpa\jsJaFont
+\ifx\bxjs@tmpa\bxjs@@auto
+  \let\bxjs@tmpa\@empty
+\else\ifx\bxjs@tmpa\bxjs@@noEmbed
+  \def\bxjs@tmpa{noembed}
+\fi\fi
+\ifx\jsJaFont\@empty\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\jsJaFont]
+        {pxchfon}[2010/05/12]}% v0.5
+  \bxjs@nxt
+\fi\fi
+\begingroup
+  \global\let\@gtempa\relax
+  \catcode`\|=0 \catcode`\\=12
+  |def|bxjs@check#1|@nil{%
+    |bxjs@check@a#1|@nil\RequirePackage|@nnil}%
+  |def|bxjs@check@a#1\RequirePackage#2|@nnil{%
+    |ifx$#1$|bxjs@check@b#2|@nil keyval|@nnil |fi}%
+  |catcode`|\=0 \catcode`\|=12
+  \def\bxjs@check@b#1keyval#2\@nnil{%
+    \ifx$#2$\else
+      \xdef\@gtempa{%
+        \noexpand\PassOptionsToPackage{scale=\jsScale}{otf}}%
+    \fi}
+\@firstofone{%
+  \catcode10=12 \endlinechar\m@ne
+  \let\do\@makeother \dospecials \catcode32=10
+  \openin\@inputcheck=otf.sty\relax
+  \@tempswatrue
+  \loop\if@tempswa
+    \ifeof\@inputcheck \@tempswafalse \fi
+    \if@tempswa
+      \read\@inputcheck to\bxjs@line
+      \expandafter\bxjs@check\bxjs@line\@nil
+    \fi
+  \repeat
+  \closein\@inputcheck
+\endgroup}
+\@gtempa
 \else\if p\jsEngine
-\RequirePackage[whole,autotilde]{bxcjkjatype}[2013/10/15]
+\bxjs@adjust@jafont{f}
+\edef\bxjs@nxt{%
+  \noexpand\RequirePackage[%
+      \ifx\bxjs@tmpa\@empty\else \bxjs@tmpa,\fi
+      whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
+\bxjs@nxt
 \bxjs@cjk@loaded
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
@@ -128,8 +229,16 @@
   \ClassError\bxjs@clsname
   {xeCJK or zxjatype is too old}\@ehc
 \fi
-\setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
-\setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\bxjs@adjust@jafont{f}
+\ifx\bxjs@tmpa\@empty
+  \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
+  \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\bxjs@tmpa]%
+        {zxjafont}[2013/01/28]}% v0.2a
+  \bxjs@nxt
+\fi
 \let\jsInhibitGlueAtParTop\@inhibitglue
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
@@ -159,9 +268,20 @@
 \ExplSyntaxOn
 \fp_gset:Nn \g_ltj_fontspec_scale_fp { \jsScale }
 \ExplSyntaxOff
-\defaultjfontfeatures{ Kerning=Off }
-\setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
-\setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+\bxjs@adjust@jafont{t}
+\ifx\bxjs@tmpa\bxjs@@noEmbed
+  \def\bxjs@tmpa{noembed}
+\fi
+\ifx\bxjs@tmpa\@empty
+  \defaultjfontfeatures{ Kerning=Off }
+  \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
+  \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\bxjs@tmpa]
+        {luatexja-preset}}%
+  \bxjs@nxt
+\fi
 \DeclareRobustCommand\rmfamily
   {\not@math@alphabet\rmfamily\mathrm
    \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}

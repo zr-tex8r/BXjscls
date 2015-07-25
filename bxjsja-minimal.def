@@ -70,7 +70,6 @@
   \def\bxjs@y{#5}}
 \expandafter\expandafter\expandafter\bxjs@tmpa
  \expandafter\string\the\jfont\relax
-\typeout{\bxjs@y}
 \@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
   {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined

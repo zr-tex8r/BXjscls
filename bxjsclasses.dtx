@@ -632,10 +632,25 @@
 %
 % \texttt{draft} でoverfull boxの起きた行末に5ptの罫線を引きます。
 %
+% \begin{ZRnote}
+% JSクラスは |\ifdraft| という公開名のスイッチを用いているが、
+% これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
+% の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
+% |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
+% 
+% \end{ZRnote}
 %    \begin{macrocode}
-\newif\ifdraft
-\DeclareOption{draft}{\drafttrue \setlength\overfullrule{5pt}}
-\DeclareOption{final}{\draftfalse \setlength\overfullrule{0pt}}
+\let\ifjsDraft\iffalse
+\@onlypreamble\bxjs@draft
+\def\bxjs@draft#1{%
+  \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
+\DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
+\DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
+\AtBeginDocument{%
+  \expandafter\ifx\csname ifdraft\endcsname\relax
+    \expandafter\let\csname ifdraft\expandafter\endcsname
+     \csname ifjsDraft\endcsname
+  \fi}
 %    \end{macrocode}
 %
 % \paragraph{和文フォントメトリックの選択}
@@ -718,58 +733,82 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@engine@opt}
+% 明示されたエンジンのオプション名。
+%    \begin{macrocode}
+%\let\bxjs@engine@opt\@undefined
+%    \end{macrocode}
+% \end{macro}
+%
 % エンジン明示指定のオプションの処理。
+% \Note 0.9pre版の暫定仕様と異なり、エンジン名は |...latex|
+% に限定する。
+% |xetex| や |pdftex| は一般的な{\LaTeX}の慣習に従って
+% 「ドライバの指定」とみなすべきだから。
 %
 %    \begin{macrocode}
 \DeclareOption{autodetect-engine}{%
-  \def\bxjs@tmpa{}%
   \let\bxjs@engine@given=*}
-\DeclareOption{etex}{%
-  \def\bxjs@tmpa{etex}%
-  \let\bxjs@engine@given=n}
 \DeclareOption{latex}{%
-  \def\bxjs@tmpa{latex}%
+  \def\bxjs@engine@opt{latex}%
   \let\bxjs@engine@given=n}
-\DeclareOption{ptex}{%
-  \def\bxjs@tmpa{ptex}%
-  \let\bxjs@engine@given=j}
 \DeclareOption{platex}{%
-  \def\bxjs@tmpa{platex}%
+  \def\bxjs@engine@opt{platex}%
   \let\bxjs@engine@given=j}
-\DeclareOption{uptex}{%
-  \def\bxjs@tmpa{uptex}%
-  \let\bxjs@engine@given=u}
 \DeclareOption{uplatex}{%
-  \def\bxjs@tmpa{uplatex}%
+  \def\bxjs@engine@opt{uplatex}%
   \let\bxjs@engine@given=u}
-\DeclareOption{xetex}{%
-  \def\bxjs@tmpa{xetex}%
-  \let\bxjs@engine@given=x}
 \DeclareOption{xelatex}{%
-  \def\bxjs@tmpa{xelatex}%
+  \def\bxjs@engine@opt{xelatex}%
   \let\bxjs@engine@given=x}
-\DeclareOption{pdftex}{%
-  \def\bxjs@tmpa{pdftex}%
-  \let\bxjs@engine@given=p}
 \DeclareOption{pdflatex}{%
-  \def\bxjs@tmpa{pdflatex}%
+  \def\bxjs@engine@opt{pdflatex}%
   \let\bxjs@engine@given=p}
-\DeclareOption{luatex}{%
-  \def\bxjs@tmpa{luatex}%
-  \let\bxjs@engine@given=l}
 \DeclareOption{lualatex}{%
-  \def\bxjs@tmpa{lualatex}%
+  \def\bxjs@engine@opt{lualatex}%
   \let\bxjs@engine@given=l}
 %    \end{macrocode}
 %
-% 「ドライバ指定」のオプションの処理。
-% ただしこのクラスではドライバ依存の処理は存在しない。
+% \begin{macro}{\bxjs@driver@given}
+% オプションで明示されたドライバの種別。
+%    \begin{macrocode}
+%\let\bxjs@driver@given\@undefined
+\let\bxjs@driver@@dvimode=0
+\let\bxjs@driver@@dvipdfmx=1
+\let\bxjs@driver@@pdfmode=2
+\let\bxjs@driver@@xetex=3
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@driver@opt}
+% 明示された「ドライバ指定」のオプション名。
+%    \begin{macrocode}
+%\let\bxjs@driver@opt\@undefined
+%    \end{macrocode}
+% \end{macro}
 %
 %    \begin{macrocode}
-\DeclareOption{dvips}{}
-\DeclareOption{dvipdfmx}{}
-\DeclareOption{dviout}{}
-\DeclareOption{xdvi}{}
+\DeclareOption{dvips}{%
+  \def\bxjs@driver@opt{dvips}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{dviout}{%
+  \def\bxjs@driver@opt{dviout}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{xdvi}{%
+  \def\bxjs@driver@opt{xdvi}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{dvipdfmx}{%
+  \def\bxjs@driver@opt{dvipdfmx}%
+  \let\bxjs@driver@given\bxjs@driver@@dvipdfmx}
+\DeclareOption{pdftex}{%
+  \def\bxjs@driver@opt{pdftex}%
+  \let\bxjs@driver@given\bxjs@driver@@pdfmode}
+\DeclareOption{luatex}{%
+  \def\bxjs@driver@opt{luatex}%
+  \let\bxjs@driver@given\bxjs@driver@@pdfmode}
+\DeclareOption{xetex}{%
+  \def\bxjs@driver@opt{xetex}%
+  \let\bxjs@driver@given\bxjs@driver@@xetex}
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@usezw}
@@ -889,9 +928,34 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |jadriver| オプションの処理。
+% |jadriver| オプション（|ja| オプション）の処理。
 %    \begin{macrocode}
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{ja}{\edef\bxjs@jadriver{#1}}
+%    \end{macrocode}
+%
+% \begin{macro}{\jsJaFont}
+% 和文フォント設定の名前。
+%    \begin{macrocode}
+\let\jsJaFont\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% |jafont| オプションの処理。
+%    \begin{macrocode}
+\define@key{bxjs}{jafont}{\edef\jsJaFont{#1}}
+%    \end{macrocode}
+%
+% \begin{macro}{\jsJaParam}
+% 和文ドライバパラメタの文字列。
+%    \begin{macrocode}
+\let\jsJaParam\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% |japaram| オプションの処理。
+%    \begin{macrocode}
+\define@key{bxjs}{japaram}{\edef\jsJaParam{#1}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@magstyle}
@@ -919,6 +983,23 @@
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
+%
+% \begin{ZRnote}
+% {\LaTeX}の実装では、クラスやパッケージのオプションのトークン列の
+% 中に |{ }| が含まれると正常に処理ができない。
+% これに対処する為 |\@removeelement| の実装に少し手を加える
+% （仕様は変わらない）。
+% \Note クラスに |\DeclareOption*| がある場合は |\@unusedoptions|
+% は常に空のままであることを利用している。
+% \end{ZRnote}
+%    \begin{macrocode}
+\let\ltx@removeelement\@removeelement
+\def\@removeelement#1#2#3{%
+  \def\reserved@a{#2}%
+  \ifx\reserved@a\@empty \let#3\@empty
+  \else \ltx@removeelement{#1}{#2}{#3}%
+  \fi}
+%    \end{macrocode}
 %
 % デフォルトのオプションを実行し，|dvi| ファイルの先頭にdvipsのpapersize
 % specialを書き込みます。このspecialはdvipsや最近のdvioutが対応しています。
@@ -950,8 +1031,36 @@
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else
     \ClassError\bxjs@clsname%
-    {Option `\bxjs@tmpa' used on wrong engine}\@ehc
+    {Option `\bxjs@engine@opt' used on wrong engine}\@ehc
   \fi
+\fi
+%    \end{macrocode}
+%
+%
+% ドライバ指定のオプションが与えられた場合は、
+% それがエンジンと整合するかを検査する。
+%    \begin{macrocode}
+\@tempswatrue
+\ifx \bxjs@driver@given\@undefined\else
+  \ifjsInPdfMode
+    \ifx\bxjs@driver@given\bxjs@driver@@pdfmode\else
+      \@tempswafalse
+    \fi
+  \else\ifx x\jsEngine
+    \ifx\bxjs@driver@given\bxjs@driver@@xetex\else
+      \@tempswafalse
+    \fi
+  \else
+    \ifx\bxjs@driver@given\bxjs@driver@@pdfmode
+      \@tempswafalse
+    \else\ifx\bxjs@driver@given\bxjs@driver@@xetex
+      \@tempswafalse
+    \fi\fi
+  \fi\fi
+\fi
+\if@tempswa\else
+  \ClassError\bxjs@clsname%
+  {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
 \fi
 %    \end{macrocode}
 %
@@ -1014,8 +1123,10 @@
 %    \end{macrocode}
 %
 % \begin{ZRnote}
-% 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
-% （和文を含むマクロ定義を通用させるため。）
+% |js| オプション指定時は、jsarticle（または jsbook）クラスを
+% 読込済のように振舞う。
+% \Note 「2つのクラスを読み込んだ状態」は |\LoadClass| を使用した
+% 場合に出現するので、別に異常ではない。
 % \end{ZRnote}
 %    \begin{macrocode}
 \ifbxjs@disguise@js
@@ -1313,7 +1424,7 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@setfontsize}
-% 基底スケールを考慮いｓた |\@setfontsize|。
+% 基底スケールを考慮した |\@setfontsize|。
 %    \begin{macrocode}
 \ifbxjs@mag
   \let\bxjs@setfontsize\@setfontsize
@@ -1761,7 +1872,7 @@
 \def\bxjs@layout{%
   headheight=\topskip,footskip=0.03367\paperheight,%
   headsep=\footskip-\topskip,includeheadfoot,%
-  hscale=0.76,,hmarginratio=1:1,%
+  hscale=0.76,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
 %</article|report>
@@ -1770,14 +1881,14 @@
 % 6mm=17.07164pt, 36mm=102.42992pt
   headheight=\topskip,headsep=17.07164\p@?,nofoot,includeheadfoot,%
   hmargin=102.42992\p@?,hmarginratio=1:1,%
-  vscale=0.83%,vmarginratio=1:1,%
+  vscale=0.83,vmarginratio=1:1,%
 }
 %</book>
 %<*slide>
 \def\bxjs@layout{%
   noheadfoot,%
   hscale=0.9,hmarginratio=1:1,%
-  vscale=0.95,vmarginratio=1:1,%%
+  vscale=0.95,vmarginratio=1:1,%
 }
 %</slide>
 %    \end{macrocode}
@@ -1818,7 +1929,6 @@
 %    \end{macrocode}
 %
 % \begin{ZRnote}
-% ここで |geometry| を読み込む。
 % |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
 % ようにする自動調整を行うが、これをどうするかは未検討。
 % 今のところ、単純に回避（無効化）している。
@@ -1872,6 +1982,20 @@
     \bxjs@InputIfFileExists{#1}{#2}{#3}%
     \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
 \fi
+%    \end{macrocode}
+% \begin{ZRnote}
+% 現状では、|geometry| はドライバが dvipdfmx の時にも |dvipdfm|
+% のドライバ指定を用いる仕様になっている。
+% \end{ZRnote}
+%    \begin{macrocode}
+\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+  \PassOptionsToPackage{dvipdfm}{geometry}
+\fi
+%    \end{macrocode}
+% \begin{ZRnote}
+% ここで |geometry| を読み込む。
+% \end{ZRnote}
+%    \begin{macrocode}
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
 \bxjs@nxt \bxjs@revert
@@ -5358,35 +5482,65 @@
 %^^A========================================================
 % \section{連携モジュールの仕様 ☆}
 %
+% 次の命令がBXJSクラス本体と和文モジュールの連携のために
+% 用意されている。
+% このうち、★印を付けたものは“書込”が許されるものである。
+%
 % \begin{itemize}
-% \item 次の命令がBXJSクラス側で定義される。
-%   \begin{itemize}
-%   \item |\jsDocClass| \zrNote{文字トークンの let}\quad
-%     文書クラスの種類を示し、次のいずれかと一致する
-%     （|\if| で判定可能）。
-%     \begin{quote}\begin{tabular}{l@{\qquad}l}
-%     |\jsArticle|   & |bxjsarticle| クラス\\
-%     |\jsBook|      & |bxjsbook| クラス\\
-%     |\jsReport|    & |bxjsreport| クラス\\
-%     |\jsSlide|     & |bxjsslide| クラス
-%     \end{tabular}\end{quote}
-%   \item |\jsUnusualPtSize| \zrNote{整数定数を表す文字列のマクロ}\quad
-%     基底フォントサイズが |10pt|、|11pt|、|12pt| のいずれでもない
-%     場合の |\@ptsize| の値。
-%     （|\@ptsize| 自体があまり有用でないと思われる。）
-%   \item |\jsScale| \zrNote{実数を表す文字列のマクロ}\quad
-%     和文フォントサイズの要求サイズに対するスケール。
-%     クラスオプション |scale| で指定される。
-%     （既定値は0.924715。）
-%   \item |\jsInhibitGlue| \zrNote{マクロ}\quad
-%     |\inhibitglue| という命令が定義されていればそれを実行し、
-%     そうでなければ何もしない。
-%     JSクラスで |\inhibitglue| を用いている箇所は
-%     全て |\jsInhibitGlue| に置き換えられている。
-%     従って、|\inhibitglue| は未定義でも動作するが、その実装が
-%     ある場合はBXJSクラスはそれを活用する。
-%   \end{itemize}
-% \item 「現在の全角幅」を表す長さ変数 |\jsZw| が用意されていて、
+% \item |\jsDocClass| \zrNote{文字トークンの let}\quad
+%   文書クラスの種類を示し、次のいずれかと一致する
+%   （|\if| で判定可能）。
+%   \begin{quote}\begin{tabular}{l@{\qquad}l}
+%   |\jsArticle|   & |bxjsarticle| クラス\\
+%   |\jsBook|      & |bxjsbook| クラス\\
+%   |\jsReport|    & |bxjsreport| クラス\\
+%   |\jsSlide|     & |bxjsslide| クラス
+%   \end{tabular}\end{quote}
+% \item |\jsEngine| \zrNote{文字トークンの let}\quad
+%   使用されているエンジンの種別。
+%   （|\if| で判定可能）。
+%   \begin{quote}\begin{tabular}{l@{\qquad}l}
+%   |p|   & pdf{\TeX}（DVIモードも含む）\\
+%   |l|   & Lua{\TeX}（〃）\\
+%   |x|   & {\XeTeX}\\
+%   |j|   & {\pTeX}または{\upTeX}\\
+%   |n|   & 以上の何れでもない
+%   \end{tabular}\end{quote}
+% \item |\ifjsWithupTeX| \zrNote{スイッチ}\quad
+%   使用されているエンジンが{\upTeX}であるか。
+% \item |\ifjsWitheTeX| \zrNote{スイッチ}\quad
+%   使用されているエンジンが{\eTeX}拡張であるか。
+% \item |\ifjsInPdfMode| \zrNote{スイッチ}\quad
+%   使用されているエンジンが（pdf{\TeX}・Lua{\TeX}の）
+%   PDFモードであるか。
+% \item |\jsUnusualPtSize| \zrNote{整数定数を表す文字列のマクロ}\quad
+%   基底フォントサイズが |10pt|、|11pt|、|12pt| のいずれでもない
+%   場合の |\@ptsize| の値。
+%   （|\@ptsize| 自体があまり有用でないと思われる。）
+% \item |\jsScale| \zrNote{実数を表す文字列のマクロ}\quad
+%   和文フォントサイズの要求サイズに対するスケール。
+%   クラスオプション |scale| で指定される。
+%   （既定値は0.924715。）
+% \item |\jsJaFont| \zrNote{マクロ}\quad
+%   和文フォント設定を表す文字列。
+%   クラスオプション |jafont| で指定された値。
+% \item |\jsJaParam| \zrNote{マクロ}\quad
+%   和文モジュールに渡すパラメタを表す文字列。
+%   この値が何を表すかは決まってなくて、各々の和文モジュールが
+%   独自に解釈する。
+%   クラスオプション |japaram| で指定された値。
+% \item |\jsInhibitGlue| \zrNote{マクロ}\quad
+%   |\inhibitglue| という命令が定義されていればそれを実行し、
+%   そうでなければ何もしない。
+%   JSクラスで |\inhibitglue| を用いている箇所は
+%   全て |\jsInhibitGlue| に置き換えられている。
+%   従って、|\inhibitglue| は未定義でも動作するが、その実装が
+%   ある場合はBXJSクラスはそれを活用する。
+% \item |\jsInhibitGlueAtParTop| \zrNote{マクロ}★\quad
+%   段落先頭におけるカギ括弧の位置調整を行うマクロ。
+%   全ての段落先頭で呼び出される。
+% \item |\jsZw| \zrNote{内部寸法値}\quad
+%   「現在の全角幅」を表す変数。
 %   JSクラスでzw単位で設定されている長さパラメタはこの変数を単位と
 %   して設定されている。
 %   この変数の値は実際に用いられる「和文フォント」のメトリックに
@@ -5398,10 +5552,12 @@
 %   和文フォントサイズを調整する必要がある。
 %   ほとんどの場合、和文フォントをNFSSで規定する際に |\jsScale|
 %   の値をスケール値として与えれば上手くいく。
-% \item フォントサイズが変更された時には |\jsResetDimen| という
-%   マクロが呼び出される。
-%   和文コンポーネントでフォントサイズに依存するパラメタを
-%   ここで設定することができる。
+% \item |\jsFontSizeChanged| \zrNote{マクロ}\quad
+%   フォントサイズが変更された時に必ず呼び出されるマクロ。
+% \item |\jsResetDimen| \zrNote{マクロ}★\quad
+%   上記 |\jsFontSizeChanged| の中で呼び出される、
+%   ユーザ（和文モジュール）用のフック。
+%   フォントサイズに依存するパラメタをここで設定することができる。
 %   既定の定義は空。
 % \end{itemize}
 %
@@ -5501,7 +5657,6 @@
   \def\bxjs@y{#5}}
 \expandafter\expandafter\expandafter\bxjs@tmpa
  \expandafter\string\the\jfont\relax
-\typeout{\bxjs@y}
 \@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
   {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined
@@ -5671,6 +5826,14 @@
 % \item |\setxkanjiskip|/|\getxkanjiskip|
 % \end{itemize}
 %
+% \paragraph{和文フォント指定の扱い}
+%
+% |standard| 和文ドライバでは |\jsJaFont| の値を和文フォントの
+% “プリセット”の指定として用いる。
+% プリセットの値は、{\TeX} Liveの |kanji-config-updmap| コマンドで
+% 使う“ファミリ”と同じにすることを想定する。
+% 特別な値として、|auto| は |kanji-config-updmap| で現在指定
+% されているファミリを表す。
 %
 %^^A----------------
 % \subsection{共通処理(1)}
@@ -5839,6 +6002,83 @@
 \let\bxjs@apply@xkanjiskip\relax
 %    \end{macrocode}
 %
+% \paragraph{和文フォント指定の扱い}
+%
+% \begin{macro}{\bxjs@adjust@jafont}
+% ムニャムニャ…。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@adjust@jafont
+\def\bxjs@adjust@jafont#1{%
+  \ifx\jsJaFont\bxjs@@auto
+    \bxjs@get@kanjiEmbed
+    \ifx\bxjs@kanjiEmbed\relax
+      \let\bxjs@tmpa\@empty
+    \else
+      \let\bxjs@tmpa\bxjs@kanjiEmbed
+    \fi
+  \else
+    \let\bxjs@tmpa\jsJaFont
+  \fi
+  \if f#1\ifx\bxjs@tmpa\bxjs@@noEmbed
+    \ClassWarning\bxjs@clsname
+    {Option 'jafont=noEmbed' is ignored, because no-embed\MessageBreak
+     is not available}%
+    \let\bxjs@tmpa\@empty
+  \fi\fi
+}
+\def\bxjs@@auto{auto}
+\def\bxjs@@noEmbed{noEmbed}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@kanjiEmbed}
+% 現在の |updmap| の |kanjiEmbed| パラメタの値。
+% |\bxjs@get@kanjiEmbed| により設定される。
+%    \begin{macrocode}
+\let\bxjs@kanjiEmbed\relax
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@get@kanjiEmbed}
+% 現在の |updmap| の |kanjiEmbed| パラメタの値を取得する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@get@kanjiEmbed
+\def\bxjs@get@kanjiEmbed{%
+  \begingroup\setbox\z@=\hbox{%
+    \global\let\bxjs@g@tmpa\relax
+    \endlinechar\m@ne
+    \let\do\@makeother\dospecials
+    \catcode32=10 \catcode12=10 %form-feed
+    \let\bxjs@tmpa\@empty
+    \openin\@inputcheck="|kpsewhich updmap.cfg"\relax
+    \ifeof\@inputcheck\else
+      \read\@inputcheck to\bxjs@tmpa
+      \closein\@inputcheck
+    \fi
+    \ifx\bxjs@tmpa\@empty\else
+      \openin\@inputcheck="\bxjs@tmpa"\relax
+      \@tempswatrue
+      \loop\if@tempswa
+        \read\@inputcheck to\bxjs@tmpa
+        \expandafter\bxjs@get@ke@a\bxjs@tmpa\@nil kanjiEmbed \@nil\@nnil
+        \ifx\bxjs@tmpa\relax\else
+          \global\let\bxjs@g@tmpa\bxjs@tmpa
+          \@tempswafalse
+        \fi
+        \ifeof\@inputcheck \@tempswafalse \fi
+      \repeat
+    \fi
+  }\endgroup
+  \let\bxjs@kanjiEmbed\bxjs@g@tmpa
+}
+\@onlypreamble\bxjs@get@ke@a
+\def\bxjs@get@ke@a#1kanjiEmbed #2\@nil#3\@nnil{%
+  \ifx$#1$\def\bxjs@tmpa{#2}%
+  \else \let\bxjs@tmpa\relax
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
 %^^A----------------
 % \subsection{{\pTeX}用設定}
 %
@@ -5855,6 +6095,65 @@
   \xkanjiskip\@tempskipa}
 %    \end{macrocode}
 %
+% \paragraph{和文フォント指定の扱い}
+%
+% {\pTeX}は既定で |kanji-config-updmap| の設定に従うため、
+% |\jsJaFont| が |auto| の場合は何もする必要がない。
+% 無指定でも |auto| でもない場合は、|\jsJaFont| をオプションに
+% して |pxchfon| パッケージを読み込む。
+%    \begin{macrocode}
+\let\bxjs@tmpa\jsJaFont
+\ifx\bxjs@tmpa\bxjs@@auto
+  \let\bxjs@tmpa\@empty
+\else\ifx\bxjs@tmpa\bxjs@@noEmbed
+  \def\bxjs@tmpa{noembed}
+\fi\fi
+\ifx\jsJaFont\@empty\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\jsJaFont]
+        {pxchfon}[2010/05/12]}% v0.5
+  \bxjs@nxt
+\fi\fi
+%    \end{macrocode}
+%
+% \paragraph{otfパッケージ対策}
+%
+% インストールされている |otf| パッケージが |scale| オプションに
+% 対応している場合は |scale=(\jsScaleの値)| を事前に |otf| に渡す。
+% \Note otf.sty の中に「|\RequirePackage{keyval}|」の行が存在する
+% かにより判定している。
+%
+%    \begin{macrocode}
+\begingroup
+  \global\let\@gtempa\relax
+  \catcode`\|=0 \catcode`\\=12
+  |def|bxjs@check#1|@nil{%
+    |bxjs@check@a#1|@nil\RequirePackage|@nnil}%
+  |def|bxjs@check@a#1\RequirePackage#2|@nnil{%
+    |ifx$#1$|bxjs@check@b#2|@nil keyval|@nnil |fi}%
+  |catcode`|\=0 \catcode`\|=12
+  \def\bxjs@check@b#1keyval#2\@nnil{%
+    \ifx$#2$\else
+      \xdef\@gtempa{%
+        \noexpand\PassOptionsToPackage{scale=\jsScale}{otf}}%
+    \fi}
+\@firstofone{%
+  \catcode10=12 \endlinechar\m@ne
+  \let\do\@makeother \dospecials \catcode32=10
+  \openin\@inputcheck=otf.sty\relax
+  \@tempswatrue
+  \loop\if@tempswa
+    \ifeof\@inputcheck \@tempswafalse \fi
+    \if@tempswa
+      \read\@inputcheck to\bxjs@line
+      \expandafter\bxjs@check\bxjs@line\@nil
+    \fi
+  \repeat
+  \closein\@inputcheck
+\endgroup}
+\@gtempa
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{pdf{\TeX}用設定： CJK + bxcjkjatype}
 %
@@ -5864,8 +6163,16 @@
 %
 % \paragraph{bxcjkjatypeパッケージの読込}
 %
+% |\jsJaFont| が指定されている場合は、その値を |bxcjkjatype| の
+% オプション（プリセット指定）に渡す。
+% （|auto| ならば |\bxjs@get@kanjiEmbed| を実行する。）
 %    \begin{macrocode}
-\RequirePackage[whole,autotilde]{bxcjkjatype}[2013/10/15]
+\bxjs@adjust@jafont{f}
+\edef\bxjs@nxt{%
+  \noexpand\RequirePackage[%
+      \ifx\bxjs@tmpa\@empty\else \bxjs@tmpa,\fi
+      whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
+\bxjs@nxt
 \bxjs@cjk@loaded
 %    \end{macrocode}
 %
@@ -5911,10 +6218,20 @@
 %
 % \paragraph{和文フォント定義}
 %
-% IPAexフォントを使用する。
+% |\jsJaFont| が指定された場合は、その値をオプションと
+% して |zxjafont| を読み込む。
+% 非指定の場合はIPAexフォントを使用する。
 %    \begin{macrocode}
-\setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
-\setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\bxjs@adjust@jafont{f}
+\ifx\bxjs@tmpa\@empty
+  \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
+  \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\bxjs@tmpa]%
+        {zxjafont}[2013/01/28]}% v0.2a
+  \bxjs@nxt
+\fi
 %    \end{macrocode}
 %
 % \paragraph{段落頭でのグルー挿入禁止}
@@ -5989,9 +6306,20 @@
 % |luatexja-preset| パッケージの |ipaex| オプション
 % （IPAexフォント使用）と等価な設定を用いる。
 %    \begin{macrocode}
-\defaultjfontfeatures{ Kerning=Off }
-\setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
-\setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+\bxjs@adjust@jafont{t}
+\ifx\bxjs@tmpa\bxjs@@noEmbed
+  \def\bxjs@tmpa{noembed}
+\fi
+\ifx\bxjs@tmpa\@empty
+  \defaultjfontfeatures{ Kerning=Off }
+  \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
+  \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+\else
+  \edef\bxjs@nxt{%
+    \noexpand\RequirePackage[\bxjs@tmpa]
+        {luatexja-preset}}%
+  \bxjs@nxt
+\fi
 %    \end{macrocode}
 %
 % 欧文総称フォント命令で和文フォントが連動するように修正する。

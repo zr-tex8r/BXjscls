@@ -194,9 +194,17 @@
       &\global\@eqcnt\thr@@ \hb@xt@\z@\bgroup\hss##\egroup
     \tabskip\z@skip\cr
     }}
-\newif\ifdraft
-\DeclareOption{draft}{\drafttrue \setlength\overfullrule{5pt}}
-\DeclareOption{final}{\draftfalse \setlength\overfullrule{0pt}}
+\let\ifjsDraft\iffalse
+\@onlypreamble\bxjs@draft
+\def\bxjs@draft#1{%
+  \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
+\DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
+\DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
+\AtBeginDocument{%
+  \expandafter\ifx\csname ifdraft\endcsname\relax
+    \expandafter\let\csname ifdraft\expandafter\endcsname
+     \csname ifjsDraft\endcsname
+  \fi}
 \newif\if@english
 \@englishfalse
 \DeclareOption{english}{\@englishtrue}
@@ -219,48 +227,50 @@
     \xdef\bxjs@gtmpa{\the\@tempdimb}%
   \egroup #1=\bxjs@gtmpa\relax}
 \DeclareOption{autodetect-engine}{%
-  \def\bxjs@tmpa{}%
   \let\bxjs@engine@given=*}
-\DeclareOption{etex}{%
-  \def\bxjs@tmpa{etex}%
-  \let\bxjs@engine@given=n}
 \DeclareOption{latex}{%
-  \def\bxjs@tmpa{latex}%
+  \def\bxjs@engine@opt{latex}%
   \let\bxjs@engine@given=n}
-\DeclareOption{ptex}{%
-  \def\bxjs@tmpa{ptex}%
-  \let\bxjs@engine@given=j}
 \DeclareOption{platex}{%
-  \def\bxjs@tmpa{platex}%
+  \def\bxjs@engine@opt{platex}%
   \let\bxjs@engine@given=j}
-\DeclareOption{uptex}{%
-  \def\bxjs@tmpa{uptex}%
-  \let\bxjs@engine@given=u}
 \DeclareOption{uplatex}{%
-  \def\bxjs@tmpa{uplatex}%
+  \def\bxjs@engine@opt{uplatex}%
   \let\bxjs@engine@given=u}
-\DeclareOption{xetex}{%
-  \def\bxjs@tmpa{xetex}%
-  \let\bxjs@engine@given=x}
 \DeclareOption{xelatex}{%
-  \def\bxjs@tmpa{xelatex}%
+  \def\bxjs@engine@opt{xelatex}%
   \let\bxjs@engine@given=x}
-\DeclareOption{pdftex}{%
-  \def\bxjs@tmpa{pdftex}%
-  \let\bxjs@engine@given=p}
 \DeclareOption{pdflatex}{%
-  \def\bxjs@tmpa{pdflatex}%
+  \def\bxjs@engine@opt{pdflatex}%
   \let\bxjs@engine@given=p}
-\DeclareOption{luatex}{%
-  \def\bxjs@tmpa{luatex}%
-  \let\bxjs@engine@given=l}
 \DeclareOption{lualatex}{%
-  \def\bxjs@tmpa{lualatex}%
+  \def\bxjs@engine@opt{lualatex}%
   \let\bxjs@engine@given=l}
-\DeclareOption{dvips}{}
-\DeclareOption{dvipdfmx}{}
-\DeclareOption{dviout}{}
-\DeclareOption{xdvi}{}
+\let\bxjs@driver@@dvimode=0
+\let\bxjs@driver@@dvipdfmx=1
+\let\bxjs@driver@@pdfmode=2
+\let\bxjs@driver@@xetex=3
+\DeclareOption{dvips}{%
+  \def\bxjs@driver@opt{dvips}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{dviout}{%
+  \def\bxjs@driver@opt{dviout}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{xdvi}{%
+  \def\bxjs@driver@opt{xdvi}%
+  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+\DeclareOption{dvipdfmx}{%
+  \def\bxjs@driver@opt{dvipdfmx}%
+  \let\bxjs@driver@given\bxjs@driver@@dvipdfmx}
+\DeclareOption{pdftex}{%
+  \def\bxjs@driver@opt{pdftex}%
+  \let\bxjs@driver@given\bxjs@driver@@pdfmode}
+\DeclareOption{luatex}{%
+  \def\bxjs@driver@opt{luatex}%
+  \let\bxjs@driver@given\bxjs@driver@@pdfmode}
+\DeclareOption{xetex}{%
+  \def\bxjs@driver@opt{xetex}%
+  \let\bxjs@driver@given\bxjs@driver@@xetex}
 \newif\ifbxjs@usezw \bxjs@usezwtrue
 \DeclareOption{nozw}{%
   \bxjs@usezwfalse}
@@ -300,6 +310,11 @@
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
 \let\bxjs@jadriver\relax
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{ja}{\edef\bxjs@jadriver{#1}}
+\let\jsJaFont\@empty
+\define@key{bxjs}{jafont}{\edef\jsJaFont{#1}}
+\let\jsJaParam\@empty
+\define@key{bxjs}{japaram}{\edef\jsJaParam{#1}}
 \let\bxjs@magstyle@mag=m
 \let\bxjs@magstyle@real=r
 \let\bxjs@magstyle@xreal=x
@@ -311,6 +326,12 @@
     \ClassError\bxjs@clsname
     {Invalid magstyle value `#1'}\@ehc
     \let\bxjs@magstyle\bxjs@magstyle@mag
+  \fi}
+\let\ltx@removeelement\@removeelement
+\def\@removeelement#1#2#3{%
+  \def\reserved@a{#2}%
+  \ifx\reserved@a\@empty \let#3\@empty
+  \else \ltx@removeelement{#1}{#2}{#3}%
   \fi}
 \ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 \ProcessOptions\relax
@@ -327,8 +348,30 @@
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else
     \ClassError\bxjs@clsname%
-    {Option `\bxjs@tmpa' used on wrong engine}\@ehc
+    {Option `\bxjs@engine@opt' used on wrong engine}\@ehc
   \fi
+\fi
+\@tempswatrue
+\ifx \bxjs@driver@given\@undefined\else
+  \ifjsInPdfMode
+    \ifx\bxjs@driver@given\bxjs@driver@@pdfmode\else
+      \@tempswafalse
+    \fi
+  \else\ifx x\jsEngine
+    \ifx\bxjs@driver@given\bxjs@driver@@xetex\else
+      \@tempswafalse
+    \fi
+  \else
+    \ifx\bxjs@driver@given\bxjs@driver@@pdfmode
+      \@tempswafalse
+    \else\ifx\bxjs@driver@given\bxjs@driver@@xetex
+      \@tempswafalse
+    \fi\fi
+  \fi\fi
+\fi
+\if@tempswa\else
+  \ClassError\bxjs@clsname%
+  {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
 \fi
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
@@ -587,7 +630,7 @@
 \def\bxjs@layout{%
   headheight=\topskip,footskip=0.03367\paperheight,%
   headsep=\footskip-\topskip,includeheadfoot,%
-  hscale=0.76,,hmarginratio=1:1,%
+  hscale=0.76,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
 \newdimen\fullwidth
@@ -632,6 +675,9 @@
   \def\InputIfFileExists#1#2#3{%
     \bxjs@InputIfFileExists{#1}{#2}{#3}%
     \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
+\fi
+\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+  \PassOptionsToPackage{dvipdfm}{geometry}
 \fi
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
