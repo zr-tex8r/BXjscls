@@ -1515,6 +1515,21 @@
 % \end{macro}
 % \end{macro}
 %
+% \begin{ZRnote}
+% |microtype| パッケージを読み込んだ場合、|\normalsize| 等の
+% フォントサイズ変更命令の定義の中にif文が使われていると、
+% 不可解なエラーが発生する。
+% これは |microtype| が邪悪なトリックを使用しているせいなのだが、
+% 一応こちら側で対策をとることにする。
+% \end{ZRnote}
+%    \begin{macrocode}
+\def\bxjs@if@narrowbaselines{%
+  \ifnarrowbaselines\expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo
+  \fi
+}
+%    \end{macrocode}
+%
 % \begin{macro}{\normalsize}
 %
 % 標準のフォントサイズと行送りを選ぶコマンドです。
@@ -1532,13 +1547,16 @@
 % 和文の推奨値の一つ「二分四分」（1.75）
 % に近づきました。
 %
+% \begin{ZRnote}
+% |microtype| 対策のためif文を避ける。
+% \end{ZRnote}
 %    \begin{macrocode}
 \renewcommand{\normalsize}{%
-  \ifnarrowbaselines
+  \bxjs@if@narrowbaselines{%
     \bxjs@setfontsize\normalsize\@xpt\@xiipt
-  \else
+  }{%else
     \bxjs@setfontsize\normalsize\@xpt{\n@baseline}%
-  \fi
+  }%
 %    \end{macrocode}
 %
 % 数式の上のアキ（|\abovedisplayskip|），
@@ -1621,15 +1639,19 @@
 % また，|\topsep| と |\parsep| は，元はそれぞれ $4 \pm 2$，$2 \pm 1$
 % ポイントでしたが，ここではゼロ（|\z@|）にしました。
 %
+% \begin{ZRnote}
+% |microtype| 対策のためif文を避ける。
+% 後の |\footnotesize| も同様。
+% \end{ZRnote}
 %    \begin{macrocode}
 \newcommand{\small}{%
-  \ifnarrowbaselines
+  \bxjs@if@narrowbaselines{%
 %<!kiyou>    \bxjs@setfontsize\small\@ixpt{11}%
 %<kiyou>    \bxjs@setfontsize\small{8.8888}{11}%
-  \else
+  }{%else
 %<!kiyou>    \bxjs@setfontsize\small\@ixpt{13}%
 %<kiyou>    \bxjs@setfontsize\small{8.8888}{13.2418}%
-  \fi
+  }%
   \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip  \z@ \@plus3\p@?
   \belowdisplayskip \abovedisplayskip
@@ -1649,13 +1671,13 @@
 %
 %    \begin{macrocode}
 \newcommand{\footnotesize}{%
-  \ifnarrowbaselines
+  \bxjs@if@narrowbaselines{%
 %<!kiyou>    \bxjs@setfontsize\footnotesize\@viiipt{9.5}%
 %<kiyou>    \bxjs@setfontsize\footnotesize{8.8888}{11}%
-  \else
+  }{%else
 %<!kiyou>    \bxjs@setfontsize\footnotesize\@viiipt{11}%
 %<kiyou>    \bxjs@setfontsize\footnotesize{8.8888}{13.2418}%
-  \fi
+  }%
   \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
   \abovedisplayshortskip  \z@ \@plus2\p@?
   \belowdisplayskip \abovedisplayskip

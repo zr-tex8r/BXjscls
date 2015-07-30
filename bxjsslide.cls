@@ -543,12 +543,17 @@
   \belowdisplayskip=\skip4
   \belowdisplayshortskip=\skip6\relax}
 \def\widebaselines{\narrowbaselinesfalse\@currsize\selectfont}
-\renewcommand{\normalsize}{%
-  \ifnarrowbaselines
-    \bxjs@setfontsize\normalsize\@xpt\@xiipt
-  \else
-    \bxjs@setfontsize\normalsize\@xpt{\n@baseline}%
+\def\bxjs@if@narrowbaselines{%
+  \ifnarrowbaselines\expandafter\@firstoftwo
+  \else \expandafter\@secondoftwo
   \fi
+}
+\renewcommand{\normalsize}{%
+  \bxjs@if@narrowbaselines{%
+    \bxjs@setfontsize\normalsize\@xpt\@xiipt
+  }{%else
+    \bxjs@setfontsize\normalsize\@xpt{\n@baseline}%
+  }%
   \abovedisplayskip 11\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip \z@ \@plus3\p@?
   \belowdisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
@@ -566,11 +571,11 @@
 \setlength\Cvs{\baselineskip}
 \setlength\Chs{1\jsZw}
 \newcommand{\small}{%
-  \ifnarrowbaselines
+  \bxjs@if@narrowbaselines{%
     \bxjs@setfontsize\small\@ixpt{11}%
-  \else
+  }{%else
     \bxjs@setfontsize\small\@ixpt{13}%
-  \fi
+  }%
   \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip  \z@ \@plus3\p@?
   \belowdisplayskip \abovedisplayskip
@@ -580,11 +585,11 @@
               \parsep \z@
               \itemsep \parsep}}
 \newcommand{\footnotesize}{%
-  \ifnarrowbaselines
+  \bxjs@if@narrowbaselines{%
     \bxjs@setfontsize\footnotesize\@viiipt{9.5}%
-  \else
+  }{%else
     \bxjs@setfontsize\footnotesize\@viiipt{11}%
-  \fi
+  }%
   \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
   \abovedisplayshortskip  \z@ \@plus2\p@?
   \belowdisplayskip \abovedisplayskip
