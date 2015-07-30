@@ -663,6 +663,15 @@
 % \mbox{}
 % \begin{ZRnote}
 % |geometry| パッケージが行う。
+%
+% 既定で有効であるが、|nopapersize| オプションで無効にできる。
+%    \begin{macrocode}
+\newif\ifbxjs@papersize
+\bxjs@papersizetrue
+\DeclareOption{nopapersize}{\bxjs@papersizefalse}
+\DeclareOption{papersize}{\bxjs@papersizetrue}
+%    \end{macrocode}
+%
 % \end{ZRnote}
 %
 % \paragraph{英語化}
@@ -1015,6 +1024,16 @@
 %
 % \begin{ZRnote}
 %
+% |papersize| と |10pt| のオプションは他のパッケージと衝突を
+% 起こす可能性があるため、グローバルオプションから外す。
+%
+%    \begin{macrocode}
+\@expandtwoargs\@removeelement
+  {papersize}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement
+  {10pt}\@classoptionslist\@classoptionslist
+%    \end{macrocode}
+%
 % エンジン明示指定のオプションが与えられた場合は、
 % それが実際のエンジンと一致するかを検査する。
 %    \begin{macrocode}
@@ -1061,6 +1080,18 @@
 \if@tempswa\else
   \ClassError\bxjs@clsname%
   {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
+\fi
+%    \end{macrocode}
+%
+% DVI出力のエンジンでドライバオプションがない場合は警告を出す。
+%    \begin{macrocode}
+\ifx\bxjs@driver@opt\@undefined
+  \ifjsInPdfMode %no-op
+  \else\ifx x\jsEngine %no-op
+  \else
+    \ClassWarningNoLine\bxjs@clsname
+    {No driver option is given}
+  \fi\fi
 \fi
 %    \end{macrocode}
 %
@@ -1984,12 +2015,21 @@
 \fi
 %    \end{macrocode}
 % \begin{ZRnote}
-% 現状では、|geometry| はドライバが dvipdfmx の時にも |dvipdfm|
-% のドライバ指定を用いる仕様になっている。
+% |geometry| のドライバオプション指定。
+% |nopapersize| 指定時は、special命令出力を抑止するために
+% ドライバを |none| にする。
+% そうでない場合は、クラスで指定したドライバオプションが引き継がれる
+% ので何もしなくてよいが、例外として、ドライバが |dvipdfmx| の
+% 時は、現状の |geometry| は |dvipdfm| を指定する必要がある。
 % \end{ZRnote}
 %    \begin{macrocode}
-\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
-  \PassOptionsToPackage{dvipdfm}{geometry}
+\ifbxjs@papersize
+  \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \PassOptionsToPackage{dvipdfm}{geometry}
+  \fi
+  \let\bxPapersizeSpecialDone=t
+\else
+  \PassOptionsToPackage{driver=none}{geometry}
 \fi
 %    \end{macrocode}
 % \begin{ZRnote}
@@ -6079,6 +6119,53 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \paragraph{hyperref対策}
+%
+% 出力ページサイズに館する処理は |geometry| パッケージが行うので、
+% |hyperref| 側の処理は無効にしておく。
+%    \begin{macrocode}
+\PassOptionsToPackage{setpagesize=false}{hyperref}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@fix@hyperref@unicode}
+% |hyperref| の |unicode| オプションの値を固定する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@fix@hyperref@unicode
+\def\bxjs@fix@hyperref@unicode#1{%
+  \PassOptionsToPackage{bxjs/hook=#1}{hyperref}%
+  \@namedef{KV@Hyp@bxjs/hook}##1{%
+    \KV@Hyp@unicode{##1}%
+    \def\KV@Hyp@unicode####1{%
+      \expandafter\ifx\csname if##1\expandafter\endcsname
+         \csname if####1\endcsname\else
+        \ClassWarningNoLine\bxjs@clsname
+        {Blcoked hyperref option 'unicode=####1'}%
+      \fi
+    }%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@urgent@special}
+% DVIのなるべく早い位置にspecialを出力する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@urgent@special
+\def\bxjs@urgent@special#1{%
+  \AtBeginDvi{\special{#1}}%
+  \AtBeginDocument{%
+    \@ifpackageloaded{atbegshi}{%
+      \begingroup
+        \toks\z@{\special{#1}}%
+        \toks\tw@\expandafter{\AtBegShi@HookFirst}%
+        \xdef\AtBegShi@HookFirst{\the\toks@\the\toks\tw@}%
+      \endgroup
+    }{}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 %^^A----------------
 % \subsection{{\pTeX}用設定}
 %
@@ -6113,7 +6200,7 @@
     \noexpand\RequirePackage[\jsJaFont]
         {pxchfon}[2010/05/12]}% v0.5
   \bxjs@nxt
-\fi\fi
+\fi
 %    \end{macrocode}
 %
 % \paragraph{otfパッケージ対策}
@@ -6122,6 +6209,7 @@
 % 対応している場合は |scale=(\jsScaleの値)| を事前に |otf| に渡す。
 % \Note otf.sty の中に「|\RequirePackage{keyval}|」の行が存在する
 % かにより判定している。
+% （もっといい方法はないのか……。）
 %
 %    \begin{macrocode}
 \begingroup
@@ -6154,6 +6242,34 @@
 \@gtempa
 %    \end{macrocode}
 %
+% \paragraph{hyperref対策}
+%
+% |unicode| にしてはいけない。
+%    \begin{macrocode}
+\bxjs@fix@hyperref@unicode{false}
+%    \end{macrocode}
+%
+% |tounicode| special命令を出力する。
+%    \begin{macrocode}
+\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+  \ifnum\jis"2121="A1A1 %euc
+    \bxjs@urgent@special{pdf:tounicode EUC-UCS2}
+  \else\ifnum\jis"2121="8140 %sjis
+    \bxjs@urgent@special{pdf:tounicode 90ms-RKSJ-UCS2}
+  \else\ifnum\jis"2121="3000 %uptex
+    \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+  \fi\fi\fi
+  \let\bxToUnicodeSpecialDone=t
+\fi
+%    \end{macrocode}
+%
+% \paragraph{microtype対策}
+%
+%    \begin{macrocode}
+\@namedef{ver@microtype.sty}{2000/01/01}
+\newcommand*\UseMicrotypeSet[2][]{}
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{pdf{\TeX}用設定： CJK + bxcjkjatype}
 %
@@ -6174,6 +6290,15 @@
       whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
 \bxjs@nxt
 \bxjs@cjk@loaded
+%    \end{macrocode}
+%
+% \paragraph{hyperref対策}
+%
+% |bxcjkjatype| 使用時は |unicode| にするべき。
+% \Note 取りあえず固定はしない。
+%
+%    \begin{macrocode}
+\PassOptionsToPackage{unicode}{hyperref}
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}
@@ -6210,6 +6335,7 @@
 % スケール値（|\jsScale|）の反映は zxjatype の側で行われる。
 %    \begin{macrocode}
 \RequirePackage{zxjatype}
+\PassOptionsToPackage{no-math}{fontspec}%!
 \ifx\zxJaFamilyName\@undefined
   \ClassError\bxjs@clsname
   {xeCJK or zxjatype is too old}\@ehc
@@ -6233,6 +6359,15 @@
   \bxjs@nxt
 \fi
 %    \end{macrocode}
+%
+% \paragraph{hyperref対策}
+%
+% 昔の |hyperref| では |unicode| を無効にするのが正解だった。
+% ところが、現在では“形式上は” |unicode| を有効にするのが正解で、
+% 無効だと警告が出て強制的に有効化される。
+% 内部動作としては、「通常（{\XeTeX}以外）の |unicode| 無効」の時と
+% 同じになるようである。
+% 取りあえず、ここでは |unicode| オプションの設定を行わない。
 %
 % \paragraph{段落頭でのグルー挿入禁止}
 %
@@ -6303,8 +6438,11 @@
 \ExplSyntaxOff
 %    \end{macrocode}
 %
-% |luatexja-preset| パッケージの |ipaex| オプション
-% （IPAexフォント使用）と等価な設定を用いる。
+% |\jsJaFont| が指定された場合は、その値をオプションと
+% して |luatexja-preset| を読み込む。
+% 非指定の場合は、|luatexja-preset| パッケージの |ipaex|
+% オプション（IPAexフォント使用）と等価な設定を用いる
+% （|luatexja-preset| は読み込まない）。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{t}
 \ifx\bxjs@tmpa\bxjs@@noEmbed
@@ -6360,6 +6498,13 @@
     luatexja.jfmglue.create_beginpar_node()}}
 \let\bxjs@ltj@inhibitglue\@inhibitglue
 \let\@@inhibitglue\@undefined
+%    \end{macrocode}
+%
+% \paragraph{hyperref対策}
+%
+% |unicode| にするべき。
+%    \begin{macrocode}
+\bxjs@fix@hyperref@unicode{true}
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}

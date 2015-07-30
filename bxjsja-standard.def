@@ -153,6 +153,34 @@
   \ifx$#1$\def\bxjs@tmpa{#2}%
   \else \let\bxjs@tmpa\relax
   \fi}
+\PassOptionsToPackage{setpagesize=false}{hyperref}
+\@onlypreamble\bxjs@fix@hyperref@unicode
+\def\bxjs@fix@hyperref@unicode#1{%
+  \PassOptionsToPackage{bxjs/hook=#1}{hyperref}%
+  \@namedef{KV@Hyp@bxjs/hook}##1{%
+    \KV@Hyp@unicode{##1}%
+    \def\KV@Hyp@unicode####1{%
+      \expandafter\ifx\csname if##1\expandafter\endcsname
+         \csname if####1\endcsname\else
+        \ClassWarningNoLine\bxjs@clsname
+        {Blcoked hyperref option 'unicode=####1'}%
+      \fi
+    }%
+  }%
+}
+\@onlypreamble\bxjs@urgent@special
+\def\bxjs@urgent@special#1{%
+  \AtBeginDvi{\special{#1}}%
+  \AtBeginDocument{%
+    \@ifpackageloaded{atbegshi}{%
+      \begingroup
+        \toks\z@{\special{#1}}%
+        \toks\tw@\expandafter{\AtBegShi@HookFirst}%
+        \xdef\AtBegShi@HookFirst{\the\toks@\the\toks\tw@}%
+      \endgroup
+    }{}%
+  }%
+}
 \if j\jsEngine
 \def\bxjs@apply@kanjiskip{%
   \kanjiskip\@tempskipa}
@@ -169,7 +197,7 @@
     \noexpand\RequirePackage[\jsJaFont]
         {pxchfon}[2010/05/12]}% v0.5
   \bxjs@nxt
-\fi\fi
+\fi
 \begingroup
   \global\let\@gtempa\relax
   \catcode`\|=0 \catcode`\\=12
@@ -198,6 +226,19 @@
   \closein\@inputcheck
 \endgroup}
 \@gtempa
+\bxjs@fix@hyperref@unicode{false}
+\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+  \ifnum\jis"2121="A1A1 %euc
+    \bxjs@urgent@special{pdf:tounicode EUC-UCS2}
+  \else\ifnum\jis"2121="8140 %sjis
+    \bxjs@urgent@special{pdf:tounicode 90ms-RKSJ-UCS2}
+  \else\ifnum\jis"2121="3000 %uptex
+    \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+  \fi\fi\fi
+  \let\bxToUnicodeSpecialDone=t
+\fi
+\@namedef{ver@microtype.sty}{2000/01/01}
+\newcommand*\UseMicrotypeSet[2][]{}
 \else\if p\jsEngine
 \bxjs@adjust@jafont{f}
 \edef\bxjs@nxt{%
@@ -206,6 +247,7 @@
       whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
 \bxjs@nxt
 \bxjs@cjk@loaded
+\PassOptionsToPackage{unicode}{hyperref}
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined
@@ -225,6 +267,7 @@
   \let\CJKecglue\bxjs@CJKecglue}
 \else\if x\jsEngine
 \RequirePackage{zxjatype}
+\PassOptionsToPackage{no-math}{fontspec}%!
 \ifx\zxJaFamilyName\@undefined
   \ClassError\bxjs@clsname
   {xeCJK or zxjatype is too old}\@ehc
@@ -303,6 +346,7 @@
     luatexja.jfmglue.create_beginpar_node()}}
 \let\bxjs@ltj@inhibitglue\@inhibitglue
 \let\@@inhibitglue\@undefined
+\bxjs@fix@hyperref@unicode{true}
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}
 \protected\def\noautospacing{%

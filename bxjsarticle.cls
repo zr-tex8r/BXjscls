@@ -201,6 +201,10 @@
     \expandafter\let\csname ifdraft\expandafter\endcsname
      \csname ifjsDraft\endcsname
   \fi}
+\newif\ifbxjs@papersize
+\bxjs@papersizetrue
+\DeclareOption{nopapersize}{\bxjs@papersizefalse}
+\DeclareOption{papersize}{\bxjs@papersizetrue}
 \newif\if@english
 \@englishfalse
 \DeclareOption{english}{\@englishtrue}
@@ -331,6 +335,10 @@
   \fi}
 \ExecuteOptions{a4paper,oneside,onecolumn,notitlepage,final}
 \ProcessOptions\relax
+\@expandtwoargs\@removeelement
+  {papersize}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement
+  {10pt}\@classoptionslist\@classoptionslist
 \let\bxjs@tmpb\jsEngine
 \ifx j\bxjs@tmpb\ifjsWithupTeX
   \let\bxjs@tmpb=u
@@ -368,6 +376,14 @@
 \if@tempswa\else
   \ClassError\bxjs@clsname%
   {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
+\fi
+\ifx\bxjs@driver@opt\@undefined
+  \ifjsInPdfMode %no-op
+  \else\ifx x\jsEngine %no-op
+  \else
+    \ClassWarningNoLine\bxjs@clsname
+    {No driver option is given}
+  \fi\fi
 \fi
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
@@ -672,8 +688,13 @@
     \bxjs@InputIfFileExists{#1}{#2}{#3}%
     \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
 \fi
-\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
-  \PassOptionsToPackage{dvipdfm}{geometry}
+\ifbxjs@papersize
+  \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \PassOptionsToPackage{dvipdfm}{geometry}
+  \fi
+  \let\bxPapersizeSpecialDone=t
+\else
+  \PassOptionsToPackage{driver=none}{geometry}
 \fi
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
