@@ -44,6 +44,13 @@
     \ifmmode \expandafter\nfss@text \fi
     {#2##1}}%
 }
+\long\def\bxjs@@CSsfdefault{\sfdefault}%
+\@onlypreamble\bxjs@if@sf@default
+\def\bxjs@if@sf@default#1{%
+  \ifx\familydefault\bxjs@@CSsfdefault#1\fi
+  \AtBeginDocument{%
+    \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
+}
 \ifx j\jsEngine
 \edef\jsc@JYn{\ifjsWithupTeX JY2\else JY1\fi}
 \edef\jsc@JTn{\ifjsWithupTeX JT2\else JT1\fi}
@@ -112,6 +119,8 @@
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\bxjs@if@sf@default{%
+  \renewcommand\kanjifamilydefault{\gtdefault}}
 \selectfont
 \prebreakpenalty\jis"2147=10000
 \postbreakpenalty\jis"2148=10000

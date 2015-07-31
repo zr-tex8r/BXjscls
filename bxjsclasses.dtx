@@ -820,6 +820,14 @@
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 %    \end{macrocode}
 %
+% 「もしDVIモードであればドライバを |dvipdfmx| にする」
+% というオプション。
+%    \begin{macrocode}
+\DeclareOption{dvipdfmx-if-dvi}{%
+  \def\bxjs@driver@opt{dvipdfmx-if-dvi}%
+  \let\bxjs@driver@given\@undefined}
+%    \end{macrocode}
+%
 % \begin{macro}{\ifbxjs@usezw}
 % |\jsZw| の同義語として |\zw| を使えるようにするか。
 % 既定は真。
@@ -1055,7 +1063,6 @@
 \fi
 %    \end{macrocode}
 %
-%
 % ドライバ指定のオプションが与えられた場合は、
 % それがエンジンと整合するかを検査する。
 %    \begin{macrocode}
@@ -1085,13 +1092,25 @@
 %
 % DVI出力のエンジンでドライバオプションがない場合は警告を出す。
 %    \begin{macrocode}
-\ifx\bxjs@driver@opt\@undefined
-  \ifjsInPdfMode %no-op
-  \else\ifx x\jsEngine %no-op
-  \else
+\ifjsInPdfMode \@tempswafalse
+\else\ifx x\jsEngine \@tempswafalse
+\else \@tempswatrue
+\fi\fi
+\if@tempswa
+  \ifx\bxjs@driver@opt\@undefined
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
-  \fi\fi
+  \fi
+%    \end{macrocode}
+% DVI出力のエンジンで |dvipdfmx-in-dvi| が指定されていた場合は、
+% |dvipdfmx| が指定された時と同じ動作にする。
+%    \begin{macrocode}
+  \def\bxjs@tmpa{dvipdfmx-if-dvi}
+  \ifx\bxjs@driver@opt\bxjs@tmpa
+    \def\bxjs@driver@opt{dvipdfmx}
+    \let\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \fi
 \fi
 %    \end{macrocode}
 %
@@ -1941,16 +1960,20 @@
 \def\bxjs@layout{%
   noheadfoot,%
   hscale=0.9,hmarginratio=1:1,%
-  vscale=0.95,vmarginratio=1:1,%
+  vscale=0.944,vmarginratio=1:1,%
 }
 %</slide>
 %    \end{macrocode}
 %
 % \begin{ZRnote}
 % |geometry| の後処理。
+%
+% |\jsTextWidthLimit| は |bxjsbook| での |\textwidth| の
+% 上限で、全角単位の実数値マクロ。
 % \end{ZRnote}
 %    \begin{macrocode}
 \newdimen\fullwidth
+%<book>\newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%
 % textwidth 調整
   \@tempdimb=\textwidth
@@ -1959,6 +1982,13 @@
   \advance\@tempdimb-\textwidth
   \advance\oddsidemargin 0.5\@tempdimb
   \advance\evensidemargin 0.5\@tempdimb
+  \fullwidth=\textwidth
+%<*book>
+  \ifdim\textwidth>\jsTextWidthLimit\Cwd
+    \textwidth=\jsTextWidthLimit\Cwd
+    \addtolength\evensidemargin{\fullwidth-\textwidth}
+  \fi
+%</book>
 % textheight 調整
   \@tempdimb=\textheight
   \advance\textheight-\topskip
@@ -1973,11 +2003,11 @@
 % marginpar 設定
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
-  \setlength\marginparwidth{\evensidemargin-1truein-\marginparsep}
+  \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
+      -\textwidth-1cm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
 % 連動する変数
   \maxdepth=.5\topskip
-  \fullwidth=\textwidth
 }
 %    \end{macrocode}
 %
@@ -5509,10 +5539,8 @@
   \raggedbottom
 \fi
 %<*slide>
-%  \renewcommand\kanjifamilydefault{\gtdefault}
   \renewcommand\familydefault{\sfdefault}
   \raggedright
-%  \xkanjiskip=0.1em\relax
 %</slide>
 %    \end{macrocode}
 %
@@ -5656,6 +5684,20 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@if@sf@default}
+% |\familydefault| の定義が“|\sfdefault|”である場合に
+% 引数のコードを実行する。
+%    \begin{macrocode}
+\long\def\bxjs@@CSsfdefault{\sfdefault}%
+\@onlypreamble\bxjs@if@sf@default
+\def\bxjs@if@sf@default#1{%
+  \ifx\familydefault\bxjs@@CSsfdefault#1\fi
+  \AtBeginDocument{%
+    \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 %
 % \subsection{(u){\pTeX}用の設定}
 %
@@ -5794,6 +5836,8 @@
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\bxjs@if@sf@default{%
+  \renewcommand\kanjifamilydefault{\gtdefault}}
 %    \end{macrocode}
 %
 % 念のため。
@@ -6497,6 +6541,8 @@
 \AtBeginDocument{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}}%
+\bxjs@if@sf@default{%
+  \renewcommand\kanjifamilydefault{\gtdefault}}
 %    \end{macrocode}
 %
 % \paragraph{和文パラメタの設定}

@@ -337,6 +337,8 @@
 \AtBeginDocument{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}}%
+\bxjs@if@sf@default{%
+  \renewcommand\kanjifamilydefault{\gtdefault}}
 \ltjsetparameter{jaxspmode={`！,1}}
 \ltjsetparameter{jaxspmode={`〒,2}}
 \ltjsetparameter{alxspmode={`+,3}}

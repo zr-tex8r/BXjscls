@@ -275,6 +275,9 @@
 \DeclareOption{xetex}{%
   \def\bxjs@driver@opt{xetex}%
   \let\bxjs@driver@given\bxjs@driver@@xetex}
+\DeclareOption{dvipdfmx-if-dvi}{%
+  \def\bxjs@driver@opt{dvipdfmx-if-dvi}%
+  \let\bxjs@driver@given\@undefined}
 \newif\ifbxjs@usezw \bxjs@usezwtrue
 \DeclareOption{nozw}{%
   \bxjs@usezwfalse}
@@ -381,13 +384,21 @@
   \ClassError\bxjs@clsname%
   {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
 \fi
-\ifx\bxjs@driver@opt\@undefined
-  \ifjsInPdfMode %no-op
-  \else\ifx x\jsEngine %no-op
-  \else
+\ifjsInPdfMode \@tempswafalse
+\else\ifx x\jsEngine \@tempswafalse
+\else \@tempswatrue
+\fi\fi
+\if@tempswa
+  \ifx\bxjs@driver@opt\@undefined
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
-  \fi\fi
+  \fi
+  \def\bxjs@tmpa{dvipdfmx-if-dvi}
+  \ifx\bxjs@driver@opt\bxjs@tmpa
+    \def\bxjs@driver@opt{dvipdfmx}
+    \let\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \fi
 \fi
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
@@ -654,6 +665,7 @@
   vscale=0.83,vmarginratio=1:1,%
 }
 \newdimen\fullwidth
+\newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%
   \@tempdimb=\textwidth
   \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
@@ -661,6 +673,11 @@
   \advance\@tempdimb-\textwidth
   \advance\oddsidemargin 0.5\@tempdimb
   \advance\evensidemargin 0.5\@tempdimb
+  \fullwidth=\textwidth
+  \ifdim\textwidth>\jsTextWidthLimit\Cwd
+    \textwidth=\jsTextWidthLimit\Cwd
+    \addtolength\evensidemargin{\fullwidth-\textwidth}
+  \fi
   \@tempdimb=\textheight
   \advance\textheight-\topskip
   \divide\textheight\baselineskip \multiply\textheight\baselineskip
@@ -672,10 +689,10 @@
   \advance\topmargin-\@tempdima
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
-  \setlength\marginparwidth{\evensidemargin-1truein-\marginparsep}
+  \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
+      -\textwidth-1cm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
   \maxdepth=.5\topskip
-  \fullwidth=\textwidth
 }
 \@onlypreamble\bxjs@revert
 \let\bxjs@revert\@empty
