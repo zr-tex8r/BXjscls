@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% bxjsclasses.dtx  (with options: `article')
+%% bxjscls.dtx  (with options: `article')
 %% 
 %% IMPORTANT NOTICE:
 %% 
@@ -14,7 +14,7 @@
 %% with new filenames distinct from bxjsarticle.cls.
 %% 
 %% For distribution of the original source see the terms
-%% for copying and modification in the file bxjsclasses.dtx.
+%% for copying and modification in the file bxjscls.dtx.
 %% 
 %% This generated file may be distributed as long as the
 %% original source files, as listed above, are part of the
@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2015/07/27 v0.9a BXJS document classes]
+  [2015/08/05 v1.0 BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
