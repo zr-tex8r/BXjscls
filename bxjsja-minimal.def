@@ -58,10 +58,10 @@
 \@onlypreamble\bxjs@declarefontshape
 \ifjsWithupTeX
 \def\bxjs@declarefontshape{%
-\DeclareFontShape{JY2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-h}{}%
-\DeclareFontShape{JY2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-h}{}%
-\DeclareFontShape{JT2}{mc}{m}{n}{<->s*[\bxjs@scale]upjisr-v}{}%
-\DeclareFontShape{JT2}{gt}{m}{n}{<->s*[\bxjs@scale]upjisg-v}{}%
+\DeclareFontShape{JY2}{mc}{m}{n}{<->s*[\bxjs@scale]upjpnrm-h}{}%
+\DeclareFontShape{JY2}{gt}{m}{n}{<->s*[\bxjs@scale]upjpngt-h}{}%
+\DeclareFontShape{JT2}{mc}{m}{n}{<->s*[\bxjs@scale]upjpnrm-v}{}%
+\DeclareFontShape{JT2}{gt}{m}{n}{<->s*[\bxjs@scale]upjpngt-v}{}%
 }
 \def\bxjs@sizereference{upjisr-h}
 \else

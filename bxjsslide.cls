@@ -290,6 +290,7 @@
 \DeclareOption*{\bxjs@setkey}
 \newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
+\def\Cjascale{\jsScale}
 \define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
 \@onlypreamble\bxjs@do@opt@jbase
 \let\bxjs@do@opt@jbase\relax
