@@ -1,0 +1,868 @@
+% 文字コードは UTF-8
+% lualatex で組版する
+\documentclass[a4paper]{ltjsarticle}
+\usepackage{url}
+\usepackage{metalogo}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgVersion}{1.0}
+\newcommand{\PkgDate}{2015/08/05}
+\newcommand{\Pkg}[1]{\textsf{#1}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
+\newcommand{\Note}{\par\noindent ※}
+\newcommand{\Means}{：\ }
+\newcommand{\jemph}{\textsf}
+\newcommand{\Ord}[1]{#1$^\circ$}
+\newcommand{\Prn}[1]{\<（#1）\<}
+\providecommand{\pTeX}{p\TeX}
+\providecommand{\pLaTeX}{p\LaTeX}
+\providecommand{\upTeX}{u\pTeX}
+\providecommand{\upLaTeX}{u\pLaTeX}
+\providecommand{\pdfLaTeX}{pdf\LaTeX}
+%-----------------------------------------------------------
+\begin{document}
+\title{\Pkg{BXjscls} パッケージ\\
+  （BXJS文書クラス集）\\
+  ユーザマニュアル}
+\author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
+\date{v\PkgVersion\quad[\PkgDate]}
+\maketitle
+
+%===========================================================
+\section*{注意}
+
+このマニュアルは\textgt{暫定版}であり、内容に不完全な点がある。
+
+BXJS文書クラスについては、“{\TeX} Wiki”中の記事、
+\footnote{\url{http://oku.edu.mie-u.ac.jp/~okumura/texwiki/?BXjscls}}%
+およびそこからたどれるサイトにある情報も参照してほしい。
+
+%===========================================================
+\section{概要}
+\label{sec:Ovewview}
+
+本パッケージに含まれる文書クラス集
+（以下では\jemph{BXJS（文書）クラス}と呼ぶ）
+は、奥村晴彦氏製作の「p{\LaTeXe}新ドキュメントクラス」
+（以下では\jemph{JS（文書）クラス}と呼ぶ）
+の拡張版に相当する。
+JSクラスのレイアウトデザインと機能をほぼ踏襲しているが、
+以下の点で改良が加えられている。
+\begin{itemize}
+\item JSクラスは{\pLaTeX}と{\upLaTeX}のみをサポートするが、
+  BXJSクラスはこれらに加えて{\pdfLaTeX}と{\XeLaTeX}と{\LuaLaTeX}を
+  サポートしており主要エンジンの全てで使用可能である。
+\item (u){\pLaTeX}以外では各々のエンジンの日本語処理パッケージを
+  利用するが、“標準設定”を用いることで、それらのパッケージの
+  設定を書かずに済ませられるので、{\pLaTeX}並に簡単に日本語の
+  文書を書き始めることができる。
+\item JSクラスでは、フォントのオプティカルサイズを最適にするため、
+  （基底フォントサイズが10pt以外の時に）{\TeX}の版面拡大（mag）機能を
+  利用しているが、これが他のパッケージと衝突して
+  不具合を起こすことがある。
+  BXJSクラスではmag機能を使う他に別の方式を選べるようにしている。
+\item 用紙サイズや基底フォントサイズについて、任意の値を指定する
+  ことができる。
+\end{itemize}
+
+%===========================================================
+\section{最も基本的な使い方}
+\label{sec:Basic}
+
+ここでは、BXJSクラスを“標準設定”（standard和文ドライバ）で
+用いる場合について解説する。
+この場合、|\documentclass| 命令を次のように書く。
+\footnote{もちろんクラスオプションの順序は任意である。}%
+
+\begin{quote}
+|\documentclass[|\Meta{エンジン}|,|\Meta{ドライバ}%
+|,ja=standard,jafont=|\Meta{フォント指定}|,|\Meta{他オプション}|]|\\
+|    {|\Meta{クラス名}|}|
+\end{quote}
+
+\begin{itemize}
+\item \Meta{エンジン}の指定は必須で、実際に使っている
+  「{\LaTeX}のコマンド名」を書く。
+  |latex|、|platex|、|uplatex|、
+  |pdflatex|、|xelatex|、|lualatex|が指定できる。
+\item DVI出力のエンジンを使う場合は、\Meta{ドライバ}の指定が必須で、
+  これは実際に使っている「DVIウェアの名前」を書く。
+  |dvips|、|dvipdfmx|、|dviout|、|xdvi|が指定できる。
+  PDF出力のエンジンの場合は\Meta{ドライバ}の指定は不要である。
+\item “標準設定”を適用するので |ja=standard| を指定する。
+  （|ja| の代わりに |jadriver| と書いてもよい。）
+\item 既定以外のフォント設定を利用する場合は、\Meta{フォント指定}に
+  その名前を書く。
+  既定の設定を用いる場合は |jafont=...| 自体を省略する。
+\item その他のクラスオプション（|a4paper| 等）については、
+  多くの場合JSクラスと同じものが使える。
+\item BXJSクラスについて、\Meta{クラス名}は以下のものがある。
+  \begin{itemize}
+  \item \Pkg{bxjsarticle}\Means 章のないレポート
+    （\Pkg{jsarticle}に相当する）
+  \item \Pkg{bxjsreport}\Means 章のあるレポート
+    （\Pkg{jsbook}\,+\,|report| に相当する）
+  \item \Pkg{bxjsbook}\Means 書籍
+    （\Pkg{jsbook}に相当する）
+  \item \Pkg{bxjsslide}\Means スライド
+    （\Pkg{jsarticle}\,+\,|slide|に相当する）
+  \end{itemize}
+\end{itemize}
+
+{\XeLaTeX}で\Pkg{bxjsarticle}クラスを用いた文書の例を示す。
+\footnote{組版結果における日付の出力はJSクラスと同様の
+「2015年7月3日」の形式になる。}%
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,xelatex,ja=standard]{bxjsarticle}
+\usepackage[unicode,colorlinks,
+    pdftitle={いきなり日本語}]{hyperref}
+\title{いきなり日本語}
+\author{七篠 権兵衛}
+\begin{document}
+\maketitle
+
+\section{日本語で{\LaTeX}する}
+中身はまだない。
+
+\end{document}
+\end{verbatim}\end{quote}
+
+以下では各エンジンについて、挙動を少し詳しく説明する。
+
+%-------------------
+\subsection{{\pLaTeX}の場合}
+
+例えば次の設定は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,platex,dvipdfmx,ja=standard]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+対応するJSクラスを用いた次の設定と（ほぼ）等価になる
+\footnote{すなわち、論理フォントは明朝がjis、
+ゴシックがjisgが使われる。
+なお、BXJSでは |mingoth| 等の論理フォント変更の
+オプションはサポートされていない。}：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,dvipdfmx]{jsarticle}
+\end{verbatim}\end{quote}
+
+次のように |jafont| を指定した場合は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,platex,dvipdfmx,ja=standard,jafont=ms]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+その値をプリセットオプションとして\Pkg{pxchfon}が読み込まれる：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,dvipdfmx]{jsarticle}
+\usepackage[ms]{pxchfon}
+\end{verbatim}\end{quote}
+
+%-------------------
+\subsection{{\upLaTeX}の場合}
+
+例えば次の設定は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a5paper,uplatex,dvipdfmx,ja=standard]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+次の設定と（ほぼ）等価になる
+\footnote{論理フォントは明朝がupjisr-h、
+ゴシックがupjisgr-hが使われる。}：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[uplatex,a4paper,dvipdfmx]{jsarticle}
+\end{verbatim}\end{quote}
+
+|jafont| オプションの扱いは{\pLaTeX}の場合と同じである。
+
+%-------------------
+\subsection{{\pdfLaTeX}の場合}
+
+エンジン指定が |pdflatex| の場合、
+日本語処理パッケージとして\Pkg{bxcjkjatype}
+（これ自体は内部で\Pkg{CJK}パッケージを読み込む）
+を利用する。
+
+例えば次の設定は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,pdflatex,ja=standard]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+次の設定と大体同じであるが、ただし文書レイアウトは
+\Pkg{article}でなく\Pkg{jsarticle}とほぼ同じになっている：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper]{article}
+\usepackage[whole,autotilde]{bxcjkjatype}
+\end{verbatim}\end{quote}
+
+|jafont| を指定した場合は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,pdflatex,ja=standard,jafont=ipaex]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+その値が\Pkg{bxcjkjatype}のフォントプリセットになる。
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper]{article}
+\usepackage[whole,autotilde,ipaex]{bxcjkjatype}
+\end{verbatim}\end{quote}
+
+\Note 補足：
+\begin{itemize}
+\item 自動的に文書本体が |CJK*| 環境
+  \footnote{\Pkg{CJKspace}パッケージが読み込まれた下での |CJK*|
+    環境である。}%
+  で囲まれかつ |\CJKtilde| が有効な状態になっている。
+  従っていきなり日本語を書き始めることができる。
+  ただし和欧文間空白（四分空き）は手動で |~| を入れる必要がある。
+  \footnote{\Pkg{CJK}パッケージには自動で和欧文間空白を入れる
+    機能はない。}%
+  日本語出力の挙動の詳細については\Pkg{bxcjkjatype}のマニュアルを
+  参照してほしい。
+  以下に完全な文書ソースの例を示す：
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,pdflatex,ja=standard]{bxjsarticle}
+\begin{document}
+日本語で~pdf{\LaTeX}~するテスト。
+\end{document}
+\end{verbatim}\end{quote}
+\item BXJSクラスでは（JSクラスと同様に）通常は和文に約92.5\%の
+  スケールを施している。
+  ところが、\Pkg{CJK}パッケージは「和文のスケール」をサポートしていない。
+  このため、エンジンが |pdflatex| の場合は他の場合と比べて和文が大きめに
+  出力される。
+\footnote{同じ理由で、|pdflatex| では |scale| オプションも無効になる。}%
+\item \Pkg{bxcjkjatype}パッケージにおけるフォントの既定設定は
+  「Type1形式のIPAexフォント」（\Pkg{ipaex-type1}パッケージ）である。
+  一方、|ipaex| プリセットを指定した場合は
+  「TrueType形式のIPAexフォント」が使われるので、両者の出力は
+  “PDFデータとしては”異なる（見かけは同じのはずだが）。
+  \footnote{ちなみに、\Pkg{bxcjkjatype}には |ipaex-type1| という
+  オプションもあるが、この設定と既定設定（オプション無し）も
+  動作は異なる。
+  BXJSクラスが用いるのは既定設定の方である。}%
+\end{itemize}
+
+%-------------------
+\subsection{{\XeLaTeX}の場合}
+
+エンジン指定が |xelatex| の場合、
+日本語処理パッケージとして\Pkg{zxjatype}
+（これ自体は内部で\Pkg{xeCJK}パッケージを読み込む）
+を利用する。
+
+例えば次の設定は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,twocolumn,xelatex,ja=standard]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+次の設定と大体同じであるが、ただし文書レイアウトは
+\Pkg{jsarticle}とほぼ同じになっている：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,twocolumn]{article}
+\usepackage{zxjatype}
+\setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}% 明朝→IPAex明朝
+\setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}% ゴシック→IPAexゴシック
+\end{verbatim}\end{quote}
+
+|jafont| を指定した場合は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[a4paper,xelatex,ja=standard,jafont=ms]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+その値が\Pkg{zxjafont}のプリセットになる。
+
+\begin{quote}\small\begin{verbatim}
+\usepackage{zxjatype}
+\usepackage[ms]{zxjafont}
+\end{verbatim}\end{quote}
+
+%-------------------
+\subsection{{\LuaLaTeX}の場合}
+
+エンジン指定が |lualatex| の場合、
+日本語処理パッケージとして\Pkg{\LuaTeX-ja}を利用する。
+
+例えば次の設定は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[b5paper,9pt,lualatex,ja=standard]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+次の設定と（ほぼ）等価になる
+（ただし\Pkg{luatexja-preset}は実際には読み込まれない）：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[b5paper,9pt]{ltjsarticle}
+\usepackage{luatexja-fontspec}
+\usepackage[ipaex]{luatexja-preset}
+\end{verbatim}\end{quote}
+
+|jafont| を指定した場合は：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[b5paper,lualatex,ja=standard,jafont=ms]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+次の設定と（ほぼ）等価になる：
+
+\begin{quote}\small\begin{verbatim}
+\documentclass[b5paper]{ltjsarticle}
+\usepackage{luatexja-fontspec}
+\usepackage[ms]{luatexja-preset}
+\end{verbatim}\end{quote}
+
+\Note 補足：
+
+\begin{itemize}
+\item \Pkg{luatexja-preset}パッケージの読込が行われるのは |jafont| を
+  指定した場合に限られる。
+\end{itemize}
+
+%-------------------
+\subsection{注意事項}
+
+主にJSクラスとの違いについての注意。
+
+\begin{itemize}
+\item ページレイアウトについて、JSクラスの設計思想を受け継いで
+  いるが、全く同じになるわけではない。
+\item JSクラスの一部のオプションで、
+  BXJSクラスでは使用不可能なものがある。
+  （\ref{ssec:JS-deleted-option}節参照。）
+\item BXJSクラスではページレイアウトを設定するために
+  内部で\Pkg{geometry}パッケージを読み込んでいる。
+  そのため、後からユーザが\Pkg{geometry}を読み込むことはできない。
+  ページレイアウトを変更する場合は、BXJSクラスが用意している
+  再設定用の命令（\ref{ssec:page-layout}節参照）か、または
+  \Pkg{geometry}パッケージが提供する再設定用命令（|\geometry| 等）
+  を利用する。
+\item \Pkg{hyperref}パッケージにおける“PDFの文字コード”の設定は
+  エンジンごとに適切な値が異なっていて複雑であり、
+  これが不適切であるためにPDF文書情報（しおり等）が文字化けして
+  しまう事例が数知れない。
+  そこで、文書クラス側でエンジン毎に適切な設定を予め行う
+  ようにした。
+  \footnote{従って、(u){\pLaTeX}において、ほとんどの場合に
+    \Pkg{pxjahyper}パッケージを読み込む必要がない。
+    ただし読み込んでも構わないし、必要な場合もある。}%
+  （ただし文書クラスが\Pkg{hyperref}を読み込むわけではない。）
+\item |jafont| が無い場合の“既定のフォント設定”は多くのエンジンに
+  おいて「IPAexフォント使用」であるが、(u){\pLaTeX}だけは異なっていて
+  「何も指定しない状態」（JSクラスと同様）である。
+  すなわち実際に使われる物理フォントの選択はDVIウェアの設定に
+  委ねられている。
+\item JSクラスは |\ifdraft| という公開名のスイッチ
+  \footnote{スイッチなので{\LaTeX}レベルの命令ではない。
+    標準クラスではこれに相当するものは |\if@draft| という非公開の
+    制御綴で定義されている。}%
+  を用いているが、これは\Pkg{ifdraft}パッケージと衝突する。
+    そこでBXJSクラスでは代わりに |\ifjsDraft| の名前を
+    用い、本文開始時に |\ifdraft| が未定義の場合に限り、
+    |\ifjsDraft| を |\ifdraft| にコピーする処理にしている。
+% TODO: \@ptsize の話
+\end{itemize}
+
+%===========================================================
+\section{クラスオプション}
+\label{sec:Class-Option}
+
+%-------------------
+\subsection{BXJSクラスに特有のオプション}
+\label{ssec:BXJS-specific-option}
+
+JSクラスには無くBXJSクラスで追加されたクラスオプション。
+
+\begin{itemize}
+\item エンジンオプション\Means
+  実際に使用するエンジン（{\LaTeX}コマンド名）を指定する。
+  有効な値は |latex|、|platex|、|uplatex|、|pdflatex|、|xelatex|、
+  |lualatex| である。
+  エンジンオプション（と次項の |autodetect-engine| の何れか）
+  の指定は必須である。
+\item |autodetect-engine|\Means
+  使用しているエンジンを判定して、自動的に適切なエンジンオプションを
+  設定する。
+  \footnote{実はエンジンの判定は常に行っていて、エンジンオプションが
+    指定された場合はそれが正しいかを検査して、誤りの場合はエラーを
+    出すようにしている。}%
+  \Note BXJSクラスの設計の思想としては、
+  「{\LaTeX}文書がどのエンジンでコンパイルすべきものかは
+  ソース中に明示されるべき」と考えていて、
+  従って、“人間が普通に”文書を作る際にはこのオプションの
+  使用は推奨されない。
+  このオプションは“{\LaTeX}ソースの自動生成”が絡む処理を念頭において
+  用意されている。
+\item ドライバオプション\Means
+  DVI出力のエンジンを用いる場合に、実際に使用するDVIウェアの名前を
+  指定する。
+  有効な値は |dvips|、|dvipdfmx|、|dviout|、|xdvi|、そして特殊な
+  値として |dvipdfmx-if-dvi| がある。
+  これは「エンジンがDVI出力の場合に限り |dvipdfmx| を指定する」
+  ことを表すもので、|autodetect-engine| と一緒に使うことが
+  想定されている。
+  \footnote{「実際に |dvipdfmx| が指定された」場合は、
+    |dvipdfmx| がグローバルオプションとしても働く。}%
+  ドライバオプションの指定は必須である。
+\item |nopapersize|\Means
+  “papersize special出力”を抑止する。
+  （JSクラスとは異なり、special出力のオプション |papersize|
+  は既定で有効である。）
+  \Note papersize specialを出力する他のパッケージとの干渉に
+  対する対策。
+\item |zw|（既定）\Means
+  |\jsZw| と等価な命令として |\zw| を定義する。
+\item |nozw|\Means
+  |zw| の否定。
+  \Note 命令名の衝突に対する対策。
+\item |js|（既定）\Means
+  JSクラス（例えば\Pkg{bxjsreport}の場合は\Pkg{jsbook}）
+  が読込済であるように振舞う。
+  \Note 「JSクラスであるかによって挙動を変える」
+  パッケージに対する対策。
+\item |nojs|\Means
+  |js| の否定。
+  \Note つまり「JSクラスの一種である」と判定されると不都合な場合に
+  このオプションを指定する。
+\item |ja=|\Meta{名前}\Means
+  使用する和文ドライバの名前を指定する。
+  （詳細は\ref{sec:Ja-Driver}節を参照。）
+  標準で提供されている和文ドライバには |minimal| と |standard| がある。
+  既定値は、エンジンが |platex| か |uplatex| の時は |standard|、
+  それ以外は |minimal|。
+\item |jadriver=|\Meta{名前}\Means
+  「|ja=|\Meta{名前}」の（0.9版以前で使われていた）別名。
+\item |jafont=|\Meta{名前}\Means
+  “和文フォントプリセット指定”の名雨を設定する。
+\item |japaram=|\Meta{値}\Means
+  “和文ドライバパラメタ”の値を設定する。
+  \Note |jafont| と |japaram| の値がどのように解釈されるかは
+  和文ドライバの仕様次第である。
+  minimal和文ドライバではこの2つの値は全く参照されない。
+  \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
+  の値が利用される。
+  現状では |japaram| は参照されない。
+\item |base=|\Meta{長さ}\Means
+  基底フォントサイズ（|\normalsize| のフォントのサイズ）を指定する。
+  JSクラスの |10pt|、|11pt| 等と同じ役割で、任意の値を指定できる。
+  基底フォントサイズの既定値は10\,ptである。
+  \Note |##pt| の形のオプションには名前と実際に設定される値が
+  ずれているものが多く、例えば |11pt| は10.95\,pt、
+  |14pt| は 14.4\,pt が実際の設定値である。
+  \footnote{これは昔の{\LaTeX}の“magstep”の習慣に由来する。}%
+  これに対して |base=14pt| は文字通り14\,ptを設定する。
+\item |jbase=|\Meta{長さ}\Means
+  和文を基準にして基底フォントサイズを指定する。
+  すなわち和文フォントの |\normalsize| のサイズを指定の長さとする。
+  \footnote{この場合に決定されるmag値は和文スケール値にも依存する
+    ことに注意。}%
+\item |scale=|\Meta{実数}\Means
+  和文スケール値を設定する。
+  既定値は 0.924715（= 13\,Q/10\,pt）である。
+  \footnote{これはJSクラスの設計に基づく値である。
+    ただし実装の都合で、JSクラスの実際のスケール値はこれから
+    僅かだけずれている。}%
+  \Note エンジンが |(pdf)latex| の時は和文スケールが無効になる。
+\item |noscale|\Means
+  |scale=1| と同値。
+\item |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}|\Means
+  用紙サイズ設定。
+  |a4paper| 等と同じ役割で、任意の値を指定できる。
+  用紙サイズの既定値はA4縦
+  （$\mbox{210\,mm}\times\mbox{294\,mm}$）である。
+\item |mag=|\Meta{整数}\Means
+  版面拡大率（mag値）の直接設定。
+  既定は |base| から算出する。
+  \Note mag値が$n$の場合、版面が $n/1000$ 倍に拡大される。
+\item |magstyle=|\Meta{値}\Means
+  “版面拡大”の実現方法を指定する。
+  有効な値は |mag|、|real|、|xreal| の何れか。
+  詳細は\ref{ssec:magstyle}節を参照。
+\end{itemize}
+
+%-------------------
+\subsection{JSクラスのオプションで使用可能なもの}
+\label{ssec:JS-inherited-option}
+
+これらについては名前だけ列挙するに留める。
+ただし、“JSクラス特有”（標準クラスに無い）オプションの一部に
+ついては解説を加える。
+
+\paragraph{用紙サイズ指定}
+|a3paper|、|a4paper|、|a5paper|、|a6paper|、
+|b4paper|、|b5paper|、|b6paper|、
+|a4j|、|a5j|、|b4j|、|b5j|、|a4var|、|b5var|、
+|letterpaper|、|legalpaper|、|executivepaper|。
+\Note |a4var| はA4変判（$\mbox{210\,mm}\times\mbox{283\,mm}$）、
+|b5var| はB5変判（$\mbox{182\,mm}\times\mbox{230\,mm}$）。
+\Note （BX）\<JSクラスでは |a4j| は |a4paper| と全く等価である。
+（他の |b4j| 等も同様。）
+
+\paragraph{横置き}
+|landscape|。
+
+\paragraph{基底フォントサイズ}
+|8pt|、|9pt|、|10pt|、|11pt|、|12pt|、|14pt|、|17pt|、|20pt|、
+|21pt|、|25pt|、|30pt|、|36pt|、|43pt|、
+|12Q|、|14Q|、
+|10ptj|、|10.5ptj|、|11ptj|、|12ptj|。
+\Note |10pt|、|11pt|、|12pt|、|14pt|、|17pt|、|21pt|、|25pt|、
+|30pt|、|36pt|、|43pt| はそれぞれmagstepの
+0、0.5、1、2、3、4、5、6、7、8である。
+|8pt|、|9pt|、|20pt| は文字通りの値。
+|##Q|／|##ptj| は |jbase=##Q|／|jbase=##pt| を表す
+（つまり和文規準）。
+\footnote{ちなみにJSクラスの（固定の）和文スケール値に従うと |10pt|
+  が |jbase=13Q| に相当するので |13Q| というオプションは無い。}%
+
+\paragraph{両面用レイアウト}
+|oneside|、|twoside|、|vartwoside|。
+\Note |vartwoside| は |twoside| と同様だが
+傍注が常に右側余白に出力される。
+
+\paragraph{段組み}
+|onecolumn|、|twocolumn|。
+
+\paragraph{表題ページ}
+|titlepage|、|notitlepage|。
+
+\paragraph{起こし}
+|openright|、|openany|。
+\Note \Pkg{jsbook}のみ（BXJSでは\Pkg{bxjsreport}と\Pkg{bxjsbook}）
+にのみ存在するオプション。
+
+\paragraph{数式配置}
+|leqno|、|fleqn|。
+
+\paragraph{オーバーフル警告}
+|final|、|draft|。
+
+\paragraph{papersize special出力}
+|papersize|。
+\Note BXJSクラスでは |papersize| は既定で有効。
+
+\paragraph{英語化}
+|english|。
+
+%-------------------
+\subsection{JSクラスのオプションで使用不可能なもの}
+\label{ssec:JS-deleted-option}
+
+\begin{itemize}
+\item クラス変種指定\Means
+  |report|、|slide|。
+  \Note |report| 相当は\Pkg{bxjsreport}、|slide| 相当は\Pkg{bxjsslide}と
+  別クラスになっている。 
+\item トンボ出力\Means
+  |tombow|、|tombo|、|mentuke|
+  \Note これは{\pLaTeX}のカーネル命令を利用しているので
+  とりあえず除外。 
+\item 和文フォントメトリック指定\Means
+  |jis|、|winjis|、|mingoth|。
+  \Note 異なるエンジンで汎用的に扱うのが難しい。
+\item 和文数式フォントの登録の制御\Means
+  |disablejfam|。
+  \Note 前項と同じ理由。
+  \footnote{ただし、こちらは一部のエンジンだけでも対応したほうが
+    よいかも知れない。}%
+\end{itemize}
+
+%-------------------
+\subsection{クラスオプション設定の既定値}
+
+\begin{itemize}
+\item BXJSクラス共通\Means
+  |a4paper|、|onecolumn|、|final|、
+  |ja=minimal|、|jafont|は空、|japaram|は空、
+  |scale=0.924715|、|magstyle=mag|
+\item \Pkg{bxjsarticle}\Means
+  |10pt|、|oneside|、|notitlepage|
+\item \Pkg{bxjsreport}\Means
+  |10pt|、|oneside|、|titlepage|、|openany|
+\item \Pkg{bxjsbook}\Means
+  |10pt|、|twoside|、|titlepage|、|openright|
+\item \Pkg{bxjsslide}\Means
+  |36pt|、|oneside|、|notitlepage|
+\end{itemize}
+
+%-------------------
+\subsection{magstyleオプション}
+\label{ssec:magstyle}
+
+JSクラスにおけるページレイアウト決定の過程では、
+基底フォントサイズが10\,pt以外の場合に、
+“版面を拡大縮小する”という処理を採用している。
+\footnote{例えば、基底フォントサイズが20\,ptだとすると、
+まずは指定されたものの半分の縦横幅をもつ用紙に対して
+基底フォントサイズが10\,ptとしてレイアウトを決定し、
+それを縦横2倍に拡大する、という過程をとっている。}%
+これには、「フォントのオプティカルサイズの選択を最適にするため
+\footnote{{\LaTeX}の既定の欧文フォントであるComputer Modernフォントが
+オプティカルサイズの性質をもつことは有名であるが、
+少々癖が強くて、本文を10\,pt（cmr10）で組んだ場合と
+12\,pt（cmr12）で組んだ場合でかなり異なった印象を受ける場合がある。
+JSクラスではそれを嫌って、本文（|\normalsize| のフォント）が
+必ず「cmr10を拡大縮小したもの」で組まれることを
+企図しているのである。}%
+」という理由があり、またこれにより、多種の基底フォントサイズへの
+対応が容易になるという利点もある。
+\footnote{BXJSで「任意の」基底フォントサイズが設定できるのも
+この利点があるため。}%
+ところがここで、JSクラスではこの“版面の拡大”を実現するために
+{\TeX}エンジンが持つ版面拡大機能（仮に「mag設定」と呼称する）
+を用いていて、これについて批判されることが多い。
+また、現実問題として、mag設定が{\LaTeX}で用いられる機会は少ないため、
+実際に用いられた時にそれを想定していないパッケージが誤動作すると
+いう問題もある。
+
+これらの問題を緩和するため、BXJSクラスでは“版面拡大”について
+他の実現方法を提供している。
+それを選択するのがクラスオプションの|magstyle|である。
+\footnote{ところで、このオプションキーの値
+（|mag|、|real|、|xreal|）はかなりイマイチなんだけど、
+もっと素敵な名前はないものだろうか……。}%
+
+\begin{itemize}
+\item |magstyle=mag|（既定）\Means
+  JSクラスと同様に、“版面拡大”のためにmag設定を用いる。
+\item |magstyle=real|\Means
+  mag設定を一切用いず、代わりに、
+  全てのページレイアウトのパラメタの値をスケールさせる。
+  |\normalsize| や |\large| 等の高位フォントサイズ命令で指定される
+  フォントサイズもスケールさせるが、
+  “オプティカルサイズの調整”は行わない。
+  いわゆる「基本35書体」のようなオプティカルサイズでない
+  \footnote{或いは、オプティカルサイズに“変な癖”のない。}%
+  フォントのみを用いるのであれば、この設定が最も適切である。
+\item |magstyle=xreal|\Means
+  |real| と同様に、
+  全てのページレイアウトのパラメタの値をスケールさせる。
+  さらに、“オプティカルサイズの調整”を実現するために、
+  NFSSの実装コードにパッチを当てる。
+  \footnote{要するに、|OT1/cmr/m/n/12| が要求された時に、
+    |cmr12| でなくて |cmr10 at 12pt| が選ばれるようにする。}%
+  この場合、mag設定による不具合は起こらなくなるが、
+  当然、NFSSのパッチのせいで別の不具合が起こる可能性はある。
+\end{itemize}
+
+%===========================================================
+\section{和文ドライバ}
+\label{sec:Ja-Driver}
+
+BXJSクラスでは様々なエンジンについて、そのエンジンおよび
+それに対応するパッケージが提供する日本語処理機能を活用することで、
+日本語用の文書クラスとしての機能を実現している。
+そこでの汎用性を確保するため、
+“日本語処理機能と連携する部分”の実装をモジュールとして分離していて、
+これを\jemph{和文ドライバ}と呼ぶ。
+\footnote{\Pkg{graphicx}パッケージ等の「ドライバ」と類似した概念
+のためこの名称を用いた。}%
+\Pkg{BXjscls}のバンドルでは次の2つの和文ドライバを提供している。
+
+\begin{itemize}
+\item standard和文ドライバ\Means
+各エンジンについて、最も一般的に用いられる特定の
+“日本語処理機能”（例えば |lualatex| なら\Pkg{\LuaTeX-ja}）
+を連携対象とした和文ドライバ。
+(u){\pLaTeX}上のJSクラスと同じくらい容易に日本語が
+書き始められることを目指している。
+\item minimal和文ドライバ\Means
+“何も実装されていない”和文ドライバ。
+上級ユーザがプレアンブルや自作パッケージ等に
+アドホックな連携コードを書いて、
+好きな“日本語処理機能”との連携を実現するために
+用いることを想定している。
+\end{itemize}
+
+和文ドライバは自分で作製することも可能である。
+\footnote{和文ドライバの実装に必要な連携仕様の
+  情報については、ソースコード説明書（bxjscls.pdf）
+  の付録Aを参照してほしい。}%
+|bxjsja-XXX.def|（|XXX| は任意の文字列
+\footnote{カテゴリコード11または12の文字からなる必要がある。}%
+）の名前のファイルに実装コードを書いてそのファイルを配置すると、
+|ja=XXX| のオプション指定でその和文ドライバを利用できる。
+
+なお、和文ドライバ指定オプション（|ja|）の既定値は |minimal|
+である。
+現実には、ほとんど全ての場合に |standard| が用いられると思われるが、
+種々の理由があって、これを既定値にはしていない。
+
+\Note ただし、(u){\pLaTeX}については、日本語処理機能がエンジン自体に
+備わっていて不可分なため少し異なる扱いになっている。
+\footnote{JSクラスの実装から分離した「日本語処理関連」のコードを
+minimalに配置している。}%
+|minimal| を用いる意義がほとんどないため、
+|standard| が既定値になっている。
+
+
+%===========================================================
+\section{ユーザ用命令}
+\label{sec:Commands}
+
+原則として、BXJSクラスで追加されたものだけを説明する。
+
+%-------------------
+\subsection{レイアウト設定関連}
+\label{ssec:page-layout}
+
+BXJSクラスではページレイアウトの設定に\Pkg{geometry}パッケージを
+用いて次の手順で行っている。 
+
+\begin{enumerate}
+\item[\Ord{1}]
+  （基底フォントサイズにより決定されたmag値を実際に設定する。）
+\item[\Ord{2}]
+  \Pkg{geometry}で次のパラメタを設定する。
+  \begin{enumerate}
+  \item[\Prn{a}]
+    クラスオプションで指定された用紙サイズ、および|truedimen|。
+  \item[\Prn{ii}]
+    \Pkg{bxjsarticle}／\Pkg{bxjsreport}の場合は次のパラメタ値。 
+\begin{quote}\small\begin{verbatim}
+headheight=10pt, footskip=0.03367\paperheight,
+headsep=\footskip-\topskip, includeheadfoot,
+hscale=0.76, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
+\end{verbatim}\end{quote}
+  \item[\Prn{iii}]
+    \Pkg{bxjsbook}の場合は次のパラメタ値。
+\begin{quote}\small\begin{verbatim}
+headheight=10pt, headsep=6mm, nofoot, includeheadfoot,
+hmargin=36mm, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
+\end{verbatim}\end{quote}
+  \item[\Prn{iv}]
+    \Pkg{bxjsslide}の場合は次のパラメタ値。
+\begin{quote}\small\begin{verbatim}
+noheadfoot, hscale=0.9, hmarginratio=1:1,
+vscale=0.944, vmarginratio=1:1
+\end{verbatim}\end{quote}
+  \end{enumerate}
+\item[\Ord{3}]
+  後処理を行う。
+  以下の処理が含まれる。
+  \begin{itemize}
+  \item |textwidth| を全角幅の整数倍に、|textheight| を整数行分の
+    自然長になるように丸める。
+  \item |marginpar| 関連の設定を行う。
+  \end{itemize}
+\end{enumerate}
+
+ページレイアウトの再設定のために次の命令が用意されている。
+\begin{itemize}
+\item |\setpagelayout{|\Meta{設定}|}|\Means
+  現在のページレイアウトの設定の一部を修正する。
+  \Meta{設定}は\Pkg{geometry}のパラメタの記述であり、
+  現在の設定に追記して\Pkg{geometry}が再設定を行った後、
+  再び\Ord{3}の後処理が行われる。
+\item |\setpagelayout*{|\Meta{設定}|}|\Means
+  用紙以外の設定をリセットして改めてページレイアウトの設定を行う。
+  具体的には、\Ord{2}の\Prn{i}と\Meta{設定}の内容を用いて
+  \Pkg{geometry}が再設定を行った後、再び\Ord{3}の後処理が行われる。
+\end{itemize}
+
+なお、|\geometry| 命令を直接呼び出すことも可能である。
+当然この場合は\Ord{3}の後処理は行われない。
+
+%-------------------
+\subsection{和文用設定関連}
+
+\begin{itemize}
+\item |\jsZw|\Means
+  和文の全角幅を表す。
+\item |\zw|\Means
+  |\jsZw| の別名。
+  \footnote{\Pkg{\LuaTeX-ja}では「実際の全角幅」を表す
+    命令 |\zw|（{\pLaTeX}の |zw| と本当に等価）が規定されている。
+    |lualatex| エンジン指定かつ和文ドライバが |standard| の場合は
+    この |\zw| の定義がそのまま使われる。
+    （従って |nozw| は実質的に無効である。）
+    なお、|\jsZw| は「規約上の全角幅」であり、「実際の全角幅」と本来は
+    一致するはずだが、実際には計算誤差のせいで僅かに値が異なる。}%
+  ただし |nozw| 指定時は定義されない。
+\end{itemize}
+
+\subsubsection{standard和文ドライバの場合}
+
+|standard| 和文ドライバ使用時を指定した時）は和文に関連する
+文書ソース記述をエンジンに依らずに共通になることを目指している。
+従って、和文関連の組版パラメタの設定*1についても
+「共通の命令」が提供される。
+
+\begin{itemize}
+\item 和文ファミリ変更命令\Means
+  {\pLaTeX}と同様に、
+  |\mcfamily| で「明朝」、|\gtfamily| で「ゴシック」に変更される。
+  |\textmc|、|\textgt| も使える。
+\item 欧文ファミリ変更命令での和文の連動\Means
+  JSクラスと同様
+  \footnote{ちなみに、(u){\pLaTeX}の既定ではこの連動は起こらない。}%
+  に、|\rmfamily| で和文が「明朝」、
+  |\sffamily| および |\ttfamily| で和文が「ゴシック」に変更される。
+\item |\zw|\Means
+  和文の全角幅を表す。
+  例えば |2\zw| が pLaTeX の |2zw| に相当する。
+\item |\jQ|、|\jH|、|\trueQ|、|\trueH|\Means
+  それぞれ{\pLaTeX}の単位Q、H、trueQ、trueHに相当する長さ。
+\item |\ascQ|\Means
+  |\trueQ| を和文スケール値で割った長さ。
+  \footnote{命令名は“anti-scaled Q”の略。}%
+  例えば、|\fontsize{10\ascQ}{16\trueH}|
+  で和文のサイズが10\,Qになる。
+\item |\setxkanjiskip{|\Meta{長さ}|}|\Means
+  和欧文間空白の量を指定する。
+  {\pLaTeX}での |\setlength{\xkanjiskip}{|\Meta{長さ}|}| に相当する。
+\item |\getxkanjiskip|\Means
+  現在の和欧文間空白の量を表す文字列に展開される。
+  {\pLaTeX}での |\xkanjiskip| の読出
+  \footnote{{\TeX}言語でいうと |\the\xkanjiskip|。}%
+  に相当する。
+\item |\autoxspacing|／|\noautoxspacing|\Means
+  和欧文間空白の挿入を有効／無効にする。
+  {\pLaTeX}の同名の命令と同等。
+\item |\setkanjiskip{|\Meta{長さ}|}|\Means
+  和文間空白の量を指定する。
+  {\pLaTeX}での |\setlength{\kanjiskip}{|\Meta{長さ}|}| に相当する。
+\item |\getkanjiskip|\Means
+  現在の和文間空白の量を表す文字列に展開される。
+  {\pLaTeX}での |\kanjiskip| の読出
+  \footnote{{\TeX}言語でいうと |\the\kanjiskip|。}%
+  に相当する。
+\item |\autospacing|／|\noautospacing|\Means
+  和文間空白の挿入を有効／無効にする。
+  {\pLaTeX}の同名の命令と同等。
+\end{itemize}
+
+例えば、{\pLaTeX}において、次のように「和文間空白」を
+利用して均等割りを行うという技法が知られている。
+
+\begin{quote}\small\begin{verbatim}
+%% \kintouwari{<整数n>}{<テキスト>}
+% n全角の幅にテキストを均等割りで出力する.
+\newcommand\kintouwari[2]{{%
+  \setlength{\kanjiskip}{\fill}%
+  \makebox[#1zw][s]{#2}}}
+\end{verbatim}\end{quote}
+
+これと同等のものを、次のようにエンジン非依存な形で書くことができる。
+
+\begin{quote}\small\begin{verbatim}
+\newcommand\kintouwari[2]{{%
+  \setkanjiskip{\fill}%
+  \makebox[#1\zw][s]{#2}}}
+\end{verbatim}\end{quote}
+
+%===========================================================
+\end{document}
+%% EOF
