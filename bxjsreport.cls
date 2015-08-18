@@ -1398,7 +1398,7 @@
   \settowidth\js@tocl@width{\headfont\prechaptername\postchaptername}%
   \settowidth\@tempdima{\headfont\appendixname}%
   \ifdim\js@tocl@width<\@tempdima \setlength\js@tocl@width{\@tempdima}\fi
-  \ifdim\js@tocl@width<2zw \divide\js@tocl@width by 2 \advance\js@tocl@width 1zw\fi
+  \ifdim\js@tocl@width<2\jsZw \divide\js@tocl@width by 2 \advance\js@tocl@width 1\jsZw\fi
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
