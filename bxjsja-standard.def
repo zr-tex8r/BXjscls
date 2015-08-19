@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-standard.def}
-  [2015/08/05 v1.0 BXJS document classes]
+  [2015/08/20 v1.0a BXJS document classes]
 \input{bxjsja-minimal.def}
 \ifjsWitheTeX
   \@tempdima=0.25mm

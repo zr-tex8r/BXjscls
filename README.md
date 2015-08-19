@@ -83,6 +83,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.0a [2015/08/20]
   * Version 1.0  [2015/08/05]
   * Version 0.9  [2013/10/03]
   * Version 0.4  [2013/08/03]

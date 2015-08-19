@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2015/08/05 v1.0 BXJS document classes]
+  [2015/08/20 v1.0a BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -1402,7 +1402,7 @@
   \settowidth\js@tocl@width{\headfont\prechaptername\postchaptername}%
   \settowidth\@tempdima{\headfont\appendixname}%
   \ifdim\js@tocl@width<\@tempdima \setlength\js@tocl@width{\@tempdima}\fi
-  \ifdim\js@tocl@width<2zw \divide\js@tocl@width by 2 \advance\js@tocl@width 1zw\fi
+  \ifdim\js@tocl@width<2\jsZw \divide\js@tocl@width by 2 \advance\js@tocl@width 1\jsZw\fi
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else

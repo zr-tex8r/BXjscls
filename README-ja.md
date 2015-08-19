@@ -93,6 +93,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.0a [2015/08/20]
+      - バグ修正。
   * Version 1.0  [2015/08/05]
       - bxjsreport と bxjsslide クラスを提供する。
       - `jafont` オプションを追加。
