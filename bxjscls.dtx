@@ -58,7 +58,7 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2015/08/20 v1.0a BXJS document classes]
+  [2015/08/23 v1.0a BXJS document classes]
 % [2015/08/05 v1.0 BXJS document classes]
 % based on jsclasses [2014/02/07]
 % [2013/10/03 v0.9pre BXJS document classes]
@@ -6421,9 +6421,41 @@
 %
 % |bxcjkjatype| 使用時は |unicode| にするべき。
 % \Note 取りあえず固定はしない。
-%
 %    \begin{macrocode}
 \PassOptionsToPackage{unicode}{hyperref}
+%    \end{macrocode}
+%
+% |\hypersetup| 命令で（|CJK*| 環境に入れなくても）日本語文字を
+% 含む文書情報を設定できるようにするための細工。
+% \Note bxcjkjatype を |whole| 付きで使っていることが前提。
+% \Note パッケージオプションでの指定に対応するのは、
+% 「アクティブな高位バイトトークンがその場で展開されてしまう」
+% ため困難である。
+%    \begin{macrocode}
+\begingroup
+  \CJK@input{UTF8.bdg}
+\endgroup
+\g@addto@macro\pdfstringdefPreHook{%
+  \@nameuse{CJK@UTF8Binding}%
+}
+%    \end{macrocode}
+%
+% |~| が和欧文間空白である場合はPDF文字列中で空白文字で
+% なく空に展開させる。
+%    \begin{macrocode}
+\g@addto@macro\pdfstringdefPreHook{%
+  \ifx~\bxjs@@CJKtilde
+    \let\bxjs@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
+    \let\HyPsd@LetUnexpandableSpace\bxjs@LetUnexpandableSpace
+    \let~\@empty
+  \fi
+}
+\def\bxjs@@CJKtilde{\CJKecglue\ignorespaces}
+\def\bxjs@@tildecmd{~}
+\def\bxjs@LetUnexpandableSpace#1{%
+  \def\bxjs@tmpa{#1}\ifx\bxjs@tmpa\bxjs@@tildecmd\else
+    \bxjs@org@LetUnexpandableSpace#1%
+  \fi}
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}

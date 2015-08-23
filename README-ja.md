@@ -93,7 +93,10 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
-  * Version 1.0a [2015/08/20]
+  * Version 1.0a [2015/08/23]
+      - `base`/`jbase` での Q 単位の指定に対応。
+      - pdflatex 使用時に `\hypersetup` で和文文字を含む文書情報を
+        指定可能にする。
       - バグ修正。
   * Version 1.0  [2015/08/05]
       - bxjsreport と bxjsslide クラスを提供する。

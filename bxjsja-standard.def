@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-standard.def}
-  [2015/08/20 v1.0a BXJS document classes]
+  [2015/08/23 v1.0a BXJS document classes]
 \input{bxjsja-minimal.def}
 \ifjsWitheTeX
   \@tempdima=0.25mm
@@ -248,6 +248,25 @@
 \bxjs@nxt
 \bxjs@cjk@loaded
 \PassOptionsToPackage{unicode}{hyperref}
+\begingroup
+  \CJK@input{UTF8.bdg}
+\endgroup
+\g@addto@macro\pdfstringdefPreHook{%
+  \@nameuse{CJK@UTF8Binding}%
+}
+\g@addto@macro\pdfstringdefPreHook{%
+  \ifx~\bxjs@@CJKtilde
+    \let\bxjs@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
+    \let\HyPsd@LetUnexpandableSpace\bxjs@LetUnexpandableSpace
+    \let~\@empty
+  \fi
+}
+\def\bxjs@@CJKtilde{\CJKecglue\ignorespaces}
+\def\bxjs@@tildecmd{~}
+\def\bxjs@LetUnexpandableSpace#1{%
+  \def\bxjs@tmpa{#1}\ifx\bxjs@tmpa\bxjs@@tildecmd\else
+    \bxjs@org@LetUnexpandableSpace#1%
+  \fi}
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined
