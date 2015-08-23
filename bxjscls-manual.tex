@@ -357,6 +357,20 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
     \Pkg{pxjahyper}パッケージを読み込む必要がない。
     ただし読み込んでも構わないし、必要な場合もある。}%
   （ただし文書クラスが\Pkg{hyperref}を読み込むわけではない。）
+\item pdf{\LaTeX}上で\Pkg{hyperref}で |pdftitle| 等の文書情報に
+  和文文字を含めたい場合は、|\hypersetup| 命令を通常通り
+  使うことができる。
+  \footnote{ちなみに、普通に\Pkg{CJKutf8}パッケージを用いた場合は、
+    この方法では失敗してしまう。
+    恐らく |\hypersetup| 命令全体を |CJK*| 環境で囲う必要が
+    あるのだと思われる。}%
+\begin{quote}\small\begin{verbatim}
+\documentclass[pdflatex,a4paper,ja=standard]{bxjsarticle}
+\usepackage[colorlinks]{hyperref}
+\hypersetup{pdftitle={日本語タイトル}}
+\end{verbatim}\end{quote}
+  \Pkg{hyperref}のパッケージオプションで和文文字を含む文書情報を
+  指定することはできない。
 \item |jafont| が無い場合の“既定のフォント設定”は多くのエンジンに
   おいて「IPAexフォント使用」であるが、(u){\pLaTeX}だけは異なっていて
   「何も指定しない状態」（JSクラスと同様）である。
@@ -461,11 +475,18 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |14pt| は 14.4\,pt が実際の設定値である。
   \footnote{これは昔の{\LaTeX}の“magstep”の習慣に由来する。}%
   これに対して |base=14pt| は文字通り14\,ptを設定する。
+  \Note \Meta{長さ}には\Pkg{calc}パッケージの式が使用できる。
+  この他に、特別に、(u){\pLaTeX}以外のエンジンでも |11Q| の
+  ようにQ単位で指定することができる
+  （この場合は“\Meta{実数}|Q|”の形に限られ式は使えない）。
+  \footnote{なお、(u){\pLaTeX}ではエンジンが単位 |Q| をサポート
+  するので、|11Q| も |10Q+1Q| も\Pkg{calc}の式として受け付けられる。}
 \item |jbase=|\Meta{長さ}\Means
   和文を基準にして基底フォントサイズを指定する。
   すなわち和文フォントの |\normalsize| のサイズを指定の長さとする。
   \footnote{この場合に決定されるmag値は和文スケール値にも依存する
     ことに注意。}%
+  \Note \Meta{長さ}の書式は |base| オプションと同様。
 \item |scale=|\Meta{実数}\Means
   和文スケール値を設定する。
   既定値は 0.924715（= 13\,Q/10\,pt）である。
