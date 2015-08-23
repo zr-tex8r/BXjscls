@@ -119,12 +119,30 @@
 \def\bxjs@param@basefontsize{10pt}
 \def\jsUnusualPtSize{-20}
 \def\bxjs@setbasefontsize#1{%
-  \setlength\@tempdima{#1}%
+  \bxjs@setbasefontlength\@tempdima{#1}%
   \edef\bxjs@param@basefontsize{\the\@tempdima}%
   \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
   \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
   \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
   \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
+\def\bxjs@setbasefontlength#1#2{%
+  \bxjs@setbasefontlength@a#2true\@nnil
+  \ifx j\jsEngine \setlength#1{#2}%
+  \else
+    \bxjs@setbasefontlength@b#2\@nil Q\@nil\@nnil
+    \ifx\bxjs@tmpa\relax \setlength#1{#2}%
+    \else \@tempdimc0.25mm #1=\bxjs@tmpa\@tempdimc
+    \fi
+  \fi}
+\def\bxjs@setbasefontlength@b#1Q\@nil#2\@nnil{%
+  \ifx\@nnil#2\@nnil \let\bxjs@tmpa\relax
+  \else \def\bxjs@tmpa{#1}%
+  \fi}
+\def\bxjs@setbasefontlength@a#1true#2\@nnil{%
+  \ifx\@nnil#2\@nnil\else
+    \ClassWarningNoLine\bxjs@clsname
+    {You should not use 'true' lengths here}%
+  \fi}
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
 \DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
 \DeclareOption{10pt}{\bxjs@setbasefontsize{10pt}}
@@ -301,7 +319,7 @@
 \define@key{bxjs}{jbase}{\bxjs@setjbasefontsize{#1}}
 \def\bxjs@setjbasefontsize#1{%
   \def\bxjs@do@opt@jbase{%
-    \setlength\@tempdima{#1}%
+    \bxjs@setbasefontlength\@tempdima{#1}%
     \bxjs@invscale\@tempdima\jsScale
     \bxjs@setbasefontsize{\@tempdima}}}
 \define@key{bxjs}{scale}{%
