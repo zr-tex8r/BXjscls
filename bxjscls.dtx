@@ -484,6 +484,10 @@
 % 特別な |\setlength|。
 % 与えられた式が“\Meta{実数}|Q|”の形の場合、Q単位の長さを
 % 代入する（この場合“式”は使えない）。
+% \Note クラスオプションのトークン列の中に展開可能なトークンが
+% ある場合、{\LaTeX}はファイルの読込の前にそれを展開しようとする。
+% このため、この位置で |\jQ| をサポートすることは
+% 原理的に不可能である。
 %    \begin{macrocode}
 \def\bxjs@setbasefontlength#1#2{%
 %    \end{macrocode}
@@ -741,17 +745,25 @@
 % \mbox{}
 % \begin{ZRnote}
 % \begin{itemize}
+% \item エンジンオプション： |xelatex| 等。
+% \item ドライバオプション： |dvipdfmx| 等。
+% \item |nopapersize| ： |papersize|（既定で有効）の否定。
+% \item |zw|／|nozw| ： |\jsZw| と等価な命令として |\zw| を
+%   定義する／しない。
+% \item |js|／|nojs| ： JSクラスを読込済として扱う／扱わない。
 % \item |base=|\meta{dimen} ： 基底フォントサイズを直接指定する。
 %   （|xxpt| オプションの代用なので、既定値は10\,ptである。）
+% \item |jbase=|\meta{dimen} ： 基底フォントサイズを“和文規準で”
+%   直接指定する。
 % \item |scale=|\meta{real} ： 和文フォントのスケールを表すマクロ |\jsScale|
 %   の値を設定する。
 %   もちろんこの値を何らかの方法で和文処理モジュールに渡さないと意味を成さない。
 %   既定値は 0.924715（= 13\,Q/10\,pt）。
+% \item |noscale| ： |scale=1| と等価。
 % \item |mag=|\meta{int} ： |\mag| 値の直接設定。既定は |base| から算出する。
 % \item |paper={|\meta{dimen:width}|}{|\meta{dimen:height}|}| ： 用紙サイズ設定。
 %   用紙サイズオプションの代用で、既定値は |a4paper| 相当。
-% \item |platex|, |uplatex| ： (u){\pTeX}用の連携モジュールを有効化する。
-% \item |CJK| ： CJKパッケージ用の連携モジュールを有効化する。
+% \item |magstyle=|\meta{name} ： “版面拡大”の実現方法の選択。
 % \end{itemize}
 %
 % \begin{macro}{\bxjs@invscale}
@@ -6394,6 +6406,7 @@
 % |\jsJaFont| が指定されている場合は、その値を |bxcjkjatype| の
 % オプション（プリセット指定）に渡す。
 % （|auto| ならば |\bxjs@get@kanjiEmbed| を実行する。）
+% スケール値（|\jsScale|）の反映は bxcjkjatype の側で行われる。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
 \edef\bxjs@nxt{%

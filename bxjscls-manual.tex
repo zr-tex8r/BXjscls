@@ -239,12 +239,6 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 日本語で~pdf{\LaTeX}~するテスト。
 \end{document}
 \end{verbatim}\end{quote}
-\item BXJSクラスでは（JSクラスと同様に）通常は和文に約92.5\%の
-  スケールを施している。
-  ところが、\Pkg{CJK}パッケージは「和文のスケール」をサポートしていない。
-  このため、エンジンが |pdflatex| の場合は他の場合と比べて和文が大きめに
-  出力される。
-\footnote{同じ理由で、|pdflatex| では |scale| オプションも無効になる。}%
 \item \Pkg{bxcjkjatype}パッケージにおけるフォントの既定設定は
   「Type1形式のIPAexフォント」（\Pkg{ipaex-type1}パッケージ）である。
   一方、|ipaex| プリセットを指定した場合は
@@ -478,7 +472,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \footnote{これはJSクラスの設計に基づく値である。
     ただし実装の都合で、JSクラスの実際のスケール値はこれから
     僅かだけずれている。}%
-  \Note エンジンが |(pdf)latex| の時は和文スケールが無効になる。
 \item |noscale|\Means
   |scale=1| と同値。
 \item |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}|\Means
