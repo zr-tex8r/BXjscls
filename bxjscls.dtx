@@ -541,16 +541,348 @@
 %    \end{macrocode}
 %
 % \paragraph{トンボオプション}
-% \mbox{}
+%
+% トンボ（crop marks）を出力します。
+% 実際の処理は\pLaTeXe 本体で行います（\texttt{plcore.dtx} 参照）。
+% オプション \texttt{tombow} で日付付きのトンボ，
+% オプション \texttt{tombo} で日付なしのトンボを出力します。
+% これらはアスキー版のままです。
+% カウンタ |\hour|，|\minute| はp\LaTeXe 本体で宣言されています。
+%
 % \begin{ZRnote}
-% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
+% BXJSクラスでは、(u){\pLaTeX}以外のエンジンでのトンボ出力を
+% 実現するため、{\pLaTeX}カーネルと互換の機能を用意する。
+%
+% \begin{macro}{\jsHour}
+% \begin{macro}{\jsMinute}
+% 現在時刻の時と分の値（整数定数）。
+%    \begin{macrocode}
+\@tempcnta\time \divide\@tempcnta 60
+\chardef\jsHour\@tempcnta
+\multiply\@tempcnta-60 \advance\@tempcnta\time
+\chardef\jsMinute\@tempcnta
+%    \end{macrocode}
+% |\hour|、|\minute| のカウンタが定義されている場合はそこにも
+% 値を代入する。
+%    \begin{macrocode}
+\AtEndOfPackage{%
+  \ifx\hour\@undefined\else \hour\jsHour \fi
+  \ifx\minute\@undefined\else \minute\jsMinute \fi
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\jsTimestamp}
+% タイプスタンプ文字列。
+%    \begin{macrocode}
+\edef\jsTimestamp{%
+  \number\year-\two@digits\month-\two@digits\day
+  \space\two@digits\jsHour:\two@digits\jsMinute}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bxjs@tombow@opt}
+% トンボ出力オプションの名前。
+%    \begin{macrocode}
+\let\bxjs@tombow@opt\relax
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bxjs@tombow@param}
+% トンボ出力オプションのパラメタ設定。
+% \Note 遅延させるためマクロに入れる。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@tombow@param
+\let\bxjs@tombow@param\relax
+%    \end{macrocode}
+% \end{macro}
+%
+% クラスオプションの処理コードでは、
+% |\bxjs@tombow@opt| と |\bxjs@tombow@param| を設定する。
 % \end{ZRnote}
+%    \begin{macrocode}
+\DeclareOption{tombow}{%
+  \def\bxjs@tombow@opt{tombow}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatetrue
+    \setlength{\@tombowwidth}{.1\p@}%
+    \edef\bxjs@tmpa{\jobname\space(\jsTimestamp)}%
+    \@bannertoken\expandafter{\bxjs@tmpa}%
+    \maketombowbox}}
+\DeclareOption{tombo}{%
+  \def\bxjs@tombow@opt{tombo}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatefalse
+    \setlength{\@tombowwidth}{.1\p@}%
+    \maketombowbox}}
+%    \end{macrocode}
 %
 % \paragraph{面付け}
-% \mbox{}
-% \begin{ZRnote}
-% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
-% \end{ZRnote}
+%
+% オプション \texttt{mentuke} で幅ゼロのトンボを出力します。
+% 面付けに便利です。これもアスキー版のままです。
+%
+%    \begin{macrocode}
+\DeclareOption{mentuke}{%
+  \def\bxjs@tombow@opt{mentuke}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatefalse
+    \setlength{\@tombowwidth}{\z@}%
+    \maketombowbox}}
+%    \end{macrocode}
+%
+% \paragraph{トンボ出力の実装 ☆}
+%
+% \Note トンボ出力機能は{\eTeX}拡張と |etoolbox| パッケージの
+% 読込を前提とする。
+%
+% トンボ出力のサポートは{\pLaTeX}のカーネルで提供されているので
+% (u){\pLaTeX}以外のエンジンでは利用できない。
+% そのようなエンジンについては、
+% {\pLaTeX}のものと互換のコードを実装してそれを利用する。
+% ここで〝互換”というのは、
+% |tombow| スイッチ、|tombowdate| スイッチ、
+% |\@bannertoken|、|\maketombowbox|
+% が提供されるということである。
+%
+% なお、{\LuaTeX}-ja を使用すると、{\pLaTeX}カーネルとほぼ同じ
+% トンボ出力機能が利用できる。
+% 従って、この場合は{\LuaTeX}-jaの機能を利用することにする。
+% 結果として、自前の実装を行うかの判断は、
+% プレアンブル終了時まで遅延させる必要がある。
+%
+% \begin{macro}{bxjs@tombow@setup@ok}
+% トンボ出力の準備の処理が成功しているか（スイッチ）。
+%    \begin{macrocode}
+\newif\ifbxjs@tombow@setup@ok
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@tombow@impl}
+% トンボ出力の実装のためのコード。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@tombow@impl
+\let\bxjs@tombow@impl\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@tombow@setup}
+% トンボ出力の準備のためのコード。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@tombow@setup
+\def\bxjs@tombow@setup{%
+  \bxjs@tombow@setup@oktrue
+%    \end{macrocode}
+% {\pLaTeX}カーネルのトンボ出力機能が利用できない場合は、
+% 自前の実装を有効にする。
+%    \begin{macrocode}
+  \ifx\maketombowbox\@undefined
+    \bxjs@tombow@setup@impl
+%    \end{macrocode}
+% 利用できる場合の処理。
+%    \begin{macrocode}
+  \else
+%    \end{macrocode}
+% BXJSではページレイアウトの設定に |geometry| パッケージを
+% 利用している。
+% トンボ出力のための版面の加工についても、
+% |geometry| の layout size の機能を用いる。
+% そのため、{\pLaTeX}カーネルのトンボ出力の実装コード
+% （|\@outputage|）に対して |geometry| の設定と
+% 整合させるためのパッチを |\patchcmd| を用いて当てる。
+%    \begin{macrocode}
+    \let\bxjs@tmpa\@outputpage
+    \patchcmd\bxjs@tmpa{%
+%    \end{macrocode}
+%
+% 元のコードではトンボ出力用の余白の確保を次のように行っている。
+% \begin{itemize}
+% \item “本来の版面”の左上隅を{\TeX}座標の原点に置く前提で
+%   トンボの罫を出力している。
+%   すなわち、トンボ用の余白の幅は1\,trueinである。
+% \item “本来の版面”を実際に出力する時に、上と左のマージンに
+%   1\,inを加算している（それが下掲の |\advance| 文）。
+%   前項の前提と整合させるにはこれは1\,trueinでなければいけないはずであるある。
+%   恐らく、|mag| の変更が行われないことを仮定しているのだろう。
+% \item このため、JSクラスではトンボ出力が有効な場合にはマージンの
+%   値を補正している
+%   （オフセットの値を1\,trueinでなく1\,inとする）。
+% \end{itemize}
+%    \begin{macrocode}
+      \advance\@@topmargin 1in\relax \advance\@themargin 1in\relax
+    }{%
+%    \end{macrocode}
+% 改変後のコードでは、トンボの出力位置を |geometry| の
+% layout size設定と整合させる。
+% \begin{itemize}
+% \item “本来の版面”のサイズは |layoutsize| に等しい。
+%   （幅は |\Gm@layoutwidth|、高さは |\Gm@layoutheight|）
+% \item “本来の版面”を移動させる処理は |geometry| が行うので
+%   マージンへの加算（|\advance\@@topmargin| など）は不要。
+% \end{itemize}
+%    \begin{macrocode}
+      \@@paperwidth\dimexpr\Gm@layoutwidth+6mm\relax
+      \@@paperheight\dimexpr\Gm@layoutheight+16mm\relax
+    }{}{\bxjs@tombow@setup@okfalse}%
+    \patchcmd\bxjs@tmpa{%
+      \@outputtombow
+    }{%
+%    \end{macrocode}
+% トンボの罫は元々は原点に出力される。
+% |geometry| が |\h[v]offset| を変更しうることを考えると、
+% これは紙面の左／上から |\h[v]offset|\,+\,1true\,inの位置になる。
+% 改修後はこれを |\Gm@layouth[v]offset| の位置に移動する
+% 必要がある。
+%    \begin{macrocode}
+      \dimdef\bxjs@tmb@ho{\Gm@layouthoffset-\hoffset-1truein}%
+      \dimdef\bxjs@tmb@vo{\Gm@layoutvoffset-\voffset-1truein}%
+      \vskip\bxjs@tmb@vo\relax
+      \moveright\bxjs@tmb@ho\vbox{\@outputtombow}%
+      \vskip-\bxjs@tmb@vo\relax
+    }{}{\bxjs@tombow@setup@okfalse}%
+%    \end{macrocode}
+% 2回の |\patchcmd| がともに成功したときにのみ
+% 実際に |\@outputpage| の定義を変更する。
+%    \begin{macrocode}
+    \ifbxjs@tombow@setup@ok \let\@outputpage\bxjs@tmpa \fi
+  \fi
+%    \end{macrocode}
+%
+% 準備が成功した場合、|geometry| のlayout sizeの設定を行う。
+%    \begin{macrocode}
+  \ifbxjs@tombow@setup@ok
+%    \end{macrocode}
+% \Note |geometry| については、|mag| が設定された場合に
+% 「設定される |\paperwidth/height| が不正な値になる」
+% という不具合がある
+% （マニュアルの“Known Problems”に載っている）。
+% 具体的にいうと、|mag|${}= 2000$で |paperwidth| を
+% 400\,truept（= 200\,pt）に設定すると、
+% |geometry| のbegin-document hookの
+% 実行以前には |\paperwidth| の値は正しく200\,ptであるが、
+% 実行以後は400\,pt（= 800\,truept）になってしまう。
+% |\bxjs@tombow@setup| もbegin-document hookの一部であって、
+% なおかつ |\paperwidth/height| を参照しているため、
+% hookの実行順序に注意する必要がある。
+% |\bxjs@tombow@setup| に対する |\AtBeginDocument|
+% は |geometry| の読込より前でなければならない。
+%    \begin{macrocode}
+    \edef\bxjs@layoutwidth{\the\paperwidth}%
+    \edef\bxjs@layoutheight{\the\paperheight}%
+    \bxjs@modify@layout{layoutoffset=1truein,%
+      layoutsize={\bxjs@layoutwidth,\bxjs@layoutheight},%
+      papersize={\bxjs@layoutwidth+2truein,\bxjs@layoutheight+2truein}}%
+%    \end{macrocode}
+%
+% 準備が失敗した場合にエラーを出す。
+%    \begin{macrocode}
+  \else
+    \ClassError\bxjs@clsname
+     {Setup for tombow output failed}
+     {Option '\bxjs@tombow@opt' was disabled.%
+      \MessageBreak\@ehc}%
+     \let\bxjs@tombow@param\relax
+  \fi}
+%    \end{macrocode}
+%
+% \Note |geometry| パッケージによる |\h[v]offset| の設定は
+% 以下のようになっている
+% （水平方向について述べるが垂直に関しても同様）。
+% \begin{itemize}
+% \item |geometry| パッケージは、{pdf\TeX}において\
+% |\pdfhorigin| の値を1\,true\,inに設定
+% （これでdvips等のDVIウェアの挙動と揃える）した上で、
+% |\hoffset| の値を $\mbox{1\,in}-\mbox{1\,true\,in}$に
+% 設定している。
+% 垂直方向に関しても同様で、
+% 結局、{\TeX}座標原点は左端・上橋から1\,inの位置にある。
+% \end{itemize}
+% \end{macro}
+%
+%    \begin{macrocode}
+\def\bxjs@tombow@impl{%
+%    \end{macrocode}
+% 変数の定義。
+% これらは{\pLaTeX}カーネルと全く同じ。
+%    \begin{macrocode}
+  \newif\iftombow \tombowfalse
+  \newif\iftombowdate \tombowdatetrue
+  \newdimen\@tombowwidth \@tombowwidth.1\p@
+  \font\@bannerfont=cmtt9
+  \newtoks\@bannertoken \@bannertoken{}%
+%    \end{macrocode}
+% |\maketombowbox| の定義。
+% {\pLaTeX}カーネルの実装では、各部品をボックス（|\@TL| など）
+% に保存している。
+%    \begin{macrocode}
+  \def\maketombowbox{%
+    \def\bxjs@tmb@TL{\hb@xt@\z@{\hss
+      \vrule\@width13mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \iftombowdate
+        \raise4pt\hb@xt@\z@{\hskip5mm\@bannerfont\the\@bannertoken\hss}%
+      \fi}}%
+    \def\bxjs@tmb@Tl{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height13mm \@width\@tombowwidth \@depth\z@}}%
+    \def\bxjs@tmb@TC{\hbox{%
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@}}%
+    \def\bxjs@tmb@TR{\hb@xt@\z@{%
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width13mm \@height\@tombowwidth \@depth\z@\hss}}%
+    \def\bxjs@tmb@Tr{\hb@xt@\z@{%
+      \vrule\@height13mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@\hss}}%
+    \def\bxjs@tmb@BL{\hb@xt@\z@{\hss
+      \vrule\@width13mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@Bl{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth13mm \@width\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@BC{\hbox{%
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@BR{\hb@xt@\z@{%
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@
+      \vrule\@width13mm \@depth\@tombowwidth \@height\z@\hss}}%
+    \def\bxjs@tmb@Br{\hb@xt@\z@{%
+      \vrule\@depth13mm \@width\@tombowwidth \@height\z@
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@\hss}}%
+    \def\bxjs@tmb@CL{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@height.5\@tombowwidth \@depth.5\@tombowwidth
+      \vrule\@height10mm \@depth10mm \@width\@tombowwidth}}%
+    \def\bxjs@tmb@CR{\hb@xt@\z@{%
+      \vrule\@height10mm \@depth10mm \@width\@tombowwidth
+      \vrule\@height.5\@tombowwidth \@depth.5\@tombowwidth \@width10mm%
+      \hss}}%
+  }%
+%    \end{macrocode}
+%    \begin{macrocode}
+  \def\@outputtombow{%
+    \iftombow
+      \dimdef\bxjs@tmb@paperwidth{\paperwidth+6mm}%
+      \dimdef\bxjs@tmb@paperheight{\paperheight+16mm}%
+      \vbox to\z@{\kern-13mm\relax
+        \moveleft3mm\vbox to\bxjs@tmb@paperheight{%
+          \hbox to\bxjs@tmb@paperwidth{\hskip3mm\relax
+           \bxjs@tmb@TL\hfill\bxjs@tmb@TC\hfill\bxjs@tmb@TR\hskip3mm}%
+          \kern-10mm
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@Tl\hfill\bxjs@tmb@Tr}%
+          \vfill
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@CL\hfill\bxjs@tmb@CR}%
+          \vfill
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@Bl\hfill\bxjs@tmb@Br}%
+          \kern-10mm
+          \hbox to\bxjs@tmb@paperwidth{\hskip3mm\relax
+             \bxjs@tmb@BL\hfill\bxjs@tmb@BC\hfill\bxjs@tmb@BR\hskip3mm}%
+        }\vss
+      }%
+    \fi
+  }%
+%    \end{macrocode}
+%    \begin{macrocode}
+%    \end{macrocode}
 %
 % \paragraph{両面，片面オプション}
 %
@@ -1241,6 +1573,27 @@
 %<book|report>\def\bxjs@js@clsname{jsbook}
 %<!book&!report>\def\bxjs@js@clsname{jsarticle}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
+\fi
+%    \end{macrocode}
+%
+% トンボ出力のオプション（|tombow| 等）が指定されている場合、
+% ここでまず{\eTeX}拡張の検査をして |etoolbox| パッケージを読み込む。
+%    \begin{macrocode}
+\ifx\bxjs@tombow@opt\relax\else
+  \ifjsWitheTeX
+    \RequirePackage{etoolbox}
+%    \end{macrocode}
+% そして、本体開始時にトンボ出力の準備処理を行う。
+%    \begin{macrocode}
+    \AtBeginDocument{%
+      \bxjs@tombow@setup
+      \bxjs@tombow@param}
+  \else
+    \ClassError\bxjs@clsname
+     {Option '\bxjs@tombow@opt' requires e-TeX extension}%
+     {The option is disabled.\MessageBreak\@ehc}
+    \let\bxjs@tombow@param\relax
+  \fi
 \fi
 %    \end{macrocode}
 %

@@ -160,6 +160,151 @@
 \DeclareOption{10.5ptj}{\bxjs@setjbasefontsize{10.5pt}}
 \DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
 \DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
+\@tempcnta\time \divide\@tempcnta 60
+\chardef\jsHour\@tempcnta
+\multiply\@tempcnta-60 \advance\@tempcnta\time
+\chardef\jsMinute\@tempcnta
+\AtEndOfPackage{%
+  \ifx\hour\@undefined\else \hour\jsHour \fi
+  \ifx\minute\@undefined\else \minute\jsMinute \fi
+}
+\edef\jsTimestamp{%
+  \number\year-\two@digits\month-\two@digits\day
+  \space\two@digits\jsHour:\two@digits\jsMinute}
+\let\bxjs@tombow@opt\relax
+\@onlypreamble\bxjs@tombow@param
+\let\bxjs@tombow@param\relax
+\DeclareOption{tombow}{%
+  \def\bxjs@tombow@opt{tombow}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatetrue
+    \setlength{\@tombowwidth}{.1\p@}%
+    \edef\bxjs@tmpa{\jobname\space(\jsTimestamp)}%
+    \@bannertoken\expandafter{\bxjs@tmpa}%
+    \maketombowbox}}
+\DeclareOption{tombo}{%
+  \def\bxjs@tombow@opt{tombo}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatefalse
+    \setlength{\@tombowwidth}{.1\p@}%
+    \maketombowbox}}
+\DeclareOption{mentuke}{%
+  \def\bxjs@tombow@opt{mentuke}%
+  \def\bxjs@tombow@param{%
+    \tombowtrue \tombowdatefalse
+    \setlength{\@tombowwidth}{\z@}%
+    \maketombowbox}}
+\newif\ifbxjs@tombow@setup@ok
+\@onlypreamble\bxjs@tombow@impl
+\let\bxjs@tombow@impl\@empty
+\@onlypreamble\bxjs@tombow@setup
+\def\bxjs@tombow@setup{%
+  \bxjs@tombow@setup@oktrue
+  \ifx\maketombowbox\@undefined
+    \bxjs@tombow@setup@impl
+  \else
+    \let\bxjs@tmpa\@outputpage
+    \patchcmd\bxjs@tmpa{%
+      \advance\@@topmargin 1in\relax \advance\@themargin 1in\relax
+    }{%
+      \@@paperwidth\dimexpr\Gm@layoutwidth+6mm\relax
+      \@@paperheight\dimexpr\Gm@layoutheight+16mm\relax
+    }{}{\bxjs@tombow@setup@okfalse}%
+    \patchcmd\bxjs@tmpa{%
+      \@outputtombow
+    }{%
+      \dimdef\bxjs@tmb@ho{\Gm@layouthoffset-\hoffset-1truein}%
+      \dimdef\bxjs@tmb@vo{\Gm@layoutvoffset-\voffset-1truein}%
+      \vskip\bxjs@tmb@vo\relax
+      \moveright\bxjs@tmb@ho\vbox{\@outputtombow}%
+      \vskip-\bxjs@tmb@vo\relax
+    }{}{\bxjs@tombow@setup@okfalse}%
+    \ifbxjs@tombow@setup@ok \let\@outputpage\bxjs@tmpa \fi
+  \fi
+  \ifbxjs@tombow@setup@ok
+    \edef\bxjs@layoutwidth{\the\paperwidth}%
+    \edef\bxjs@layoutheight{\the\paperheight}%
+    \bxjs@modify@layout{layoutoffset=1truein,%
+      layoutsize={\bxjs@layoutwidth,\bxjs@layoutheight},%
+      papersize={\bxjs@layoutwidth+2truein,\bxjs@layoutheight+2truein}}%
+  \else
+    \ClassError\bxjs@clsname
+     {Setup for tombow output failed}
+     {Option '\bxjs@tombow@opt' was disabled.%
+      \MessageBreak\@ehc}%
+     \let\bxjs@tombow@param\relax
+  \fi}
+\def\bxjs@tombow@impl{%
+  \newif\iftombow \tombowfalse
+  \newif\iftombowdate \tombowdatetrue
+  \newdimen\@tombowwidth \@tombowwidth.1\p@
+  \font\@bannerfont=cmtt9
+  \newtoks\@bannertoken \@bannertoken{}%
+  \def\maketombowbox{%
+    \def\bxjs@tmb@TL{\hb@xt@\z@{\hss
+      \vrule\@width13mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \iftombowdate
+        \raise4pt\hb@xt@\z@{\hskip5mm\@bannerfont\the\@bannertoken\hss}%
+      \fi}}%
+    \def\bxjs@tmb@Tl{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height13mm \@width\@tombowwidth \@depth\z@}}%
+    \def\bxjs@tmb@TC{\hbox{%
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@}}%
+    \def\bxjs@tmb@TR{\hb@xt@\z@{%
+      \vrule\@height10mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width13mm \@height\@tombowwidth \@depth\z@\hss}}%
+    \def\bxjs@tmb@Tr{\hb@xt@\z@{%
+      \vrule\@height13mm \@width\@tombowwidth \@depth\z@
+      \vrule\@width10mm \@height\@tombowwidth \@depth\z@\hss}}%
+    \def\bxjs@tmb@BL{\hb@xt@\z@{\hss
+      \vrule\@width13mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@Bl{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth13mm \@width\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@BC{\hbox{%
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@}}%
+    \def\bxjs@tmb@BR{\hb@xt@\z@{%
+      \vrule\@depth10mm \@width\@tombowwidth \@height\z@
+      \vrule\@width13mm \@depth\@tombowwidth \@height\z@\hss}}%
+    \def\bxjs@tmb@Br{\hb@xt@\z@{%
+      \vrule\@depth13mm \@width\@tombowwidth \@height\z@
+      \vrule\@width10mm \@depth\@tombowwidth \@height\z@\hss}}%
+    \def\bxjs@tmb@CL{\hb@xt@\z@{\hss
+      \vrule\@width10mm \@height.5\@tombowwidth \@depth.5\@tombowwidth
+      \vrule\@height10mm \@depth10mm \@width\@tombowwidth}}%
+    \def\bxjs@tmb@CR{\hb@xt@\z@{%
+      \vrule\@height10mm \@depth10mm \@width\@tombowwidth
+      \vrule\@height.5\@tombowwidth \@depth.5\@tombowwidth \@width10mm%
+      \hss}}%
+  }%
+  \def\@outputtombow{%
+    \iftombow
+      \dimdef\bxjs@tmb@paperwidth{\paperwidth+6mm}%
+      \dimdef\bxjs@tmb@paperheight{\paperheight+16mm}%
+      \vbox to\z@{\kern-13mm\relax
+        \moveleft3mm\vbox to\bxjs@tmb@paperheight{%
+          \hbox to\bxjs@tmb@paperwidth{\hskip3mm\relax
+           \bxjs@tmb@TL\hfill\bxjs@tmb@TC\hfill\bxjs@tmb@TR\hskip3mm}%
+          \kern-10mm
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@Tl\hfill\bxjs@tmb@Tr}%
+          \vfill
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@CL\hfill\bxjs@tmb@CR}%
+          \vfill
+          \hbox to\bxjs@tmb@paperwidth{\bxjs@tmb@Bl\hfill\bxjs@tmb@Br}%
+          \kern-10mm
+          \hbox to\bxjs@tmb@paperwidth{\hskip3mm\relax
+             \bxjs@tmb@BL\hfill\bxjs@tmb@BC\hfill\bxjs@tmb@BR\hskip3mm}%
+        }\vss
+      }%
+    \fi
+  }%
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -448,6 +593,19 @@
 \ifbxjs@disguise@js
 \def\bxjs@js@clsname{jsarticle}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
+\fi
+\ifx\bxjs@tombow@opt\relax\else
+  \ifjsWitheTeX
+    \RequirePackage{etoolbox}
+    \AtBeginDocument{%
+      \bxjs@tombow@setup
+      \bxjs@tombow@param}
+  \else
+    \ClassError\bxjs@clsname
+     {Option '\bxjs@tombow@opt' requires e-TeX extension}%
+     {The option is disabled.\MessageBreak\@ehc}
+    \let\bxjs@tombow@param\relax
+  \fi
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
