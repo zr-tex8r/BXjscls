@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2015/08/23 v1.0a BXJS document classes]
+  [2015/09/07 v1.0b BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -578,7 +578,10 @@
   \skip2=\abovedisplayshortskip
   \skip4=\belowdisplayskip
   \skip6=\belowdisplayshortskip
+  \let\bxjs@ltx@nomath\@nomath
+  \let\@nomath\@gobble
   \@currsize\selectfont
+  \let\@nomath\bxjs@ltx@nomath
   \abovedisplayskip=\skip0
   \abovedisplayshortskip=\skip2
   \belowdisplayskip=\skip4

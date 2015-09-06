@@ -58,7 +58,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2015/08/23 v1.0a BXJS document classes]
+  [2015/09/07 v1.0b BXJS document classes]
+% [2015/08/23 v1.0a BXJS document classes]
 % [2015/08/05 v1.0 BXJS document classes]
 % based on jsclasses [2014/02/07]
 % [2013/10/03 v0.9pre BXJS document classes]
@@ -1595,6 +1596,16 @@
 %
 % TODO: Hasumiさん [qa:54539] のご指摘は考慮中です。
 %
+% \begin{ZRnote}
+% 別行立て数式に入るときに |\narrowbaselines| が呼ばれるが、
+% このコードでは「数式中で |\normalsize| などのサイズ命令
+% （|\@currsize| の実体）が呼ばれた」ことになり警告が出る。
+% JSクラスでは、|\@setfontsize| 中の |\@nomath| 実行を消して
+% 「そもそもサイズ命令で警告が出ない」ようにしている。
+% 警告が常に出ないのも望ましくないので、BXJSクラスの実装では、
+% |\narrowbaselines| の時だけ警告が出ないようにする。
+% \end{ZRnote}
+%
 %    \begin{macrocode}
 \newif\ifnarrowbaselines
 \if@english
@@ -1606,7 +1617,11 @@
   \skip2=\abovedisplayshortskip
   \skip4=\belowdisplayskip
   \skip6=\belowdisplayshortskip
+% 一時的に警告を無効化する
+  \let\bxjs@ltx@nomath\@nomath
+  \let\@nomath\@gobble
   \@currsize\selectfont
+  \let\@nomath\bxjs@ltx@nomath
   \abovedisplayskip=\skip0
   \abovedisplayshortskip=\skip2
   \belowdisplayskip=\skip4
