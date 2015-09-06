@@ -304,8 +304,14 @@
   \bxjs@disguise@jstrue}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
-\def\bxjs@setkey@a{\setkeys{bxjs}}
+\def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}
 \DeclareOption*{\bxjs@setkey}
+\def\bxjs@safe@setkeys#1#2{%
+  \let\bxjs@KV@errx\KV@errx
+  \let\KV@errx\bxjs@safe@setkeys@a
+  \setkeys{#1}{#2}%
+  \let\KV@errx\bxjs@KV@errx}
+\def\bxjs@safe@setkeys@a#1{}
 \newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
 \def\Cjascale{\jsScale}
@@ -349,11 +355,11 @@
     {Invalid magstyle value `#1'}\@ehc
     \let\bxjs@magstyle\bxjs@magstyle@mag
   \fi}
-\let\ltx@removeelement\@removeelement
+\let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
   \ifx\reserved@a\@empty \let#3\@empty
-  \else \ltx@removeelement{#1}{#2}{#3}%
+  \else \bxjs@ltx@removeelement{#1}{#2}{#3}%
   \fi}
 \ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
@@ -361,6 +367,9 @@
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
   {10pt}\@classoptionslist\@classoptionslist
+\ifx\bxjs@jadriver\relax\else
+  \let\bxjs@jadriver@given\bxjs@jadriver
+\fi
 \let\bxjs@tmpb\jsEngine
 \ifx j\bxjs@tmpb\ifjsWithupTeX
   \let\bxjs@tmpb=u
@@ -401,8 +410,9 @@
 \fi
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
+\else\ifx\bxjs@jadriver@given\@undefined \@tempswafalse
 \else \@tempswatrue
-\fi\fi
+\fi\fi\fi
 \if@tempswa
   \ifx\bxjs@driver@opt\@undefined
     \ClassWarningNoLine\bxjs@clsname
@@ -423,7 +433,7 @@
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
-\ifx\bxjs@jadriver\bxjs@@minimal\else
+\ifx\bxjs@jadriver@given\@undefined\else
   \ifx\bxjs@engine@given\@undefined
     \ClassError\bxjs@clsname%
     {An engine option must be explicitly given}%

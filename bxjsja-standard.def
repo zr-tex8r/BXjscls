@@ -287,6 +287,8 @@
 \else\if x\jsEngine
 \RequirePackage{zxjatype}
 \PassOptionsToPackage{no-math}{fontspec}%!
+\PassOptionsToPackage{xetex}{graphicx}%!
+\PassOptionsToPackage{xetex}{graphics}%!
 \ifx\zxJaFamilyName\@undefined
   \ClassError\bxjs@clsname
   {xeCJK or zxjatype is too old}\@ehc
@@ -327,6 +329,8 @@
 \let\zw\@undefined
 \RequirePackage{luatexja}
 \RequirePackage{luatexja-fontspec}
+\PassOptionsToPackage{pdftex}{graphicx}%!
+\PassOptionsToPackage{pdftex}{graphics}%!
 \ExplSyntaxOn
 \fp_gset:Nn \g_ltj_fontspec_scale_fp { \jsScale }
 \ExplSyntaxOff

@@ -919,9 +919,21 @@
 %    \begin{macrocode}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
-\def\bxjs@setkey@a{\setkeys{bxjs}}
+\def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}
 \DeclareOption*{\bxjs@setkey}
 %    \end{macrocode}
+%
+% \begin{macro}{\bxjs@safe@setkeys}
+% 未知のキーに対してエラー無しで無視する |\setkeys|。
+%    \begin{macrocode}
+\def\bxjs@safe@setkeys#1#2{%
+  \let\bxjs@KV@errx\KV@errx
+  \let\KV@errx\bxjs@safe@setkeys@a
+  \setkeys{#1}{#2}%
+  \let\KV@errx\bxjs@KV@errx}
+\def\bxjs@safe@setkeys@a#1{}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\ifbxjs@scaleset}
 % 和文スケール値が指定されたか。
@@ -1000,10 +1012,11 @@
 % 和文ドライバの名前。
 %    \begin{macrocode}
 \let\bxjs@jadriver\relax
+%\let\bxjs@jadriver@given\@undefined
 %    \end{macrocode}
 % \end{macro}
 %
-% |jadriver| オプション（|ja| オプション）の処理。
+% |ja| オプション（|jadriver| オプション）の処理。
 %    \begin{macrocode}
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
 \define@key{bxjs}{ja}{\edef\bxjs@jadriver{#1}}
@@ -1068,11 +1081,11 @@
 % は常に空のままであることを利用している。
 % \end{ZRnote}
 %    \begin{macrocode}
-\let\ltx@removeelement\@removeelement
+\let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
   \ifx\reserved@a\@empty \let#3\@empty
-  \else \ltx@removeelement{#1}{#2}{#3}%
+  \else \bxjs@ltx@removeelement{#1}{#2}{#3}%
   \fi}
 %    \end{macrocode}
 %
@@ -1098,6 +1111,14 @@
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
   {10pt}\@classoptionslist\@classoptionslist
+%    \end{macrocode}
+%
+% 現在の（正規化前の）和文ドライバの値を\
+% |\bxjs@jadriver@given| に保存する。
+%    \begin{macrocode}
+\ifx\bxjs@jadriver\relax\else
+  \let\bxjs@jadriver@given\bxjs@jadriver
+\fi
 %    \end{macrocode}
 %
 % エンジン明示指定のオプションが与えられた場合は、
@@ -1149,11 +1170,13 @@
 %    \end{macrocode}
 %
 % DVI出力のエンジンでドライバオプションがない場合は警告を出す。
+% \Note ただし |ja| 非指定の場合はスキップする。
 %    \begin{macrocode}
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
+\else\ifx\bxjs@jadriver@given\@undefined \@tempswafalse
 \else \@tempswatrue
-\fi\fi
+\fi\fi\fi
 \if@tempswa
   \ifx\bxjs@driver@opt\@undefined
     \ClassWarningNoLine\bxjs@clsname
@@ -1187,8 +1210,10 @@
 \fi
 %    \end{macrocode}
 %
+% エンジンオプションがない場合はエラーを出す。
+% \Note ただし |ja| 非指定の場合はスキップする。
 %    \begin{macrocode}
-\ifx\bxjs@jadriver\bxjs@@minimal\else
+\ifx\bxjs@jadriver@given\@undefined\else
   \ifx\bxjs@engine@given\@undefined
     \ClassError\bxjs@clsname%
     {An engine option must be explicitly given}%
@@ -6493,6 +6518,8 @@
 %    \begin{macrocode}
 \RequirePackage{zxjatype}
 \PassOptionsToPackage{no-math}{fontspec}%!
+\PassOptionsToPackage{xetex}{graphicx}%!
+\PassOptionsToPackage{xetex}{graphics}%!
 \ifx\zxJaFamilyName\@undefined
   \ClassError\bxjs@clsname
   {xeCJK or zxjatype is too old}\@ehc
@@ -6583,6 +6610,8 @@
 \let\zw\@undefined
 \RequirePackage{luatexja}
 \RequirePackage{luatexja-fontspec}
+\PassOptionsToPackage{pdftex}{graphicx}%!
+\PassOptionsToPackage{pdftex}{graphics}%!
 %    \end{macrocode}
 %
 % \paragraph{和文フォント定義}
