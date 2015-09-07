@@ -1295,8 +1295,11 @@
 \renewcommand{\theenumii}{\@alph\c@enumii}
 \renewcommand{\theenumiii}{\@roman\c@enumiii}
 \renewcommand{\theenumiv}{\@Alph\c@enumiv}
+\def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
+\newcommand*{\jsInParen}[1]{%
+  \bxjs@dust\jsInhibitGlue（\theenumii）\jsInhibitGlue\bxjs@dust}
 \newcommand{\labelenumi}{\theenumi.}
-\newcommand{\labelenumii}{\jsInhibitGlue（\theenumii）\jsInhibitGlue}
+\newcommand{\labelenumii}{\jsInParen{（\theenumii）}}
 \newcommand{\labelenumiii}{\theenumiii.}
 \newcommand{\labelenumiv}{\theenumiv.}
 \renewcommand{\p@enumii}{\theenumi}

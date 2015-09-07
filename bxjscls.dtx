@@ -3839,12 +3839,24 @@
 %    第2レベル以外は最後に欧文のピリオドが付きますが，
 %    これは好みに応じて取り払ってください。
 %    第2レベルの番号のかっこは和文用に換え，
-%    その両側に入る余分なグルーを |\jsInhibitGlue| で
+%    その両側に入る余分なグルーを |\inhibitglue| で
 %    取り除いています。
+% \begin{ZRnote}
+% 和文の括弧で囲むための補助命令 |\jsInJaParen| を
+% 定義して |\labelenumii| でそれを用いている。
+% \Note 現状の |zxjatype| の |\inhibitglue| の実装には
+% 「前後のグルーを消してしまう」という不備があって、
+% そのため |enumii| の出力が異常になるという不具合があった。
+% |zxjatype| を修正するまでの回避策として、サイズがゼロの
+% 罫（|\bxjs@dust|）でガードしておく。
+% \end{ZRnote}
 %
 %    \begin{macrocode}
+\def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
+\newcommand*{\jsInJaParen}[1]{%
+  \bxjs@dust\jsInhibitGlue（\theenumii）\jsInhibitGlue\bxjs@dust}
 \newcommand{\labelenumi}{\theenumi.}
-\newcommand{\labelenumii}{\jsInhibitGlue（\theenumii）\jsInhibitGlue}
+\newcommand{\labelenumii}{\jsInJaParen{（\theenumii）}}
 \newcommand{\labelenumiii}{\theenumiii.}
 \newcommand{\labelenumiv}{\theenumiv.}
 %    \end{macrocode}
