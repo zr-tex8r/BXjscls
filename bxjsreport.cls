@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2015/09/07 v1.0b BXJS document classes]
+  [2015/10/18 v1.0c BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -367,6 +367,24 @@
   \fi}
 \ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 \ProcessOptions\relax
+\@onlypreamble\bxjs@purge@brace@elts
+\def\bxjs@purge@brace@elts{%
+  \def\bxjs@tmpa{\@gobble}%
+  \expandafter\bxjs@purge@be@a\@classoptionslist,\@nil,%
+  \let\@classoptionslist\bxjs@tmpa}
+\@onlypreamble\bxjs@purge@be@a
+\def\bxjs@purge@be@a#1,{%
+  \ifx\@nil#1\relax\else
+    \bxjs@purge@be@b#1{}\@nil
+    \if@tempswa \edef\bxjs@tmpa{\bxjs@tmpa,#1}\fi
+    \expandafter\bxjs@purge@be@a
+  \fi}
+\@onlypreamble\bxjs@purge@be@b
+\def\bxjs@purge@be@b#1#{\bxjs@purge@be@c}
+\@onlypreamble\bxjs@purge@be@c
+\def\bxjs@purge@be@c#1\@nil{%
+  \ifx\@nil#1\@nil \@tempswatrue \else \@tempswafalse \fi}
+\bxjs@purge@brace@elts
 \@expandtwoargs\@removeelement
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
@@ -1296,10 +1314,10 @@
 \renewcommand{\theenumiii}{\@roman\c@enumiii}
 \renewcommand{\theenumiv}{\@Alph\c@enumiv}
 \def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
-\newcommand*{\jsInParen}[1]{%
+\newcommand*{\jsInJaParen}[1]{%
   \bxjs@dust\jsInhibitGlue（\theenumii）\jsInhibitGlue\bxjs@dust}
 \newcommand{\labelenumi}{\theenumi.}
-\newcommand{\labelenumii}{\jsInParen{（\theenumii）}}
+\newcommand{\labelenumii}{\jsInJaParen{（\theenumii）}}
 \newcommand{\labelenumiii}{\theenumiii.}
 \newcommand{\labelenumiv}{\theenumiv.}
 \renewcommand{\p@enumii}{\theenumi}
