@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-standard.def}
-  [2015/10/18 v1.0c BXJS document classes]
+  [2015/11/21 v1.0d BXJS document classes]
 \input{bxjsja-minimal.def}
 \ifjsWitheTeX
   \@tempdima=0.25mm
@@ -153,6 +153,17 @@
   \ifx$#1$\def\bxjs@tmpa{#2}%
   \else \let\bxjs@tmpa\relax
   \fi}
+\def\jsJaChar#1{%
+  \begingroup
+    \jsLetHeadChar\bxjs@tmpa{#1}%
+    \ifx\bxjs@tmpa\relax
+      \ClassWarningNoLine\bxjs@clsname
+        {Illegal argument given to \string\jsJaChar}%
+    \else
+      \expandafter\bxjs@jachar\expandafter{\bxjs@tmpa}%
+    \fi
+  \endgroup}
+\let\bxjs@jachar\@firstofone
 \PassOptionsToPackage{setpagesize=false}{hyperref}
 \@onlypreamble\bxjs@fix@hyperref@unicode
 \def\bxjs@fix@hyperref@unicode#1{%
@@ -186,6 +197,34 @@
   \kanjiskip\@tempskipa}
 \def\bxjs@apply@xkanjiskip{%
   \xkanjiskip\@tempskipa}
+\def\bxjs@jachar#1{%
+  \bxjs@jachar@a#1....\@nil}
+\def\bxjs@jachar@a#1#2#3#4#5\@nil{%
+  \ifx.#2#1%
+  \else\ifx.#3%
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \advance\@tempcnta-"3080
+    \bxjs@jachar@b
+  \else\ifx.#4%
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \multiply\@tempcnta64
+    \advance\@tempcnta`#3 \advance\@tempcnta-"E2080
+    \bxjs@jachar@b
+  \else
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \multiply\@tempcnta64
+    \advance\@tempcnta`#3 \multiply\@tempcnta64
+    \advance\@tempcnta`#4 \advance\@tempcnta-"3C82080
+    \bxjs@jachar@b
+  \fi\fi\fi}
+\ifjsWithupTeX
+  \def\bxjs@jachar@b{\kchar\@tempcnta}
+\else
+  \def\bxjs@jachar@b{%
+    \ifx\bxUInt\@undefined\else
+      \bxUInt{\@tempcnta}%
+    \fi}
+\fi
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
   \let\bxjs@tmpa\@empty
@@ -284,6 +323,8 @@
 \def\bxjs@apply@xkanjiskip{%
   \jsXKanjiSkip\@tempskipa
   \let\CJKecglue\bxjs@CJKecglue}
+\def\bxjs@jachar#1{%
+  \CJKforced{#1}}
 \else\if x\jsEngine
 \RequirePackage{zxjatype}
 \PassOptionsToPackage{no-math}{fontspec}%!
@@ -325,6 +366,9 @@
   \protected\def\mcfamily{\CJKfamily{\CJKrmdefault}}
   \protected\def\gtfamily{\CJKfamily{\CJKsfdefault}}
 \fi
+\def\bxjs@jachar#1{%
+  \xeCJKDeclareCharClass{CJK}{`#1}\relax
+  #1}
 \else\if l\jsEngine
 \let\zw\@undefined
 \RequirePackage{luatexja}
@@ -384,6 +428,8 @@
   \ltjsetparameter{kanjiskip={\@tempskipa}}}
 \def\bxjs@apply@xkanjiskip{%
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
+\def\bxjs@jachar#1{%
+  \ltjjachar`#1\relax}
 \fi\fi\fi\fi
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}

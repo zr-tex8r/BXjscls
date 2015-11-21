@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2015/10/18 v1.0c BXJS document classes]
+  [2015/11/21 v1.0d BXJS document classes]
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
@@ -69,6 +69,10 @@
 \ifx\pdfoutput\@undefined\else\ifnum\pdfoutput>\z@
   \jsInPdfModetrue
 \fi\fi
+\@gobbletwo\if\if \def\bxjs@cond#1\fi{%
+  #1\expandafter\@firstoftwo
+  \else\expandafter\@secondoftwo
+  \fi}
 \let\jsArticle=a
 \let\jsBook=b
 \let\jsReport=r
@@ -1151,15 +1155,16 @@
     {\z@}%
     {\normalfont\normalsize\headfont}}
 \fi
+\newcommand\jsParagraphMark{\jsJaChar{■}}
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
-    {\normalfont\normalsize\headfont ■}}
+    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \else
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {0.5\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
     {-1\jsZw}% 改行せず 1\jsZw のアキ
-    {\normalfont\normalsize\headfont ■}}
+    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \fi
 \newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
    {\z@}{-1\jsZw}%

@@ -58,7 +58,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2015/10/18 v1.0c BXJS document classes]
+  [2015/11/21 v1.0d BXJS document classes]
+% [2015/10/18 v1.0c BXJS document classes]
 % [2015/09/07 v1.0b BXJS document classes]
 % [2015/08/23 v1.0a BXJS document classes]
 % [2015/08/05 v1.0 BXJS document classes]
@@ -190,12 +191,20 @@
 %
 % \paragraph{BXJSクラス特有の設定 ☆}
 %
+% \mbox{}
+% \begin{ZRnote}
 %    \begin{macrocode}
 %<*!drvminimal&!drvstandard>
+%    \end{macrocode}
+% 長さ値の指定で式を利用可能にするため |calc| を読み込む。
+%    \begin{macrocode}
 \RequirePackage{calc}
+%    \end{macrocode}
+% クラスオプションでkey-value形式を使用するため |keyval| を読み込む。
+%    \begin{macrocode}
 \RequirePackage{keyval}
 %    \end{macrocode}
-% \begin{ZRnote}
+% クラスの本体ではこの他に |geometry| パッケージが読み込まれる。
 %
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
@@ -271,6 +280,18 @@
 \ifx\pdfoutput\@undefined\else\ifnum\pdfoutput>\z@
   \jsInPdfModetrue
 \fi\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@cond}
+% |\bxjs@cond\ifXXX|……|\fi|\Meta{真}\Meta{偽}\par
+% {\TeX}のif-文（|\ifXXX|……\Meta{真}|\else|\Meta{偽}|\fi|）を
+% 末尾呼出形式に変換するためのマクロ。
+%    \begin{macrocode}
+\@gobbletwo\if\if \def\bxjs@cond#1\fi{%
+  #1\expandafter\@firstoftwo
+  \else\expandafter\@secondoftwo
+  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3631,18 +3652,25 @@
 %
 %    見出しの後ろで改行されません。
 %
+% \begin{ZRnote}
+% 段落のマーク（■）が必ず和文フォントで出力されるようにする。
+% さらに、このマークを変更可能にするため |\jsParagraphMark| と
+% いうマクロに切り出した。
+% \end{ZRnote}
+%
 %    \begin{macrocode}
+\newcommand\jsParagraphMark{\jsJaChar{■}}
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
 %<jspf>    {\normalfont\normalsize\headfont}}
-%<!jspf>    {\normalfont\normalsize\headfont ■}}
+%<!jspf>    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \else
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {0.5\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
     {-1\jsZw}% 改行せず 1\jsZw のアキ
 %<jspf>    {\normalfont\normalsize\headfont}}
-%<!jspf>    {\normalfont\normalsize\headfont ■}}
+%<!jspf>    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -5803,6 +5831,9 @@
 % 選択の余地がないため、このドライバにおいて、
 % 「JSクラスと同等の指定」を完成させるためのコードを記述する。
 %
+%^^A----------------
+% \subsection{補助マクロ}
+%
 %    \begin{macrocode}
 %<*drvminimal>
 %% このファイルは日本語文字を含みます
@@ -5834,7 +5865,90 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\jsLetHeadChar}
+% |\jsLetHeadChar\CS{|\Meta{トークン列}|}|\Means
+% トークン列の先頭の文字を抽出し、|\CS| をその文字トークン
+% （に展開されるマクロ）として定義する。
+% \Note 先頭にあるのが制御綴やグループである場合は |\CS| は |\relax|
+% に等置される。
+% \Note 文字トークンは“|\the|-文字列”のカテゴリコードをもつ。
+% \Note 非Unicodeエンジンの場合は文字列がUTF-8で符号化されていると
+% 見なし、先頭が高位バイトの場合は1文字分のバイト列（のトークン列）
+% を抽出する。
+% この場合は元のカテゴリコードが保持される。
+%    \begin{macrocode}
+\def\jsLetHeadChar#1#2{%
+  \begingroup
+    \escapechar=`\\ %
+    \let\bxjs@tmpa={% brace-match-hack
+    \bxjs@let@hchar@exp#2}%
+  \endgroup
+  \let#1\bxjs@g@tmpa}
+\def\bxjs@let@hchar@exp{%
+  \futurelet\@let@token\bxjs@let@hchar@exp@a}
+\def\bxjs@let@hchar@exp@a{%
+  \bxjs@cond\ifcat\noexpand\@let@token\bgroup\fi{% 波括弧
+    \bxjs@let@hchar@out\let\relax
+  }{\bxjs@cond\ifcat\noexpand\@let@token\@sptoken\fi{% 空白
+    \bxjs@let@hchar@out\let\space%
+  }{\bxjs@cond\if\noexpand\@let@token\@backslashchar\fi{% バックスラッシュ
+    \bxjs@let@hchar@out\let\@backslashchar
+  }{\bxjs@let@hchar@exp@b}}}}
+\def\bxjs@let@hchar@exp@b#1{%
+  \expandafter\bxjs@let@hchar@exp@c\string#1?\@nil#1}
+\def\bxjs@let@hchar@exp@c#1#2\@nil{%
+%\message{<#1#2>}%
+  \bxjs@cond\if#1\@backslashchar\fi{% 制御綴
+    \bxjs@cond\expandafter\ifx\noexpand\@let@token\@let@token\fi{%
+      \bxjs@let@hchar@out\let\relax
+    }{%else
+      \expandafter\bxjs@let@hchar@exp
+    }%
+  }{%else
+    \bxjs@let@hchar@chr#1%
+  }}
+\def\bxjs@let@hchar@chr#1{%
+  \bxjs@let@hchar@out\def{{#1}}}
+\def\bxjs@let@hchar@out#1#2{%
+  \global#1\bxjs@g@tmpa#2\relax
+  \toks@\bgroup}% skip to right brace
+%    \end{macrocode}
+% UTF-8のバイト列を扱うコード。
+%    \begin{macrocode}
+\chardef\bxjs@let@hchar@csta=128
+\chardef\bxjs@let@hchar@cstb=192
+\chardef\bxjs@let@hchar@cstc=224
+\chardef\bxjs@let@hchar@cstd=240
+\chardef\bxjs@let@hchar@cste=248
+\let\bxjs@let@hchar@chr@ue@a\bxjs@let@hchar@chr
+\def\bxjs@let@hchar@chr@ue#1{%
+  \@tempcnta=`#1\relax
+%\message{\the\@tempcnta}%
+  \bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@csta\fi{%
+    \bxjs@let@hchar@chr@ue@a#1%
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstb\fi{%
+    \bxjs@let@hchar@out\let\relax
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstc\fi{%
+    \bxjs@let@hchar@chr@ue@b
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstd\fi{%
+    \bxjs@let@hchar@chr@ue@c
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cste\fi{%
+    \bxjs@let@hchar@chr@ue@d
+  }{%else
+    \bxjs@let@hchar@out\let\relax
+  }}}}}}
+\def\bxjs@let@hchar@chr@ue@a#1{%
+  \bxjs@let@hchar@out\def{{#1}}}
+\def\bxjs@let@hchar@chr@ue@b#1#2{%
+  \bxjs@let@hchar@out\def{{#1#2}}}
+\def\bxjs@let@hchar@chr@ue@c#1#2#3{%
+  \bxjs@let@hchar@out\def{{#1#2#3}}}
+\def\bxjs@let@hchar@chr@ue@d#1#2#3#4{%
+  \bxjs@let@hchar@out\def{{#1#2#3#4}}}
+%    \end{macrocode}
+% \end{macro}
 %
+%^^A----------------
 % \subsection{(u){\pTeX}用の設定}
 %
 %    \begin{macrocode}
@@ -5844,6 +5958,22 @@
 % 基本的に、JSクラスのコードの中で、「和文コンポーネントの管轄」
 % としてBXJSクラスで除外されている部分に相当するが、
 % 若干の変更が加えられている。
+%
+% \paragraph{補助マクロ}
+%
+% |\jsLetHeadChar| を和文文字トークンに対応させる。
+%    \begin{macrocode}
+\def\bxjs@let@hchar@chr@pp#1{%
+  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#1\relax#1}
+\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3{%
+%\message{(#1)}%
+  \bxjs@cond\if#1t\fi{%
+    \bxjs@let@hchar@chr@ue#3%
+  }{%else
+    \bxjs@let@hchar@out\def{{#3}}%
+  }}
+\let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@pp
+%    \end{macrocode}
 %
 % \paragraph{エンジン依存の定義}
 %
@@ -6013,12 +6143,16 @@
 %
 % |\jsResetDimen| は空のままでよい。
 %
+%^^A----------------
 % \subsection{pdf{\TeX}用の処理}
 %
 %    \begin{macrocode}
 \else\ifx p\jsEngine
 %    \end{macrocode}
 %
+%    \begin{macrocode}
+\let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@ue
+%    \end{macrocode}
 %
 %    \begin{macrocode}
 \@onlypreamble\bxjs@cjk@loaded
@@ -6045,9 +6179,30 @@
 }
 %    \end{macrocode}
 %
+%^^A----------------
+% \subsection{{\XeTeX}用の処理}
+%
+%    \begin{macrocode}
+\else\ifx x\jsEngine
+%    \end{macrocode}
+%
+% |\bxjs@let@hchar@chr| について、
+% 「BMP外の文字の文字トークンに対して |\string| を適用すると
+% サロゲートペアに分解される」という問題に対する応急措置を施す。
+%    \begin{macrocode}
+\def\bxjs@let@hchar@chr#1{%
+  \@tempcnta`#1\relax \divide\@tempcnta"800\relax
+  \bxjs@cond\ifnum\@tempcnta=27 \fi{%
+    \bxjs@let@hchar@chr@xe
+  }{\bxjs@let@hchar@out\def{{#1}}}}
+\def\bxjs@let@hchar@chr@xe#1{%
+  \lccode`0=`#1\relax
+  \lowercase{\bxjs@let@hchar@out\def{{0}}}}
+%    \end{macrocode}
+%
 % 以上で終わり。
 %    \begin{macrocode}
-\fi\fi
+\fi\fi\fi
 %</drvminimal>
 %    \end{macrocode}
 %
@@ -6066,6 +6221,8 @@
 % \item |\trueQ|/|\trueH|/|\ascQ|
 % \item |\setkanjiskip|/|\getkanjiskip|
 % \item |\setxkanjiskip|/|\getxkanjiskip|
+% \item |\autospacing|/|\noautospacing|
+% \item |\autoxspacing|/|\noautoxspacing|
 % \end{itemize}
 %
 % \paragraph{和文フォント指定の扱い}
@@ -6321,6 +6478,31 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\jsJaChar}
+% |\jsJaChar{|\meta{文字}|}|\Means
+% 和文文字として出力する。
+%    \begin{macrocode}
+\def\jsJaChar#1{%
+  \begingroup
+%    \end{macrocode}
+% |\jsLetHeadChar| で先頭の“文字”を拾って
+% それを |\bxjs@jachar| に渡す。
+%    \begin{macrocode}
+    \jsLetHeadChar\bxjs@tmpa{#1}%
+    \ifx\bxjs@tmpa\relax
+      \ClassWarningNoLine\bxjs@clsname
+        {Illegal argument given to \string\jsJaChar}%
+    \else
+      \expandafter\bxjs@jachar\expandafter{\bxjs@tmpa}%
+    \fi
+  \endgroup}
+%    \end{macrocode}
+% 下請けの |\bxjs@jachar| の実装はエンジンにより異なる。
+%    \begin{macrocode}
+\let\bxjs@jachar\@firstofone
+%    \end{macrocode}
+% \end{macro}
+%
 % \paragraph{hyperref対策}
 %
 % 出力ページサイズに館する処理は |geometry| パッケージが行うので、
@@ -6382,6 +6564,49 @@
   \kanjiskip\@tempskipa}
 \def\bxjs@apply@xkanjiskip{%
   \xkanjiskip\@tempskipa}
+%    \end{macrocode}
+%
+% |\jaJaChar| のサブマクロ。
+%    \begin{macrocode}
+\def\bxjs@jachar#1{%
+  \bxjs@jachar@a#1....\@nil}
+\def\bxjs@jachar@a#1#2#3#4#5\@nil{%
+%    \end{macrocode}
+% 引数が単一トークンなら和文文字トークンが得られたと
+% 見なしてそれをそのまま出力する。
+%    \begin{macrocode}
+  \ifx.#2#1%
+%    \end{macrocode}
+% 引数が複数トークンの場合は、UTF-8のバイト列であると見なし、
+% そのスカラー値を |\@tempcnta| に代入する。
+%    \begin{macrocode}
+  \else\ifx.#3%
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \advance\@tempcnta-"3080
+    \bxjs@jachar@b
+  \else\ifx.#4%
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \multiply\@tempcnta64
+    \advance\@tempcnta`#3 \advance\@tempcnta-"E2080
+    \bxjs@jachar@b
+  \else
+    \@tempcnta`#1 \multiply\@tempcnta64
+    \advance\@tempcnta`#2 \multiply\@tempcnta64
+    \advance\@tempcnta`#3 \multiply\@tempcnta64
+    \advance\@tempcnta`#4 \advance\@tempcnta-"3C82080
+    \bxjs@jachar@b
+  \fi\fi\fi}
+%    \end{macrocode}
+% 符号値が |\@tempcnta| の和文文字を出力する処理。
+%    \begin{macrocode}
+\ifjsWithupTeX
+  \def\bxjs@jachar@b{\kchar\@tempcnta}
+\else
+  \def\bxjs@jachar@b{%
+    \ifx\bxUInt\@undefined\else
+      \bxUInt{\@tempcnta}%
+    \fi}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{和文フォント指定の扱い}
@@ -6558,6 +6783,12 @@
   \let\CJKecglue\bxjs@CJKecglue}
 %    \end{macrocode}
 %
+% |\jsJaChar| のサブマクロの実装。
+%    \begin{macrocode}
+\def\bxjs@jachar#1{%
+  \CJKforced{#1}}
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{{\XeTeX}用設定： xeCJK + zxjatype}
 %
@@ -6641,6 +6872,13 @@
   \protected\def\mcfamily{\CJKfamily{\CJKrmdefault}}
   \protected\def\gtfamily{\CJKfamily{\CJKsfdefault}}
 \fi
+%    \end{macrocode}
+%
+% |\jsJaChar| のサブマクロの実装。
+%    \begin{macrocode}
+\def\bxjs@jachar#1{%
+  \xeCJKDeclareCharClass{CJK}{`#1}\relax
+  #1}
 %    \end{macrocode}
 %
 %^^A----------------
@@ -6763,6 +7001,12 @@
   \ltjsetparameter{kanjiskip={\@tempskipa}}}
 \def\bxjs@apply@xkanjiskip{%
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
+%    \end{macrocode}
+%
+% |\jsJaChar| のサブマクロの実装。
+%    \begin{macrocode}
+\def\bxjs@jachar#1{%
+  \ltjjachar`#1\relax}
 %    \end{macrocode}
 %
 %^^A----------------

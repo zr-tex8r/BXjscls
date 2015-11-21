@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-minimal.def}
-  [2015/10/18 v1.0c BXJS document classes]
+  [2015/11/21 v1.0d BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -51,7 +51,79 @@
   \AtBeginDocument{%
     \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
 }
+\def\jsLetHeadChar#1#2{%
+  \begingroup
+    \escapechar=`\\ %
+    \let\bxjs@tmpa={% brace-match-hack
+    \bxjs@let@hchar@exp#2}%
+  \endgroup
+  \let#1\bxjs@g@tmpa}
+\def\bxjs@let@hchar@exp{%
+  \futurelet\@let@token\bxjs@let@hchar@exp@a}
+\def\bxjs@let@hchar@exp@a{%
+  \bxjs@cond\ifcat\noexpand\@let@token\bgroup\fi{% 波括弧
+    \bxjs@let@hchar@out\let\relax
+  }{\bxjs@cond\ifcat\noexpand\@let@token\@sptoken\fi{% 空白
+    \bxjs@let@hchar@out\let\space%
+  }{\bxjs@cond\if\noexpand\@let@token\@backslashchar\fi{% バックスラッシュ
+    \bxjs@let@hchar@out\let\@backslashchar
+  }{\bxjs@let@hchar@exp@b}}}}
+\def\bxjs@let@hchar@exp@b#1{%
+  \expandafter\bxjs@let@hchar@exp@c\string#1?\@nil#1}
+\def\bxjs@let@hchar@exp@c#1#2\@nil{%
+  \bxjs@cond\if#1\@backslashchar\fi{% 制御綴
+    \bxjs@cond\expandafter\ifx\noexpand\@let@token\@let@token\fi{%
+      \bxjs@let@hchar@out\let\relax
+    }{%else
+      \expandafter\bxjs@let@hchar@exp
+    }%
+  }{%else
+    \bxjs@let@hchar@chr#1%
+  }}
+\def\bxjs@let@hchar@chr#1{%
+  \bxjs@let@hchar@out\def{{#1}}}
+\def\bxjs@let@hchar@out#1#2{%
+  \global#1\bxjs@g@tmpa#2\relax
+  \toks@\bgroup}% skip to right brace
+\chardef\bxjs@let@hchar@csta=128
+\chardef\bxjs@let@hchar@cstb=192
+\chardef\bxjs@let@hchar@cstc=224
+\chardef\bxjs@let@hchar@cstd=240
+\chardef\bxjs@let@hchar@cste=248
+\let\bxjs@let@hchar@chr@ue@a\bxjs@let@hchar@chr
+\def\bxjs@let@hchar@chr@ue#1{%
+  \@tempcnta=`#1\relax
+  \bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@csta\fi{%
+    \bxjs@let@hchar@chr@ue@a#1%
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstb\fi{%
+    \bxjs@let@hchar@out\let\relax
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstc\fi{%
+    \bxjs@let@hchar@chr@ue@b
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cstd\fi{%
+    \bxjs@let@hchar@chr@ue@c
+  }{\bxjs@cond\ifnum\@tempcnta<\bxjs@let@hchar@cste\fi{%
+    \bxjs@let@hchar@chr@ue@d
+  }{%else
+    \bxjs@let@hchar@out\let\relax
+  }}}}}}
+\def\bxjs@let@hchar@chr@ue@a#1{%
+  \bxjs@let@hchar@out\def{{#1}}}
+\def\bxjs@let@hchar@chr@ue@b#1#2{%
+  \bxjs@let@hchar@out\def{{#1#2}}}
+\def\bxjs@let@hchar@chr@ue@c#1#2#3{%
+  \bxjs@let@hchar@out\def{{#1#2#3}}}
+\def\bxjs@let@hchar@chr@ue@d#1#2#3#4{%
+  \bxjs@let@hchar@out\def{{#1#2#3#4}}}
 \ifx j\jsEngine
+\def\bxjs@let@hchar@chr@pp#1{%
+  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#1\relax#1}
+\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3{%
+  \bxjs@cond\if#1t\fi{%
+    \bxjs@let@hchar@chr@ue#3%
+  }{%else
+    \bxjs@let@hchar@out\def{{#3}}%
+  }}
+\let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@pp
 \edef\jsc@JYn{\ifjsWithupTeX JY2\else JY1\fi}
 \edef\jsc@JTn{\ifjsWithupTeX JT2\else JT1\fi}
 \edef\jsc@pfx@{\ifjsWithupTeX u\fi}
@@ -133,6 +205,7 @@
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
 \let\jsInhibitGlueAtParTop\@inhibitglue
 \else\ifx p\jsEngine
+\let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@ue
 \@onlypreamble\bxjs@cjk@loaded
 \def\bxjs@cjk@loaded{%
   \def\@footnotemark{%
@@ -155,7 +228,16 @@
     \bxjs@cjk@loaded
   }{}%
 }
-\fi\fi
+\else\ifx x\jsEngine
+\def\bxjs@let@hchar@chr#1{%
+  \@tempcnta`#1\relax \divide\@tempcnta"800\relax
+  \bxjs@cond\ifnum\@tempcnta=27 \fi{%
+    \bxjs@let@hchar@chr@xe
+  }{\bxjs@let@hchar@out\def{{#1}}}}
+\def\bxjs@let@hchar@chr@xe#1{%
+  \lccode`0=`#1\relax
+  \lowercase{\bxjs@let@hchar@out\def{{0}}}}
+\fi\fi\fi
 \endinput
 %%
 %% End of file `bxjsja-minimal.def'.
