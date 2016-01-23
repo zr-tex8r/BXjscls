@@ -1,0 +1,104 @@
+%%
+%% This is file `bxjsja-pandoc.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjscls.dtx  (with options: `drv,pandoc')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjsja-pandoc.def.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjscls.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesFile{bxjsja-pandoc.def}
+  [2015/11/21 v1.0d BXJS document classes]
+\input{bxjsja-standard.def}
+\@onlypreamble\bxjs@set@dupload@proc
+\def\bxjs@set@dupload@proc#1{%
+  \expandafter\bxjs@set@dupload@proc@a\csname bxjs@dlp/#1\endcsname}
+\@onlypreamble\bxjs@set@dupload@proc@a
+\def\bxjs@set@dupload@proc@a#1{%
+  \@onlypreamble#1\def#1##1}
+\@onlypreamble\bxjs@org@if@ptions
+\let\bxjs@org@if@ptions\@if@ptions
+\newif\ifbxjs@dlp
+\def\@if@ptions#1#2#3{%
+  \bxjs@dlpfalse
+  \def\bxjs@tmpa{#1}\def\bxjs@tmpb{\@currext}%
+  \ifx\bxjs@tmpa\bxjs@tmpb
+    \expandafter\ifx\csname bxjs@dlp/#2.#1\endcsname\relax\else
+      \bxjs@dlptrue \fi
+  \fi
+  \ifbxjs@dlp \expandafter\bxjs@do@dupload@proc
+  \else \expandafter\bxjs@org@if@ptions
+  \fi {#1}{#2}{#3}}
+\AtBeginDocument{%
+  \let\@if@ptions\bxjs@org@if@ptions}
+\@onlypreamble\bxjs@do@dupload@proc
+\def\bxjs@do@dupload@proc#1#2#3{%
+  \csname bxjs@dlp/#2.#1\endcsname{#3}%
+  \@firstoftwo}
+\def\bxjs@mark@as@loaded#1{%
+  \expandafter\bxjs@mal@a\csname ver@#1\endcsname}
+\def\bxjs@mal@a#1{%
+  \ifx#1\relax \def#1{2001/01/01}\fi}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
+\bxjs@mark@as@loaded{polyglossia.sty}
+\bxjs@set@dupload@proc{polyglossia.sty}{%
+  \ClassWarning\bxjs@clsname
+   {Loading of polyglossia is blocked}}
+\ifx\setmainlanguage\@undefined
+\newcommand*\setmainlanguage[2][]{}
+\newcommand*\setotherlanguage[2][]{%
+  \ifcat_#2_\else
+    \expandafter\let\csname #2\endcsname\@empty
+    \expandafter\let\csname end#2\endcsname\@empty
+    \expandafter\let\csname text#2\endcsname\@firstofone
+  \fi}
+\fi
+\else
+\bxjs@mark@as@loaded{babel.sty}
+\bxjs@set@dupload@proc{babel.sty}{%
+  \ClassWarning\bxjs@clsname
+   {Loading of babel is blocked}}
+\let\foreignlanguage\@secondoftwo
+\let\otherlanguage\@gobble
+\let\endotherlanguage\@empty
+\fi
+\bxjs@set@dupload@proc{geometry.sty}{%
+  \setpagelayout*{#1}}
+\if l\jsEngine
+  \bxjs@mark@as@loaded{xeCJK.sty}
+  \providecommand*{\setCJKmainfont}{\setmainjfont}
+\fi
+\ifx\@IncludeInRelease\@undefined\else
+  \bxjs@mark@as@loaded{fixltx2e.sty}
+\fi
+\endinput
+%%
+%% End of file `bxjsja-pandoc.def'.

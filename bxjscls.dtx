@@ -55,6 +55,7 @@
 %<slide>\ProvidesClass{bxjsslide}
 %<minimal>\ProvidesFile{bxjsja-minimal.def}
 %<standard>\ProvidesFile{bxjsja-standard.def}
+%<pandoc>\ProvidesFile{bxjsja-pandoc.def}
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
@@ -816,6 +817,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@composite@proc}
+% 複合設定オプションの処理マクロ。
+\let\bxjs@composite@proc\relax
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareOption{pandoc}{%
+  \def\bxjs@composite@proc{%
+    \setkeys{bxjs}{ja=pandoc}%
+    \let\bxjs@engine@given=*}%
+  \def\bxjs@driver@opt{dvipdfmx-if-dvi}}
+%    \end{macrocode}
+%
 % \begin{macro}{\bxjs@engine@given}
 % オプションで明示されたエンジンの種別。
 %    \begin{macrocode}
@@ -1123,6 +1137,7 @@
 %<book>\ExecuteOptions{a4paper,twoside,onecolumn,titlepage,openright,final}
 %<slide>\ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
+\bxjs@composite@proc
 %    \end{macrocode}
 %
 % \begin{ZRnote}
@@ -7047,6 +7062,163 @@
 %
 %    \begin{macrocode}
 %</standard>
+%    \end{macrocode}
+%
+%^^A========================================================
+% \section{和文ドライバ：pandoc ☆}
+%
+% Pandoc用の何か。
+%
+% standardドライバの設定を引き継ぐ。
+%    \begin{macrocode}
+%<*pandoc>
+\input{bxjsja-standard.def}
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{duploadシステム}
+%
+% パッケージが重複して読み込まれたときに“option clash”の
+% 検査をスキップする。
+% この時に何らかのコードを実行させることができる。
+%
+% \begin{macro}{\bxjs@set@dupload@proc}
+% |\bxjs@set@dupload@proc{|\Meta{ファイル名}|}{|\Meta{定義本体}|}|
+% 特定のファイルの読込が |\@filewithoptions| で指示されて、しかも
+% そのファイルが読込済である場合に、オプション重複検査をスキップして、
+% 代わりに\Meta{定義本体}のコードを実行する。
+% このコード中で |#1| は渡されたオプション列のテキストに置換される。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@set@dupload@proc
+\def\bxjs@set@dupload@proc#1{%
+  \expandafter\bxjs@set@dupload@proc@a\csname bxjs@dlp/#1\endcsname}
+\@onlypreamble\bxjs@set@dupload@proc@a
+\def\bxjs@set@dupload@proc@a#1{%
+  \@onlypreamble#1\def#1##1}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@if@ptions}
+% |\@if@ptions| の再定義。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@org@if@ptions
+\let\bxjs@org@if@ptions\@if@ptions
+\newif\ifbxjs@dlp
+\def\@if@ptions#1#2#3{%
+  \bxjs@dlpfalse
+  \def\bxjs@tmpa{#1}\def\bxjs@tmpb{\@currext}%
+  \ifx\bxjs@tmpa\bxjs@tmpb
+    \expandafter\ifx\csname bxjs@dlp/#2.#1\endcsname\relax\else
+      \bxjs@dlptrue \fi
+  \fi
+  \ifbxjs@dlp \expandafter\bxjs@do@dupload@proc
+  \else \expandafter\bxjs@org@if@ptions
+  \fi {#1}{#2}{#3}}
+\AtBeginDocument{%
+  \let\@if@ptions\bxjs@org@if@ptions}
+\@onlypreamble\bxjs@do@dupload@proc
+\def\bxjs@do@dupload@proc#1#2#3{%
+  \csname bxjs@dlp/#2.#1\endcsname{#3}%
+  \@firstoftwo}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@mark@as@loaded}
+% |\bxjs@mark@as@loaded{|\Meta{ファイル名}|}|\Means
+% 特定のファイルに対して、（|\@filewithoptions| の処理に関して）
+% 読込済であるとマークする。
+%    \begin{macrocode}
+\def\bxjs@mark@as@loaded#1{%
+  \expandafter\bxjs@mal@a\csname ver@#1\endcsname}
+\def\bxjs@mal@a#1{%
+  \ifx#1\relax \def#1{2001/01/01}\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%^^A----------------
+%\subsection{lang変数}
+% |lang=ja| という言語指定が行われると、
+% Pandocはこれに対応していないため
+% 不完全なBabelやPolyglossiaの設定を出力してしまう。
+% これを防ぐため、とりあえず両パッケージを無効化しておく。
+%
+%    \begin{macrocode}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
+%    \end{macrocode}
+% Polyglossiaについて。
+%    \begin{macrocode}
+\bxjs@mark@as@loaded{polyglossia.sty}
+\bxjs@set@dupload@proc{polyglossia.sty}{%
+  \ClassWarning\bxjs@clsname
+   {Loading of polyglossia is blocked}}
+\ifx\setmainlanguage\@undefined
+\newcommand*\setmainlanguage[2][]{}
+\newcommand*\setotherlanguage[2][]{%
+  \ifcat_#2_\else
+    \expandafter\let\csname #2\endcsname\@empty
+    \expandafter\let\csname end#2\endcsname\@empty
+    \expandafter\let\csname text#2\endcsname\@firstofone
+  \fi}
+\fi
+\else
+%    \end{macrocode}
+% Babelについて。
+%    \begin{macrocode}
+\bxjs@mark@as@loaded{babel.sty}
+\bxjs@set@dupload@proc{babel.sty}{%
+  \ClassWarning\bxjs@clsname
+   {Loading of babel is blocked}}
+\let\foreignlanguage\@secondoftwo
+\let\otherlanguage\@gobble
+\let\endotherlanguage\@empty
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{geometry変数}
+% |geometry| を“再度読み込んだ”場合に、
+% そのパラメタで |\setpagelayout*| が呼ばれるようにする。
+%
+%    \begin{macrocode}
+\bxjs@set@dupload@proc{geometry.sty}{%
+  \setpagelayout*{#1}}
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{CJKmainfont変数}
+% Lua{\TeX}（+ Lua{{TeX}-ja）の場合に CJKmainfont 変数が
+% 指定された場合は |\setmainjfont| の指定にまわす。
+%    \begin{macrocode}
+\if l\jsEngine
+  \bxjs@mark@as@loaded{xeCJK.sty}
+  \providecommand*{\setCJKmainfont}{\setmainjfont}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{fixltx2eパッケージ}
+% テンプレートでは |fixltx2e| パッケージを読み込むが、
+% 最近（2015年版以降）の{\LaTeX}ではこれで警告が出る。
+% これを抑止する。
+%
+% {\LaTeX}カーネルが新しい場合は |fixltx2e| を
+% 読込済にする。
+%    \begin{macrocode}
+\ifx\@IncludeInRelease\@undefined\else
+  \bxjs@mark@as@loaded{fixltx2e.sty}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{完了}
+% おしまい。
+%    \begin{macrocode}
+%</pandoc>
+%    \end{macrocode}
+%
+% 和文ドライバ実装はここまで。
+%    \begin{macrocode}
+%</drv>
 %    \end{macrocode}
 %
 % \Finale

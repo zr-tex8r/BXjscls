@@ -253,6 +253,12 @@
       \else \@tempdimb=\@tempcntb\@ne \fi}%
     \xdef\bxjs@gtmpa{\the\@tempdimb}%
   \egroup #1=\bxjs@gtmpa\relax}
+\let\bxjs@composite@proc\relax
+\DeclareOption{pandoc}{%
+  \def\bxjs@composite@proc{%
+    \setkeys{bxjs}{ja=pandoc}%
+    \let\bxjs@engine@given=*}%
+  \def\bxjs@driver@opt{dvipdfmx-if-dvi}}
 \DeclareOption{autodetect-engine}{%
   \let\bxjs@engine@given=*}
 \DeclareOption{latex}{%
@@ -372,6 +378,7 @@
   \fi}
 \ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 \ProcessOptions\relax
+\bxjs@composite@proc
 \@onlypreamble\bxjs@purge@brace@elts
 \def\bxjs@purge@brace@elts{%
   \def\bxjs@tmpa{\@gobble}%
