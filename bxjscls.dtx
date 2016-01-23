@@ -53,8 +53,8 @@
 %<report>\ProvidesClass{bxjsreport}
 %<book>\ProvidesClass{bxjsbook}
 %<slide>\ProvidesClass{bxjsslide}
-%<drvminimal>\ProvidesFile{bxjsja-minimal.def}
-%<drvstandard>\ProvidesFile{bxjsja-standard.def}
+%<minimal>\ProvidesFile{bxjsja-minimal.def}
+%<standard>\ProvidesFile{bxjsja-standard.def}
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
@@ -194,7 +194,8 @@
 % \mbox{}
 % \begin{ZRnote}
 %    \begin{macrocode}
-%<*!drvminimal&!drvstandard>
+%<*cls>
+%% このファイルは日本語文字を含みます
 %    \end{macrocode}
 % 長さ値の指定で式を利用可能にするため |calc| を読み込む。
 %    \begin{macrocode}
@@ -5723,7 +5724,7 @@
 % 最後に日本語文字のカテゴリコードを元に戻す。
 %    \begin{macrocode}
 \bxjs@restore@jltrcc
-%</!drvminimal&!drvstandard>
+%</cls>
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -5734,9 +5735,9 @@
 % \clearpage
 % \appendix
 %^^A========================================================
-% \section{連携モジュールの仕様 ☆}
+% \section{和文ドライバの仕様 ☆}
 %
-% 次の命令がBXJSクラス本体と和文モジュールの連携のために
+% 次の命令がBXJSクラス本体と和文ドライバの連携のために
 % 用意されている。
 % このうち、★印を付けたものは“書込”が許されるものである。
 %
@@ -5815,6 +5816,11 @@
 %   既定の定義は空。
 % \end{itemize}
 %
+% 以下で標準で用意されている和文ドライバの実装を示す。
+%    \begin{macrocode}
+%<*drv>
+%    \end{macrocode}
+%
 %^^A========================================================
 % \section{和文ドライバ：minimal ☆}
 %
@@ -5835,7 +5841,7 @@
 % \subsection{補助マクロ}
 %
 %    \begin{macrocode}
-%<*drvminimal>
+%<*minimal>
 %% このファイルは日本語文字を含みます
 %    \end{macrocode}
 %
@@ -6203,7 +6209,7 @@
 % 以上で終わり。
 %    \begin{macrocode}
 \fi\fi\fi
-%</drvminimal>
+%</minimal>
 %    \end{macrocode}
 %
 %^^A========================================================
@@ -6239,7 +6245,7 @@
 %
 % まず minimal ドライバを読み込む。
 %    \begin{macrocode}
-%<*drvstandard>
+%<*standard>
 \input{bxjsja-minimal.def}
 %    \end{macrocode}
 %
@@ -7040,7 +7046,7 @@
 % 以上で終わり。
 %
 %    \begin{macrocode}
-%</drvstandard>
+%</standard>
 %    \end{macrocode}
 %
 % \Finale

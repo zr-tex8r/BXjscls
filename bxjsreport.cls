@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% bxjscls.dtx  (with options: `report')
+%% bxjscls.dtx  (with options: `cls,report')
 %% 
 %% IMPORTANT NOTICE:
 %% 
@@ -38,6 +38,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
   [2015/11/21 v1.0d BXJS document classes]
+%% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \let\jsEngine=n
