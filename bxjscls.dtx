@@ -55,7 +55,9 @@
 %<slide>\ProvidesClass{bxjsslide}
 %<minimal>\ProvidesFile{bxjsja-minimal.def}
 %<standard>\ProvidesFile{bxjsja-standard.def}
+%<modern>\ProvidesFile{bxjsja-modern.def}
 %<pandoc>\ProvidesFile{bxjsja-pandoc.def}
+%<cjkcat>\ProvidesPackage{bxjscjkcat}
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
@@ -1057,7 +1059,8 @@
 % |ja| オプション（|jadriver| オプション）の処理。
 %    \begin{macrocode}
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
-\define@key{bxjs}{ja}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{ja}[\relax]{%
+  \ifx\relax#1\else\edef\bxjs@jadriver{#1}\fi}
 %    \end{macrocode}
 %
 % \begin{macro}{\jsJaFont}
@@ -7065,6 +7068,80 @@
 %    \end{macrocode}
 %
 %^^A========================================================
+% \section{和文ドライバ：modern ☆}
+%
+% モダーンな設定。
+%
+% standardドライバの設定を引き継ぐ。
+%    \begin{macrocode}
+%<*modern>
+\input{bxjsja-standard.def}
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{フォント設定}
+% 
+% T1エンコーディングに変更する。
+% \Note 以下のコードは |\usepackage[T1]{fontenc}| と同等。
+%    \begin{macrocode}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
+\def\encodingdefault{T1}%
+\input{t1enc.def}%
+\fontencoding\encodingdefault\selectfont
+\fi
+%    \end{macrocode}
+%
+% 基本フォントをLatin Modernフォントファミリに変更する。
+% \Note 以下は |\usepackage[noamth]{lmodern}| と同じ。
+% ユーザは後で |lmodern| を好きなオプションを付けて読み込む
+% ことができる。
+%    \begin{macrocode}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
+\renewcommand{\rmdefault}{lmr}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\fi
+%    \end{macrocode}
+%
+% 大型演算子用の数式フォントの設定。
+% \Note |amsfonts| パッケージと同等にする。
+%    \begin{macrocode}
+\DeclareFontShape{OMX}{cmex}{m}{n}{%
+  <-7.5>cmex7<7.5-8.5>cmex8%
+  <8.5-9.5>cmex9<9.5->cmex10}{}%
+\expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+%    \end{macrocode}
+% |amsmath| 読込時に上書きされるのを防ぐ。
+%    \begin{macrocode}
+\def\cmex@opt{10}
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{fixltx2e読込}
+%
+% \Note |fixltx2e| 廃止前の{\LaTeX}カーネルの場合。
+%    \begin{macrocode}
+\ifx\@IncludeInRelease\@undefined
+\RequirePackage{fixltx2e}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{和文カテゴリコード}
+%
+% 和文カテゴリコード設定のための補助パッケージを読みこむ。
+%    \begin{macrocode}
+\RequirePackage{bxjscjkcat}
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{完了}
+% おしまい。
+%    \begin{macrocode}
+%</modern>
+%    \end{macrocode}
+%
+%^^A========================================================
 % \section{和文ドライバ：pandoc ☆}
 %
 % Pandoc用の何か。
@@ -7159,6 +7236,9 @@
     \expandafter\let\csname end#2\endcsname\@empty
     \expandafter\let\csname text#2\endcsname\@firstofone
   \fi}
+\newcommand*\setotherlanguages[2][]{%
+  \@for\bxjs@tmpa:={#2}\do{%
+    \setotherlangauge{\bxjs@tmpa}}}
 \fi
 \else
 %    \end{macrocode}
@@ -7219,6 +7299,492 @@
 % 和文ドライバ実装はここまで。
 %    \begin{macrocode}
 %</drv>
+%    \end{macrocode}
+%
+%^^A========================================================
+% \section{補助パッケージ一覧 ☆}
+%
+% BXJSクラスの機能を実現するために用意されたものだが、
+% 他のクラスの文書で読み込んで利用することもできる。
+%
+% \begin{itemize}
+% \item bxjscjkcat： modernドライバ用の和文カテゴリを適用する。
+% \end{itemize}
+%
+%    \begin{macrocode}
+%<*anc>
+%    \end{macrocode}
+%
+%^^A========================================================
+% \section{補助パッケージ：bxjscjkcat ☆}
+%
+% modernドライバ用の和文カテゴリを適用する。
+%
+%^^A----------------
+% \subsection{準備}
+%
+%    \begin{macrocode}
+%<*cjkcat>
+\def\bxjx@pkgname{bxjscjkcat}
+\newcount\bxjx@cnta
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjx@engine}
+% エンジンの種別。
+%    \begin{macrocode}
+\let\bxjx@engine=n
+\def\bxjx@do#1#2{%
+  \edef\bxjx@tmpa{\string#1}%
+  \edef\bxjx@tmpb{\meaning#1}%
+  \ifx\bxjx@tmpa\bxjx@tmpb #2\fi}
+\bxjx@do\kanjiskip{\let\bxjx@engine=j}
+\bxjx@do\enablecjktoken{\let\bxjx@engine=u}
+\bxjx@do\XeTeXversion{\let\bxjx@engine=x}
+\bxjx@do\pdftexversion{\let\bxjx@engine=p}
+\bxjx@do\luatexversion{\let\bxjx@engine=l}
+%    \end{macrocode}
+% \end{macro}
+%
+% それぞれのエンジンで、前提となる日本語処理パッケージが実際に
+% 読み込まれているかを検査する。
+%    \begin{macrocode}
+\def\bxjx@do#1#2{%
+  \if#1\bxjx@engine
+    \@ifpackageloaded{#2}{}{%else
+      \PackageError\bxjx@pkgname
+       {Package '#2' must be loaded}%
+       {Package loading is aborted.\MessageBreak\@ehc}%
+      \endinput}
+  \fi}
+\bxjx@do{p}{bxcjkjatype}
+\bxjx@do{x}{xeCJK}
+\bxjx@do{l}{luatexja}
+%    \end{macrocode}
+%
+% 古い{\LaTeX}の場合、|\TextOrMath| は |fixltx2e| パッケージで
+% 提供される。
+%    \begin{macrocode}
+\ifx\TextOrMath\@undefined
+  \RequirePackage{fixltx2e}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{和文カテゴリコードの設定}
+%
+% up{\LaTeX}の場合、和文カテゴリコードの設定を
+% Lua{\TeX}-jaと（ほぼ）等価なものに変更する。
+%
+% \Note Lua{\TeX}-jaとの相違点：
+% |A830|、|A960|、|1B000|。
+%    \begin{macrocode}
+\if u\bxjx@engine
+\@for\bxjx@x:={%
+0080,0100,0180,0250,02B0,0300,0500,0530,0590,0600,%
+0700,0750,0780,07C0,0800,0840,08A0,0900,0980,0A00,%
+0A80,0B00,0B80,0C00,0C80,0D00,0D80,0E00,0E80,0F00,%
+1000,10A0,1200,1380,13A0,1400,1680,16A0,1700,1720,%
+1740,1760,1780,1800,18B0,1900,1950,1980,19E0,1A00,%
+1A20,1AB0,1B00,1B80,1BC0,1C00,1C50,1CC0,1CD0,1D00,%
+1D80,1DC0,1E00,2440,27C0,27F0,2800,2A00,2C00,2C60,%
+2C80,2D00,2D30,2D80,2DE0,2E00,4DC0,A4D0,A500,A640,%
+A6A0,A700,A720,A800,A830,A840,A880,A8E0,A900,A930,%
+A980,A9E0,AA00,AA60,AA80,AAE0,AB00,AB30,AB70,ABC0,%
+D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
+10000,10080,10100,10140,10190,101D0,10280,102A0,%
+102E0,10300,10330,10350,10380,103A0,10400,10450,%
+10480,10500,10530,10600,10800,10840,10860,10880,%
+108E0,10900,10920,10980,109A0,10A00,10A60,10A80,%
+10AC0,10B00,10B40,10B60,10B80,10C00,10C80,10E60,%
+11000,11080,110D0,11100,11150,11180,111E0,11200,%
+11280,112B0,11300,11480,11580,11600,11680,11700,%
+118A0,11AC0,12000,12400,12480,13000,14400,16800,%
+16A40,16AD0,16B00,16F00,1BC00,1BCA0,1D000,1D100,%
+1D200,1D300,1D360,1D400,1D800,1E800,1EE00,1F000,%
+1F030,1F0A0,1F100,1F200,1F300,1F600,1F650,1F680,%
+1F700,1F780,1F800,1F900,E0000,F0000,100000%
+}\do{\kcatcode"\bxjx@x=15 }
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{ギリシャ・キリル文字の扱い}
+%
+% \Note ここで「ギリシャ・キリル文字」はUnicodeとJIS X 0213に
+% 共通して含まれるもののみを指すことにする。
+%
+% \begin{macro}{\bxjx@grkcyr@list}
+% 対象のギリシャ・キリル文字に関するデータ。
+%    \begin{macrocode}
+\def\bxjx@grkcyr@list{%
+\do{0391}{LGR}{\textAlpha}{A}%            % GR. C. L. ALPHA
+\do{0392}{LGR}{\textBeta}{B}%             % GR. C. L. BETA
+\do{0393}{LGR}{\textGamma}{\Gamma}%       % GR. C. L. GAMMA
+\do{0394}{LGR}{\textDelta}{\Delta}%       % GR. C. L. DELTA
+\do{0395}{LGR}{\textEpsilon}{E}%          % GR. C. L. EPSILON
+\do{0396}{LGR}{\textZeta}{Z}%             % GR. C. L. ZETA
+\do{0397}{LGR}{\textEta}{H}%              % GR. C. L. ETA
+\do{0398}{LGR}{\textTheta}{\Theta}%       % GR. C. L. THETA
+\do{0399}{LGR}{\textIota}{I}%             % GR. C. L. IOTA
+\do{039A}{LGR}{\textKappa}{K}%            % GR. C. L. KAPPA
+\do{039B}{LGR}{\textLambda}{\Lambda}%     % GR. C. L. LAMDA
+\do{039C}{LGR}{\textMu}{M}%               % GR. C. L. MU
+\do{039D}{LGR}{\textNu}{N}%               % GR. C. L. NU
+\do{039E}{LGR}{\textXi}{\Xi}%             % GR. C. L. XI
+\do{039F}{LGR}{\textOmicron}{O}%          % GR. C. L. OMICRON
+\do{03A0}{LGR}{\textPi}{\Pi}%             % GR. C. L. PI
+\do{03A1}{LGR}{\textRho}{P}%              % GR. C. L. RHO
+\do{03A3}{LGR}{\textSigma}{\Sigma}%       % GR. C. L. SIGMA
+\do{03A4}{LGR}{\textTau}{T}%              % GR. C. L. TAU
+\do{03A5}{LGR}{\textUpsilon}{\Upsilon}%   % GR. C. L. UPSILON
+\do{03A6}{LGR}{\textPhi}{\Phi}%           % GR. C. L. PHI
+\do{03A7}{LGR}{\textChi}{X}%              % GR. C. L. CHI
+\do{03A8}{LGR}{\textPsi}{\Psi}%           % GR. C. L. PSI
+\do{03A9}{LGR}{\textOmega}{\Omega}%       % GR. C. L. OMEGA
+\do{03B1}{LGR}{\textalpha}{\alpha}%       % GR. S. L. ALPHA
+\do{03B2}{LGR}{\textbeta}{\beta}%         % GR. S. L. BETA
+\do{03B3}{LGR}{\textgamma}{\gamma}%       % GR. S. L. GAMMA
+\do{03B4}{LGR}{\textdelta}{\delta}%       % GR. S. L. DELTA
+\do{03B5}{LGR}{\textepsilon}{\epsilon}%   % GR. S. L. EPSILON
+\do{03B6}{LGR}{\textzeta}{\zeta}%         % GR. S. L. ZETA
+\do{03B7}{LGR}{\texteta}{\eta}%           % GR. S. L. ETA
+\do{03B8}{LGR}{\texttheta}{\theta}%       % GR. S. L. THETA
+\do{03B9}{LGR}{\textiota}{\iota}%         % GR. S. L. IOTA
+\do{03BA}{LGR}{\textkappa}{\kappa}%       % GR. S. L. KAPPA
+\do{03BB}{LGR}{\textlambda}{\lambda}%     % GR. S. L. LAMDA
+\do{03BC}{LGR}{\textmu}{\mu}%             % GR. S. L. MU
+\do{03BD}{LGR}{\textnu}{\nu}%             % GR. S. L. NU
+\do{03BE}{LGR}{\textxi}{\xi}%             % GR. S. L. XI
+\do{03BF}{LGR}{\textomicron}{o}%          % GR. S. L. OMICRON
+\do{03C0}{LGR}{\textpi}{\pi}%             % GR. S. L. PI
+\do{03C1}{LGR}{\textrho}{\rho}%           % GR. S. L. RHO
+\do{03C2}{LGR}{\textvarsigma}{\varsigma}% % GR. S. L. FINAL SIGMA
+\do{03C3}{LGR}{\textsigma}{\sigma}%       % GR. S. L. SIGMA
+\do{03C4}{LGR}{\texttau}{\tau}%           % GR. S. L. TAU
+\do{03C5}{LGR}{\textupsilon}{\upsilon}%   % GR. S. L. UPSILON
+\do{03C6}{LGR}{\textphi}{\phi}%           % GR. S. L. PHI
+\do{03C7}{LGR}{\textchi}{\chi}%           % GR. S. L. CHI
+\do{03C8}{LGR}{\textpsi}{\psi}%           % GR. S. L. PSI
+\do{03C9}{LGR}{\textomega}{\omega}%       % GR. S. L. OMEGA
+\do{0401}{T2A}{\CYRYO}{}%                 % CY. C. L. IO
+\do{0410}{T2A}{\CYRA}{}%                  % CY. C. L. A
+\do{0411}{T2A}{\CYRB}{}%                  % CY. C. L. BE
+\do{0412}{T2A}{\CYRV}{}%                  % CY. C. L. VE
+\do{0413}{T2A}{\CYRG}{}%                  % CY. C. L. GHE
+\do{0414}{T2A}{\CYRD}{}%                  % CY. C. L. DE
+\do{0415}{T2A}{\CYRE}{}%                  % CY. C. L. IE
+\do{0416}{T2A}{\CYRZH}{}%                 % CY. C. L. ZHE
+\do{0417}{T2A}{\CYRZ}{}%                  % CY. C. L. ZE
+\do{0418}{T2A}{\CYRI}{}%                  % CY. C. L. I
+\do{0419}{T2A}{\CYRISHRT}{}%              % CY. C. L. SHORT I
+\do{041A}{T2A}{\CYRK}{}%                  % CY. C. L. KA
+\do{041B}{T2A}{\CYRL}{}%                  % CY. C. L. EL
+\do{041C}{T2A}{\CYRM}{}%                  % CY. C. L. EM
+\do{041D}{T2A}{\CYRN}{}%                  % CY. C. L. EN
+\do{041E}{T2A}{\CYRO}{}%                  % CY. C. L. O
+\do{041F}{T2A}{\CYRP}{}%                  % CY. C. L. PE
+\do{0420}{T2A}{\CYRR}{}%                  % CY. C. L. ER
+\do{0421}{T2A}{\CYRS}{}%                  % CY. C. L. ES
+\do{0422}{T2A}{\CYRT}{}%                  % CY. C. L. TE
+\do{0423}{T2A}{\CYRU}{}%                  % CY. C. L. U
+\do{0424}{T2A}{\CYRF}{}%                  % CY. C. L. EF
+\do{0425}{T2A}{\CYRH}{}%                  % CY. C. L. HA
+\do{0426}{T2A}{\CYRC}{}%                  % CY. C. L. TSE
+\do{0427}{T2A}{\CYRCH}{}%                 % CY. C. L. CHE
+\do{0428}{T2A}{\CYRSH}{}%                 % CY. C. L. SHA
+\do{0429}{T2A}{\CYRSHCH}{}%               % CY. C. L. SHCHA
+\do{042A}{T2A}{\CYRHRDSN}{}%              % CY. C. L. HARD SIGN
+\do{042B}{T2A}{\CYRERY}{}%                % CY. C. L. YERU
+\do{042C}{T2A}{\CYRSFTSN}{}%              % CY. C. L. SOFT SIGN
+\do{042D}{T2A}{\CYREREV}{}%               % CY. C. L. E
+\do{042E}{T2A}{\CYRYU}{}%                 % CY. C. L. YU
+\do{042F}{T2A}{\CYRYA}{}%                 % CY. C. L. YA
+\do{0430}{T2A}{\cyra}{}%                  % CY. S. L. A
+\do{0431}{T2A}{\cyrb}{}%                  % CY. S. L. BE
+\do{0432}{T2A}{\cyrv}{}%                  % CY. S. L. VE
+\do{0433}{T2A}{\cyrg}{}%                  % CY. S. L. GHE
+\do{0434}{T2A}{\cyrd}{}%                  % CY. S. L. DE
+\do{0435}{T2A}{\cyre}{}%                  % CY. S. L. IE
+\do{0436}{T2A}{\cyrzh}{}%                 % CY. S. L. ZHE
+\do{0437}{T2A}{\cyrz}{}%                  % CY. S. L. ZE
+\do{0438}{T2A}{\cyri}{}%                  % CY. S. L. I
+\do{0439}{T2A}{\cyrishrt}{}%              % CY. S. L. SHORT I
+\do{043A}{T2A}{\cyrk}{}%                  % CY. S. L. KA
+\do{043B}{T2A}{\cyrl}{}%                  % CY. S. L. EL
+\do{043C}{T2A}{\cyrm}{}%                  % CY. S. L. EM
+\do{043D}{T2A}{\cyrn}{}%                  % CY. S. L. EN
+\do{043E}{T2A}{\cyro}{}%                  % CY. S. L. O
+\do{043F}{T2A}{\cyrp}{}%                  % CY. S. L. PE
+\do{0440}{T2A}{\cyrr}{}%                  % CY. S. L. ER
+\do{0441}{T2A}{\cyrs}{}%                  % CY. S. L. ES
+\do{0442}{T2A}{\cyrt}{}%                  % CY. S. L. TE
+\do{0443}{T2A}{\cyru}{}%                  % CY. S. L. U
+\do{0444}{T2A}{\cyrf}{}%                  % CY. S. L. EF
+\do{0445}{T2A}{\cyrh}{}%                  % CY. S. L. HA
+\do{0446}{T2A}{\cyrc}{}%                  % CY. S. L. TSE
+\do{0447}{T2A}{\cyrch}{}%                 % CY. S. L. CHE
+\do{0448}{T2A}{\cyrsh}{}%                 % CY. S. L. SHA
+\do{0449}{T2A}{\cyrshch}{}%               % CY. S. L. SHCHA
+\do{044A}{T2A}{\cyrhrdsn}{}%              % CY. S. L. HARD SIGN
+\do{044B}{T2A}{\cyrery}{}%                % CY. S. L. YERU
+\do{044C}{T2A}{\cyrsftsn}{}%              % CY. S. L. SOFT SIGN
+\do{044D}{T2A}{\cyrerev}{}%               % CY. S. L. E
+\do{044E}{T2A}{\cyryu}{}%                 % CY. S. L. YU
+\do{044F}{T2A}{\cyrya}{}%                 % CY. S. L. YA
+\do{0451}{T2A}{\cyryo}{}%                 % CY. S. L. IO
+\do{00A7}{TS1}{\textsection}{\mathsection}% SECTION SYMBOL
+\do{00A8}{TS1}{\textasciidieresis}{}%      % DIAERESIS
+\do{00B0}{TS1}{\textdegree}{\mathdegree}% % DEGREE SIGN
+\do{00B1}{TS1}{\textpm}{\pm}%             % PLUS-MINUS SIGN
+\do{00B4}{TS1}{\textasciiacute}{}%        % ACUTE ACCENT
+\do{00B6}{TS1}{\textparagraph}{\mathparagraph}% PILCROW SIGN
+\do{00D7}{TS1}{\texttimes}{\times}%       % MULTIPLICATION SIGN
+\do{00F7}{TS1}{\textdiv}{\div}%           % DIVISION SIGN
+}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\providecommand*{\mathdegree}{{}^{\circ}}
+%    \end{macrocode}
+%
+%
+% \begin{macro}{\ifbxjx@gcc@cjk}
+% 〔スイッチ〕
+% ギリシャ・キリル文字を和文扱いにするか。
+%    \begin{macrocode}
+\newif\ifbxjx@gcc@cjk
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\greekasCJK}
+% ギリシャ・キリル文字を和文扱いにする。
+% \begin{macro}{\nogreekasCJK}
+% ギリシャ・キリル文字を欧文扱いにする。
+%    \begin{macrocode}
+\newcommand*\greekasCJK{%
+  \bxjx@gcc@cjktrue}
+\newcommand*\nogreekasCJK{%
+  \bxjx@gcc@cjkfalse}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\bx@fake@grk}
+% |\bx@fake@grk{|\Meta{出力文字}|}{|\Meta{基準文字}|}|\Means
+%    \begin{macrocode}
+\def\bxjx@do#1\relax{%
+  \def\bxjx@fake@grk##1##2{%
+    \expandafter\bxjx@fake@grk@a\meaning##2#1\@nil{##1}{##2}}%
+  \def\bxjx@fake@grk@a##1#1##2\@nil##3##4{%
+    \ifx\\##1\\%
+      \bxjx@cnta##4\divide\bxjx@cnta\@cclvi
+      \multiply\bxjx@cnta\@cclvi \advance\bxjx@cnta`##3\relax
+      \mathchar\bxjx@cnta
+    \else ##3\fi}
+}\expandafter\bxjx@do\string\mathchar\relax
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{pdfLaTeX・upLaTeXの場合}
+%    \begin{macrocode}
+\ifnum0\if p\bxjx@engine1\fi\if u\bxjx@engine1\fi>0
+%    \end{macrocode}
+% まず |inputenc| を読み込んで入力エンコーディングを |utf8|
+% に変更する。
+%    \begin{macrocode}
+\@ifpackageloaded{inputenc}{}{%else
+  \RequirePackage[utf8]{inputenc}}
+\def\bxjx@tmpa{utf8}
+\ifx\bxjx@tmpa\inputencdoingname
+  \PackageWarningNoLine\bxjx@pkgname
+   {Input encoding changed to utf8}%
+  \inputencoding{utf8}%
+\fi
+%    \end{macrocode}
+%
+% up{\LaTeX}の場合は当該の文字を含むブロックをの和文カテゴリコード
+% を変更する。
+%    \begin{macrocode}
+\if u\bxjx@engine
+\kcatcode"0370=15
+\kcatcode"0400=15
+\kcatcode"0500=15
+\fi
+%    \end{macrocode}
+% 各文字について |\DeclareUnicodeCharacter| を実行する。
+%    \begin{macrocode}
+\def\do#1{%
+  \@tempcnta="#1\relax
+  \@tempcntb=\@tempcnta \divide\@tempcntb256
+  \expandafter\let\csname bxjx@KCR/\the\@tempcntb\endcsname=t%
+  \expandafter\bxjx@do@a\csname bxjx@KC/\the\@tempcnta\endcsname{#1}}
+\def\bxjx@do@a#1#2#3#4#5{%
+  \ifx\\#5\\%
+    \def\bxjx@tmpa{\@inmathwarn#4}%
+  \else\ifcat A\noexpand#5%
+    \edef\bxjx@tmpa{\noexpand\bxjx@fake@grk{#5}%
+      {\ifnum\uccode`#5=`#5\noexpand\Pi\else\noexpand\pi\fi}}%
+  \else \def\bxjx@tmpa{#5}%
+  \fi\fi
+  \def\bxjx@tmpb{\bxjx@do@b{#1}{#2}{#3}{#4}}%
+  \expandafter\bxjx@tmpb\expandafter{\bxjx@tmpa}}
+\if u\bxjx@engine
+% {\bxjx@KC/NN}{XXXX}{ENC}{\textCS}{\mathCS}
+\def\bxjx@do@b#1#2#3#4#5{%
+  \kchardef#1=\@tempcnta
+  \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{#1}{#3}{#4}}%
+  \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
+\else\if p\bxjx@engine
+\def\bxjx@do@b#1#2#3#4#5{%
+  \mathchardef#1=\@tempcnta
+  \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{\UTF{#2}}{#3}{#4}}%
+  \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
+\fi\fi
+\bxjx@grkcyr@list
+\let\bxjx@do@a\undefined
+\let\bxjx@do@b\undefined
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjx@DeclareUnicodeCharacter}
+% |\bxjx@DeclareUnicodeCharacter| を改変して、
+% ギリシャ・キリル文字の場合に再定義を抑止したもの。
+%    \begin{macrocode}
+\@onlypreamble\bxjx@org@DeclareUnicodeCharacter
+\let\bxjx@org@DeclareUnicodeCharacter\DeclareUnicodeCharacter
+\@onlypreamble\bxjx@DeclareUnicodeCharacter
+\def\bxjx@DeclareUnicodeCharacter#1#2{%
+  \count@="#1\relax \bxjx@cnta\count@ \divide\bxjx@cnta256
+  \expandafter\ifx\csname bxjx@KCR/\the\bxjx@cnta\endcsname\relax
+    \bxjx@org@DeclareUnicodeCharacter{#1}{#2}%
+  \else\expandafter\ifx\csname bxjx@KC/\the\count@\endcsname\relax
+    \bxjx@org@DeclareUnicodeCharacter{#1}{#2}%
+  \else
+    \wlog{ \space\space skipped defining Unicode char U+#1}%
+  \fi\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjx@ja@or@not}
+% |\bxjx@ja@or@not|
+%    \begin{macrocode}
+\def\bxjx@ja@or@not#1#2#3{%
+%    \end{macrocode}
+% |\greekasCJK| の場合は、無条件に和文用コードを実行する。
+%    \begin{macrocode}
+  \ifbxjx@gcc@cjk #1%
+%    \end{macrocode}
+% |\nogreekasCJK| の場合は、エンコーディングを固定して欧文用の
+% コードを実行するが、そのエンコーディングが未定義の場合は
+% （フォールバックとして）和文用コードを使う。
+%    \begin{macrocode}
+  \else\expandafter\ifx\csname T@#2\endcsname\relax #1%
+  \else \UseTextSymbol{#2}{#3}%
+  \fi\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\DeclareFontEncoding@}
+% |\DeclareFontEncoding@| にパッチを当てて、
+% |\DeclareFontEncoding| の実行中だけ
+% 改変後の |\DeclareUnicodeCharacter| が使われるようにする。
+%    \begin{macrocode}
+\begingroup
+\toks@\expandafter{\DeclareFontEncoding@{#1}{#2}{#3}}
+\xdef\next{\def\noexpand\DeclareFontEncoding@##1##2##3{%
+  \noexpand\bxjx@swap@DUC@cmd
+  \the\toks@
+  \noexpand\bxjx@swap@DUC@cmd}}
+\endgroup\next
+\def\bxjx@swap@DUC@cmd{%
+  \let\bxjx@tmpa\DeclareUnicodeCharacter
+  \let\DeclareUnicodeCharacter\bxjx@DeclareUnicodeCharacter
+  \let\bxjx@DeclareUnicodeCharacter\bxjx@tmpa}
+%    \end{macrocode}
+% \end{macro}
+%
+% 以上。
+%
+% \paragraph{{\XeLaTeX}・Lua{\LaTeX}の場合}
+%    \begin{macrocode}
+\else\ifnum0\if x\bxjx@engine1\fi\if l\bxjx@engine1\fi>0
+%    \end{macrocode}
+%
+% 各文字について、math activeを設定する。
+%    \begin{macrocode}
+\def\do#1{%
+  \bxjx@cnta="#1\relax
+  \begingroup
+    \lccode`~=\bxjx@cnta
+  \lowercase{\endgroup
+    \bxjx@do@a{~}}{#1}}
+\def\bxjx@do@a#1#2#3#4#5{%
+  \ifx\\#5\\\let\bxjx@tmpa\relax
+  \else\ifcat A\noexpand#5%
+    \edef\bxjx@tmpa{\noexpand\bxjx@fake@grk{#5}%
+      {\ifnum\uccode`#5=`#5\noexpand\Pi\else\noexpand\pi\fi}}%
+  \else \def\bxjx@tmpa{#5}%
+  \fi\fi
+  \ifx\bxjx@tmpa\relax\else
+    \mathcode\bxjx@cnta"8000 \let#1\bxjx@tmpa
+  \fi}
+%    \end{macrocode}
+% 「Unicodeな数式」の設定が行われているかを（簡易的に）検査して、
+% そうでない場合にのみ、こちらの設定を有効にする。
+%    \begin{macrocode}
+\mathchardef\bxjx@tmpa="119
+\ifx\bxjx@tmpa\pi \bxjx@grkcyr@list \fi
+\let\bxjx@do@a\undefined
+%    \end{macrocode}
+%
+% Lua{\TeX}における |\(no)greekasCJK| の定義。
+% |jacharrange| の設定を変更する。
+%    \begin{macrocode}
+\if l\bxjx@engine
+  \protected\def\greekasCJK{%
+    \bxjx@gcc@cjktrue
+    \ltjsetparameter{jacharrange={+2, +8}}}
+  \protected\def\nogreekasCJK{%
+    \bxjx@gcc@cjkfalse
+    \ltjsetparameter{jacharrange={-2, -8}}}
+\fi
+%    \end{macrocode}
+%
+% {\XeTeX}における |\(no)greekasCJK| の定義。
+%    \begin{macrocode}
+\if x\bxjx@engine
+  \protected\def\greekasCJK{%
+    \bxjx@gcc@cjktrue
+    \def\do##1##2##3##4{\XeTeXcharclass"##1\@ne}%
+    \bxjx@grkcyr@list}
+  \protected\def\nogreekasCJK{%
+    \bxjx@gcc@cjkfalse
+    \def\do##1##2##3##4{\XeTeXcharclass"##1\z@}%
+    \bxjx@grkcyr@list}
+\fi
+%    \end{macrocode}
+%
+% 以上。
+%    \begin{macrocode}
+\fi\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{完了}
+% おしまい。
+%    \begin{macrocode}
+%</cjkcat>
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{初期設定}
+% ギリシャ・キリル文字を欧文扱いにする。
+%    \begin{macrocode}
+\nogreekasCJK
+%    \end{macrocode}
+%
+% 補助パッケージ実装はここまで。
+%    \begin{macrocode}
+%</anc>
 %    \end{macrocode}
 %
 % \Finale

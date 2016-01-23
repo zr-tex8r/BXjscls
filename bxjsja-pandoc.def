@@ -80,6 +80,9 @@
     \expandafter\let\csname end#2\endcsname\@empty
     \expandafter\let\csname text#2\endcsname\@firstofone
   \fi}
+\newcommand*\setotherlanguages[2][]{%
+  \@for\bxjs@tmpa:={#2}\do{%
+    \setotherlangauge{\bxjs@tmpa}}}
 \fi
 \else
 \bxjs@mark@as@loaded{babel.sty}

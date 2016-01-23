@@ -1,0 +1,62 @@
+%%
+%% This is file `bxjsja-modern.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjscls.dtx  (with options: `drv,modern')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjsja-modern.def.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjscls.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesFile{bxjsja-modern.def}
+  [2015/11/21 v1.0d BXJS document classes]
+\input{bxjsja-standard.def}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
+\def\encodingdefault{T1}%
+\input{t1enc.def}%
+\fontencoding\encodingdefault\selectfont
+\fi
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
+\renewcommand{\rmdefault}{lmr}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\fi
+\DeclareFontShape{OMX}{cmex}{m}{n}{%
+  <-7.5>cmex7<7.5-8.5>cmex8%
+  <8.5-9.5>cmex9<9.5->cmex10}{}%
+\expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+\def\cmex@opt{10}
+\ifx\@IncludeInRelease\@undefined
+\RequirePackage{fixltx2e}
+\fi
+\RequirePackage{bxjscjkcat}
+\endinput
+%%
+%% End of file `bxjsja-modern.def'.

@@ -349,7 +349,8 @@
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
 \let\bxjs@jadriver\relax
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
-\define@key{bxjs}{ja}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{ja}[\relax]{%
+  \ifx\relax#1\else\edef\bxjs@jadriver{#1}\fi}
 \let\jsJaFont\@empty
 \define@key{bxjs}{jafont}{\edef\jsJaFont{#1}}
 \let\jsJaParam\@empty
