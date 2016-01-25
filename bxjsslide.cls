@@ -867,6 +867,7 @@
   \let\sectionmark\@gobble
   \let\subsectionmark\@gobble
 }
+\newcommand*{\subtitle}[1]{\gdef\bxjs@subtitle{#1}}
 \def\plainifnotempty{%
   \ifx \@oddhead \@empty
     \ifx \@oddfoot \@empty
@@ -891,6 +892,10 @@
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
           \smallskip
           \@title
+          \ifx\bxjs@subtitle\@undefined\else
+            \par\vskip\z@
+            {\small \bxjs@subtitle\par}
+          \fi
           \smallskip
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
           \vfill
@@ -900,6 +905,10 @@
       \vskip 60\p@?
       \begin{center}%
         {\LARGE \@title \par}%
+        \ifx\bxjs@subtitle\@undefined\else
+          \vskip5\p@?
+          {\normalsize \bxjs@subtitle\par}
+        \fi
         \vskip 3em%
         {\large
           \lineskip .75em
@@ -965,6 +974,10 @@
     \begin{center}%
       \let\footnote\thanks
       {\LARGE \@title \par}%
+      \ifx\bxjs@subtitle\@undefined\else
+        \vskip3\p@?
+        {\normalsize \bxjs@subtitle\par}
+      \fi
       \vskip 1.5em
       {\large
         \lineskip .5em
