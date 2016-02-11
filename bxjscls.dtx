@@ -432,7 +432,6 @@
 % \begin{ZRnote}
 % BXJSクラスではページレイアウト設定に |geometry| パッケージを用いる。
 % 用紙サイズ設定は |geometry| に渡すオプションの指定と扱われる。
-% \end{ZRnote}
 %    \begin{macrocode}
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
 \DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
@@ -452,6 +451,7 @@
 \DeclareOption{legalpaper}{\bxjs@setpaper{legalpaper}}
 \DeclareOption{executivepaper}{\bxjs@setpaper{executivepaper}}
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{横置き}
 %
@@ -487,13 +487,13 @@
 % \begin{ZRnote}
 % |\@ptsize| は |10pt|, |11pt|, |12pt| が指定された時のみ従来と同じ値とし、
 % それ以外は |\jsUnusualPtSize|（= $-20$）にする。
-% \end{ZRnote}
+%
 %    \begin{macrocode}
 \newcommand{\@ptsize}{0}
 \def\bxjs@param@basefontsize{10pt}
 \def\jsUnusualPtSize{-20}
 %    \end{macrocode}
-% \begin{ZRnote}
+%
 % \begin{macro}{\bxjs@setbasefontsize}
 % 基底フォントサイズを実際に変更する。
 %    \begin{macrocode}
@@ -544,7 +544,7 @@
   \fi}
 %    \end{macrocode}
 % \end{macro}
-% \end{ZRnote}
+%
 %    \begin{macrocode}
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
 \DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
@@ -566,6 +566,7 @@
 \DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
 \DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{トンボオプション}
 % \mbox{}
@@ -701,7 +702,7 @@
 % \paragraph{数式フォントとして和文フォントを登録しないオプション}
 % \mbox{}
 % \begin{ZRnote}
-% ここは和文処理コンポーネントの管轄。
+% ここは和文ドライバの管轄。
 % \end{ZRnote}
 %
 % \paragraph{ドラフト}
@@ -713,7 +714,6 @@
 % これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
 % の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
 % |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
-%
 % \end{ZRnote}
 %    \begin{macrocode}
 \let\ifjsDraft\iffalse
@@ -732,7 +732,7 @@
 % \paragraph{和文フォントメトリックの選択}
 % \mbox{}
 % \begin{ZRnote}
-% ここは和文処理コンポーネントの管轄。
+% ここは和文ドライバの管轄。
 % \end{ZRnote}
 %
 % \paragraph{papersizeスペシャルの利用}
@@ -768,12 +768,13 @@
 % BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
 % \end{ZRnote}
 %
-% \paragraph{BXJS特有のオプション ☆}
+% \paragraph{BXJS特有のオプションの一覧 ☆}
 % \mbox{}
 % \begin{ZRnote}
 % \begin{itemize}
 % \item エンジンオプション： |xelatex| 等。
 % \item ドライバオプション： |dvipdfmx| 等。
+% \item 複合設定オプション： |pandoc| 等。
 % \item |nopapersize| ： |papersize|（既定で有効）の否定。
 % \item |zw|／|nozw| ： |\jsZw| と等価な命令として |\zw| を
 %   定義する／しない。
@@ -819,19 +820,49 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \end{ZRnote}
+%
+% \paragraph{複合設定オプション ☆}
+% \mbox{}
+% \begin{ZRnote}
+% 複合設定オプションとは、
+% 「エンジンやドライバや和文ドライバの設定を含む、
+% 複数の設定を一度に行うオプション」
+% のことである。
+% ある特定の設定を短く書く必要性が高いと判断される場合に
+% 用意される。
+%
 % \begin{macro}{\bxjs@composite@proc}
-% 複合設定オプションの処理マクロ。
+% 複合設定オプションのための遅延処理マクロ。
 \let\bxjs@composite@proc\relax
 % \end{macro}
 %
+% |pandoc| オプションは、Pandocで{\LaTeX}用の既定テンプレートを
+% 用いて他形式から{\LaTeX}（およびPDF）形式に変換する用途に
+% 最適化した設定を与える。
 %    \begin{macrocode}
 \DeclareOption{pandoc}{%
+%    \end{macrocode}
+% 和文ドライバを |pandoc| に、エンジン指定を |autodetect-engine| に
+% 変更する。
+%    \begin{macrocode}
+% \Note 実際の和文ドライバ・エンジン設定より優先される。
   \def\bxjs@composite@proc{%
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
+%    \end{macrocode}
+% ドライバオプションを |dvipdfmx-if-dvi| に変更する。
+% \Note これは実際のドライバ設定で上書きできる
+% （オプション宣言順に注意）。
+%    \begin{macrocode}
   \def\bxjs@driver@opt{dvipdfmx-if-dvi}}
 %    \end{macrocode}
 %
+% \end{ZRnote}
+%
+% \paragraph{エンジン・ドライバオプション ☆}
+% \mbox{}
+% \begin{ZRnote}
 % \begin{macro}{\bxjs@engine@given}
 % オプションで明示されたエンジンの種別。
 %    \begin{macrocode}
@@ -925,6 +956,11 @@
   \let\bxjs@driver@given\@undefined}
 %    \end{macrocode}
 %
+% \end{ZRnote}
+%
+% \paragraph{その他のBXJS独自オプション ☆}
+% \mbox{}
+% \begin{ZRnote}
 % \begin{macro}{\ifbxjs@usezw}
 % |\jsZw| の同義語として |\zw| を使えるようにするか。
 % 既定は真。
@@ -1120,7 +1156,6 @@
 % （仕様は変わらない）。
 % \Note クラスに |\DeclareOption*| がある場合は |\@unusedoptions|
 % は常に空のままであることを利用している。
-% \end{ZRnote}
 %    \begin{macrocode}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
@@ -1129,6 +1164,8 @@
   \else \bxjs@ltx@removeelement{#1}{#2}{#3}%
   \fi}
 %    \end{macrocode}
+%
+% \end{ZRnote}
 %
 % デフォルトのオプションを実行し，|dvi| ファイルの先頭にdvipsのpapersize
 % specialを書き込みます。このspecialはdvipsや最近のdvioutが対応しています。
@@ -1237,7 +1274,8 @@
 %    \end{macrocode}
 %
 % DVI出力のエンジンでドライバオプションがない場合は警告を出す。
-% \Note ただし |ja| 非指定の場合はスキップする。
+% \Note ただし |ja| 非指定の場合はスキップする
+% （0.3 版との互換性のため）。
 %    \begin{macrocode}
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
@@ -1312,7 +1350,6 @@
 % \begin{ZRnote}
 % 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
 % （和文を含むマクロ定義を通用させるため。）
-% \end{ZRnote}
 %    \begin{macrocode}
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \@tempcnta="80 \loop \ifnum\@tempcnta<"100
@@ -1322,12 +1359,10 @@
 \fi
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % |js| オプション指定時は、jsarticle（または jsbook）クラスを
 % 読込済のように振舞う。
 % \Note 「2つのクラスを読み込んだ状態」は |\LoadClass| を使用した
 % 場合に出現するので、別に異常ではない。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifbxjs@disguise@js
 %<book|report>\def\bxjs@js@clsname{jsbook}
@@ -1335,6 +1370,7 @@
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{papersizeスペシャルの出力}
 % \mbox{}
@@ -1448,14 +1484,11 @@
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
 %    \end{macrocode}
-% \end{ZRnote}
 %
-% \begin{ZRnote}
 % ここで{p\TeX}のzwに相当する単位として用いる長さ変数 |\jsZw| を作成する。
 % 約束により、これは |\jsScale| $\times$ (指定フォントサイズ) に等しい。
 %
 % |nozw| 非指定時は |\zw| を |\jsZw| と同義にする。
-% \end{ZRnote}
 %    \begin{macrocode}
 \newdimen\jsZw
 \jsZw=10\bxjs@mpt \jsZw=\jsScale\jsZw
@@ -1463,11 +1496,12 @@
   \providecommand*\zw{\jsZw}
 \fi
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{NFSSパッチ ☆}
 %
-% ムニャムニャムニャ……。
 % \begin{ZRnote}
+% ムニャムニャムニャ……。
 %    \begin{macrocode}
 \ifbxjs@nfss@patch
 \RequirePackage{type1cm}
@@ -1521,7 +1555,7 @@
 % \section{和文フォントの変更}
 %
 % \begin{ZRnote}
-% 和文フォントの設定は和文処理モジュールの管轄。
+% 和文フォントの設定は和文ドライバの管轄。
 % \end{ZRnote}
 %
 % \begin{macro}{\@}
@@ -1704,7 +1738,6 @@
 % 不可解なエラーが発生する。
 % これは |microtype| が邪悪なトリックを使用しているせいなのだが、
 % 一応こちら側で対策をとることにする。
-% \end{ZRnote}
 %    \begin{macrocode}
 \def\bxjs@if@narrowbaselines{%
   \ifnarrowbaselines\expandafter\@firstoftwo
@@ -1712,6 +1745,7 @@
   \fi
 }
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \begin{macro}{\normalsize}
 %
