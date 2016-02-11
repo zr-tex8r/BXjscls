@@ -64,9 +64,13 @@
   \csname bxjs@dlp/#2.#1\endcsname{#3}%
   \@firstoftwo}
 \def\bxjs@mark@as@loaded#1{%
-  \expandafter\bxjs@mal@a\csname ver@#1\endcsname}
-\def\bxjs@mal@a#1{%
-  \ifx#1\relax \def#1{2001/01/01}\fi}
+  \expandafter\bxjs@mal@a\csname ver@#1\endcsname{#1}}
+\def\bxjs@mal@a#1#2{%
+  \ifx#1\relax
+    \def#1{2001/01/01}%
+    \ClassInfo\bxjs@clsname
+     {File '#2' marked as loaded\@gobble}%
+  \fi}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
 \bxjs@mark@as@loaded{polyglossia.sty}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
@@ -102,6 +106,10 @@
 \ifx\@IncludeInRelease\@undefined\else
   \bxjs@mark@as@loaded{fixltx2e.sty}
 \fi
+\if j\jsEngine
+  \bxjs@mark@as@loaded{cmap.sty}
+\fi
+\PassOptionsToPackage{verbose=silent}{microtype}
 \endinput
 %%
 %% End of file `bxjsja-pandoc.def'.

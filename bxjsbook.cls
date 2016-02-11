@@ -67,9 +67,12 @@
   \def\bxjs@robust@def{\DeclareRobustCommand*}
 \fi
 \newif\ifjsInPdfMode
-\ifx\pdfoutput\@undefined\else\ifnum\pdfoutput>\z@
+\let\bxjs@tmpa\z@
+\ifx\pdfoutput\@undefined\else \let\bxjs@tmpa\pdfoutput \fi
+\ifx\outputmode\@undefined\else \let\bxjs@tmpa\outputmode \fi
+\ifnum\bxjs@tmpa>\z@
   \jsInPdfModetrue
-\fi\fi
+\fi
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
@@ -414,6 +417,11 @@
 \fi\fi
 \ifx *\bxjs@engine@given
   \let\bxjs@engine@given\bxjs@tmpb
+  \ifx j\bxjs@engine@given
+    \g@addto@macro\@classoptionslist{,platex}
+  \else\ifx u\bxjs@engine@given
+    \g@addto@macro\@classoptionslist{,uplatex}
+  \fi\fi
 \fi
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else

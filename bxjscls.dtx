@@ -279,11 +279,15 @@
 % \begin{macro}{\ifjsInPdfMode}
 % 〔スイッチ〕
 % pdf{\TeX}／Lua{\TeX}がPDFモードで動作しているか。
+% \Note Lua{\TeX} 0.8x版でのプリミティブ名変更に対応。
 %    \begin{macrocode}
 \newif\ifjsInPdfMode
-\ifx\pdfoutput\@undefined\else\ifnum\pdfoutput>\z@
+\let\bxjs@tmpa\z@
+\ifx\pdfoutput\@undefined\else \let\bxjs@tmpa\pdfoutput \fi
+\ifx\outputmode\@undefined\else \let\bxjs@tmpa\outputmode \fi
+\ifnum\bxjs@tmpa>\z@
   \jsInPdfModetrue
-\fi\fi
+\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1235,8 +1239,22 @@
 \ifx p\bxjs@tmpb\ifjsInPdfMode\else
   \let\bxjs@tmpb=n
 \fi\fi
+%    \end{macrocode}
+% （この時点で |\bxjs@tmpb| は |\bxjs@engine@given| と
+% 同じ規則で分類したコードをもっている。）
+%    \begin{macrocode}
 \ifx *\bxjs@engine@given
   \let\bxjs@engine@given\bxjs@tmpb
+%    \end{macrocode}
+% エンジン指定が |autodetec-engine| であり、かつ実際のエンジンが
+% {(u)\pLaTeX}だった場合は、本来のエンジンオプションを
+% グローバルオプションに加える。
+%    \begin{macrocode}
+  \ifx j\bxjs@engine@given
+    \g@addto@macro\@classoptionslist{,platex}
+  \else\ifx u\bxjs@engine@given
+    \g@addto@macro\@classoptionslist{,uplatex}
+  \fi\fi
 \fi
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else
@@ -7262,9 +7280,13 @@
 % 読込済であるとマークする。
 %    \begin{macrocode}
 \def\bxjs@mark@as@loaded#1{%
-  \expandafter\bxjs@mal@a\csname ver@#1\endcsname}
-\def\bxjs@mal@a#1{%
-  \ifx#1\relax \def#1{2001/01/01}\fi}
+  \expandafter\bxjs@mal@a\csname ver@#1\endcsname{#1}}
+\def\bxjs@mal@a#1#2{%
+  \ifx#1\relax
+    \def#1{2001/01/01}%
+    \ClassInfo\bxjs@clsname
+     {File '#2' marked as loaded\@gobble}%
+  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7343,6 +7365,26 @@
 \ifx\@IncludeInRelease\@undefined\else
   \bxjs@mark@as@loaded{fixltx2e.sty}
 \fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{cmapパッケージ}
+% エンジンが{(u)\pLaTeX}のときに |cmap| パッケージが
+% 読み込まれるのを阻止する。
+% （実際は警告が出るだけで無害であるが。）
+%
+%    \begin{macrocode}
+\if j\jsEngine
+  \bxjs@mark@as@loaded{cmap.sty}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{microtypeパッケージ}
+% 警告が多すぎなので消す。
+%
+%    \begin{macrocode}
+\PassOptionsToPackage{verbose=silent}{microtype}
 %    \end{macrocode}
 %
 %^^A----------------
