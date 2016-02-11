@@ -64,11 +64,15 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * `bxjsslide.cls`： BXJS版 slide クラスファイル
   * `bxjsja-minimal.def`： minimal 和文ドライバファイル
   * `bxjsja-standard.def`： standard 和文ドライバファイル
+  * `bxjsja-pandoc.def`: pandoc 和文ドライバファイル
+  * `bxjsja-modern.def`: modern 和文ドライバファイル
+  * `bxjscompat.sty`: bxjscompat パッケージファイル
+  * `bxjscjkcat.sty`: bxjscjkcat パッケージファイル
 
 その後、各ファイルを次の場所に移動する。
 （TDS 1.1 に従ったシステムの場合。）
 
-  - `*.cls`/`*.def` → $TEXMF/tex/latex/bxjscls/
+  - `*.cls`/`*.def`/`*.sty` → $TEXMF/tex/latex/bxjscls/
   - `*.dtx`/`*.ins` → $TEXMF/source/latex/bxjscls/
   - `*.pdf`/`*.tex` → $TEXMF/doc/latex/bxjscls/
 
@@ -93,6 +97,11 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.1  [2016/02/14]
+      - “Pandoc モード”おとび pandoc 和文ドライバを追加。
+      - サブタイトル命令 `\subtitle` を追加。
+      - 〈試験的〉modern 和文ドライバを追加。
+      - 〈試験的〉補助パッケージ bxjscompat と bxjscjkcat を追加。
   * Version 1.0d [2015/11/21]
       - バグ修正。
   * Version 1.0c [2015/10/18]

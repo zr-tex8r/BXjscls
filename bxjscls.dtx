@@ -62,7 +62,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2015/11/21 v1.0d BXJS document classes]
+  [2016/02/14 v1.1 BXJS document classes]
+% [2015/11/21 v1.0d BXJS document classes]
 % [2015/10/18 v1.0c BXJS document classes]
 % [2015/09/07 v1.0b BXJS document classes]
 % [2015/08/23 v1.0a BXJS document classes]
@@ -120,6 +121,12 @@
 % \maketitle
 %
 % \MakeShortVerb{\|}
+%
+% \begin{ZRnote}
+% この文書はソースコード説明書です。
+% 一般の文書作成者向けの解説については、
+% ユーザマニュアル |bxjscls-manual.pdf| を参照してください。
+% \end{ZRnote}
 %
 % \section{はじめに}
 %
@@ -6355,6 +6362,7 @@
 % まず minimal ドライバを読み込む。
 %    \begin{macrocode}
 %<*standard>
+%% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 %    \end{macrocode}
 %

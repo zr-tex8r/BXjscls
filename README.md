@@ -61,11 +61,15 @@ This command will generate the following files:
   * `bxjsslide.cls`: the BXJS-flavored slide class file
   * `bxjsja-minimal.def`: the `minimal` ja-driver file
   * `bxjsja-standard.def`: the `standard` ja-driver file
+  * `bxjsja-pandoc.def`: the `pandoc` ja-driver file
+  * `bxjsja-modern.def`: the `modern` ja-driver file
+  * `bxjscompat.sty`: the `bxjscompat` package file
+  * `bxjscjkcat.sty`: the `bxjscjkcat` package file
 
 After that, move the files as follows (in a system compliant to
 TDS 1.1):
 
-  - `*.cls`/`*.def` → $TEXMF/tex/latex/bxjscls/
+  - `*.cls`/`*.def`/`*.sty` → $TEXMF/tex/latex/bxjscls/
   - `*.dtx`/`*.ins` → $TEXMF/source/latex/bxjscls/
   - `*.pdf`/`*.tex` → $TEXMF/doc/latex/bxjscls/
 
@@ -83,6 +87,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.1  [2016/02/14]
   * Version 1.0d [2015/11/21]
   * Version 1.0c [2015/10/18]
   * Version 1.0b [2015/09/07]

@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2015/11/21 v1.0d BXJS document classes]
+  [2016/02/14 v1.1 BXJS document classes]
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
