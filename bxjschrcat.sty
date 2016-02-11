@@ -1,0 +1,107 @@
+%%
+%% This is file `bxjschrcat.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjscls.dtx  (with options: `anc,chrcat')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjschrcat.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjscls.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesPackage{bxjschrcat}
+  [2015/11/21 v1.0d BXJS document classes]
+\def\bxac@pkgname{bxjschrcat}
+\let\bxac@engine=n
+\def\bxac@do#1#2{%
+  \edef\bxac@tmpa{\string#1}%
+  \edef\bxac@tmpb{\meaning#1}%
+  \ifx\bxac@tmpa\bxac@tmpb #2\fi}
+\bxac@do\XeTeXversion{\let\bxac@engine=x}
+\bxac@do\luatexversion{\let\bxac@engine=l}
+\ifx\jsAtEndOfClass\@undefined
+  \let\bxac@delayed@if@bxjs\@firstofone
+\else \let\bxac@delayed@if@bxjs\jsAtEndOfClass
+\fi
+\ifx x\bxac@engine
+\@onlypreamble\bxac@adjust@charclass
+\bxac@delayed@if@bxjs{%
+  \@ifpackageloaded{xeCJK}{}{%else
+    \ifx\xe@alloc@intercharclass\@undefined\else
+        \ifnum\xe@alloc@intercharclass=\z@
+      \PackageInfo\bxac@pkgname
+        {Setting up interchar class for CJK...\@gobble}%
+      \InputIfFileExists{load-unicode-xetex-classes.tex}{%
+        \xe@alloc@intercharclass=3
+      }{%else
+        \PackageWarning\bxac@pkgname
+          {Cannot find file 'load-unicode-xetex-classes.tex'%
+           \@gobble}%
+      }%
+    \fi\fi
+    \ifnum\XeTeXcharclass"3041=\z@
+      \PackageInfo\bxac@pkgname
+        {Adjusting interchar class for CJK...\@gobble}%
+      \@for\bxac@x:={%
+        3041,3043,3045,3047,3049,3063,3083,3085,3087,308E,%
+        3095,3096,30A1,30A3,30A5,30A7,30A9,30C3,30E3,30E5,%
+        30E7,30EE,30F5,30F6,30FC,31F0,31F1,31F2,31F3,31F4,%
+        31F5,31F6,31F7,31F8,31F9,31FA,31FB,31FC,31FD,31FE,%
+        31FF%
+      }\do{\XeTeXcharclass"\bxac@x=\@ne}%
+    \fi
+  }%
+}
+\fi
+\ifx l\bxac@engine
+  \ifnum\luatexversion>64 \directlua{
+    local function range(cs, ce, cc, ff)
+      if ff or not tex.getcatcode(cs) == cc then
+        local setcc = tex.setcatcode
+        for c = cs, ce do setcc(c, cc) end
+      end
+    end
+    range(0x3400, 0x4DB5, 11, false)
+    range(0x4DB5, 0x4DBF, 11, true)
+    range(0x4E00, 0x9FCC, 11, false)
+    range(0x9FCD, 0x9FFF, 11, true)
+    range(0xAC00, 0xD7A3, 11, false)
+    range(0x20000, 0x2A6D6, 11, false)
+    range(0x2A6D7, 0x2A6FF, 11, true)
+    range(0x2A700, 0x2B734, 11, false)
+    range(0x2B735, 0x2B73F, 11, true)
+    range(0x2B740, 0x2B81D, 11, false)
+    range(0x2B81E, 0x2B81F, 11, true)
+    range(0x2B820, 0x2CEA1, 11, false)
+    range(0x2CEA2, 0x2FFFD, 11, true)
+  }\fi
+\fi
+\endinput
+%%
+%% End of file `bxjschrcat.sty'.

@@ -83,6 +83,11 @@
 \let\jsSlide=s
 \let\jsDocClass\jsReport
 \def\bxjs@clsname{bxjsreport}
+\def\jsAtEndOfClass{%
+  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
+\IfFileExists{bxjschrcat.sty}{%
+  \RequirePackage{bxjschrcat}%
+}{}
 \@onlypreamble\bxjs@restore@jltrcc
 \let\bxjs@restore@jltrcc\@empty
 \if l\jsEngine
