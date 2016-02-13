@@ -85,8 +85,8 @@
 \def\bxjs@clsname{bxjsarticle}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
-\IfFileExists{bxjschrcat.sty}{%
-  \RequirePackage{bxjschrcat}%
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
 }{}
 \@onlypreamble\bxjs@restore@jltrcc
 \let\bxjs@restore@jltrcc\@empty

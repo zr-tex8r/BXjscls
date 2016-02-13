@@ -57,7 +57,7 @@
 %<standard>\ProvidesFile{bxjsja-standard.def}
 %<modern>\ProvidesFile{bxjsja-modern.def}
 %<pandoc>\ProvidesFile{bxjsja-pandoc.def}
-%<chrcat>\ProvidesPackage{bxjschrcat}
+%<compat>\ProvidesPackage{bxjscompat}
 %<cjkcat>\ProvidesPackage{bxjscjkcat}
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
@@ -338,8 +338,8 @@
 % \end{macro}
 % ここでカテゴリコード補正のための補助パッケージを読み込む。
 %    \begin{macrocode}
-\IfFileExists{bxjschrcat.sty}{%
-  \RequirePackage{bxjschrcat}%
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
 }{}
 %    \end{mactocode}
 %
@@ -7430,7 +7430,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{補助パッケージ：bxjschrcat ☆}
+% \section{補助パッケージ：bxjscompat ☆}
 %
 % ムニャムニャムニャ……。
 %
@@ -7438,8 +7438,8 @@
 % \subsection{準備}
 %
 %    \begin{macrocode}
-%<*chrcat>
-\def\bxac@pkgname{bxjschrcat}
+%<*compat>
+\def\bxac@pkgname{bxjscompat}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjx@engine}
@@ -7546,7 +7546,7 @@
 % \subsection{完了}
 % おしまい。
 %    \begin{macrocode}
-%</chrcat>
+%</compat>
 %    \end{macrocode}
 %
 %^^A========================================================
