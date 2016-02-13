@@ -49,6 +49,9 @@
   \let\bxac@delayed@if@bxjs\@firstofone
 \else \let\bxac@delayed@if@bxjs\jsAtEndOfClass
 \fi
+\newif\ifbxac@in@old@behavior
+\let\ImposeOldLuaTeXBehavior\relax
+\let\RevokeOldLuaTeXBehavior\relax
 \ifx x\bxac@engine
 \@onlypreamble\bxac@adjust@charclass
 \bxac@delayed@if@bxjs{%
@@ -80,6 +83,36 @@
 }
 \fi
 \ifx l\bxac@engine
+\unless\ifnum\luatexversion<80 \ifnum\luatexversion<85
+  \chardef\pdftexversion=200
+  \def\pdftexrevision{0}
+  \let\pdftexbanner\luatexbanner
+\fi\fi
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname outputmode\endcsname\relax\else
+\def\bxac@ob@list{%
+  \do{\let}\pdfoutput{\outputmode}%
+  \do{\let}\pdfpagewidth{\pagewidth}%
+  \do{\let}\pdfpageheight{\pageheight}%
+  \do{\protected\edef}\pdfhorigin{{\pdfvariable horigin}}%
+  \do{\protected\edef}\pdfvorigin{{\pdfvariable vorigin}}}
+\def\bxac@ob@do#1#2{\begingroup
+  \expandafter\bxac@ob@do@a\csname bxac@\string#2\endcsname{#1}#2}
+\def\bxac@ob@do@a#1#2#3#4{\endgroup
+  \ifbxac@in@old@behavior \let#1#3\relax #2#3#4\relax
+  \else \let#3#1\relax \let#1\@undefined
+  \fi}
+\protected\def\ImposeOldLuaTeXBehavior{%
+  \unless\ifbxac@in@old@behavior
+    \bxac@in@old@behaviortrue
+    \let\do\bxac@ob@do \bxac@ob@list
+  \fi}
+\protected\def\RevokeOldLuaTeXBehavior{%
+  \ifbxac@in@old@behavior
+    \bxac@in@old@behaviorfalse
+    \let\do\bxac@ob@do \bxac@ob@list
+  \fi}
+\fi
   \ifnum\luatexversion>64 \directlua{
     local function range(cs, ce, cc, ff)
       if ff or not tex.getcatcode(cs) == cc then

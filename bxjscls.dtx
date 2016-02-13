@@ -211,6 +211,13 @@
 %    \end{macrocode}
 % クラスの本体ではこの他に |geometry| パッケージが読み込まれる。
 %
+% 互換性のための補助パッケージを読み込む。
+%    \begin{macrocode}
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
+}{}
+%    \end{macrocode}
+%
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
 % エンジン（{\TeX}の種類）の種別：
@@ -283,12 +290,10 @@
 % \Note Lua{\TeX} 0.8x版でのプリミティブ名変更に対応。
 %    \begin{macrocode}
 \newif\ifjsInPdfMode
-\let\bxjs@tmpa\z@
-\ifx\pdfoutput\@undefined\else \let\bxjs@tmpa\pdfoutput \fi
-\ifx\outputmode\@undefined\else \let\bxjs@tmpa\outputmode \fi
-\ifnum\bxjs@tmpa>\z@
-  \jsInPdfModetrue
-\fi
+\@nameuse{ImposeOldLuaTeXBehavior}
+\RequirePackage{ifpdf}
+\@nameuse{RevokeOldLuaTeXBehavior}
+\let\ifjsInPdfMode\ifpdf
 %    \end{macrocode}
 % \end{macro}
 %
@@ -336,12 +341,6 @@
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 %    \end{macrocode}
 % \end{macro}
-% ここでカテゴリコード補正のための補助パッケージを読み込む。
-%    \begin{macrocode}
-\IfFileExists{bxjscompat.sty}{%
-  \RequirePackage{bxjscompat}%
-}{}
-%    \end{mactocode}
 %
 % Lua\TeX の場合、原版のコード中のコントロールワード中に現れる
 % 日本語文字のカテゴリコードを11に変更する。
@@ -2322,7 +2321,9 @@
 %    \begin{macrocode}
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+\AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
+\AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \bxjs@postproc@layout
 %    \end{macrocode}
 %
@@ -7466,6 +7467,17 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ImposeOldLuaTeXBehavior}
+% \begin{macro}{\RevokeOldLuaTeXBehavior}
+% ムニャムニャ。
+%    \begin{macrocode}
+\newif\ifbxac@in@old@behavior
+\let\ImposeOldLuaTeXBehavior\relax
+\let\RevokeOldLuaTeXBehavior\relax
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
 %^^A----------------
 % \subsection{{\XeTeX}部分}
 %    \begin{macrocode}
@@ -7513,6 +7525,49 @@
 %    \begin{macrocode}
 \ifx l\bxac@engine
 %    \end{macrocode}
+%
+% ムニャムニャ。
+%    \begin{macrocode}
+\unless\ifnum\luatexversion<80 \ifnum\luatexversion<85
+  \chardef\pdftexversion=200
+  \def\pdftexrevision{0}
+  \let\pdftexbanner\luatexbanner
+\fi\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\ImposeOldLuaTeXBehavior}
+% \begin{macro}{\RevokeOldLuaTeXBehavior}
+% ムニャムニャ。
+%    \begin{macrocode}
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname outputmode\endcsname\relax\else
+\def\bxac@ob@list{%
+  \do{\let}\pdfoutput{\outputmode}%
+  \do{\let}\pdfpagewidth{\pagewidth}%
+  \do{\let}\pdfpageheight{\pageheight}%
+  \do{\protected\edef}\pdfhorigin{{\pdfvariable horigin}}%
+  \do{\protected\edef}\pdfvorigin{{\pdfvariable vorigin}}}
+\def\bxac@ob@do#1#2{\begingroup
+  \expandafter\bxac@ob@do@a\csname bxac@\string#2\endcsname{#1}#2}
+\def\bxac@ob@do@a#1#2#3#4{\endgroup
+  \ifbxac@in@old@behavior \let#1#3\relax #2#3#4\relax
+  \else \let#3#1\relax \let#1\@undefined
+  \fi}
+\protected\def\ImposeOldLuaTeXBehavior{%
+  \unless\ifbxac@in@old@behavior
+    \bxac@in@old@behaviortrue
+    \let\do\bxac@ob@do \bxac@ob@list
+  \fi}
+\protected\def\RevokeOldLuaTeXBehavior{%
+  \ifbxac@in@old@behavior
+    \bxac@in@old@behaviorfalse
+    \let\do\bxac@ob@do \bxac@ob@list
+  \fi}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
 % 漢字および完成形ハングルのカテゴリコードのムニャムニャ。
 %    \begin{macrocode}
   \ifnum\luatexversion>64 \directlua{

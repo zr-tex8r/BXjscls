@@ -41,6 +41,9 @@
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
+}{}
 \let\jsEngine=n
 \def\bxjs@test@engine#1#2{%
   \edef\bxjs@tmpa{\string#1}%
@@ -67,12 +70,10 @@
   \def\bxjs@robust@def{\DeclareRobustCommand*}
 \fi
 \newif\ifjsInPdfMode
-\let\bxjs@tmpa\z@
-\ifx\pdfoutput\@undefined\else \let\bxjs@tmpa\pdfoutput \fi
-\ifx\outputmode\@undefined\else \let\bxjs@tmpa\outputmode \fi
-\ifnum\bxjs@tmpa>\z@
-  \jsInPdfModetrue
-\fi
+\@nameuse{ImposeOldLuaTeXBehavior}
+\RequirePackage{ifpdf}
+\@nameuse{RevokeOldLuaTeXBehavior}
+\let\ifjsInPdfMode\ifpdf
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
@@ -85,9 +86,6 @@
 \def\bxjs@clsname{bxjsarticle}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
-\IfFileExists{bxjscompat.sty}{%
-  \RequirePackage{bxjscompat}%
-}{}
 \@onlypreamble\bxjs@restore@jltrcc
 \let\bxjs@restore@jltrcc\@empty
 \if l\jsEngine
@@ -791,7 +789,9 @@
 \fi
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+\AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
+\AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \bxjs@postproc@layout
 \def\setpagelayout{\@ifstar
   {\bxjs@reset@layout}{\bxjs@modify@layout}}
