@@ -37,11 +37,12 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2016/02/14 v1.1 BXJS document classes]
+  [2016/02/20 v1.1a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \IfFileExists{bxjscompat.sty}{%
+  \let\jsAtEndOfClass\@gobble
   \RequirePackage{bxjscompat}%
 }{}
 \let\jsEngine=n
@@ -1286,6 +1287,7 @@
     {\normalfont\normalsize\headfont}}
 \fi
 \newcommand\jsParagraphMark{\jsJaChar{■}}
+\let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ

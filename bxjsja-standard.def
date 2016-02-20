@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-standard.def}
-  [2016/02/14 v1.1 BXJS document classes]
+  [2016/02/20 v1.1a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \ifjsWitheTeX
@@ -154,16 +154,17 @@
   \ifx$#1$\def\bxjs@tmpa{#2}%
   \else \let\bxjs@tmpa\relax
   \fi}
-\def\jsJaChar#1{%
+\newcommand*\jachar[1]{%
   \begingroup
     \jsLetHeadChar\bxjs@tmpa{#1}%
     \ifx\bxjs@tmpa\relax
       \ClassWarningNoLine\bxjs@clsname
-        {Illegal argument given to \string\jsJaChar}%
+        {Illegal argument given to \string\jachar}%
     \else
       \expandafter\bxjs@jachar\expandafter{\bxjs@tmpa}%
     \fi
   \endgroup}
+\let\jsJaChar\jachar
 \let\bxjs@jachar\@firstofone
 \PassOptionsToPackage{setpagesize=false}{hyperref}
 \@onlypreamble\bxjs@fix@hyperref@unicode

@@ -62,7 +62,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/02/14 v1.1 BXJS document classes]
+  [2016/02/20 v1.1a BXJS document classes]
+% [2016/02/14 v1.1 BXJS document classes]
 % [2015/11/21 v1.0d BXJS document classes]
 % [2015/10/18 v1.0c BXJS document classes]
 % [2015/09/07 v1.0b BXJS document classes]
@@ -221,6 +222,7 @@
 % 互換性のための補助パッケージを読み込む。
 %    \begin{macrocode}
 \IfFileExists{bxjscompat.sty}{%
+  \let\jsAtEndOfClass\@gobble
   \RequirePackage{bxjscompat}%
 }{}
 %    \end{macrocode}
@@ -3773,10 +3775,13 @@
 % 段落のマーク（■）が必ず和文フォントで出力されるようにする。
 % さらに、このマークを変更可能にするため |\jsParagraphMark| と
 % いうマクロに切り出した。
-% \end{ZRnote}
 %
+% |\jsJaChar| はstandard和文ドライバが読み込まれた場合は\
+% |\jachar| と同義になるが、それ以外は何もしない。
+% \end{ZRnote}
 %    \begin{macrocode}
 \newcommand\jsParagraphMark{\jsJaChar{■}}
+\let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
@@ -6601,11 +6606,11 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\jsJaChar}
-% |\jsJaChar{|\meta{文字}|}|\Means
+% \begin{macro}{\jachar}
+% |\jachar{|\meta{文字}|}|\Means
 % 和文文字として出力する。
 %    \begin{macrocode}
-\def\jsJaChar#1{%
+\newcommand*\jachar[1]{%
   \begingroup
 %    \end{macrocode}
 % |\jsLetHeadChar| で先頭の“文字”を拾って
@@ -6614,11 +6619,15 @@
     \jsLetHeadChar\bxjs@tmpa{#1}%
     \ifx\bxjs@tmpa\relax
       \ClassWarningNoLine\bxjs@clsname
-        {Illegal argument given to \string\jsJaChar}%
+        {Illegal argument given to \string\jachar}%
     \else
       \expandafter\bxjs@jachar\expandafter{\bxjs@tmpa}%
     \fi
   \endgroup}
+%    \end{macrocode}
+% |\jsJaChar| を |\jachar| と等価にする。
+%    \begin{macrocode}
+\let\jsJaChar\jachar
 %    \end{macrocode}
 % 下請けの |\bxjs@jachar| の実装はエンジンにより異なる。
 %    \begin{macrocode}
@@ -6906,7 +6915,7 @@
   \let\CJKecglue\bxjs@CJKecglue}
 %    \end{macrocode}
 %
-% |\jsJaChar| のサブマクロの実装。
+% |\jachar| のサブマクロの実装。
 %    \begin{macrocode}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
@@ -6997,7 +7006,7 @@
 \fi
 %    \end{macrocode}
 %
-% |\jsJaChar| のサブマクロの実装。
+% |\jachar| のサブマクロの実装。
 %    \begin{macrocode}
 \def\bxjs@jachar#1{%
   \xeCJKDeclareCharClass{CJK}{`#1}\relax
@@ -7126,7 +7135,7 @@
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
 %    \end{macrocode}
 %
-% |\jsJaChar| のサブマクロの実装。
+% |\jachar| のサブマクロの実装。
 %    \begin{macrocode}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}

@@ -5,8 +5,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.1}
-\newcommand{\PkgDate}{2016/02/14}
+\newcommand{\PkgVersion}{1.1a}
+\newcommand{\PkgDate}{2016/02/20}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -923,6 +923,16 @@ vscale=0.944, vmarginratio=1:1
 当然この場合は\Ord{3}の後処理は行われない。
 
 %-------------------
+\subsection{構造マークアップ関連}
+
+\begin{itemize}
+\item |\subtitle{|\Meta{テキスト}|}|\Means
+  サブタイトルを設定する。
+  \Note |\maketitle| の出力にサブタイトルが含まれるようになる。
+\end{itemize}
+
+
+%-------------------
 \subsection{和文用設定関連}
 
 \begin{itemize}
@@ -942,10 +952,12 @@ vscale=0.944, vmarginratio=1:1
 
 \subsubsection{standard和文ドライバの場合}
 
-|standard| 和文ドライバ使用時を指定した時）は和文に関連する
+standard和文ドライバでは和文に関連する
 文書ソース記述をエンジンに依らずに共通になることを目指している。
 従って、和文関連の組版パラメタの設定*1についても
 「共通の命令」が提供される。
+\footnote{pandoc和文ドライバはstandard和文ドライバの設定を
+引き継ぐため、pandocモードでもこれらの命令を使用できる。}
 
 \begin{itemize}
 \item 和文ファミリ変更命令\Means
@@ -989,6 +1001,8 @@ vscale=0.944, vmarginratio=1:1
 \item |\autospacing|／|\noautospacing|\Means
   和文間空白の挿入を有効／無効にする。
   {\pLaTeX}の同名の命令と同等。
+\item |\jachar{|\Meta{文字1つ}|]|\Means
+  指定の文字を和文文字として（現在の和文フォントで）出力する。
 \end{itemize}
 
 例えば、{\pLaTeX}において、次のように「和文間空白」を
