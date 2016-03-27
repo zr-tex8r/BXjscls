@@ -39,6 +39,7 @@
   [2016/03/27 v1.1b BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
+\bxjs@simplejasetupfalse
 \ifjsWitheTeX
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
@@ -289,12 +290,15 @@
 \bxjs@nxt
 \bxjs@cjk@loaded
 \PassOptionsToPackage{unicode}{hyperref}
+\ifx\bxcjkjatypeHyperrefPatchDone\@undefined
 \begingroup
   \CJK@input{UTF8.bdg}
 \endgroup
 \g@addto@macro\pdfstringdefPreHook{%
   \@nameuse{CJK@UTF8Binding}%
 }
+\fi
+\ifx\bxcjkjatypeHyperrefPatchDone\@undefined
 \g@addto@macro\pdfstringdefPreHook{%
   \ifx~\bxjs@@CJKtilde
     \let\bxjs@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
@@ -308,6 +312,7 @@
   \def\bxjs@tmpa{#1}\ifx\bxjs@tmpa\bxjs@@tildecmd\else
     \bxjs@org@LetUnexpandableSpace#1%
   \fi}
+\fi
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined

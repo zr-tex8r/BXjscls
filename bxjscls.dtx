@@ -1023,6 +1023,36 @@
   \bxjs@disguise@jstrue}
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@precisetext}
+% {\XeTeX}の``generateactualtext''を有効にするか。
+% 既定は偽。
+%    \begin{macrocode}
+\newif\ifbxjs@precisetext
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareOption{noprecisetext}{%
+  \bxjs@precisetextfalse}
+\DeclareOption{precisetext}{%
+  \bxjs@precisetexttrue}
+%    \end{macrocode}
+%
+% \begin{macro}{\ifbxjs@simplejasetup}
+% {\XeTeX}の``linebreaklocale''を有効にするか。
+% 既定は真（であるが多くの場合は後に無効化される）。
+%    \begin{macrocode}
+\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareOption{nosimplejasetup}{%
+  \bxjs@simplejasetupfalse}
+\DeclareOption{simplejasetup}{%
+  \bxjs@simplejasetuptrue}
+%    \end{macrocode}
+%
 % keyval型のオプションの処理。
 %    \begin{macrocode}
 \def\bxjs@setkey{%
@@ -6351,9 +6381,69 @@
   \lowercase{\bxjs@let@hchar@out\def{{0}}}}
 %    \end{macrocode}
 %
-% 以上で終わり。
+% \begin{macro}{\bxjs@do@precisetext}
+% |precisetext| オプションの処理。
+%    \begin{macrocode}
+\ifx\XeTeXgenerateactualtext\@undefined\else
+  \def\bxjs@do@precisetext{%
+    \XeTeXgenerateactualtext=\@ne}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@do@simplejasetup}
+% |simplejasetup| オプションの処理。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@do@simplejasetup
+\def\bxjs@do@simplejasetup{%
+  \ifnum\XeTeXinterchartokenstate>\z@
+  \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
+    \jsSimpleJaSetup
+    \ClassInfo\bxjs@clsname
+     {\string\jsSimpleJaSetup\space is applied\@gobble}%
+  \fi\fi}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\jsSimpleJaSetup}
+% 日本語出力用の超簡易的な設定。
+%    \begin{macrocode}
+\newcommand*{\jsSimpleJaSetup}{%
+  \XeTeXlinebreaklocale "ja"\relax
+  \XeTeXlinebreakskip=0pt plus 1pt minus 0.1pt\relax
+  \XeTeXlinebreakpenalty=0\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%^^A----------------
+% \subsection{後処理（エンジン共通）}
 %    \begin{macrocode}
 \fi\fi\fi
+%    \end{macrocode}
+%
+% |simplejasetup| オプションの処理。
+%    \begin{macrocode}
+\ifx\bxjs@do@simplejasetup\@undefined\else
+  \AtBeginDocument{%
+    \ifbxjs@simplejasetup
+      \bxjs@do@simplejasetup
+    \fi}
+\fi
+%
+% |precisetext| オプションの処理。
+%    \begin{macrocode}
+\ifbxjs@precisetext
+  \ifx\bxjs@do@precisetext\@undefined
+    \ClassWarning\bxjs@clsname
+     {The current engine does not supprt the\MessageBreak
+      'precisetext' option\@gobble}
+  \else
+    \bxjs@do@precisetext
+  \fi
+\fi
+%    \end{macrocode}
+%
+% 以上で終わり。
+%    \begin{macrocode}
 %</minimal>
 %    \end{macrocode}
 %
@@ -6393,6 +6483,11 @@
 %<*standard>
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
+%    \end{macrocode}
+%
+% |simplejasetup| はstandardでは無効になる。
+%    \begin{macrocode}
+\bxjs@simplejasetupfalse
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}
@@ -6891,17 +6986,20 @@
 % 「アクティブな高位バイトトークンがその場で展開されてしまう」
 % ため困難である。
 %    \begin{macrocode}
+\ifx\bxcjkjatypeHyperrefPatchDone\@undefined
 \begingroup
   \CJK@input{UTF8.bdg}
 \endgroup
 \g@addto@macro\pdfstringdefPreHook{%
   \@nameuse{CJK@UTF8Binding}%
 }
+\fi
 %    \end{macrocode}
 %
 % |~| が和欧文間空白である場合はPDF文字列中で空白文字で
 % なく空に展開させる。
 %    \begin{macrocode}
+\ifx\bxcjkjatypeHyperrefPatchDone\@undefined
 \g@addto@macro\pdfstringdefPreHook{%
   \ifx~\bxjs@@CJKtilde
     \let\bxjs@org@LetUnexpandableSpace\HyPsd@LetUnexpandableSpace
@@ -6915,6 +7013,7 @@
   \def\bxjs@tmpa{#1}\ifx\bxjs@tmpa\bxjs@@tildecmd\else
     \bxjs@org@LetUnexpandableSpace#1%
   \fi}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}

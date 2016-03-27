@@ -237,7 +237,38 @@
 \def\bxjs@let@hchar@chr@xe#1{%
   \lccode`0=`#1\relax
   \lowercase{\bxjs@let@hchar@out\def{{0}}}}
+\ifx\XeTeXgenerateactualtext\@undefined\else
+  \def\bxjs@do@precisetext{%
+    \XeTeXgenerateactualtext=\@ne}
+\fi
+\@onlypreamble\bxjs@do@simplejasetup
+\def\bxjs@do@simplejasetup{%
+  \ifnum\XeTeXinterchartokenstate>\z@
+  \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
+    \jsSimpleJaSetup
+    \ClassInfo\bxjs@clsname
+     {\string\jsSimpleJaSetup\space is applied\@gobble}%
+  \fi\fi}
+\newcommand*{\jsSimpleJaSetup}{%
+  \XeTeXlinebreaklocale "ja"\relax
+  \XeTeXlinebreakskip=0pt plus 1pt minus 0.1pt\relax
+  \XeTeXlinebreakpenalty=0\relax}
 \fi\fi\fi
+\ifx\bxjs@do@simplejasetup\@undefined\else
+  \AtBeginDocument{%
+    \ifbxjs@simplejasetup
+      \bxjs@do@simplejasetup
+    \fi}
+\fi
+\ifbxjs@precisetext
+  \ifx\bxjs@do@precisetext\@undefined
+    \ClassWarning\bxjs@clsname
+     {The current engine does not supprt the\MessageBreak
+      'precisetext' option\@gobble}
+  \else
+    \bxjs@do@precisetext
+  \fi
+\fi
 \endinput
 %%
 %% End of file `bxjsja-minimal.def'.

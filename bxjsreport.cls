@@ -327,6 +327,16 @@
   \bxjs@disguise@jsfalse}
 \DeclareOption{js}{%
   \bxjs@disguise@jstrue}
+\newif\ifbxjs@precisetext
+\DeclareOption{noprecisetext}{%
+  \bxjs@precisetextfalse}
+\DeclareOption{precisetext}{%
+  \bxjs@precisetexttrue}
+\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
+\DeclareOption{nosimplejasetup}{%
+  \bxjs@simplejasetupfalse}
+\DeclareOption{simplejasetup}{%
+  \bxjs@simplejasetuptrue}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}
