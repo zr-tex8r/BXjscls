@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2016/02/20 v1.1a BXJS document classes]
+  [2016/03/27 v1.1b BXJS document classes]
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -72,7 +72,10 @@
 \fi
 \newif\ifjsInPdfMode
 \@nameuse{ImposeOldLuaTeXBehavior}
+\let\bxjs@tmpa\PackageWarningNoLine
+\let\PackageWarningNoLine\PackageInfo % suppress warning
 \RequirePackage{ifpdf}
+\let\PackageWarningNoLine\bxjs@tmpa
 \@nameuse{RevokeOldLuaTeXBehavior}
 \let\ifjsInPdfMode\ifpdf
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
@@ -369,7 +372,11 @@
 \let\bxjs@magstyle@mag=m
 \let\bxjs@magstyle@real=r
 \let\bxjs@magstyle@xreal=x
-\let\bxjs@magstyle\bxjs@magstyle@mag
+\let\bxjs@magstyle@default\bxjs@magstyle@mag
+\ifx l\jsEngine \ifnum\luatexversion>86
+  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+\fi\fi
+\let\bxjs@magstyle\bxjs@magstyle@default
 \define@key{bxjs}{magstyle}{%
   \expandafter\let\expandafter\bxjs@magstyle\csname
    bxjs@magstyle@#1\endcsname
@@ -487,6 +494,15 @@
     {When you employ a Japanese-driver you must specify a
     correct\MessageBreak engine option.\MessageBreak\@ehc}
 \fi\fi
+\ifx\bxjs@magstyle@default\bxjs@magstyle@mag\else
+  \ifx\bxjs@magstyle\bxjs@magstyle@mag
+    \let\bxjs@magstyle\bxjs@magstyle@default
+    \ClassError\bxjs@clsname%
+    {The engine does not support 'magstyle=mag'}%
+    {LuaTeX v0.87 or later no longer supports "mag" feature.\MessageBreak
+     The default value is used instead.\MessageBreak \@ehc}
+  \fi
+\fi
 \bxjs@do@opt@jbase
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}

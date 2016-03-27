@@ -87,18 +87,19 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
-  * Version 1.1a [2016/02/20]
-  * Version 1.1  [2016/02/14]
-  * Version 1.0d [2015/11/21]
-  * Version 1.0c [2015/10/18]
-  * Version 1.0b [2015/09/07]
-  * Version 1.0a [2015/08/23]
-  * Version 1.0  [2015/08/05]
-  * Version 0.9  [2013/10/03]
-  * Version 0.4  [2013/08/03]
-  * Version 0.3a [2012/05/01]
-  * Version 0.3  [2010/08/15]
-  * Version 0.2  [2009/08/15]
+  * Version 1.1b 〈2016/03/27〉
+  * Version 1.1a 〈2016/02/20〉
+  * Version 1.1  〈2016/02/14〉
+  * Version 1.0d 〈2015/11/21〉
+  * Version 1.0c 〈2015/10/18〉
+  * Version 1.0b 〈2015/09/07〉
+  * Version 1.0a 〈2015/08/23〉
+  * Version 1.0  〈2015/08/05〉
+  * Version 0.9  〈2013/10/03〉
+  * Version 0.4  〈2013/08/03〉
+  * Version 0.3a 〈2012/05/01〉
+  * Version 0.3  〈2010/08/15〉
+  * Version 0.2  〈2009/08/15〉
 
 --------------------
 Takayuki YATO (aka. "ZR")  

@@ -5,8 +5,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.1a}
-\newcommand{\PkgDate}{2016/02/20}
+\newcommand{\PkgVersion}{1.1b}
+\newcommand{\PkgDate}{2016/03/27}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -469,7 +469,6 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
     |-V documentclass=bxjsbook|\\\quad
     |-V classoption=pandoc|
     |-V classoption=jbase=11Q|\\\quad
-    |-V classoption=magstyle=real|
     |-V classoption=jafont=ipaex|\\\quad
     |-V mainfont="TeX Gyre Termes"|
     |-V sansfont="TeX Gyre Heros"|
@@ -479,8 +478,6 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   \begin{itemize}
   \item \Pkg{bxjsbook}クラスは「章（|\chapter|）」をもつクラスなので、
     Pandocで |--chapters| の指定が必要。
-  \item 基底フォントサイズを指定する場合、
-    |magstyle| は |mag| 以外にした方がよいだろう。
   \end{itemize}
 
 \item Pandocで（{\LaTeX}経由で）PDFを出力する場合、
@@ -728,7 +725,9 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item BXJSクラス共通\Means
   |a4paper|、|onecolumn|、|final|、
   |ja=minimal|、|jafont|は空、|japaram|は空、
-  |scale=0.924715|、|magstyle=mag|
+  |scale=0.924715|、|magstyle=mag|%
+  \footnote{Lua{\TeX}の0.87版以降では |magstyle=xreal| が既定となる。
+    \ref{ssec:magstyle}節参照。}
 \item \Pkg{bxjsarticle}\Means
   |10pt|、|oneside|、|notitlepage|
 \item \Pkg{bxjsreport}\Means
@@ -777,7 +776,7 @@ JSクラスではそれを嫌って、本文（|\normalsize| のフォント）�
 もっと素敵な名前はないものだろうか……。}%
 
 \begin{itemize}
-\item |magstyle=mag|（既定）\Means
+\item |magstyle=mag|\Means
   JSクラスと同様に、“版面拡大”のためにmag設定を用いる。
 \item |magstyle=real|\Means
   mag設定を一切用いず、代わりに、
@@ -798,6 +797,15 @@ JSクラスではそれを嫌って、本文（|\normalsize| のフォント）�
   この場合、mag設定による不具合は起こらなくなるが、
   当然、NFSSのパッチのせいで別の不具合が起こる可能性はある。
 \end{itemize}
+
+\Note Lua{\TeX}の0.87版以降では（PDF出力時の）「mag設定」の機能が
+廃止されている。
+そのため、そのようなエンジンでは |mag| はサポートされない
+（エラーになる）。
+
+\Note |magstyle| オプションの既定値は |mag| である。
+ただし例外として、Lua{\TeX}の0.87版以降では
+（|mag| が使えないため）|xreal| が既定値となる。
 
 %===========================================================
 \section{和文ドライバ}
