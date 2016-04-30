@@ -62,7 +62,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/03/27 v1.1b BXJS document classes]
+  [2016/05/01 v1.1c BXJS document classes]
+% [2016/03/27 v1.1b BXJS document classes]
 % [2016/02/20 v1.1a BXJS document classes]
 % [2016/02/14 v1.1 BXJS document classes]
 % [2015/11/21 v1.0d BXJS document classes]
@@ -2269,6 +2270,8 @@
 \newdimen\fullwidth
 %<book>\newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%
+% ドライバ再設定
+  \let\Gm@driver\bxjs@geometry@driver
 % textwidth 調整
   \@tempdimb=\textwidth
   \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
@@ -2387,6 +2390,12 @@
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
+%    \end{macrocode}
+% |\bxjs@geometry@driver| は |geometry| が用いるドライバの名前。
+% \Note この値は一度決めた後は変わってほしくないので、
+% |\bxjs@postproc@layout| において書き戻す処理を入れている。
+%    \begin{macrocode}
+\let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 %    \end{macrocode}
 %

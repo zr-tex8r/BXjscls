@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2016/03/27 v1.1b BXJS document classes]
+  [2016/05/01 v1.1c BXJS document classes]
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -764,6 +764,7 @@
 }
 \newdimen\fullwidth
 \def\bxjs@postproc@layout{%
+  \let\Gm@driver\bxjs@geometry@driver
   \@tempdimb=\textwidth
   \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
   \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
@@ -819,6 +820,7 @@
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
+\let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 \def\setpagelayout{\@ifstar
   {\bxjs@reset@layout}{\bxjs@modify@layout}}
