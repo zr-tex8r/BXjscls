@@ -333,6 +333,15 @@
   \bxjs@simplejasetupfalse}
 \DeclareOption{simplejasetup}{%
   \bxjs@simplejasetuptrue}
+\newif\ifbxjs@bigcode \bxjs@bigcodefalse
+\edef\bxjs@tmpa{\expandafter\noexpand\csname\endcsname}
+\def\bxjs@tmpb#1 #2#3\@nil{%
+  \ifx1#2\bxjs@bigcodetrue \fi}
+\expandafter\bxjs@tmpb\meaning\bxjs@tmpa1 0\@nil
+\DeclareOption{nobigcode}{%
+  \bxjs@bigcodefalse}
+\DeclareOption{bigcode}{%
+  \bxjs@bigcodetrue}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}

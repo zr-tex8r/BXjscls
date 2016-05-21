@@ -1055,6 +1055,35 @@
   \bxjs@simplejasetuptrue}
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@bigcode}
+% {\upTeX}で有効かするToUnicode CMapとして
+% 「|UTF8-UCS2|」の代わりに「|UTF8-UTF16|」を使うか。
+% BMP外の文字に対応できる「|UTF8-UTF16|」の方が望ましいのであるが、
+% このファイルが利用可能かの確実な判定が困難であるため、
+% オプションで指定することとする。
+%    \begin{macrocode}
+\newif\ifbxjs@bigcode \bxjs@bigcodefalse
+%    \end{macrocode}
+% その上で、「{\TeX}環境がある程度新しければ利用可能であろう」
+% と判断し |bxjs@bigcode| の既定値を真とする。
+% 具体的な判断基準として、
+% 「{\TeX}のバージョンが3.14159265（2014年1月）以上であるか」
+% を採用する。
+%    \begin{macrocode}
+\edef\bxjs@tmpa{\expandafter\noexpand\csname\endcsname}
+\def\bxjs@tmpb#1 #2#3\@nil{%
+  \ifx1#2\bxjs@bigcodetrue \fi}
+\expandafter\bxjs@tmpb\meaning\bxjs@tmpa1 0\@nil
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareOption{nobigcode}{%
+  \bxjs@bigcodefalse}
+\DeclareOption{bigcode}{%
+  \bxjs@bigcodetrue}
+%    \end{macrocode}
+%
 % keyval型のオプションの処理。
 %    \begin{macrocode}
 \def\bxjs@setkey{%
@@ -6945,7 +6974,11 @@
   \else\ifnum\jis"2121="8140 %sjis
     \bxjs@urgent@special{pdf:tounicode 90ms-RKSJ-UCS2}
   \else\ifnum\jis"2121="3000 %uptex
-    \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+    \ifbxjs@bigcode
+      \bxjs@urgent@special{pdf:tounicode UTF8-UTF16}
+    \else
+      \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+    \fi
   \fi\fi\fi
   \let\bxToUnicodeSpecialDone=t
 \fi

@@ -275,7 +275,11 @@
   \else\ifnum\jis"2121="8140 %sjis
     \bxjs@urgent@special{pdf:tounicode 90ms-RKSJ-UCS2}
   \else\ifnum\jis"2121="3000 %uptex
-    \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+    \ifbxjs@bigcode
+      \bxjs@urgent@special{pdf:tounicode UTF8-UTF16}
+    \else
+      \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+    \fi
   \fi\fi\fi
   \let\bxToUnicodeSpecialDone=t
 \fi
