@@ -97,6 +97,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.1d 〈2016/05/21〉
+      - XeTeX でも「hyperref で `unicode` を既定で有効」にする。
   * Version 1.1c 〈2016/05/01〉
       - バグ修正。
   * Version 1.1b 〈2016/03/27〉

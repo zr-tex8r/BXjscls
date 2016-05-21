@@ -62,7 +62,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/05/01 v1.1c BXJS document classes]
+  [2016/05/21 v1.1d BXJS document classes]
+% [2016/05/01 v1.1c BXJS document classes]
 % [2016/03/27 v1.1b BXJS document classes]
 % [2016/02/20 v1.1a BXJS document classes]
 % [2016/02/14 v1.1 BXJS document classes]
@@ -7094,12 +7095,27 @@
 %
 % \paragraph{hyperref対策}
 %
-% 昔の |hyperref| では |unicode| を無効にするのが正解だった。
-% ところが、現在では“形式上は” |unicode| を有効にするのが正解で、
-% 無効だと警告が出て強制的に有効化される。
-% 内部動作としては、「通常（{\XeTeX}以外）の |unicode| 無効」の時と
-% 同じになるようである。
-% 取りあえず、ここでは |unicode| オプションの設定を行わない。
+% |unicode| オプションの指定に関する話。
+%
+% {\XeTeX}の場合は、xdvipdfmxがUTF-8→UTF-16の変換を行う機能を
+% 持っているため、本来はspecial命令の文字列の文字コード変換は不要である。
+% ところが、|hyperref| での方針としては、{\XeTeX}の場合にも
+% パッケージ側で文字コード変換を行う方が望ましいと考えている。
+% 実際、|unicode| を無効にしていると警告が出て強制的に有効化される。
+% 一方で、過去（r35125まで）^^A2014/09/20
+% のxdvipdfmxでは、文字列をUTF-16に変換した状態で与えるのは不正と
+% 見なしていて警告が発生する。
+%
+% これを踏まえて、ここでは、
+% 「{\XeTeX}のバージョンが0.99992以上の場合に |unicode| を既定で
+% 有効にする」
+% ことにする。
+% \Note 取りあえず固定はしない。
+%    \begin{macrocode}
+\ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
+  \PassOptionsToPackage{unicode}{hyperref}
+\fi
+%    \end{macrocode}
 %
 % \paragraph{段落頭でのグルー挿入禁止}
 %
