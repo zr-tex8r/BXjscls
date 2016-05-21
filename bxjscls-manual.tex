@@ -554,20 +554,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   は既定で有効である。）
   \Note papersize specialを出力する他のパッケージとの干渉に
   対する対策。
-\item |zw|（既定）\Means
-  |\jsZw| と等価な命令として |\zw| を定義する。
-\item |nozw|\Means
-  |zw| の否定。
-  \Note 命令名の衝突に対する対策。
-\item |js|（既定）\Means
-  JSクラス（例えば\Pkg{bxjsreport}の場合は\Pkg{jsbook}）
-  が読込済であるように振舞う。
-  \Note 「JSクラスであるかによって挙動を変える」
-  パッケージに対する対策。
-\item |nojs|\Means
-  |js| の否定。
-  \Note つまり「JSクラスの一種である」と判定されると不都合な場合に
-  このオプションを指定する。
 \item |ja=|\Meta{名前}\Means
   使用する和文ドライバの名前を指定する。
   （詳細は\ref{sec:Ja-Driver}節を参照。）
@@ -621,6 +607,60 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |a4paper| 等と同じ役割で、任意の値を指定できる。
   用紙サイズの既定値はA4縦
   （$\mbox{210\,mm}\times\mbox{294\,mm}$）である。
+\end{itemize}
+
+以下に挙げるのは上級者向けのオプションである。
+
+\begin{itemize}
+\item |zw|（既定）\Means
+  |\jsZw| と等価な命令として |\zw| を定義する。
+\item |nozw|\Means
+  |zw| の否定。
+  \Note 命令名の衝突に対する対策。
+\item |js|（既定）\Means
+  JSクラス（例えば\Pkg{bxjsreport}の場合は\Pkg{jsbook}）
+  が読込済であるように振舞う。
+  \Note 「JSクラスであるかによって挙動を変える」
+  パッケージに対する対策。
+\item |nojs|\Means
+  |js| の否定。
+  \Note つまり「JSクラスの一種である」と判定されると不都合な場合に
+  このオプションを指定する。
+\item |bigcode|\Means
+  {\upTeX}エンジンとdvipdfmxの組合せで\Pkg{hyperref}パッケージを
+  利用する時に適用されるToUnicode CMapとして |UTF8-UTF16| を指定する。
+  PDFの文書情報の文字列にBMP外の文字が含まれる場合には
+  この指定が必要である。
+  |UTF8-UTF16| のファイルがインストールされていないと、
+  dvipdfmxの処理が失敗する。
+\item |nobigcode|\Means
+  |bigcode| の否定。ToUnicode CMapとして |UTF8-UCS2| を指定する。
+  この場合は文書情報の文字列にBMP外の文字を使用できない。
+  \Note |UTF8-UTF16| のファイルが利用できるかを確実に判定するのは
+  困難なため、|bigcode| の既定値は次のようなアドホックな方法で
+  決めている：
+  {\TeX}エンジンのバージョンが3.14159265以上
+  \footnote{{\TeX}のバージョン3.14159265は2014年1月にリリースされた。}
+  である場合は、
+  （{\TeX}環境がある程度新しく、|UTF8-UTF16| が利用可能と思われるので）
+  |bigcode| を既定とし、それ以外は |nobigcode| を既定とする。
+\item |precisetext|\Means
+  {\XeTeX}エンジンにおいて、「ActualText生成機能」を有効化する。
+  \footnote{つまり、|\XeTeXgenerateactualtext=1| を行う。
+    ActualText 生成機能と日本語処理は相性が悪いため、これを使うと
+    出力PDFのサイズが増大する（1.5～2倍）ことに注意。}
+\item |noprecisetext|（既定）\Means
+  |precisetext|の否定。
+\item |simplejasetup|（既定）\Means
+  {\XeTeX}エンジン自体の行組版機能（|\XeTeXlinebreaklocale| 等）
+  を利用した、簡易的な日本語用組版設定を行う。
+  \Note {\XeTeX}エンジン以外では無効である。
+  また、\Pkg{xeCJK}や\Pkg{zhspacing}等の日本語（CJK）組版用
+  パッケージが読み込まれた場合も無効化される。
+  特に、和文ドライバがstandardである場合は、必ず\Pkg{xeCJK}が
+  読み込まれるため、このオプションは無意味である。
+\item |nosimplejasetup|\Means
+  |simplejasetup| の否定。
 \item |mag=|\Meta{整数}\Means
   版面拡大率（mag値）の直接設定。
   既定は |base| から算出する。
