@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-standard.def}
-  [2016/05/21 v1.1d BXJS document classes]
+  [2016/05/28 v1.1e BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse

@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2016/05/21 v1.1d BXJS document classes]
+  [2016/05/28 v1.1e BXJS document classes]
 %% このファイルは日本語文字を含みます
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -920,7 +920,17 @@
   \let\sectionmark\@gobble
   \let\subsectionmark\@gobble
 }
-\newcommand*{\subtitle}[1]{\gdef\bxjs@subtitle{#1}}
+\newcommand*{\jsSubtitle}[1]{\gdef\bxjs@subtitle{#1}}
+\renewcommand*{\title}[1]{\bxjs@decl@subtitle\gdef\@title{#1}}
+\AtBeginDocument{\bxjs@decl@subtitle}
+\def\bxjs@decl@subtitle{%
+  \global\let\bxjs@decl@subtitle\relax
+  \ifx\subtitle\@undefined
+    \global\let\subtitle\jsSubtitle
+  \fi}
+\def\bxjs@annihilate@subtitle{%
+  \ifx\subtitle\jsSubtitle \global\let\subtitle\relax \fi
+  \global\let\jsSubtitle\relax}
 \def\plainifnotempty{%
   \ifx \@oddhead \@empty
     \ifx \@oddfoot \@empty
@@ -986,6 +996,7 @@
     \global\let\author\relax
     \global\let\date\relax
     \global\let\and\relax
+    \bxjs@annihilate@subtitle
   }%
 \else
   \newcommand{\maketitle}{\par
@@ -1020,6 +1031,7 @@
     \global\let\author\relax
     \global\let\date\relax
     \global\let\and\relax
+    \bxjs@annihilate@subtitle
   }
   \def\@maketitle{%
     \newpage\null
