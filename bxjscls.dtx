@@ -4,7 +4,7 @@
 %  BXJS ドキュメントクラス
 %
 %  本ソフトウェアは奥村晴彦氏による「pLaTeX2ε新ドキュメントクラス」を
-%  「ZR」が改変したものである。
+%  「八登 崇之（別名 ZR）」が改変したものである。
 %  本ソフトウェアは修正 BSD ライセンスの下で配布される。
 %
 %  以下に原版についての原版著者による情報を示す：
@@ -13,13 +13,16 @@
 %  pLaTeX2ε新ドキュメントクラス
 %
 %  これは LaTeX3 Project の classes.dtx と株式会社アスキーの jclasses.dtx
-%  に基づいて奥村 <okumura@edu.mie-u.ac.jp> が改変したものです。
+%  に基づいて奥村 <okumura@okumuralab.org> が改変したものです。
 %  奥村の改変部分については何の権利も主張しません。
 %  オリジナルの著作権の許す範囲で自由にご利用ください。
 %
 %  [2002-12-19] いろいろなものに収録していただく際にライセンスを明確にする
 %  必要が生じてきました。アスキーのものが最近はmodified BSDライセンスになっ
 %  ていますので，私のものもそれに準じてmodified BSDとすることにします。
+%
+%  [2016-07-11] abenoriさんによる\texttt{nomag}オプションをマージしました。
+%  なお，ソースコードの管理はGitHubで行うことにしました。
 %
 %  Copyright 1993 1994 1995 1996 1997 1998 1999
 %  The LaTeX3 Project and any individual authors listed elsewhere
@@ -518,6 +521,9 @@
 % [2003-03-22] 14Qオプションを追加しました。
 %
 % [2003-04-18] 12Qオプションを追加しました。
+%
+% [2016-07-08] |\mag| を使わずに各種寸法をスケールさせるためのオプション \texttt{nomag} を新設しました。
+% \texttt{usemag} オプションの指定で従来通りの動作となります．デフォルトは \texttt{usemag} です．
 %
 % \begin{ZRnote}
 % |\@ptsize| は |10pt|, |11pt|, |12pt| が指定された時のみ従来と同じ値とし、
@@ -1562,6 +1568,7 @@
 % 設定すべき |\mag| 値を (基底サイズ)/(10\,pt) $\times$ 1000 と算出。
 % BXJSクラスでは、|\mag| を直接指定したい場合は、|geometry| 側では
 % なくクラスのオプションで行うものとする。
+% \end{ZRnote}
 %    \begin{macrocode}
 \ifx\bxjs@param@mag\relax
   \@tempdima=\bxjs@param@basefontsize
@@ -1593,9 +1600,10 @@
 %\typeout{\string\ifbxjs@nfss@patch: \meaning\ifbxjs@nfss@patch}
 %    \end{macrocode}
 %
-% |\js@mpt| は基底スケールしたpt。
-% |\mag| する場合は |\p@| と同値にする。
+% [2016-07-08] |\js@mpt| および |\js@mmm| に，それぞれ1ptおよび1mmを拡大させた値を格納します。
+% 以降のレイアウト指定ではこちらを使います。
 %
+% \begin{ZRnote}
 % |\mag| する場合（現状はこれが既定）にコードの変更を低減するために、
 % 以下では必要に応じて、|\js@mpt| を |\p@?| と書く。
 % その上で、|\mag| する場合は |?| を無視して |\p@| と解釈させ、
