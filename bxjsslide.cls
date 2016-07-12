@@ -545,6 +545,7 @@
 \def\bxjs@js@clsname{jsarticle}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
+\g@addto@macro\@classoptionslist{,nosetpagesize}
 \def\n@baseline{13}%
 \newif\ifbxjs@nfss@patch
 \ifx\bxjs@magstyle\bxjs@magstyle@mag

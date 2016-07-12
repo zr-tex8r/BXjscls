@@ -1518,6 +1518,7 @@
 % \begin{ZRnote}
 % 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
 % （和文を含むマクロ定義を通用させるため。）
+% \end{ZRnote}
 %    \begin{macrocode}
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \@tempcnta="80 \loop \ifnum\@tempcnta<"100
@@ -1527,10 +1528,12 @@
 \fi
 %    \end{macrocode}
 %
+% \begin{ZRnote}
 % |js| オプション指定時は、jsarticle（または jsbook）クラスを
 % 読込済のように振舞う。
 % \Note 「2つのクラスを読み込んだ状態」は |\LoadClass| を使用した
 % 場合に出現するので、別に異常ではない。
+% \end{ZRnote}
 %    \begin{macrocode}
 \ifbxjs@disguise@js
 %<book|report>\def\bxjs@js@clsname{jsbook}
@@ -1538,7 +1541,15 @@
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
 %    \end{macrocode}
+%
+% \begin{ZRnote}
+% |color|/|graphics|パッケージがもつ出力用紙サイズ設定の機能は、
+% BXJSクラスでは余計なので無効にしておく。
+% このため、グローバルで |nosetpagesize| を設定しておく。
 % \end{ZRnote}
+%    \begin{macrocode}
+\g@addto@macro\@classoptionslist{,nosetpagesize}
+%    \end{macrocode}
 %
 % \paragraph{papersizeスペシャルの出力}
 % \mbox{}

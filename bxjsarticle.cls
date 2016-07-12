@@ -545,6 +545,7 @@
 \def\bxjs@js@clsname{jsarticle}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
+\g@addto@macro\@classoptionslist{,nosetpagesize}
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
 \newif\ifbxjs@nfss@patch
