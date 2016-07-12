@@ -204,6 +204,22 @@
 \@tempcnta="80 \@whilenum\@tempcnta<"100 \do{%
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
 \let\jsInhibitGlueAtParTop\@inhibitglue
+\begingroup
+\catcode`\!=0
+\gdef\bxjs@ptex@dir{%
+  !iftdir t%
+  !else!ifydir y%
+  !else ?%
+  !fi!fi}
+\long\def\bxjs@tmpa{\hbox{%
+  !ifydir \@textsuperscript{\normalfont\@thefnmark}%
+  !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}}
+\ifx\@makefnmark\bxjs@tmpa
+\long\gdef\@makefnmark{%
+  !ifydir \hbox{}\hbox{\@textsuperscript{\normalfont\@thefnmark}}\hbox{}%
+  !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}
+\fi
+\endgroup
 \else\ifx p\jsEngine
 \let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@ue
 \@onlypreamble\bxjs@cjk@loaded

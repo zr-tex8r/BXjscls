@@ -5535,14 +5535,11 @@
 %
 % [2013-05-14] plcore.ltx に倣った形に書き直しました（Thanks: 北川さん）。
 %
+% [2016-07-11] コミュニティ版p\LaTeX の変更に追随しました（Thanks: 角藤さん）。
+%
 % \begin{ZRnote}
-% {\pTeX}依存のコードなので、{\pTeX}連携モジュールに移動。
+% {\pTeX}依存のコードなので、minimal和文ドライバ実装に移動。
 % \end{ZRnote}
-%    \begin{macrocode}
-%\renewcommand\@makefnmark{\hbox{}\hbox{%
-%  \ifydir \@textsuperscript{\normalfont\@thefnmark}%
-%  \else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}\fi}\hbox{}}
-%    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\thefootnote}
@@ -6430,19 +6427,53 @@
   \xspcode\@tempcnta=3\advance\@tempcnta\@ne}
 %    \end{macrocode}
 %
-% 新版の{\pTeX}で脚注番号の周囲の空きが過大になる現象への対処。
-%    \begin{macrocode}
-%\renewcommand\@makefnmark{\hbox{}\hbox{%
-%  \ifydir \@textsuperscript{\normalfont\@thefnmark}%
-%  \else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}\fi}\hbox{}}
-%    \end{macrocode}
-%
 % |\jsInhibitGlueAtParTop| の定義。
 %    \begin{macrocode}
 \let\jsInhibitGlueAtParTop\@inhibitglue
 %    \end{macrocode}
 %
 % |\jsResetDimen| は空のままでよい。
+%
+% \paragraph{組方向依存の処理}
+%
+% 組方向判定のif-トークン（|\if?dir|）は{\pTeX}以外では未定義で
+% あるため、そのままif文に入れることができない。
+% これを回避するため部分的に|!|をエスケープ文字に使う。
+%    \begin{macrocode}
+\begingroup
+\catcode`\!=0
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@ptex@dir}
+% 現在の組方向： |t|=縦、|y|=横、|?|=その他。
+%    \begin{macrocode}
+\gdef\bxjs@ptex@dir{%
+  !iftdir t%
+  !else!ifydir y%
+  !else ?%
+  !fi!fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% 新版の{\pTeX}で脚注番号の周囲の空きが過大になる現象への対処。
+% \Note 現在の{p\LaTeX}カーネルでは対処が既に行われている。
+% ここでは、|\@makefnmark| の定義が古いものであった場合に、
+% 新しいものに置き換える。
+%    \begin{macrocode}
+% 古い \@makefnmark の定義
+\long\def\bxjs@tmpa{\hbox{%
+  !ifydir \@textsuperscript{\normalfont\@thefnmark}%
+  !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}}
+\ifx\@makefnmark\bxjs@tmpa
+\long\gdef\@makefnmark{%
+  !ifydir \hbox{}\hbox{\@textsuperscript{\normalfont\@thefnmark}}\hbox{}%
+  !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\endgroup
+%    \end{macrocode}
 %
 %^^A----------------
 % \subsection{pdf{\TeX}用の処理}
