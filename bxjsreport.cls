@@ -571,16 +571,17 @@
 \edef\bxjs@real@mag{\strip@pt\@tempdima}
 \let\jsBaseFontSize\bxjs@param@basefontsize
 \ifbxjs@mag
-  \let\bxjs@mpt\p@
+  \let\js@mpt\p@
+  \newdimen\js@mmm \js@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\bxjs@mpt
-  \bxjs@mpt=\bxjs@real@mag \p@
-  \catcode`\?=11 \let\p@?\bxjs@mpt
+  \newdimen\js@mpt \js@mpt=\bxjs@real@mag \p@
+  \newdimen\js@mmm \js@mmm=\bxjs@real@mag mm
+  \catcode`\?=11 \let\p@?\js@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
 \newdimen\jsZw
-\jsZw=10\bxjs@mpt \jsZw=\jsScale\jsZw
+\jsZw=10\js@mpt \jsZw=\jsScale\jsZw
 \ifbxjs@usezw
   \providecommand*\zw{\jsZw}
 \fi
@@ -647,7 +648,7 @@
   \let\bxjs@setfontsize\@setfontsize
 \else
   \def\bxjs@setfontsize#1#2#3{%
-    \@setfontsize#1{#2\bxjs@mpt}{#3\bxjs@mpt}}
+    \@setfontsize#1{#2\js@mpt}{#3\js@mpt}}
 \fi
 \emergencystretch 3\jsZw
 \newif\ifnarrowbaselines
@@ -797,7 +798,7 @@
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
-      -\textwidth-1cm-\marginparsep}
+      -\textwidth-10\js@mmm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
   \maxdepth=.5\topskip
 }
@@ -1263,8 +1264,8 @@
     \addcontentsline{toc}{chapter}{#1}%
   \fi
   \chaptermark{#1}%
-  \addtocontents{lof}{\protect\addvspace{10\p@}}%
-  \addtocontents{lot}{\protect\addvspace{10\p@}}%
+  \addtocontents{lof}{\protect\addvspace{10\js@mpt}}%
+  \addtocontents{lot}{\protect\addvspace{10\js@mpt}}%
   \if@twocolumn
     \@topnewpage[\@makechapterhead{#2}]%
   \else
@@ -1706,7 +1707,7 @@
 \def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
 \def\thefootnote{\ifnum\c@footnote>\z@\leavevmode\lower.5ex\hbox{*}\@arabic\c@footnote\fi}
 \renewcommand{\footnoterule}{%
-  \kern-3\p@?
+  \kern-2.6\p@? \kern-.4\p@
   \hrule width .4\columnwidth
   \kern 2.6\p@?}
 \@addtoreset{footnote}{chapter}
