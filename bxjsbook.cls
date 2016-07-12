@@ -158,6 +158,7 @@
     \ClassWarningNoLine\bxjs@clsname
     {You should not use 'true' lengths here}%
   \fi}
+\newif\ifjs@mag
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
 \DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
 \DeclareOption{10pt}{\bxjs@setbasefontsize{10pt}}
@@ -177,6 +178,10 @@
 \DeclareOption{10.5ptj}{\bxjs@setjbasefontsize{10.5pt}}
 \DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
 \DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
+\DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@usemag}
+\DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@nomag}
+\DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@xreal}
+\newdimen\stockwidth \newdimen\stockheight
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -391,7 +396,10 @@
 \let\bxjs@magstyle@mag=m
 \let\bxjs@magstyle@real=r
 \let\bxjs@magstyle@xreal=x
-\let\bxjs@magstyle@default\bxjs@magstyle@mag
+\let\bxjs@magstyle@usemag\bxjs@magstyle@mag
+\let\bxjs@magstyle@nomag\bxjs@magstyle@real
+\expandafter\let\csname bxjs@magstyle@nomag*\endcsname\bxjs@magstyle@xreal
+\let\bxjs@magstyle@default\bxjs@magstyle@usemag
 \ifx l\jsEngine \ifnum\luatexversion>86
   \let\bxjs@magstyle@default\bxjs@magstyle@xreal
 \fi\fi
@@ -402,7 +410,7 @@
   \ifx\bxjs@magstyle\relax
     \ClassError\bxjs@clsname
     {Invalid magstyle value `#1'}\@ehc
-    \let\bxjs@magstyle\bxjs@magstyle@mag
+    \let\bxjs@magstyle\bxjs@magstyle@default
   \fi}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
@@ -543,10 +551,9 @@
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
-\newif\ifbxjs@mag
 \newif\ifbxjs@nfss@patch
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
-  \bxjs@magtrue
+  \js@magtrue
 \else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
   \bxjs@nfss@patchtrue
 \fi\fi
@@ -568,15 +575,15 @@
 \@tempcnta\bxjs@param@mag \advance\@tempcnta100000
 \def\bxjs@tmpa#1#2#3#4\@nil{\@tempdima=#2#3.#4\p@}
 \expandafter\bxjs@tmpa\the\@tempcnta\@nil
-\edef\bxjs@real@mag{\strip@pt\@tempdima}
+\edef\js@magscale{\strip@pt\@tempdima}
 \let\jsBaseFontSize\bxjs@param@basefontsize
-\ifbxjs@mag
+\ifjs@mag
   \let\js@mpt\p@
   \newdimen\js@mmm \js@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\js@mpt \js@mpt=\bxjs@real@mag \p@
-  \newdimen\js@mmm \js@mmm=\bxjs@real@mag mm
+  \newdimen\js@mpt \js@mpt=\js@magscale \p@
+  \newdimen\js@mmm \js@mmm=\js@magscale mm
   \catcode`\?=11 \let\p@?\js@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
@@ -603,7 +610,7 @@
   \fi}
 \def\bxjs@preadjust@extract@font{%
   \let\bxjs@req@size\f@size
-  \dimen@\f@size\p@ \bxjs@invscale\dimen@\bxjs@real@mag
+  \dimen@\f@size\p@ \bxjs@invscale\dimen@\js@magscale
   \advance\dimen@.005pt\relax \bxjs@fstrunc\dimen@
   \let\bxjs@ref@size\bxjs@tmpa
   \let\f@size\bxjs@ref@size}
@@ -613,7 +620,7 @@
   \csname s@fct@#1\endcsname}
 \let\bxjs@DeclareErrorFont\DeclareErrorFont
 \def\DeclareErrorFont#1#2#3#4#5{%
-  \@tempdimc#5\p@ \@tempdimc\bxjs@real@mag\@tempdimc
+  \@tempdimc#5\p@ \@tempdimc\js@magscale\@tempdimc
   \edef\bxjs@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
   \expandafter\bxjs@DeclareErrorFont\bxjs@tmpa}
 \def\gen@sfcnt{%
@@ -644,10 +651,10 @@
   \fi\relax
   \jsResetDimen}
 \newcommand*\jsResetDimen{}
-\ifbxjs@mag
-  \let\bxjs@setfontsize\@setfontsize
+\ifjs@mag
+  \let\js@setfontsize\@setfontsize
 \else
-  \def\bxjs@setfontsize#1#2#3{%
+  \def\js@setfontsize#1#2#3{%
     \@setfontsize#1{#2\js@mpt}{#3\js@mpt}}
 \fi
 \emergencystretch 3\jsZw
@@ -677,9 +684,9 @@
 }
 \renewcommand{\normalsize}{%
   \bxjs@if@narrowbaselines{%
-    \bxjs@setfontsize\normalsize\@xpt\@xiipt
+    \js@setfontsize\normalsize\@xpt\@xiipt
   }{%else
-    \bxjs@setfontsize\normalsize\@xpt{\n@baseline}%
+    \js@setfontsize\normalsize\@xpt{\n@baseline}%
   }%
   \abovedisplayskip 11\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip \z@ \@plus3\p@?
@@ -699,9 +706,9 @@
 \setlength\Chs{1\jsZw}
 \newcommand{\small}{%
   \bxjs@if@narrowbaselines{%
-    \bxjs@setfontsize\small\@ixpt{11}%
+    \js@setfontsize\small\@ixpt{11}%
   }{%else
-    \bxjs@setfontsize\small\@ixpt{13}%
+    \js@setfontsize\small\@ixpt{13}%
   }%
   \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip  \z@ \@plus3\p@?
@@ -713,9 +720,9 @@
               \itemsep \parsep}}
 \newcommand{\footnotesize}{%
   \bxjs@if@narrowbaselines{%
-    \bxjs@setfontsize\footnotesize\@viiipt{9.5}%
+    \js@setfontsize\footnotesize\@viiipt{9.5}%
   }{%else
-    \bxjs@setfontsize\footnotesize\@viiipt{11}%
+    \js@setfontsize\footnotesize\@viiipt{11}%
   }%
   \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
   \abovedisplayshortskip  \z@ \@plus2\p@?
@@ -725,18 +732,18 @@
               \topsep \z@
               \parsep \z@
               \itemsep \parsep}}
-\newcommand{\scriptsize}{\bxjs@setfontsize\scriptsize\@viipt\@viiipt}
-\newcommand{\tiny}{\bxjs@setfontsize\tiny\@vpt\@vipt}
+\newcommand{\scriptsize}{\js@setfontsize\scriptsize\@viipt\@viiipt}
+\newcommand{\tiny}{\js@setfontsize\tiny\@vpt\@vipt}
 \if@twocolumn
-  \newcommand{\large}{\bxjs@setfontsize\large\@xiipt{\n@baseline}}
+  \newcommand{\large}{\js@setfontsize\large\@xiipt{\n@baseline}}
 \else
-  \newcommand{\large}{\bxjs@setfontsize\large\@xiipt{17}}
+  \newcommand{\large}{\js@setfontsize\large\@xiipt{17}}
 \fi
-\newcommand{\Large}{\bxjs@setfontsize\Large\@xivpt{21}}
-\newcommand{\LARGE}{\bxjs@setfontsize\LARGE\@xviipt{25}}
-\newcommand{\huge}{\bxjs@setfontsize\huge\@xxpt{28}}
-\newcommand{\Huge}{\bxjs@setfontsize\Huge\@xxvpt{33}}
-\newcommand{\HUGE}{\bxjs@setfontsize\HUGE{30}{40}}
+\newcommand{\Large}{\js@setfontsize\Large\@xivpt{21}}
+\newcommand{\LARGE}{\js@setfontsize\LARGE\@xviipt{25}}
+\newcommand{\huge}{\js@setfontsize\huge\@xxpt{28}}
+\newcommand{\Huge}{\js@setfontsize\Huge\@xxvpt{33}}
+\newcommand{\HUGE}{\js@setfontsize\HUGE{30}{40}}
 \everydisplay=\expandafter{\the\everydisplay \narrowbaselines}
 \newcommand{\headfont}{\sffamily}
 \setlength\columnsep{2\Cwd}
@@ -755,7 +762,7 @@
 \@lowpenalty   51
 \@medpenalty  151
 \@highpenalty 301
-\ifbxjs@mag
+\ifjs@mag
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
@@ -767,7 +774,7 @@
 \def\bxjs@read@d#1\@nil{}
 \expandafter\bxjs@read@a\bxjs@param@paper\@nil
 \edef\bxjs@layout@paper{%
-  \ifbxjs@mag truedimen,\fi
+  \ifjs@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
 \def\bxjs@layout{%
@@ -805,6 +812,8 @@
       -\textwidth-10\js@mmm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
   \maxdepth=.5\topskip
+  \stockwidth=\paperwidth
+  \stockheight=\paperheight
 }
 \@onlypreamble\bxjs@revert
 \let\bxjs@revert\@empty

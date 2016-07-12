@@ -44,7 +44,7 @@
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
   \let\jH\jQ
-  \ifbxjs@mag
+  \ifjs@mag
     \@tempdima=2.5mm
     \@tempdimb=\jsBaseFontSize\relax
     \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
