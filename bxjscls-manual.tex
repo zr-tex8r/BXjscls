@@ -5,8 +5,8 @@
 \usepackage{metalogo}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.1e}
-\newcommand{\PkgDate}{2016/05/28}
+\newcommand{\PkgVersion}{1.1f}
+\newcommand{\PkgDate}{2016/07/16}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -27,15 +27,17 @@
 \author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
 \date{v\PkgVersion\quad[\PkgDate]}
 \maketitle
+\tableofcontents
 
 %===========================================================
 \section*{注意}
 
+% 1.2で文言削除予定
 このマニュアルは\textgt{暫定版}であり、内容に不完全な点がある。
 
 BXJS文書クラスについては、“{\TeX} Wiki”中の記事、
 \footnote{\url{https://texwiki.texjp.org/?BXjscls}}%
-およびそこからたどれるサイトにある情報も参照してほしい。
+およびそこからたどれるサイトにある情報も併せて参照してほしい。
 
 %===========================================================
 \section{概要}
@@ -43,7 +45,8 @@ BXJS文書クラスについては、“{\TeX} Wiki”中の記事、
 
 本パッケージに含まれる文書クラス集
 （以下では\jemph{BXJS（文書）クラス}と呼ぶ）
-は、奥村晴彦氏製作の「p{\LaTeXe}新ドキュメントクラス」
+は、奥村晴彦氏および“日本語{\TeX}開発コミュニティ”により作製された
+「p{\LaTeXe}新ドキュメントクラス」
 （以下では\jemph{JS（文書）クラス}と呼ぶ）
 の拡張版に相当する。
 JSクラスのレイアウトデザインと機能をほぼ踏襲しているが、
@@ -61,6 +64,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   利用しているが、これが他のパッケージと衝突して
   不具合を起こすことがある。
   BXJSクラスではmag機能を使う他に別の方式を選べるようにしている。
+  \Note JSクラスについても新しい（2016/07/11以降の）版では
+  同様の機能が提供されている。
 \item 用紙サイズや基底フォントサイズについて、任意の値を指定する
   ことができる。
 \end{itemize}
@@ -347,6 +352,16 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   再設定用の命令（\ref{ssec:page-layout}節参照）か、または
   \Pkg{geometry}パッケージが提供する再設定用命令（|\geometry| 等）
   を利用する。
+\item |papersize|オプションは既定で有効になっていて、
+  出力用紙サイズはクラスオプションで指定したものに
+  自動的に設定される。
+  この処理を無効にするには|nopapersize|オプションを指定すればよい。
+\item |papersize|オプションの処理は\Pkg{geometry}パッケージの
+  機能により行われる。
+  \Pkg{hyperref}パッケージや（最近の）\Pkg{graphics}／
+  \Pkg{color}パッケージがもつ出力用紙サイズ設定の機能は
+  これと干渉する可能性があるので、
+  BXJSクラスにおいては自動的に無効化される。
 \item \Pkg{hyperref}パッケージにおける“PDFの文字コード”の設定は
   エンジンごとに適切な値が異なっていて複雑であり、
   これが不適切であるためにPDF文書情報（しおり等）が文字化けして
@@ -384,6 +399,9 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
     そこでBXJSクラスでは代わりに |\ifjsDraft| の名前を
     用い、本文開始時に |\ifdraft| が未定義の場合に限り、
     |\ifjsDraft| を |\ifdraft| にコピーする処理にしている。
+  \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
+  従って、BXJSクラスにおいて |\ifdraft| スイッチの使用を
+  非推奨とし、将来的に廃止を予定する。
 % TODO: \@ptsize の話
 \end{itemize}
 
@@ -810,15 +828,17 @@ JSクラスではそれを嫌って、本文（|\normalsize| のフォント）�
 
 これらの問題を緩和するため、BXJSクラスでは“版面拡大”について
 他の実現方法を提供している。
-それを選択するのがクラスオプションの|magstyle|である。
-\footnote{ところで、このオプションキーの値
-（|mag|、|real|、|xreal|）はかなりイマイチなんだけど、
-もっと素敵な名前はないものだろうか……。}%
+それを選択するのが以下に挙げる「magstyleオプション」である。
+\footnote{「magstyleオプション」の値は、|magstyle|をキー名にした
+keyval形式（例えば|magstyle=nomag*|）で書くこともできる。
+1.1e版以前では、keyval形式のみがサポートされ、しかも値の識別子として
+|usemag|／|nomag|／|nomag*|の代わりに|mag|／|real|／|xreal|を用いて
+（つまり|magstyle=xreal|と書いて）いた。}
 
 \begin{itemize}
-\item |magstyle=mag|\Means
+\item |usemag|\Means
   JSクラスと同様に、“版面拡大”のためにmag設定を用いる。
-\item |magstyle=real|\Means
+\item |nomag|\Means
   mag設定を一切用いず、代わりに、
   全てのページレイアウトのパラメタの値をスケールさせる。
   |\normalsize| や |\large| 等の高位フォントサイズ命令で指定される
@@ -827,8 +847,8 @@ JSクラスではそれを嫌って、本文（|\normalsize| のフォント）�
   いわゆる「基本35書体」のようなオプティカルサイズでない
   \footnote{或いは、オプティカルサイズに“変な癖”のない。}%
   フォントのみを用いるのであれば、この設定が最も適切である。
-\item |magstyle=xreal|\Means
-  |real| と同様に、
+\item |nomag*|\Means
+  |nomag| と同様に、
   全てのページレイアウトのパラメタの値をスケールさせる。
   さらに、“オプティカルサイズの調整”を実現するために、
   NFSSの実装コードにパッチを当てる。

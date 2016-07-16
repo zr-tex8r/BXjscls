@@ -97,6 +97,13 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.1f 〈2016/07/16〉
+      - jsclasses の開発体制の変更に応じて、原作に関する記述を修正。
+      - magstyle オプションの値の名前を jsclasses に合わせて変更。
+      - 動く引数中で `\@` を用いた場合に aux ファイル中で後続の空白文字
+        が消えてしまう不具合を修正。
+      - graphics/color パッケージ対策で `nosetpagesize` をグローバルに
+        指定した。
   * Version 1.1e 〈2016/05/28〉
       - `\subtitle` の定義を遅延させる。
   * Version 1.1d 〈2016/05/21〉
