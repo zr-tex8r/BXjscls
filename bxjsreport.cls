@@ -634,7 +634,8 @@
 \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
 \fi
 \chardef\bxjs@periodchar=`\.
-\def\@{\spacefactor\sfcode\bxjs@periodchar}
+\bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
+\def\@{\bxjs@SE{}}
 \def\bxjs@tmpa{\def\set@fontsize##1##2##3}
 \expandafter\bxjs@tmpa\expandafter{%
   \set@fontsize{#1}{#2}{#3}%

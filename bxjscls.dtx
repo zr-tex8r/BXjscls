@@ -1741,7 +1741,8 @@
 %
 %    \begin{macrocode}
 \chardef\bxjs@periodchar=`\.
-\def\@{\spacefactor\sfcode\bxjs@periodchar}
+\bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
+\def\@{\bxjs@SE{}}
 %    \end{macrocode}
 % \end{macro}
 %
