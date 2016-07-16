@@ -3,7 +3,8 @@
 %
 %  BXJS ドキュメントクラス
 %
-%  本ソフトウェアは奥村晴彦氏による「pLaTeX2ε新ドキュメントクラス」を
+%  本ソフトウェアは奥村晴彦氏および日本語TeX開発コミュニティによる
+%  「pLaTeX2ε新ドキュメントクラス」を
 %  「八登 崇之（別名 ZR）」が改変したものである。
 %  本ソフトウェアは修正 BSD ライセンスの下で配布される。
 %
@@ -13,9 +14,9 @@
 %  pLaTeX2ε新ドキュメントクラス
 %
 %  これは LaTeX3 Project の classes.dtx と株式会社アスキーの jclasses.dtx
-%  に基づいて奥村 <okumura@okumuralab.org> が改変したものです。
-%  奥村の改変部分については何の権利も主張しません。
-%  オリジナルの著作権の許す範囲で自由にご利用ください。
+%  に基づいて，もともと奥村晴彦 <okumura@okumuralab.org> により
+%  作成されたものです。
+%  現在は日本語\TeX 開発コミュニティにより管理されています。
 %
 %  [2002-12-19] いろいろなものに収録していただく際にライセンスを明確にする
 %  必要が生じてきました。アスキーのものが最近はmodified BSDライセンスになっ
@@ -24,11 +25,15 @@
 %  [2016-07-11] abenoriさんによる\texttt{nomag}オプションをマージしました。
 %  なお，ソースコードの管理はGitHubで行うことにしました。
 %
+%  [2016-07-13] 日本語\TeX 開発コミュニティによる管理に移行しました。
+%
 %  Copyright 1993 1994 1995 1996 1997 1998 1999
 %  The LaTeX3 Project and any individual authors listed elsewhere
 %  in this file.
 %
 %  Copyright 1995-1999 ASCII Corporation.
+%  Copyright 1999-2016 Haruhiko Okumura
+%  Copyright 2016 Japanese TeX Development Community
 %
 % \fi
 % \CheckSum{0}
@@ -154,10 +159,10 @@
 %   \end{tabular}
 % \end{quote}
 %
-% 本ドキュメントクラスは奥村晴彦氏の「p\LaTeXe 新ドキュメントクラス」
-% に改変を加えたものである。
+% 本ドキュメントクラスは奥村晴彦氏および日本語TeX開発コミュニティ
+% による「p\LaTeXe 新ドキュメントクラス」に改変を加えたものである。
 % 本ドキュメントクラスに関する説明は全てこの形式の枠の中に記す。
-% 枠の外にあるものは奥村氏による原版に対する解説である。
+% 枠の外にあるものは原版著者による原版に対する解説である。
 % \end{ZRnote}
 %
 % これは\LaTeX3 Projectの \texttt{classes.dtx} と
@@ -586,10 +591,10 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |\\ifjs@mag| は「|\mag| を使うか」を表すスイッチ。
+% |\\ifjsc@mag| は「|\mag| を使うか」を表すスイッチ。
 %    \begin{macrocode}
-\newif\ifjs@mag
-%\let\js@magscale\@undefined
+\newif\ifjsc@mag
+%\let\jsc@magscale\@undefined
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -1582,7 +1587,7 @@
 %
 %    \begin{macrocode}
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
-  \js@magtrue
+  \jsc@magtrue
 \else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
   \bxjs@nfss@patchtrue
 \fi\fi
@@ -1627,35 +1632,35 @@
 \@tempcnta\bxjs@param@mag \advance\@tempcnta100000
 \def\bxjs@tmpa#1#2#3#4\@nil{\@tempdima=#2#3.#4\p@}
 \expandafter\bxjs@tmpa\the\@tempcnta\@nil
-\edef\js@magscale{\strip@pt\@tempdima}
+\edef\jsc@magscale{\strip@pt\@tempdima}
 \let\jsBaseFontSize\bxjs@param@basefontsize
 %\typeout{\string\jsDocClass: \meaning\jsDocClass}
 %\typeout{\string\jsEngine: \meaning\jsEngine}
 %\typeout{\string\jsBaseFontSize: \jsBaseFontSize}
 %\typeout{\string\bxjs@param@mag: \bxjs@param@mag}
-%\typeout{\string\js@magscale: \js@magscale}
-%\typeout{\string\ifjs@mag: \meaning\ifjs@mag}
+%\typeout{\string\jsc@magscale: \jsc@magscale}
+%\typeout{\string\ifjsc@mag: \meaning\ifjsc@mag}
 %\typeout{\string\ifbxjs@nfss@patch: \meaning\ifbxjs@nfss@patch}
 %    \end{macrocode}
 %
-% [2016-07-08] |\js@mpt| および |\js@mmm| に，それぞれ1ptおよび1mmを拡大させた値を格納します。
+% [2016-07-08] |\jsc@mpt| および |\jsc@mmm| に，それぞれ1ptおよび1mmを拡大させた値を格納します。
 % 以降のレイアウト指定ではこちらを使います。
 %
 % \begin{ZRnote}
 % |\mag| する場合（現状はこれが既定）にコードの変更を低減するために、
-% 以下では必要に応じて、|\js@mpt| を |\p@?| と書く。
+% 以下では必要に応じて、|\jsc@mpt| を |\p@?| と書く。
 % その上で、|\mag| する場合は |?| を無視して |\p@| と解釈させ、
 % |\mag| しない場合は |?| を英字扱いにして |\p@?| という制御綴を
-% |\js@mpt| と同値にする。
+% |\jsc@mpt| と同値にする。
 %    \begin{macrocode}
-\ifjs@mag
-  \let\js@mpt\p@
-  \newdimen\js@mmm \js@mmm=1mm
+\ifjsc@mag
+  \let\jsc@mpt\p@
+  \newdimen\jsc@mmm \jsc@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\js@mpt \js@mpt=\js@magscale \p@
-  \newdimen\js@mmm \js@mmm=\js@magscale mm
-  \catcode`\?=11 \let\p@?\js@mpt
+  \newdimen\jsc@mpt \jsc@mpt=\jsc@magscale \p@
+  \newdimen\jsc@mmm \jsc@mmm=\jsc@magscale mm
+  \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
 %    \end{macrocode}
@@ -1666,7 +1671,7 @@
 % |nozw| 非指定時は |\zw| を |\jsZw| と同義にする。
 %    \begin{macrocode}
 \newdimen\jsZw
-\jsZw=10\js@mpt \jsZw=\jsScale\jsZw
+\jsZw=10\jsc@mpt \jsZw=\jsScale\jsZw
 \ifbxjs@usezw
   \providecommand*\zw{\jsZw}
 \fi
@@ -1696,7 +1701,7 @@
   \fi}
 \def\bxjs@preadjust@extract@font{%
   \let\bxjs@req@size\f@size
-  \dimen@\f@size\p@ \bxjs@invscale\dimen@\js@magscale
+  \dimen@\f@size\p@ \bxjs@invscale\dimen@\jsc@magscale
   \advance\dimen@.005pt\relax \bxjs@fstrunc\dimen@
   \let\bxjs@ref@size\bxjs@tmpa
   \let\f@size\bxjs@ref@size}
@@ -1706,7 +1711,7 @@
   \csname s@fct@#1\endcsname}
 \let\bxjs@DeclareErrorFont\DeclareErrorFont
 \def\DeclareErrorFont#1#2#3#4#5{%
-  \@tempdimc#5\p@ \@tempdimc\js@magscale\@tempdimc
+  \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
   \edef\bxjs@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
   \expandafter\bxjs@DeclareErrorFont\bxjs@tmpa}
 \def\gen@sfcnt{%
@@ -1834,15 +1839,15 @@
 % \end{macro}
 % \end{ZRnote}
 %
-% \begin{macro}{\js@setfontsize}
-% クラスファイルの内部では，拡大率も考慮した |\js@setfontsize| を
+% \begin{macro}{\jsc@setfontsize}
+% クラスファイルの内部では，拡大率も考慮した |\jsc@setfontsize| を
 % |\@setfontsize| の変わりに用いることにします。
 %    \begin{macrocode}
-\ifjs@mag
-  \let\js@setfontsize\@setfontsize
+\ifjsc@mag
+  \let\jsc@setfontsize\@setfontsize
 \else
-  \def\js@setfontsize#1#2#3{%
-    \@setfontsize#1{#2\js@mpt}{#3\js@mpt}}
+  \def\jsc@setfontsize#1#2#3{%
+    \@setfontsize#1{#2\jsc@mpt}{#3\jsc@mpt}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -1947,9 +1952,9 @@
 %    \begin{macrocode}
 \renewcommand{\normalsize}{%
   \bxjs@if@narrowbaselines{%
-    \js@setfontsize\normalsize\@xpt\@xiipt
+    \jsc@setfontsize\normalsize\@xpt\@xiipt
   }{%else
-    \js@setfontsize\normalsize\@xpt{\n@baseline}%
+    \jsc@setfontsize\normalsize\@xpt{\n@baseline}%
   }%
 %    \end{macrocode}
 %
@@ -2040,11 +2045,11 @@
 %    \begin{macrocode}
 \newcommand{\small}{%
   \bxjs@if@narrowbaselines{%
-%<!kiyou>    \js@setfontsize\small\@ixpt{11}%
-%<kiyou>    \js@setfontsize\small{8.8888}{11}%
+%<!kiyou>    \jsc@setfontsize\small\@ixpt{11}%
+%<kiyou>    \jsc@setfontsize\small{8.8888}{11}%
   }{%else
-%<!kiyou>    \js@setfontsize\small\@ixpt{13}%
-%<kiyou>    \js@setfontsize\small{8.8888}{13.2418}%
+%<!kiyou>    \jsc@setfontsize\small\@ixpt{13}%
+%<kiyou>    \jsc@setfontsize\small{8.8888}{13.2418}%
   }%
   \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip  \z@ \@plus3\p@?
@@ -2066,11 +2071,11 @@
 %    \begin{macrocode}
 \newcommand{\footnotesize}{%
   \bxjs@if@narrowbaselines{%
-%<!kiyou>    \js@setfontsize\footnotesize\@viiipt{9.5}%
-%<kiyou>    \js@setfontsize\footnotesize{8.8888}{11}%
+%<!kiyou>    \jsc@setfontsize\footnotesize\@viiipt{9.5}%
+%<kiyou>    \jsc@setfontsize\footnotesize{8.8888}{11}%
   }{%else
-%<!kiyou>    \js@setfontsize\footnotesize\@viiipt{11}%
-%<kiyou>    \js@setfontsize\footnotesize{8.8888}{13.2418}%
+%<!kiyou>    \jsc@setfontsize\footnotesize\@viiipt{11}%
+%<kiyou>    \jsc@setfontsize\footnotesize{8.8888}{13.2418}%
   }%
   \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
   \abovedisplayshortskip  \z@ \@plus2\p@?
@@ -2102,21 +2107,21 @@
 % [2004-11-03] |\HUGE| を追加。
 %
 %    \begin{macrocode}
-\newcommand{\scriptsize}{\js@setfontsize\scriptsize\@viipt\@viiipt}
-\newcommand{\tiny}{\js@setfontsize\tiny\@vpt\@vipt}
+\newcommand{\scriptsize}{\jsc@setfontsize\scriptsize\@viipt\@viiipt}
+\newcommand{\tiny}{\jsc@setfontsize\tiny\@vpt\@vipt}
 \if@twocolumn
-%<!kiyou>  \newcommand{\large}{\js@setfontsize\large\@xiipt{\n@baseline}}
-%<kiyou>  \newcommand{\large}{\js@setfontsize\large{11.111}{\n@baseline}}
+%<!kiyou>  \newcommand{\large}{\jsc@setfontsize\large\@xiipt{\n@baseline}}
+%<kiyou>  \newcommand{\large}{\jsc@setfontsize\large{11.111}{\n@baseline}}
 \else
-%<!kiyou>  \newcommand{\large}{\js@setfontsize\large\@xiipt{17}}
-%<kiyou>  \newcommand{\large}{\js@setfontsize\large{11.111}{17}}
+%<!kiyou>  \newcommand{\large}{\jsc@setfontsize\large\@xiipt{17}}
+%<kiyou>  \newcommand{\large}{\jsc@setfontsize\large{11.111}{17}}
 \fi
-%<!kiyou>\newcommand{\Large}{\js@setfontsize\Large\@xivpt{21}}
-%<kiyou>\newcommand{\Large}{\js@setfontsize\Large{12.222}{21}}
-\newcommand{\LARGE}{\js@setfontsize\LARGE\@xviipt{25}}
-\newcommand{\huge}{\js@setfontsize\huge\@xxpt{28}}
-\newcommand{\Huge}{\js@setfontsize\Huge\@xxvpt{33}}
-\newcommand{\HUGE}{\js@setfontsize\HUGE{30}{40}}
+%<!kiyou>\newcommand{\Large}{\jsc@setfontsize\Large\@xivpt{21}}
+%<kiyou>\newcommand{\Large}{\jsc@setfontsize\Large{12.222}{21}}
+\newcommand{\LARGE}{\jsc@setfontsize\LARGE\@xviipt{25}}
+\newcommand{\huge}{\jsc@setfontsize\huge\@xxpt{28}}
+\newcommand{\Huge}{\jsc@setfontsize\Huge\@xxvpt{33}}
+\newcommand{\HUGE}{\jsc@setfontsize\HUGE{30}{40}}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -2279,7 +2284,7 @@
 % |\topskip| も指定する。
 % \end{ZRnote}
 %    \begin{macrocode}
-\ifjs@mag
+\ifjsc@mag
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
@@ -2304,7 +2309,7 @@
 % \end{ZRnote}
 %    \begin{macrocode}
 \edef\bxjs@layout@paper{%
-  \ifjs@mag truedimen,\fi
+  \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
 %    \end{macrocode}
@@ -2325,8 +2330,8 @@
 %</article|report>
 %<*book>
 \def\bxjs@layout{%
-  headheight=\topskip,headsep=6\js@mmm,nofoot,includeheadfoot,%
-  hmargin=36\js@mmm,hmarginratio=1:1,%
+  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+  hmargin=36\jsc@mmm,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
 %</book>
@@ -2380,7 +2385,7 @@
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
-      -\textwidth-10\js@mmm-\marginparsep}
+      -\textwidth-10\jsc@mmm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
 % 連動する変数
   \maxdepth=.5\topskip
@@ -3811,8 +3816,8 @@
     \addcontentsline{toc}{chapter}{#1}%
   \fi
   \chaptermark{#1}%
-  \addtocontents{lof}{\protect\addvspace{10\js@mpt}}%
-  \addtocontents{lot}{\protect\addvspace{10\js@mpt}}%
+  \addtocontents{lof}{\protect\addvspace{10\jsc@mpt}}%
+  \addtocontents{lot}{\protect\addvspace{10\jsc@mpt}}%
   \if@twocolumn
     \@topnewpage[\@makechapterhead{#2}]%
   \else
@@ -4995,18 +5000,18 @@
 %
 % 目次を生成します。
 %
-% \begin{macro}{\js@tocl@width}
+% \begin{macro}{\jsc@tocl@width}
 %
 % [2013-12-30] |\prechaptername| などから見積もった目次のラベルの長さです。(by ts)
 %
 %    \begin{macrocode}
-\newdimen\js@tocl@width
+\newdimen\jsc@tocl@width
 \newcommand{\tableofcontents}{%
 %<*book|report>
-  \settowidth\js@tocl@width{\headfont\prechaptername\postchaptername}%
+  \settowidth\jsc@tocl@width{\headfont\prechaptername\postchaptername}%
   \settowidth\@tempdima{\headfont\appendixname}%
-  \ifdim\js@tocl@width<\@tempdima \setlength\js@tocl@width{\@tempdima}\fi
-  \ifdim\js@tocl@width<2\jsZw \divide\js@tocl@width by 2 \advance\js@tocl@width 1\jsZw\fi
+  \ifdim\jsc@tocl@width<\@tempdima \setlength\jsc@tocl@width{\@tempdima}\fi
+  \ifdim\jsc@tocl@width<2\jsZw \divide\jsc@tocl@width by 2 \advance\jsc@tocl@width 1\jsZw\fi
   \if@twocolumn
     \@restonecoltrue\onecolumn
   \else
@@ -5016,10 +5021,10 @@
   \@mkboth{\contentsname}{}%
 %</book|report>
 %<*!book&!report>
-  \settowidth\js@tocl@width{\headfont\presectionname\postsectionname}%
+  \settowidth\jsc@tocl@width{\headfont\presectionname\postsectionname}%
   \settowidth\@tempdima{\headfont\appendixname}%
-  \ifdim\js@tocl@width<\@tempdima\relax\setlength\js@tocl@width{\@tempdima}\fi
-  \ifdim\js@tocl@width<2\jsZw \divide\js@tocl@width by 2 \advance\js@tocl@width 1\jsZw\fi
+  \ifdim\jsc@tocl@width<\@tempdima\relax\setlength\jsc@tocl@width{\@tempdima}\fi
+  \ifdim\jsc@tocl@width<2\jsZw \divide\jsc@tocl@width by 2 \advance\jsc@tocl@width 1\jsZw\fi
   \section*{\contentsname}%
   \@mkboth{\contentsname}{\contentsname}%
 %</!book&!report>
@@ -5061,7 +5066,7 @@
 %
 % 章の目次です。|\@lnumwidth| を4.683zwに増やしました。
 %
-% [2013-12-30] |\@lnumwidth| を |\js@tocl@width| から
+% [2013-12-30] |\@lnumwidth| を |\jsc@tocl@width| から
 % 決めるようにしてみました。(by ts)
 %
 %    \begin{macrocode}
@@ -5078,7 +5083,7 @@
       \parfillskip-\rightskip
       \leavevmode\headfont
 %     % \if@english\setlength\@lnumwidth{5.5em}\else\setlength\@lnumwidth{4.683\jsZw}\fi
-      \setlength\@lnumwidth{\js@tocl@width}\advance\@lnumwidth 2.683\jsZw
+      \setlength\@lnumwidth{\jsc@tocl@width}\advance\@lnumwidth 2.683\jsZw
       \advance\leftskip\@lnumwidth \hskip-\leftskip
       #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
       \penalty\@highpenalty
@@ -5105,7 +5110,7 @@
       \parfillskip-\rightskip
       \leavevmode\headfont
 %     % \setlength\@lnumwidth{4\jsZw}% 元1.5em [2003-03-02]
-      \setlength\@lnumwidth{\js@tocl@width}\advance\@lnumwidth 2\jsZw
+      \setlength\@lnumwidth{\jsc@tocl@width}\advance\@lnumwidth 2\jsZw
       \advance\leftskip\@lnumwidth \hskip-\leftskip
       #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
     \endgroup
@@ -5119,7 +5124,7 @@
 %<book|report> % \newcommand*{\l@section}{\@dottedtocline{1}{1\jsZw}{3.683\jsZw}}
 %    \end{macrocode}
 %
-% [2013-12-30] 上のインデントは |\js@tocl@width| から決めるように
+% [2013-12-30] 上のインデントは |\jsc@tocl@width| から決めるように
 % しました。(by ts)
 %
 % \end{macro}
@@ -5132,7 +5137,7 @@
 % さらに下位レベルの目次項目の体裁です。
 % あまり使ったことがありませんので，要修正かもしれません。
 %
-% [2013-12-30] ここも  |\js@tocl@width| から決めるように
+% [2013-12-30] ここも  |\jsc@tocl@width| から決めるように
 % してみました。(by ts)
 %
 %    \begin{macrocode}
@@ -5147,16 +5152,16 @@
 % \newcommand*{\l@subparagraph} {\@dottedtocline{5}{4\jsZw}{3\jsZw}}
 %
 \newcommand*{\l@subsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima -1\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima -1\jsZw
           \@dottedtocline{2}{\@tempdima}{3\jsZw}}
 \newcommand*{\l@subsubsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 0\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 0\jsZw
           \@dottedtocline{3}{\@tempdima}{4\jsZw}}
 \newcommand*{\l@paragraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 1\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 1\jsZw
           \@dottedtocline{4}{\@tempdima}{5\jsZw}}
 \newcommand*{\l@subparagraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 2\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 2\jsZw
           \@dottedtocline{5}{\@tempdima}{6\jsZw}}
 %</!book&!report>
 %<*book|report>
@@ -5165,19 +5170,19 @@
 % \newcommand*{\l@paragraph}    {\@dottedtocline{4}{10em}{5em}}
 % \newcommand*{\l@subparagraph} {\@dottedtocline{5}{12em}{6em}}
 \newcommand*{\l@section}{%
-          \@tempdima\js@tocl@width \advance\@tempdima -1\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima -1\jsZw
           \@dottedtocline{1}{\@tempdima}{3.683\jsZw}}
 \newcommand*{\l@subsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 2.683\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 2.683\jsZw
           \@dottedtocline{2}{\@tempdima}{3.5\jsZw}}
 \newcommand*{\l@subsubsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 6.183\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 6.183\jsZw
           \@dottedtocline{3}{\@tempdima}{4.5\jsZw}}
 \newcommand*{\l@paragraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 10.683\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 10.683\jsZw
           \@dottedtocline{4}{\@tempdima}{5.5\jsZw}}
 \newcommand*{\l@subparagraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 16.183\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 16.183\jsZw
           \@dottedtocline{5}{\@tempdima}{6.5\jsZw}}
 %</book|report>
 %    \end{macrocode}
@@ -6667,7 +6672,7 @@
 % \begin{macro}{\trueH}
 % |\trueQ| と |\trueH| はともに0.25\,true\,mmに等しい。
 %    \begin{macrocode}
-  \ifjs@mag
+  \ifjsc@mag
     \@tempdima=2.5mm
     \@tempdimb=\jsBaseFontSize\relax
     \edef\bxjs@tmpa{\strip@pt\@tempdimb}%

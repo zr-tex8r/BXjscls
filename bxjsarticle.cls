@@ -156,7 +156,7 @@
     \ClassWarningNoLine\bxjs@clsname
     {You should not use 'true' lengths here}%
   \fi}
-\newif\ifjs@mag
+\newif\ifjsc@mag
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
 \DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
 \DeclareOption{10pt}{\bxjs@setbasefontsize{10pt}}
@@ -550,7 +550,7 @@
 \else \def\n@baseline{16}\fi
 \newif\ifbxjs@nfss@patch
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
-  \js@magtrue
+  \jsc@magtrue
 \else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
   \bxjs@nfss@patchtrue
 \fi\fi
@@ -572,20 +572,20 @@
 \@tempcnta\bxjs@param@mag \advance\@tempcnta100000
 \def\bxjs@tmpa#1#2#3#4\@nil{\@tempdima=#2#3.#4\p@}
 \expandafter\bxjs@tmpa\the\@tempcnta\@nil
-\edef\js@magscale{\strip@pt\@tempdima}
+\edef\jsc@magscale{\strip@pt\@tempdima}
 \let\jsBaseFontSize\bxjs@param@basefontsize
-\ifjs@mag
-  \let\js@mpt\p@
-  \newdimen\js@mmm \js@mmm=1mm
+\ifjsc@mag
+  \let\jsc@mpt\p@
+  \newdimen\jsc@mmm \jsc@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\js@mpt \js@mpt=\js@magscale \p@
-  \newdimen\js@mmm \js@mmm=\js@magscale mm
-  \catcode`\?=11 \let\p@?\js@mpt
+  \newdimen\jsc@mpt \jsc@mpt=\jsc@magscale \p@
+  \newdimen\jsc@mmm \jsc@mmm=\jsc@magscale mm
+  \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
 \newdimen\jsZw
-\jsZw=10\js@mpt \jsZw=\jsScale\jsZw
+\jsZw=10\jsc@mpt \jsZw=\jsScale\jsZw
 \ifbxjs@usezw
   \providecommand*\zw{\jsZw}
 \fi
@@ -607,7 +607,7 @@
   \fi}
 \def\bxjs@preadjust@extract@font{%
   \let\bxjs@req@size\f@size
-  \dimen@\f@size\p@ \bxjs@invscale\dimen@\js@magscale
+  \dimen@\f@size\p@ \bxjs@invscale\dimen@\jsc@magscale
   \advance\dimen@.005pt\relax \bxjs@fstrunc\dimen@
   \let\bxjs@ref@size\bxjs@tmpa
   \let\f@size\bxjs@ref@size}
@@ -617,7 +617,7 @@
   \csname s@fct@#1\endcsname}
 \let\bxjs@DeclareErrorFont\DeclareErrorFont
 \def\DeclareErrorFont#1#2#3#4#5{%
-  \@tempdimc#5\p@ \@tempdimc\js@magscale\@tempdimc
+  \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
   \edef\bxjs@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
   \expandafter\bxjs@DeclareErrorFont\bxjs@tmpa}
 \def\gen@sfcnt{%
@@ -649,11 +649,11 @@
   \fi\relax
   \jsResetDimen}
 \newcommand*\jsResetDimen{}
-\ifjs@mag
-  \let\js@setfontsize\@setfontsize
+\ifjsc@mag
+  \let\jsc@setfontsize\@setfontsize
 \else
-  \def\js@setfontsize#1#2#3{%
-    \@setfontsize#1{#2\js@mpt}{#3\js@mpt}}
+  \def\jsc@setfontsize#1#2#3{%
+    \@setfontsize#1{#2\jsc@mpt}{#3\jsc@mpt}}
 \fi
 \emergencystretch 3\jsZw
 \newif\ifnarrowbaselines
@@ -682,9 +682,9 @@
 }
 \renewcommand{\normalsize}{%
   \bxjs@if@narrowbaselines{%
-    \js@setfontsize\normalsize\@xpt\@xiipt
+    \jsc@setfontsize\normalsize\@xpt\@xiipt
   }{%else
-    \js@setfontsize\normalsize\@xpt{\n@baseline}%
+    \jsc@setfontsize\normalsize\@xpt{\n@baseline}%
   }%
   \abovedisplayskip 11\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip \z@ \@plus3\p@?
@@ -704,9 +704,9 @@
 \setlength\Chs{1\jsZw}
 \newcommand{\small}{%
   \bxjs@if@narrowbaselines{%
-    \js@setfontsize\small\@ixpt{11}%
+    \jsc@setfontsize\small\@ixpt{11}%
   }{%else
-    \js@setfontsize\small\@ixpt{13}%
+    \jsc@setfontsize\small\@ixpt{13}%
   }%
   \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \abovedisplayshortskip  \z@ \@plus3\p@?
@@ -718,9 +718,9 @@
               \itemsep \parsep}}
 \newcommand{\footnotesize}{%
   \bxjs@if@narrowbaselines{%
-    \js@setfontsize\footnotesize\@viiipt{9.5}%
+    \jsc@setfontsize\footnotesize\@viiipt{9.5}%
   }{%else
-    \js@setfontsize\footnotesize\@viiipt{11}%
+    \jsc@setfontsize\footnotesize\@viiipt{11}%
   }%
   \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
   \abovedisplayshortskip  \z@ \@plus2\p@?
@@ -730,18 +730,18 @@
               \topsep \z@
               \parsep \z@
               \itemsep \parsep}}
-\newcommand{\scriptsize}{\js@setfontsize\scriptsize\@viipt\@viiipt}
-\newcommand{\tiny}{\js@setfontsize\tiny\@vpt\@vipt}
+\newcommand{\scriptsize}{\jsc@setfontsize\scriptsize\@viipt\@viiipt}
+\newcommand{\tiny}{\jsc@setfontsize\tiny\@vpt\@vipt}
 \if@twocolumn
-  \newcommand{\large}{\js@setfontsize\large\@xiipt{\n@baseline}}
+  \newcommand{\large}{\jsc@setfontsize\large\@xiipt{\n@baseline}}
 \else
-  \newcommand{\large}{\js@setfontsize\large\@xiipt{17}}
+  \newcommand{\large}{\jsc@setfontsize\large\@xiipt{17}}
 \fi
-\newcommand{\Large}{\js@setfontsize\Large\@xivpt{21}}
-\newcommand{\LARGE}{\js@setfontsize\LARGE\@xviipt{25}}
-\newcommand{\huge}{\js@setfontsize\huge\@xxpt{28}}
-\newcommand{\Huge}{\js@setfontsize\Huge\@xxvpt{33}}
-\newcommand{\HUGE}{\js@setfontsize\HUGE{30}{40}}
+\newcommand{\Large}{\jsc@setfontsize\Large\@xivpt{21}}
+\newcommand{\LARGE}{\jsc@setfontsize\LARGE\@xviipt{25}}
+\newcommand{\huge}{\jsc@setfontsize\huge\@xxpt{28}}
+\newcommand{\Huge}{\jsc@setfontsize\Huge\@xxvpt{33}}
+\newcommand{\HUGE}{\jsc@setfontsize\HUGE{30}{40}}
 \everydisplay=\expandafter{\the\everydisplay \narrowbaselines}
 \newcommand{\headfont}{\sffamily}
 \setlength\columnsep{2\Cwd}
@@ -760,7 +760,7 @@
 \@lowpenalty   51
 \@medpenalty  151
 \@highpenalty 301
-\ifjs@mag
+\ifjsc@mag
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
@@ -772,7 +772,7 @@
 \def\bxjs@read@d#1\@nil{}
 \expandafter\bxjs@read@a\bxjs@param@paper\@nil
 \edef\bxjs@layout@paper{%
-  \ifjs@mag truedimen,\fi
+  \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
 \def\bxjs@layout{%
@@ -803,7 +803,7 @@
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
-      -\textwidth-10\js@mmm-\marginparsep}
+      -\textwidth-10\jsc@mmm-\marginparsep}
   \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
   \maxdepth=.5\topskip
   \stockwidth=\paperwidth
@@ -1497,12 +1497,12 @@
 \newcommand\@tocrmarg{2.55em}
 \newcommand\@dotsep{4.5}
 \setcounter{tocdepth}{2}
-\newdimen\js@tocl@width
+\newdimen\jsc@tocl@width
 \newcommand{\tableofcontents}{%
-  \settowidth\js@tocl@width{\headfont\presectionname\postsectionname}%
+  \settowidth\jsc@tocl@width{\headfont\presectionname\postsectionname}%
   \settowidth\@tempdima{\headfont\appendixname}%
-  \ifdim\js@tocl@width<\@tempdima\relax\setlength\js@tocl@width{\@tempdima}\fi
-  \ifdim\js@tocl@width<2\jsZw \divide\js@tocl@width by 2 \advance\js@tocl@width 1\jsZw\fi
+  \ifdim\jsc@tocl@width<\@tempdima\relax\setlength\jsc@tocl@width{\@tempdima}\fi
+  \ifdim\jsc@tocl@width<2\jsZw \divide\jsc@tocl@width by 2 \advance\jsc@tocl@width 1\jsZw\fi
   \section*{\contentsname}%
   \@mkboth{\contentsname}{\contentsname}%
   \@starttoc{toc}%
@@ -1531,22 +1531,22 @@
       \rightskip\@tocrmarg
       \parfillskip-\rightskip
       \leavevmode\headfont
-      \setlength\@lnumwidth{\js@tocl@width}\advance\@lnumwidth 2\jsZw
+      \setlength\@lnumwidth{\jsc@tocl@width}\advance\@lnumwidth 2\jsZw
       \advance\leftskip\@lnumwidth \hskip-\leftskip
       #1\nobreak\hfil\nobreak\hbox to\@pnumwidth{\hss#2}\par
     \endgroup
   \fi}
 \newcommand*{\l@subsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima -1\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima -1\jsZw
           \@dottedtocline{2}{\@tempdima}{3\jsZw}}
 \newcommand*{\l@subsubsection}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 0\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 0\jsZw
           \@dottedtocline{3}{\@tempdima}{4\jsZw}}
 \newcommand*{\l@paragraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 1\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 1\jsZw
           \@dottedtocline{4}{\@tempdima}{5\jsZw}}
 \newcommand*{\l@subparagraph}{%
-          \@tempdima\js@tocl@width \advance\@tempdima 2\jsZw
+          \@tempdima\jsc@tocl@width \advance\@tempdima 2\jsZw
           \@dottedtocline{5}{\@tempdima}{6\jsZw}}
 \newdimen\@lnumwidth
 \def\numberline#1{\hb@xt@\@lnumwidth{#1\hfil}\hspace{0pt}}
