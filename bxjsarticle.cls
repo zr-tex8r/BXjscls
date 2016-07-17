@@ -356,6 +356,11 @@
   \bxjs@bigcodefalse}
 \DeclareOption{bigcode}{%
   \bxjs@bigcodetrue}
+\newif\ifbxjs@oldfontcommands
+\DeclareOption{nooldfontcommands}{%
+  \bxjs@oldfontcommandsfalse}
+\DeclareOption{oldfontcommands}{%
+  \bxjs@oldfontcommandstrue}
 \def\bxjs@setkey{%
   \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
 \def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}
@@ -555,6 +560,9 @@
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
 \g@addto@macro\@classoptionslist{,nosetpagesize}
+\ifbxjs@oldfontcommands
+  \jsAtEndOfClass{\allowoldfontcommands}
+\fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
 \newif\ifbxjs@nfss@patch
@@ -1491,15 +1499,66 @@
   \ifdim \wd\@tempboxa <\hsize \centering \fi
   #1\hskip1\jsZw\relax #2\par
   \vskip\belowcaptionskip}}
-\DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
-\DeclareOldFontCommand{\gt}{\normalfont\gtfamily}{\mathgt}
-\DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
-\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
-\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
-\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
-\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
-\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
-\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
+\newif\if@jsc@warnoldfontcmd
+\@jsc@warnoldfontcmdtrue
+\newif\if@jsc@warnoldfontcmdexception
+\@jsc@warnoldfontcmdexceptionfalse
+\newcommand*{\jsc@DeclareOldFontCommand}[3]{%
+  \g@addto@macro\bxjs@oldfontcmd@list{\do#1}%
+  \DeclareOldFontCommand{#1}{%
+    \bxjs@oldfontcmd{#1}#2%
+  }{%
+    \bxjs@oldfontcmd{#1}#3%
+  }%
+}
+\DeclareRobustCommand*{\jsc@warnoldfontcmd}[1]{%
+  \ClassWarning\bxjs@clsname
+   {Old font command '\string#1' is used!!\MessageBreak
+    First occurrence is}%
+}
+\newcommand*{\allowoldfontcommands}{%
+  \@jsc@warnoldfontcmdexceptiontrue}
+\newcommand*{\disallowoldfontcommands}{%
+  \@jsc@warnoldfontcmdexceptionfalse}
+\let\bxjs@oldfontcmd@list\@empty
+\def\bxjs@oldfontcmd#1{%
+  \expandafter\bxjs@oldfontcmd@a\csname bxjs@ofc/\string#1\endcsname#1}
+\def\bxjs@oldfontcmd@a#1#2{%
+  \if@jsc@warnoldfontcmdexception\else
+    \global\@jsc@warnoldfontcmdfalse
+    \ifx#1\relax
+      \global\let#1=t%
+      \jsc@warnoldfontcmd{#2}%
+    \fi
+  \fi}
+\def\bxjs@warnoldfontcmd@final{%
+  \let\@tempa\@empty
+  \def\do##1{%
+    \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
+      \edef\@tempa{\@tempa \space\string##1}\fi}
+  \bxjs@oldfontcmd@list
+  \ifx\@tempa\@empty\else
+    \ClassWarningNoLine\bxjs@clsname
+     {Some old font commands were used in text:\MessageBreak
+      \space\@tempa\MessageBreak
+      You should note, that since 1994 LaTeX2e provides a\MessageBreak
+      new font selection scheme called NFSS2 with several\MessageBreak
+      new, combinable font commands. The
+      class provides\MessageBreak
+      the old font commands
+      only for compatibility%
+      }%
+  \fi}
+\AtEndDocument{\bxjs@warnoldfontcmd@final}
+\jsc@DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
+\jsc@DeclareOldFontCommand{\gt}{\normalfont\gtfamily}{\mathgt}
+\jsc@DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
+\jsc@DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
+\jsc@DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
+\jsc@DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\jsc@DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
+\jsc@DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
+\jsc@DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
 \DeclareRobustCommand*{\cal}{\@fontswitch\relax\mathcal}
 \DeclareRobustCommand*{\mit}{\@fontswitch\relax\mathnormal}
 \newcommand\@pnumwidth{1.55em}
@@ -1586,6 +1645,7 @@
 \newdimen\bibindent
 \setlength\bibindent{2\jsZw}
 \newenvironment{thebibliography}[1]{%
+  \@jsc@warnoldfontcmdexceptiontrue
   \global\let\presectionname\relax
   \global\let\postsectionname\relax
   \section*{\refname}\@mkboth{\refname}{\refname}%
