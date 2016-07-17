@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-pandoc.def}
-  [2016/07/16 v1.1f BXJS document classes]
+  [2016/07/17 v1.2pre BXJS document classes]
 \input{bxjsja-standard.def}
 \@onlypreamble\bxjs@set@dupload@proc
 \def\bxjs@set@dupload@proc#1{%

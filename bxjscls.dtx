@@ -70,7 +70,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/07/16 v1.1f BXJS document classes]
+  [2016/07/17 v1.2pre BXJS document classes]
+% [2016/07/16 v1.1f BXJS document classes]
 % based on jsclasses [2016/07/15]
 % [2016/05/28 v1.1e BXJS document classes]
 % [2016/05/21 v1.1d BXJS document classes]
@@ -861,6 +862,14 @@
 % \item |zw|／|nozw| ： |\jsZw| と等価な命令として |\zw| を
 %   定義する／しない。
 % \item |js|／|nojs| ： JSクラスを読込済として扱う／扱わない。
+% \item |precisetext|／|noprecisetext| ： {\XeTeX}の``generateactualtext''を
+%    有効／無効にする。
+% \item |simplejasetup|／|nosimplejasetup| ： {\XeTeX}の``linebreaklocale''を
+%    有効／無効にする。
+% \item |bigcode|／|nobigcode| ： {\upTeX}でCMapとして |UTF8-UCS2| の
+%    代わりに |UTF8-UTF16| を使う／使わない。
+% \item |oldfontcommands|／|nooldfontcommands| ： 古い“二文字フォント命令”
+%    に対する警告を抑止する／しない。
 % \item |base=|\meta{dimen} ： 基底フォントサイズを直接指定する。
 %   （|xxpt| オプションの代用なので、既定値は10\,ptである。）
 % \item |jbase=|\meta{dimen} ： 基底フォントサイズを“和文規準で”
@@ -873,6 +882,9 @@
 % \item |mag=|\meta{int} ： |\mag| 値の直接設定。既定は |base| から算出する。
 % \item |paper={|\meta{dimen:width}|}{|\meta{dimen:height}|}| ： 用紙サイズ設定。
 %   用紙サイズオプションの代用で、既定値は |a4paper| 相当。
+% \item |ja=|\meta{name} ： 使用する和文ドライバの指定。
+% \item |jafont=|\meta{name} ： 和文フォントプリセットの指定。
+% \item |japaram=|\meta{name} ： 和文フォントパラメタの指定。
 % \item |magstyle=|\meta{name} ： “版面拡大”の実現方法の選択。
 % \end{itemize}
 %
@@ -1051,6 +1063,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |zw|、|nozw| オプションの定義。
 %    \begin{macrocode}
 \DeclareOption{nozw}{%
   \bxjs@usezwfalse}
@@ -1066,6 +1079,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |nojs|、|js| オプションの定義。
 %    \begin{macrocode}
 \DeclareOption{nojs}{%
   \bxjs@disguise@jsfalse}
@@ -1081,6 +1095,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |noprecisetext|／|precisetext| オプションの定義。
 %    \begin{macrocode}
 \DeclareOption{noprecisetext}{%
   \bxjs@precisetextfalse}
@@ -1096,6 +1111,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |nosimplejasetup|／|simplejasetup| オプションの定義。
 %    \begin{macrocode}
 \DeclareOption{nosimplejasetup}{%
   \bxjs@simplejasetupfalse}
@@ -1125,6 +1141,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |nobigcode|／|bigcode| オプションの定義。
 %    \begin{macrocode}
 \DeclareOption{nobigcode}{%
   \bxjs@bigcodefalse}
@@ -1139,9 +1156,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |nooldfontcommands|、|oldfontcommands|オプションの定義。
-% \Note |oldfontcommands|オプションの名前は\Pkg{memoir}クラスに倣った。
-% ちなみに\Pkg{KOMA-Script}では|enabledeprecatedfontcommands|であるが
+% |nooldfontcommands|、|oldfontcommands| オプションの定義。
+% \Note |oldfontcommands| オプションの名前は\Pkg{memoir}クラスに倣った。
+% ちなみに\Pkg{KOMA-Script}では |enabledeprecatedfontcommands| であるが
 % これはチョットアレなので避けた。
 %    \begin{macrocode}
 \DeclareOption{nooldfontcommands}{%
@@ -1580,14 +1597,14 @@
 \fi
 %    \end{macrocode}
 %
-% |color|/|graphics|パッケージが持つ出力用紙サイズ設定の機能は、
+% |color|/|graphics| パッケージが持つ出力用紙サイズ設定の機能は、
 % BXJSクラスでは余計なので無効にしておく。
 % このため、グローバルで |nosetpagesize| を設定しておく。
 %    \begin{macrocode}
 \g@addto@macro\@classoptionslist{,nosetpagesize}
 %    \end{macrocode}
 %
-% |oldfontcommands|オプション指定時は |\allowoldfontcommands|
+% |oldfontcommands| オプション指定時は |\allowoldfontcommands|
 % 命令を実行する。
 %    \begin{macrocode}
 \ifbxjs@oldfontcommands
