@@ -103,6 +103,15 @@
 \fi
 \bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
+\if@compatibility
+  \ClassError\bxjs@clsname
+   {Something went chaotic!\MessageBreak
+    I cannot go a single step further...}
+   {If the chant of \string\documentstyle\space was just a blunder
+    of yours,\MessageBreak then there'll still be hope....}
+  \expandafter\@firstofone
+\else \expandafter\@gobble
+\fi{\typeout{Farewell!}\endinput\@@end}
 \newif\if@restonecol
 \newif\if@titlepage
 \newif\if@enablejfam \@enablejfamtrue

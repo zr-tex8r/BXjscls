@@ -393,6 +393,21 @@
 \bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
 %    \end{macrocode}
+%
+% 万が一「2.09互換モード」になっていた場合は、
+% これ以上進むと危険なので強制終了させる。
+%    \begin{macrocode}
+\if@compatibility
+  \ClassError\bxjs@clsname
+   {Something went chaotic!\MessageBreak
+    I cannot go a single step further...}
+   {If the chant of \string\documentstyle\space was just a blunder
+    of yours,\MessageBreak then there'll still be hope....}
+  \expandafter\@firstofone
+\else \expandafter\@gobble
+\fi{\typeout{Farewell!}\endinput\@@end}
+%    \end{macrocode}
+%
 % \end{ZRnote}
 %
 % \section{オプション}
