@@ -426,6 +426,17 @@
     {Invalid magstyle value `#1'}\@ehc
     \let\bxjs@magstyle\bxjs@magstyle@default
   \fi}
+\let\bxjs@geometry@class=c
+\let\bxjs@geometry@user=u
+\let\bxjs@geometry\bxjs@geometry@class
+\define@key{bxjs}{geometry}{%
+  \expandafter\let\expandafter\bxjs@geometry\csname
+   bxjs@geometry@#1\endcsname
+  \ifx\bxjs@geometry\relax
+    \ClassError\bxjs@clsname
+    {Invalid geometry value `#1'}\@ehc
+    \let\bxjs@geometry\bxjs@geometry@class
+  \fi}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -804,7 +815,9 @@
 \newdimen\fullwidth
 \newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%
-  \let\Gm@driver\bxjs@geometry@driver
+  \ifx\bxjs@geometry@driver\relax\else
+    \let\Gm@driver\bxjs@geometry@driver
+  \fi
   \@tempdimb=\textwidth
   \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
   \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
@@ -834,25 +847,14 @@
   \stockwidth=\paperwidth
   \stockheight=\paperheight
 }
+\edef\jsGeometryOptions{%
+  \bxjs@layout@paper,\bxjs@layout}
+\ifx\bxjs@geometry\bxjs@geometry@class
 \@onlypreamble\bxjs@revert
 \let\bxjs@revert\@empty
 \edef\bxjs@tmpa{\the\ht\strutbox}
 \ht\strutbox=10\p@?
 \g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
-\if x\jsEngine
-  \ifx\pdfpagewidth\@undefined
-    \def\bxjs@Gm@driver{dvipdfm}
-  \else
-    \def\bxjs@Gm@driver{pdftex}
-    \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
-    \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
-  \fi
-  \let\bxjs@InputIfFileExists\InputIfFileExists
-  \g@addto@macro\bxjs@revert{\let\InputIfFileExists\bxjs@InputIfFileExists}
-  \def\InputIfFileExists#1#2#3{%
-    \bxjs@InputIfFileExists{#1}{#2}{#3}%
-    \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
-\fi
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \PassOptionsToPackage{dvipdfm}{geometry}
@@ -862,7 +864,8 @@
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
 \edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]%
+      {geometry}[2010/02/12]}% v5.0
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
@@ -876,6 +879,26 @@
 \def\bxjs@reset@layout#1{%
   \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
   \bxjs@nxt\bxjs@postproc@layout}
+\else\ifx\bxjs@geometry\bxjs@geometry@user
+\AtBeginDocument{\bxjs@check@page@layout}
+\@onlypreamble\bxjs@check@page@layout
+\def\bxjs@check@page@layout{%
+  \ifdim\textwidth=.5\maxdimen
+    \ClassError\bxjs@clsname
+     {Page layout is not properly set}
+     \@ehd
+  \fi}
+\def\jsUseMinimalPageLayout{%
+  \setlength{\textwidth}{6.5in}%
+  \setlength{\textheight}{8in}}
+\let\bxjs@geometry@driver\relax
+\def\setpagelayout{\@ifstar
+  {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
+\def\bxjs@pagelayout@a#1{%
+  \ClassError\bxjs@clsname
+   {Command \string\setpagelayout\space is not supported,\MessageBreak
+    because 'geometry' value is not 'class'}\@eha}
+\fi\fi
 \footnotesep=11\p@? \footnotesep=0.7\footnotesep
 \setlength{\skip\footins}{16\p@? \@plus 5\p@? \@minus 2\p@?}
 \setcounter{topnumber}{9}

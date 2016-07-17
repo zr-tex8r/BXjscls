@@ -1340,6 +1340,27 @@
   \fi}
 %    \end{macrocode}
 %
+% \begin{macro}{\bxjs@geometry}
+% |geometry| オプションの値。
+%    \begin{macrocode}
+\let\bxjs@geometry@class=c
+\let\bxjs@geometry@user=u
+\let\bxjs@geometry\bxjs@geometry@class
+%    \end{macrocode}
+% \end{macro}
+%
+% |geometry| オプションの処理。
+%    \begin{macrocode}
+\define@key{bxjs}{geometry}{%
+  \expandafter\let\expandafter\bxjs@geometry\csname
+   bxjs@geometry@#1\endcsname
+  \ifx\bxjs@geometry\relax
+    \ClassError\bxjs@clsname
+    {Invalid geometry value `#1'}\@ehc
+    \let\bxjs@geometry\bxjs@geometry@class
+  \fi}
+%    \end{macrocode}
+%
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
@@ -2412,7 +2433,9 @@
 %<book>\newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%
 % ドライバ再設定
-  \let\Gm@driver\bxjs@geometry@driver
+  \ifx\bxjs@geometry@driver\relax\else
+    \let\Gm@driver\bxjs@geometry@driver
+  \fi
 % textwidth 調整
   \@tempdimb=\textwidth
   \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
@@ -2451,6 +2474,26 @@
 }
 %    \end{macrocode}
 %
+% \begin{macro}{\jsGeometryOptions}
+% \begin{ZRnote}
+% |geometry|パッケージに渡すオプションのリスト。
+% \Note |geometry=user| 指定時にユーザが利用することを想定している。
+% \end{ZRnote}
+%    \begin{macrocode}
+\edef\jsGeometryOptions{%
+  \bxjs@layout@paper,\bxjs@layout}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{ZRnote}
+% ここで|geoemtry|オプションの値に応じて分岐する。
+%
+% まずは|geometry=class|の場合。
+% \end{ZRnote}
+%    \begin{macrocode}
+\ifx\bxjs@geometry\bxjs@geometry@class
+%    \end{macrocode}
+%
 % \begin{ZRnote}
 % |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
 % ようにする自動調整を行うが、これをどうするかは未検討。
@@ -2462,49 +2505,6 @@
 \edef\bxjs@tmpa{\the\ht\strutbox}
 \ht\strutbox=10\p@?
 \g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
-%    \end{macrocode}
-% \begin{ZRnote}
-% エンジンが{\XeTeX}である場合の処理。
-% \begin{itemize}
-% \item |geometry| 4.2版の場合：\
-%   {\TeX} Liveの一部の版に用意されている設定ファイル |geometry.cfg|
-%   では、|geometry| のドライバ自動検出の処理を乗っ取って、
-%   強制的に |pdftex| を使用するようになっている。
-%   ところが、{\XeTeX}では |\pdfhorigin| など未サポートのpdf{\TeX}%
-%   プリミティブがあり、|\mag| $\neq 1000$ の場合にエラーになる。
-%   そこで、|geometry.cfg| の読込の箇所にフックをかけて、|geometry.cfg|
-%   での処理をさらに乗っ取ることにする。
-%   \begin{itemize}
-%   \item {\XeTeX}が |\pdfpagewidth| をサポートする場合は、ダミーの\
-%     |\pdfhorigin|、|\pdfvorigin| を用意してドライバを |pdftex|
-%     に強制的に変更する。
-%   \item そうでない場合は、ドライバを |dvipdfm| に強制的に変更する。
-%   \end{itemize}
-% \item |geometry| 5.x版の場合：\
-%   この版の |geometry| は{\XeTeX}に正式に対応（ドライバ名 |xetex|）
-%   していて、また{\XeTeX}で実行した場合にドライバ自動検出の結果は\
-%   |xetex| となる。
-%   従って、特に何もする必要がない。
-%   さらに、ドライバ自動検出処理のマクロ名を4.2版のもの
-%   （|\Gm@checkdrivers|）から変えているので、上述の |geometry.cfg|
-%   のフックおよびここで行っているフックはともに無力化されている。
-% \end{itemize}
-% \end{ZRnote}
-%    \begin{macrocode}
-\if x\jsEngine
-  \ifx\pdfpagewidth\@undefined
-    \def\bxjs@Gm@driver{dvipdfm}
-  \else
-    \def\bxjs@Gm@driver{pdftex}
-    \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
-    \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
-  \fi
-  \let\bxjs@InputIfFileExists\InputIfFileExists
-  \g@addto@macro\bxjs@revert{\let\InputIfFileExists\bxjs@InputIfFileExists}
-  \def\InputIfFileExists#1#2#3{%
-    \bxjs@InputIfFileExists{#1}{#2}{#3}%
-    \edef\Gm@checkdrivers{\noexpand\Gm@setdriver{\bxjs@Gm@driver}}}%
-\fi
 %    \end{macrocode}
 % \begin{ZRnote}
 % |geometry| のドライバオプション指定。
@@ -2531,7 +2531,8 @@
 % \end{ZRnote}
 %    \begin{macrocode}
 \edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]%
+      {geometry}[2010/02/12]}% v5.0
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
@@ -2564,6 +2565,56 @@
 \def\bxjs@reset@layout#1{%
   \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
   \bxjs@nxt\bxjs@postproc@layout}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |geometry=class|の場合の処理はここで終わり。
+%
+% 次に、|geometry=user|の場合の処理。
+% \end{ZRnote}
+%    \begin{macrocode}
+\else\ifx\bxjs@geometry\bxjs@geometry@user
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% この場合はユーザが何らかの方法（例えば |geometry| を読み込む）
+% でページレイアウトを設定する必要がある。
+% もし、本体開始時に |\textwidth| がカーネル設定の値（|.5\maxdimen|）
+% になっている場合はエラーを出す。
+% \Note |\jsUseMinimalPageLayout| は動作テスト用。
+% \end{ZRnote}
+%    \begin{macrocode}
+\AtBeginDocument{\bxjs@check@page@layout}
+\@onlypreamble\bxjs@check@page@layout
+\def\bxjs@check@page@layout{%
+  \ifdim\textwidth=.5\maxdimen
+    \ClassError\bxjs@clsname
+     {Page layout is not properly set}
+     \@ehd
+  \fi}
+\def\jsUseMinimalPageLayout{%
+  \setlength{\textwidth}{6.5in}%
+  \setlength{\textheight}{8in}}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |\setpagelayout| はとりあえず無効にしておく。
+% \end{ZRnote}
+%    \begin{macrocode}
+\let\bxjs@geometry@driver\relax
+\def\setpagelayout{\@ifstar
+  {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
+\def\bxjs@pagelayout@a#1{%
+  \ClassError\bxjs@clsname
+   {Command \string\setpagelayout\space is not supported,\MessageBreak
+    because 'geometry' value is not 'class'}\@eha}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% |geometry=user|の場合の処理はここで終わり。
+% \end{ZRnote}
+%    \begin{macrocode}
+\fi\fi
 %    \end{macrocode}
 %
 % \begin{ZRnote}
