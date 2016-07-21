@@ -1533,7 +1533,7 @@
   }%
 }
 \DeclareRobustCommand*{\jsc@warnoldfontcmd}[1]{%
-  \ClassWarning\bxjs@clsname
+  \ClassInfo\bxjs@clsname
    {Old font command '\string#1' is used!!\MessageBreak
     First occurrence is}%
 }
@@ -1560,6 +1560,9 @@
   \bxjs@oldfontcmd@list
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
+     {Some old font commands were used in text\MessageBreak
+      (see the log output for detail)}%
+    \ClassInfo\bxjs@clsname
      {Some old font commands were used in text:\MessageBreak
       \space\@tempa\MessageBreak
       You should note, that since 1994 LaTeX2e provides a\MessageBreak
@@ -1568,7 +1571,7 @@
       class provides\MessageBreak
       the old font commands
       only for compatibility%
-      }%
+      \@gobble}%
   \fi}
 \AtEndDocument{\bxjs@warnoldfontcmd@final}
 \jsc@DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
