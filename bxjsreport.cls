@@ -261,7 +261,7 @@
 \DeclareOption{english}{\@englishtrue}
 \mathchardef\bxjs@csta=259
 \def\bxjs@invscale#1#2{%
-  \bgroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
+  \begingroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
     \@tempcnta\@tempdima \multiply\@tempcnta\@cclvi
     \divide\@tempcnta\@tempdimb \multiply\@tempcnta\@cclvi
     \@tempcntb\p@ \divide\@tempcntb\@tempdimb
@@ -276,7 +276,7 @@
         \advance\@tempcntb\m@ne \@tempdimc=\@tempcntb\@ne
       \else \@tempdimb=\@tempcntb\@ne \fi}%
     \xdef\bxjs@gtmpa{\the\@tempdimb}%
-  \egroup #1=\bxjs@gtmpa\relax}
+  \endgroup #1=\bxjs@gtmpa\relax}
 \let\bxjs@composite@proc\relax
 \DeclareOption{pandoc}{%
   \def\bxjs@composite@proc{%
