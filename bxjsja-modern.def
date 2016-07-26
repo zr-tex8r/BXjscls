@@ -36,7 +36,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 \ProvidesFile{bxjsja-modern.def}
-  [2016/07/17 v1.2pre BXJS document classes]
+  [2016/07/26 v1.2pre BXJS document classes]
 \input{bxjsja-standard.def}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
 \def\encodingdefault{T1}%
