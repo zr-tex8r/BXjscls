@@ -278,7 +278,8 @@
   \def\bxjs@composite@proc{%
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
-  \def\bxjs@driver@opt{dvipdfmx-if-dvi}}
+  \def\bxjs@driver@opt{dvipdfmx}%
+  \bxjs@dvi@opttrue}
 \DeclareOption{autodetect-engine}{%
   \let\bxjs@engine@given=*}
 \DeclareOption{latex}{%
@@ -325,8 +326,7 @@
   \def\bxjs@driver@opt{xetex}%
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 \DeclareOption{dvipdfmx-if-dvi}{%
-  \def\bxjs@driver@opt{dvipdfmx-if-dvi}%
-  \let\bxjs@driver@given\@undefined}
+  \setkeys{bxjs}{dvi=dvipdfmx}}
 \newif\ifbxjs@usezw \bxjs@usezwtrue
 \DeclareOption{nozw}{%
   \bxjs@usezwfalse}
@@ -433,6 +433,22 @@
     {Invalid geometry value `#1'}\@ehc
     \let\bxjs@geometry\bxjs@geometry@class
   \fi}
+\newif\ifbxjs@dvi@opt
+\let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
+\let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
+\define@key{bxjs}{dvi}{%
+  \expandafter\let\expandafter\bxjs@tmpa\csname
+   bxjs@dvidriver@@#1\endcsname
+  \ifx\bxjs@tmpa\relax
+    \ClassError\bxjs@clsname
+    {Invalid dvi value `#1'}\@ehc
+  \else
+    \def\bxjs@driver@opt{#1}%
+    \let\bxjs@driver@given\@undefined
+    \bxjs@dvi@opttrue
+  \fi}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -512,19 +528,20 @@
 \fi
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
-\else\ifx\bxjs@jadriver@given\@undefined \@tempswafalse
 \else \@tempswatrue
-\fi\fi\fi
+\fi\fi
 \if@tempswa
-  \ifx\bxjs@driver@opt\@undefined
+  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@given\@undefined\else
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
-  \fi
-  \def\bxjs@tmpa{dvipdfmx-if-dvi}
-  \ifx\bxjs@driver@opt\bxjs@tmpa
-    \def\bxjs@driver@opt{dvipdfmx}
-    \let\bxjs@driver@given\bxjs@driver@@dvipdfmx
-    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \fi\fi
+  \ifbxjs@dvi@opt
+    \edef\bxjs@nxt{%
+      \let\noexpand\bxjs@driver@given
+       \csname bxjs@dvidriver@@\bxjs@driver@opt\endcsname
+      \noexpand\g@addto@macro\noexpand\@classoptionslist
+       {,\bxjs@driver@opt}%
+    }\bxjs@nxt
   \fi
 \fi
 \def\bxjs@@minimal{minimal}

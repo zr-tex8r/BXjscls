@@ -950,7 +950,8 @@
 % \Note これは実際のドライバ設定で上書きできる
 % （オプション宣言順に注意）。
 %    \begin{macrocode}
-  \def\bxjs@driver@opt{dvipdfmx-if-dvi}}
+  \def\bxjs@driver@opt{dvipdfmx}%
+  \bxjs@dvi@opttrue}
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -1047,8 +1048,7 @@
 % というオプション。
 %    \begin{macrocode}
 \DeclareOption{dvipdfmx-if-dvi}{%
-  \def\bxjs@driver@opt{dvipdfmx-if-dvi}%
-  \let\bxjs@driver@given\@undefined}
+  \setkeys{bxjs}{dvi=dvipdfmx}}
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -1362,6 +1362,39 @@
   \fi}
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@dvi@opt}
+% |dvi| オプションが指定されたか。
+%    \begin{macrocode}
+\newif\ifbxjs@dvi@opt
+%    \end{macrocode}
+% \end{macro}
+%
+% DVIモードのドライバとドライバ種別との対応。
+%    \begin{macrocode}
+\let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
+\let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
+%    \end{macrocode}
+%
+% |dvi| オプションの処理。
+%    \begin{macrocode}
+\define@key{bxjs}{dvi}{%
+  \expandafter\let\expandafter\bxjs@tmpa\csname
+   bxjs@dvidriver@@#1\endcsname
+  \ifx\bxjs@tmpa\relax
+    \ClassError\bxjs@clsname
+    {Invalid dvi value `#1'}\@ehc
+  \else
+%    \end{macrocode}
+% |\bxjs@driver@given| を未定義にしていることに注意。
+%    \begin{macrocode}
+    \def\bxjs@driver@opt{#1}%
+    \let\bxjs@driver@given\@undefined
+    \bxjs@dvi@opttrue
+  \fi}
+%    \end{macrocode}
+%
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
@@ -1504,29 +1537,34 @@
 \fi
 %    \end{macrocode}
 %
-% DVI出力のエンジンでドライバオプションがない場合は警告を出す。
-% \Note ただし |ja| 非指定の場合はスキップする
-% （0.3 版との互換性のため）。
+% DVI出力のエンジンである場合の追加処理。
 %    \begin{macrocode}
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
-\else\ifx\bxjs@jadriver@given\@undefined \@tempswafalse
 \else \@tempswatrue
-\fi\fi\fi
+\fi\fi
 \if@tempswa
-  \ifx\bxjs@driver@opt\@undefined
+%    \end{macrocode}
+% ドライバオプションがない場合は警告を出す。
+% \Note ただし |ja| 非指定の場合はスキップする
+% （0.3 版との互換性のため）。
+%    \begin{macrocode}
+  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@given\@undefined\else
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
-  \fi
+  \fi\fi
 %    \end{macrocode}
-% DVI出力のエンジンで |dvipdfmx-in-dvi| が指定されていた場合は、
-% |dvipdfmx| が指定された時と同じ動作にする。
+% |dvi=XXX| が指定されていた場合は、
+% |XXX| が指定された時と同じ動作にする。
+% （グローバルオプションに |XXX| を追加する。）
 %    \begin{macrocode}
-  \def\bxjs@tmpa{dvipdfmx-if-dvi}
-  \ifx\bxjs@driver@opt\bxjs@tmpa
-    \def\bxjs@driver@opt{dvipdfmx}
-    \let\bxjs@driver@given\bxjs@driver@@dvipdfmx
-    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \ifbxjs@dvi@opt
+    \edef\bxjs@nxt{%
+      \let\noexpand\bxjs@driver@given
+       \csname bxjs@dvidriver@@\bxjs@driver@opt\endcsname
+      \noexpand\g@addto@macro\noexpand\@classoptionslist
+       {,\bxjs@driver@opt}%
+    }\bxjs@nxt
   \fi
 \fi
 %    \end{macrocode}
