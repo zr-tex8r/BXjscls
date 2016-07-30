@@ -1610,6 +1610,7 @@
     \fi
   \fi}
 \def\bxjs@warnoldfontcmd@final{%
+  \par
   \let\@tempa\@empty
   \def\do##1{%
     \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
