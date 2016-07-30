@@ -871,13 +871,25 @@
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
 \edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]%
-      {geometry}[2010/02/12]}% v5.0
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+\AtBeginDocument{\bxjs@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
+\@onlypreamble\bxjs@pre@geometry@hook
+\def\bxjs@pre@geometry@hook{%
+  \@ifpackageloaded{geometry}{\@ifpackagelater{geometry}{2010/02/12}{}{%
+      \PackageWarningNoLine\bxjs@clsname
+       {The 'geometry' package installed\MessageBreak
+        is too old (< v5.0)}%
+      \if x\jsEngine \ifnum\mag=\@m\else
+        \def\bxjs@Gm@driver{pdftex}
+        \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
+        \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
+      \fi\fi
+  }}{}}
 \def\setpagelayout{\@ifstar
   {\bxjs@reset@layout}{\bxjs@modify@layout}}
 \def\bxjs@modify@layout#1{%

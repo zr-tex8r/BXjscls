@@ -2567,12 +2567,11 @@
 % ここで |geometry| を読み込む。
 % \Note |geometry| のbegin-documentフックにおいて、Lua{\TeX}の
 % 旧版互換を有効にする。
-% \Note 1.2版より、|geometry| の4.x版のサポートを廃止した。
 % \end{ZRnote}
 %    \begin{macrocode}
 \edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]%
-      {geometry}[2010/02/12]}% v5.0
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
+\AtBeginDocument{\bxjs@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
@@ -2586,6 +2585,27 @@
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 %    \end{macrocode}
+%
+% \begin{macro}{\bxjs@pre@geometry@hook}
+% \begin{ZRnote}
+% 1.2版より、|geometry| の4.x版の使用は非推奨とする。
+% \Note 将来サポートを廃止する予定。
+% \end{ZRnote}
+%    \begin{macrocode}
+\@onlypreamble\bxjs@pre@geometry@hook
+\def\bxjs@pre@geometry@hook{%
+  \@ifpackageloaded{geometry}{\@ifpackagelater{geometry}{2010/02/12}{}{%
+      \PackageWarningNoLine\bxjs@clsname
+       {The 'geometry' package installed\MessageBreak
+        is too old (< v5.0)}%
+      \if x\jsEngine \ifnum\mag=\@m\else
+        \def\bxjs@Gm@driver{pdftex}
+        \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
+        \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
+      \fi\fi
+  }}{}}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{ZRnote}
 % \begin{itemize}
