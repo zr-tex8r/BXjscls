@@ -276,6 +276,7 @@
 \let\bxjs@composite@proc\relax
 \DeclareOption{pandoc}{%
   \def\bxjs@composite@proc{%
+    \bxjs@oldfontcommandstrue
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
   \def\bxjs@driver@opt{dvipdfmx}%

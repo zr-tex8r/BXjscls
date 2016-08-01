@@ -943,6 +943,7 @@
 %    \begin{macrocode}
 % \Note 実際の和文ドライバ・エンジン設定より優先される。
   \def\bxjs@composite@proc{%
+    \bxjs@oldfontcommandstrue
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
 %    \end{macrocode}
