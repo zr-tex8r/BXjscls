@@ -70,7 +70,7 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/07/26 v1.2pre BXJS document classes]
+  [2016/08/01 v1.2 BXJS document classes]
 % based on jsclasses [2016/07/18]
 % [2016/07/16 v1.1f BXJS document classes]
 % based on jsclasses [2016/07/15]
@@ -96,7 +96,10 @@
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
+\newcommand{\TODO}{\par\noindent
+  {\usefont{OT1}{cmss}{sbc}{n}\color{red}TODO:}\ }
 \newcommand{\Means}{~：\quad}
+\newcommand{\ZRX}{☃}
 \newenvironment{ZRnote}
   {\StartZRnote}{\EndZRnote}
 \newcommand*{\ZRnoteline}[1]{
@@ -119,6 +122,7 @@
 \setlength\marginparpush{0pt}
 % \OnlyDescription
 \DisableCrossrefs
+\CodelineNumbered
 \setcounter{StandardModuleDepth}{1}
 \GetFileInfo{bxjscls.dtx}
 \begin{document}
@@ -144,6 +148,8 @@
 % 一般の文書作成者向けの解説については、
 % ユーザマニュアル |bxjscls-manual.pdf| を参照してください。
 % \end{ZRnote}
+%
+% \tableofcontents
 %
 % \section{はじめに}
 %
@@ -217,7 +223,7 @@
 %
 % 以下では実際のコードに即して説明します。
 %
-% \paragraph{BXJSクラス特有の設定 ☆}
+% \paragraph{BXJSクラス特有の設定 \ZRX}
 %
 % \mbox{}
 % \begin{ZRnote}
@@ -371,10 +377,13 @@
 % \end{macro}
 %
 % Lua\TeX の場合、原版のコード中のコントロールワード中に現れる
-% 日本語文字のカテゴリコードを11に変更する。
-% （元は12。）
-% ただし、読込終了時点で元に戻しているので、日本語文字のコントロール
-% ワードのマクロはそのままでは使える状態になっていない。
+% 日本語文字のカテゴリコードを一時的に11に変更する。
+% クラス読込終了時点で元に戻される。
+% \Note 現在の{Lua\LaTeX}では、漢字のカテゴリコードは最初から11に
+% なっているので、この処理は特段の意味を持たない。
+% しかし、昔は12になっていて、この場合、日本語文字の
+% コントロールワードの命令を使用するには、カテゴリコードを11に
+% 変更する必要がある。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@restore@jltrcc
 \let\bxjs@restore@jltrcc\@empty
@@ -798,6 +807,7 @@
 % これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
 % の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
 % |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
+% \Note |\ifdraft| は2.0版で廃止予定。
 % \end{ZRnote}
 %    \begin{macrocode}
 \let\ifjsDraft\iffalse
@@ -852,7 +862,7 @@
 % BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
 % \end{ZRnote}
 %
-% \paragraph{BXJS特有のオプションの一覧 ☆}
+% \paragraph{BXJS特有のオプションの一覧 \ZRX}
 % \mbox{}
 % \begin{ZRnote}
 % \begin{itemize}
@@ -887,12 +897,18 @@
 % \item |jafont=|\meta{name} ： 和文フォントプリセットの指定。
 % \item |japaram=|\meta{name} ： 和文フォントパラメタの指定。
 % \item |magstyle=|\meta{name} ： “版面拡大”の実現方法の選択。
+% \item |dvi=|\meta{name} ： DVIモードの時のみに参照されるドライバ指定。
+% \item |geometry=|\meta{name} ： |geometry| パッケージの読込を自動的に
+%   行うかユーザに任せるか。
 % \end{itemize}
 %
 % \begin{macro}{\bxjs@invscale}
 % |\bxjs@invscale| は{\TeX}における「長さのスケール」の逆関数を求めるもの。
 % 例えば |\bxjs@invscale\dimX{1.3}| は |\dimX=1.3\dimX| の
 % 逆の演算を行う。
+% \Note 局所化の |\begingroup|～|\endgroup| について、
+% 以前は |\group|～|\egroup| を使っていたが、これだと数詞モード中では
+% 空のサブ数式を生み出してしまうため修正した。
 %    \begin{macrocode}
 \mathchardef\bxjs@csta=259
 \def\bxjs@invscale#1#2{%
@@ -917,7 +933,7 @@
 %
 % \end{ZRnote}
 %
-% \paragraph{複合設定オプション ☆}
+% \paragraph{複合設定オプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
 % 複合設定オプションとは、
@@ -929,7 +945,9 @@
 %
 % \begin{macro}{\bxjs@composite@proc}
 % 複合設定オプションのための遅延処理マクロ。
+%    \begin{macrocode}
 \let\bxjs@composite@proc\relax
+%    \end{macrocode}
 % \end{macro}
 %
 % |pandoc| オプションは、Pandocで{\LaTeX}用の既定テンプレートを
@@ -940,16 +958,17 @@
 %    \end{macrocode}
 % 和文ドライバを |pandoc| に、エンジン指定を |autodetect-engine| に
 % 変更する。
-%    \begin{macrocode}
 % \Note 実際の和文ドライバ・エンジン設定より優先される。
+%    \begin{macrocode}
   \def\bxjs@composite@proc{%
     \bxjs@oldfontcommandstrue
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
 %    \end{macrocode}
-% ドライバオプションを |dvipdfmx-if-dvi| に変更する。
+% ドライバオプションを |dvi=dvipdfmx| 相当に変更する。
 % \Note これは実際のドライバ設定で上書きできる
 % （オプション宣言順に注意）。
+% \TODO できない気がする…。
 %    \begin{macrocode}
   \def\bxjs@driver@opt{dvipdfmx}%
   \bxjs@dvi@opttrue}
@@ -957,7 +976,7 @@
 %
 % \end{ZRnote}
 %
-% \paragraph{エンジン・ドライバオプション ☆}
+% \paragraph{エンジン・ドライバオプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
 % \begin{macro}{\bxjs@engine@given}
@@ -1047,6 +1066,8 @@
 %
 % 「もしDVIモードであればドライバを |dvipdfmx| にする」
 % というオプション。
+% \Note 1.2版で |dvi| オプションが新設されたが、互換性のため
+% このオプションも残す。
 %    \begin{macrocode}
 \DeclareOption{dvipdfmx-if-dvi}{%
   \setkeys{bxjs}{dvi=dvipdfmx}}
@@ -1054,7 +1075,7 @@
 %
 % \end{ZRnote}
 %
-% \paragraph{その他のBXJS独自オプション ☆}
+% \paragraph{その他のBXJS独自オプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
 % \begin{macro}{\ifbxjs@usezw}
@@ -1122,7 +1143,7 @@
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@bigcode}
-% {\upTeX}で有効かするToUnicode CMapとして
+% {\upTeX}で有効化するToUnicode CMapとして
 % 「|UTF8-UCS2|」の代わりに「|UTF8-UTF16|」を使うか。
 % BMP外の文字に対応できる「|UTF8-UTF16|」の方が望ましいのであるが、
 % このファイルが利用可能かの確実な判定が困難であるため、
@@ -1171,7 +1192,7 @@
 %
 % \end{ZRnote}
 %
-% \paragraph{keyval型のオプション ☆}
+% \paragraph{keyval型のオプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
 %    \begin{macrocode}
@@ -1694,7 +1715,7 @@
 % \end{macro}
 %
 % \paragraph{拡大率の設定}
-%
+% \mbox{}
 % \begin{ZRnote}
 % \begin{macro}{\ifbxjs@nfss@patch}
 % NFSSパッチするか。
@@ -1796,8 +1817,8 @@
 %    \end{macrocode}
 % \end{ZRnote}
 %
-% \paragraph{NFSSパッチ ☆}
-%
+% \paragraph{NFSSパッチ \ZRX}
+% \mbox{}
 % \begin{ZRnote}
 % ムニャムニャムニャ……。
 %    \begin{macrocode}
@@ -6276,8 +6297,8 @@
 %</slide>
 %    \end{macrocode}
 %
-% \paragraph{BXJS独自の追加処理 ☆}
-%
+% \paragraph{BXJS独自の追加処理 \ZRX}
+% \mbox{}
 % \begin{ZRnote}
 %
 % 和文ドライバのファイルを読み込む。
@@ -6302,7 +6323,7 @@
 % \clearpage
 % \appendix
 %^^A========================================================
-% \section{和文ドライバの仕様 ☆}
+% \section{和文ドライバの仕様 \ZRX}
 %
 % 次の命令がBXJSクラス本体と和文ドライバの連携のために
 % 用意されている。
@@ -6389,7 +6410,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{和文ドライバ：minimal ☆}
+% \section{和文ドライバ：minimal \ZRX}
 %
 % |jadriver| の指定が無い場合に適用されるドライバ。
 % また、standard ドライバはまずこのドライバファイルを
@@ -6874,7 +6895,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{和文ドライバ：standard ☆}
+% \section{和文ドライバ：standard \ZRX}
 %
 % 標準のドライバ。
 %
@@ -7745,7 +7766,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{和文ドライバ：modern ☆}
+% \section{和文ドライバ：modern \ZRX}
 %
 % モダーンな設定。
 %
@@ -7819,7 +7840,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{和文ドライバ：pandoc ☆}
+% \section{和文ドライバ：pandoc \ZRX}
 %
 % Pandoc用の何か。
 %
@@ -8003,7 +8024,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{補助パッケージ一覧 ☆}
+% \section{補助パッケージ一覧 \ZRX}
 %
 % BXJSクラスの機能を実現するために用意されたものだが、
 % 他のクラスの文書で読み込んで利用することもできる。
@@ -8017,7 +8038,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{補助パッケージ：bxjscompat ☆}
+% \section{補助パッケージ：bxjscompat \ZRX}
 %
 % ムニャムニャムニャ……。
 %
@@ -8191,7 +8212,7 @@
 %    \end{macrocode}
 %
 %^^A========================================================
-% \section{補助パッケージ：bxjscjkcat ☆}
+% \section{補助パッケージ：bxjscjkcat \ZRX}
 %
 % modernドライバ用の和文カテゴリを適用する。
 %

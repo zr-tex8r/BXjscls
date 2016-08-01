@@ -1,12 +1,19 @@
 % 文字コードは UTF-8
 % lualatex で組版する
 \documentclass[a4paper]{ltjsarticle}
-\usepackage{url}
+\usepackage{color}
+\definecolor{myblue}{rgb}{0,0,0.75}
+\definecolor{mygreen}{rgb}{0,0.45,0}
+%\usepackage{url}
+\usepackage[unicode,colorlinks,hyperfootnotes=false]{hyperref}
+\hypersetup{linkcolor=myblue,urlcolor=mygreen}
 \usepackage{metalogo}
+\pdfstringdefDisableCommands{%
+  \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.1f}
-\newcommand{\PkgDate}{2016/07/16}
+\newcommand{\PkgVersion}{1.2}
+\newcommand{\PkgDate}{2016/08/01}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -19,6 +26,7 @@
 \providecommand{\upTeX}{u\pTeX}
 \providecommand{\upLaTeX}{u\pLaTeX}
 \providecommand{\pdfLaTeX}{pdf\LaTeX}
+\providecommand{\BibTeX}{Bib\TeX}
 %-----------------------------------------------------------
 \begin{document}
 \title{\Pkg{BXjscls} パッケージ\\
@@ -402,6 +410,9 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
   従って、BXJSクラスにおいて |\ifdraft| スイッチの使用を
   非推奨とし、将来的に廃止を予定する。
+\item 1.2版より、|\bf| や |\it| 等の旧式のフォント選択命令の使用が
+  非推奨となり、これらの命令を使うと警告が出るようになった。
+  詳細は\ref{sec:Old-font-commands}節を参照。
 % TODO: \@ptsize の話
 \end{itemize}
 
@@ -549,21 +560,29 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item ドライバオプション\Means
   DVI出力のエンジンを用いる場合に、実際に使用するDVIウェアの名前を
   指定する。
-  有効な値は |dvips|、|dvipdfmx|、|dviout|、|xdvi|、そして特殊な
-  値として |dvipdfmx-if-dvi| がある。
-  これは「エンジンがDVI出力の場合に限り |dvipdfmx| を指定する」
-  ことを表すもので、|autodetect-engine| と一緒に使うことが
-  想定されている。
-  \footnote{「実際に |dvipdfmx| が指定された」場合は、
-    |dvipdfmx| がグローバルオプションとしても働く。}%
+  有効な値は |dvips|、|dvipdfmx|、|dviout|、|xdvi| である。
   ドライバオプションの指定は必須である。
+  \footnote{ただし現状では、ドライバオプションが無い場合には
+    エラーではなく警告が出る。}
+\item |dvi=|\Meta{ドライバ名}\Means
+  エンジンがDVI出力の場合に限り、指定のドライバオプションを
+  有効にする。
+  \footnote{実際にドライバオプションが有効化された場合は、
+    そのオプションがグローバルオプションとしても働く。
+    例えば、DVI出力のエンジンで |dvi=dvipdfmx| が指定された場合は、
+    |dvipdfmx| がグローバルオプションに追加される。}%
+  |autodetect-engine| と一緒に使うことが想定されている。
+\item |dvipdfmx-if-dvi|\Means
+  |dvi=dvipdfmx| と同値。
+  \Note |dvi| オプションは1.2版で新設されたもので、以前は
+  このオプションのみが存在した。
 \item |pandoc|\Means
   「Pandocモード」（\ref{sec:Pandoc-mode}節）を指定する。
   以下の設定が行われる：
   \begin{itemize}
   \item エンジンオプションが |autodetect-engine| に固定される。
   \item 和文ドライバが |pandoc| に固定される。
-  \item ドライバオプションについて |dvipdfmx-if-dvi| が既定になる
+  \item ドライバオプションについて |dvi=dvipdfmx| が既定になる
     （明示指定で上書可能）。
   \end{itemize}
 \item |nopapersize|\Means
@@ -687,6 +706,27 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   “版面拡大”の実現方法を指定する。
   有効な値は |mag|、|real|、|xreal| の何れか。
   詳細は\ref{ssec:magstyle}節を参照。
+\item |geometry=|\Meta{値}\Means
+  \Pkg{geometry}パッケージの読込に対する制御。
+  \begin{itemize}
+  \item |class|（既定）\Means
+    通常通り、文書クラスが\Pkg{geometry}パッケージを読み込む。
+    ユーザは\Pkg{geometry}を後から読み込むことはできない。
+  \item |user|\Means
+    文書クラスによる\Pkg{geometry}パッケージの読込をスキップする。
+    この場合、ユーザが自分で\Pkg{geometry}を読み込むことが想定される。
+    \footnote{\Pkg{geometry}の読込は必須ではなく、ページレイアウトの
+      パラメタを自分で設定しても構わない。
+      ただし\Pkg{geometry}の読込が強く推奨される。
+      （\Pkg{geometry}非読込時の動作テストはほとんど行っていない。）}
+  \end{itemize}
+  \Note “どうしても\Pkg{geometry}パッケージを自分で読み込みたい”
+  という人のための設定。
+\item |oldfontcommands|\Means
+  |\bf| 等の“二文字フォント命令”の使用を許容する。
+\item |nooldfontcommands|（既定）\Means
+  “二文字フォント命令”の使用に対して警告を出す。
+  詳細については\ref{sec:Old-font-commands}節を参照されたい。
 \end{itemize}
 
 %-------------------
@@ -1091,6 +1131,106 @@ standard和文ドライバでは和文に関連する
   \setkanjiskip{\fill}%
   \makebox[#1\zw][s]{#2}}}
 \end{verbatim}\end{quote}
+
+%===========================================================
+\section{“二文字フォント命令”に対する警告}
+\label{sec:Old-font-commands}
+
+ここでいう“二文字フォント命令”というのは、|\bf| や |\it| 等の
+{\LaTeX}~2.09で標準であったフォント選択命令のことである。
+\footnote{なお、|\em| は「二文字の名前のフォント命令」であるが、
+  これは{\LaTeXe}でも標準命令であり、“二文字フォント命令”には
+  含まれない。}\
+{\LaTeXe}においては、これらに代わって、|\bfseries| 等の
+（NFSSに基づく）新しい命令群が標準となり、
+古い二文字フォント命令はカーネルではもはサポートされなくなった。
+しかし同時に、二文字フォント命令を利用したパッケージを
+動作させるための“当面の”
+\footnote{ちなみに、
+  {\LaTeXe}が最初にリリースされたのは1994年のことである。}%
+互換性対策として、
+「標準の文書クラス（article、book等）で二文字フォント命令の
+サポートを行う」という方針がとられた。
+これに倣って、他の文書クラスの多くもクラスのレベルで
+二文字フォント命令をサポートしていて、
+BXJSクラスもその例に含まれる。
+
+ところが最近になって、一部の文書クラス
+（\Pkg{KOMA-Script}クラス群や\Pkg{memoir}クラス等）
+において、二文字フォント命令を明示的に非推奨の扱いにした上で、
+その使用に制限を設ける
+（警告を出す、オプションを指定しないと使えない、等）
+という措置が取られるようになっている。
+
+これに合わせて、BXJSクラスでは1.2版より
+二文字フォント命令を非推奨とし、また、
+既定でその使用に対して警告を出すようにした。
+
+%-------------------
+\subsection{警告の内容}
+
+現状では警告はとても控えめに出される。
+すなわち、文書中で |\bf| などの二文字フォント命令が呼び出された場合、
+コンパイルの最後に（一度だけ）以下の警告メッセージが表示される。
+
+\begin{quote}\small\begin{verbatim}
+Class bxjsarticle Warning: Some old font commands were used in text
+(bxjsarticle)              (see the log output for detail).
+\end{verbatim}
+\end{quote}
+
+少し詳細な注意メッセージが、ログファイルのみに書き出される。
+
+なお、この警告は、パッケージの機能の実装として用いられたものも含めて
+全ての二文字フォント命令の呼出が対象になる。
+ただし例外として、thebibliography環境の内部で呼び出されたものだけは
+対象から除外される。
+{\BibTeX}の文献スタイルファイル（|.bst|）や文献データベース（|.bib|）
+のファイルは（パッケージと比較しても）極めて古いものが
+割と普通に使い続けられることが多い。
+そういった極めて古いファイルに由来する二文字フォント命令を
+警告したとしても、多くの場合、ユーザ側には対処する方法が存在しない。
+これが文献リスト環境中で警告を抑止する理由である。
+
+%-------------------
+\subsection{警告の制御}
+
+二文字フォント命令に対する警告の有無はクラスオプションで制御できる。
+
+\begin{itemize}
+\item |oldfontcommands|\Means
+  二文字フォント命令を警告の対象にしない。
+\item |nooldfontcommands|（既定）\Means
+  二文字フォント命令を警告の対象にする。
+\end{itemize}
+
+また、以下の命令により、文書中で一時的に警告の設定を変えられる。
+\footnote{これらの命令の効果はグルーピングの影響を受ける。}
+
+\begin{itemize}
+\item |\allowoldfontcommands|\Means
+  これ以降に実行される二文字フォント命令を警告の対象にしない。
+\item |\disallowoldfontcommands|\Means
+  これ以降に実行される二文字フォント命令を警告の対象にする。
+\end{itemize}
+
+%-------------------
+\subsection{将来的な二文字フォント命令の扱い}
+
+\Note 以下の記述は現在存在する和文ドライバを使用する場合に
+ついてのものである。
+
+\begin{itemize}
+\item 二文字フォント命令に対する警告の様式は、
+  今後変更される可能性がある。
+\item しかし、将来に二文字フォント命令のサポートが廃止されることはない。
+\item |oldfontcommands| オプションよおび |\allowoldfontcommands| 命令
+  は継続して提供され、
+  これらの機能を用いた場合は、二文字フォント命令に関する警告が
+  端末に表示されることは一切無い。
+\end{itemize}
+
+
 
 %===========================================================
 \end{document}
