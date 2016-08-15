@@ -45,16 +45,21 @@
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
   \let\jH\jQ
   \ifjsc@mag
-    \@tempdima=2.5mm
     \@tempdimb=\jsBaseFontSize\relax
     \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
+    \@tempdima=2.5mm
     \bxjs@invscale\@tempdima\bxjs@tmpa
-    \edef\trueQ{\dimexpr\the\@tempdima\relax}
-  \else \let\trueQ\jQ
+    \protected\edef\trueQ{\dimexpr\the\@tempdima\relax}
+    \@tempdima=10pt
+    \bxjs@invscale\@tempdima\bxjs@tmpa
+    \protected\edef\bxjs@truept{\dimexpr\the\@tempdima\relax}
+  \else \let\trueQ\jQ \let\bxjs@truept\p@
   \fi
   \let\trueH\trueQ
   \@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
-  \edef\ascQ{\dimexpr\the\@tempdima\relax}
+  \protected\edef\ascQ{\dimexpr\the\@tempdima\relax}
+  \@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
+  \protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
 \fi
 \def\bxjs@kanjiskip{0pt}
 \newcommand*\setkanjiskip[1]{%
