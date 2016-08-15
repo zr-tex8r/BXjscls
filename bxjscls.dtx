@@ -1247,6 +1247,25 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@set@keyval}
+% |\bxjs@set@keyval{|\Meta{key}|}{|\Meta{value}|}{|\Meta{error}|}| は、
+% |\bxjs@kv@|\Meta{key}|@|\Meta{value} が定義済ならそれを実行し、
+% 未定義ならエラーを出す。
+%    \begin{macrocode}
+\def\bxjs@set@keyval#1#2#3{%
+  \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
+  \ifx\bxjs@next\relax
+    \bxjs@error@keyval{#1}{#2}%
+    #3%
+  \else \bxjs@next
+  \fi}
+\@onlypreamble\bxjs@error@keyval
+\def\bxjs@error@keyval#1#2{%
+  \ClassError\bxjs@clsname
+   {Invalid value '#2' for option #1}\@ehc}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifbxjs@scaleset}
 % 和文スケール値が指定されたか。
 %    \begin{macrocode}
@@ -1418,6 +1437,22 @@
     {Invalid geometry value `#1'}\@ehc
     \let\bxjs@geometry\bxjs@geometry@class
   \fi}
+%    \end{macrocode}
+%
+% \begin{macro}{\ifbxjs@fancyhdr}
+% |fancyhdr| オプションの値。
+% |fancyhdr| パッケージに対する調整を行うか。
+%    \begin{macrocode}
+\newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
+%    \end{macrocode}
+% \end{macro}
+%
+% |fancyhdr| オプションの処理。
+%    \begin{macrocode}
+\let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
+\let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
+\define@key{bxjs}{fancyhdr}{%
+  \bxjs@set@keyval{fancyhdr}{#1}{}}
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@dvi@opt}
@@ -6950,6 +6985,7 @@
       \bxjs@do@simplejasetup
     \fi}
 \fi
+%    \end{macrocode}
 %
 % |precisetext| オプションの処理。
 %    \begin{macrocode}
@@ -6961,6 +6997,90 @@
   \else
     \bxjs@do@precisetext
   \fi
+\fi
+%    \end{macrocode}
+%
+% \paragraph{fancyhdr対策}
+% |fancyhdr| オプションの値が |true| であり、
+% かつ |fancyhdr| が使用された場合に以下の対策を行う。
+% \begin{itemize}
+% \item デフォルトの書式設定に含まれる“二文字フォント命令”を除去する。
+% \item bxjsbookにおいて、ヘッダ・フッタの横幅を |\fullwidth| に変える。
+% \end{itemize}
+%
+%    \begin{macrocode}
+\ifbxjs@fancyhdr
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@adjust@fancyhdr}
+% |fancyhdr| の初期設定に関する改変の処理。
+% |fancyhdr| 読込完了と |\pagestyle{fancy}| 実行の間で実行されるべき。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@adjust@fancyhdr
+\def\bxjs@adjust@fancyhdr{%
+%    \end{macrocode}
+% ヘッダ・フッタの要素の書式について、それが既定のままであれば、
+% “二文字フォント命令”を除去したものに置き換える。
+% \Note 和文なので |\sl| は無い方がよいはず。
+%    \begin{macrocode}
+  \def\bxjs@tmpa{\fancyplain{}{\sl\rightmark}\strut}%
+  \def\bxjs@tmpb{\fancyplain{}{\rightmark}\strut}%
+  \ifx\f@ncyelh\bxjs@tmpa \global\let\f@ncyelh\bxjs@tmpb \fi
+  \ifx\f@ncyerh\bxjs@tmpa \global\let\f@ncyerh\bxjs@tmpb \fi
+  \ifx\f@ncyolh\bxjs@tmpa \global\let\f@ncyolh\bxjs@tmpb \fi
+  \ifx\f@ncyorh\bxjs@tmpa \global\let\f@ncyorh\bxjs@tmpb \fi
+  \def\bxjs@tmpa{\fancyplain{}{\sl\leftmark}\strut}%
+  \def\bxjs@tmpb{\fancyplain{}{\leftmark}\strut}%
+  \ifx\f@ncyelh\bxjs@tmpa \global\let\f@ncyelh\bxjs@tmpb \fi
+  \ifx\f@ncyerh\bxjs@tmpa \global\let\f@ncyerh\bxjs@tmpb \fi
+  \ifx\f@ncyolh\bxjs@tmpa \global\let\f@ncyolh\bxjs@tmpb \fi
+  \ifx\f@ncyorh\bxjs@tmpa \global\let\f@ncyorh\bxjs@tmpb \fi
+  \def\bxjs@tmpa{\rm\thepage\strut}%
+  \def\bxjs@tmpb{\thepage\strut}%
+  \ifx\f@ncyecf\bxjs@tmpa \global\let\f@ncyecf\bxjs@tmpb \fi
+  \ifx\f@ncyocf\bxjs@tmpa \global\let\f@ncyocf\bxjs@tmpb \fi
+%    \end{macrocode}
+% |\fullwidth| が（定義済で）|\textwidth| よりも大きい場合、
+% ヘッダ・フッタの横幅を |\fullwidth| に合わせる。
+%    \begin{macrocode}
+  \ifx\fullwidth\@undefined\else \ifdim\textwidth<\fullwidth
+    \setlength{\@tempdima}{\fullwidth-\textwidth}%
+    \edef\bxjs@tmpa{\noexpand\fancyhfoffset[EL,OR]{\the\@tempdima}%
+    }\bxjs@tmpa
+  \fi\fi
+  \PackageInfo\bxjs@clsname
+   {Patch to fancyhdr is applied\@gobble}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@pagestyle@hook}
+% |\pagestyle| へのフックの本体。
+%    \begin{macrocode}
+\def\bxjs@pagestyle@hook{%
+  \@ifpackageloaded{fancyhdr}{%
+    \bxjs@adjust@fancyhdr
+    \global\let\bxjs@adjust@fancyhdr\relax
+  }{}}
+%    \end{macrocode}
+% \end{macro}
+%
+% |\pagestyle| にフックを入れ込む。
+%    \begin{macrocode}
+\let\bxjs@org@pagestyle\pagestyle
+\def\pagestyle{%
+  \bxjs@pagestyle@hook \bxjs@org@pagestyle}
+%    \end{macrocode}
+%
+% begin-document フック。
+% \Note これ以降に |fancyhdr| が読み込まれることはあり得ない。
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \bxjs@pagestyle@hook
+  \global\let\bxjs@pagestyle@hook\relax}
+%    \end{macrocode}
+%
+% 終わり。
+%    \begin{macrocode}
 \fi
 %    \end{macrocode}
 %

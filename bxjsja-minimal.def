@@ -288,6 +288,44 @@
     \bxjs@do@precisetext
   \fi
 \fi
+\ifbxjs@fancyhdr
+\@onlypreamble\bxjs@adjust@fancyhdr
+\def\bxjs@adjust@fancyhdr{%
+  \def\bxjs@tmpa{\fancyplain{}{\sl\rightmark}\strut}%
+  \def\bxjs@tmpb{\fancyplain{}{\rightmark}\strut}%
+  \ifx\f@ncyelh\bxjs@tmpa \global\let\f@ncyelh\bxjs@tmpb \fi
+  \ifx\f@ncyerh\bxjs@tmpa \global\let\f@ncyerh\bxjs@tmpb \fi
+  \ifx\f@ncyolh\bxjs@tmpa \global\let\f@ncyolh\bxjs@tmpb \fi
+  \ifx\f@ncyorh\bxjs@tmpa \global\let\f@ncyorh\bxjs@tmpb \fi
+  \def\bxjs@tmpa{\fancyplain{}{\sl\leftmark}\strut}%
+  \def\bxjs@tmpb{\fancyplain{}{\leftmark}\strut}%
+  \ifx\f@ncyelh\bxjs@tmpa \global\let\f@ncyelh\bxjs@tmpb \fi
+  \ifx\f@ncyerh\bxjs@tmpa \global\let\f@ncyerh\bxjs@tmpb \fi
+  \ifx\f@ncyolh\bxjs@tmpa \global\let\f@ncyolh\bxjs@tmpb \fi
+  \ifx\f@ncyorh\bxjs@tmpa \global\let\f@ncyorh\bxjs@tmpb \fi
+  \def\bxjs@tmpa{\rm\thepage\strut}%
+  \def\bxjs@tmpb{\thepage\strut}%
+  \ifx\f@ncyecf\bxjs@tmpa \global\let\f@ncyecf\bxjs@tmpb \fi
+  \ifx\f@ncyocf\bxjs@tmpa \global\let\f@ncyocf\bxjs@tmpb \fi
+  \ifx\fullwidth\@undefined\else \ifdim\textwidth<\fullwidth
+    \setlength{\@tempdima}{\fullwidth-\textwidth}%
+    \edef\bxjs@tmpa{\noexpand\fancyhfoffset[EL,OR]{\the\@tempdima}%
+    }\bxjs@tmpa
+  \fi\fi
+  \PackageInfo\bxjs@clsname
+   {Patch to fancyhdr is applied\@gobble}}
+\def\bxjs@pagestyle@hook{%
+  \@ifpackageloaded{fancyhdr}{%
+    \bxjs@adjust@fancyhdr
+    \global\let\bxjs@adjust@fancyhdr\relax
+  }{}}
+\let\bxjs@org@pagestyle\pagestyle
+\def\pagestyle{%
+  \bxjs@pagestyle@hook \bxjs@org@pagestyle}
+\AtBeginDocument{%
+  \bxjs@pagestyle@hook
+  \global\let\bxjs@pagestyle@hook\relax}
+\fi
 \endinput
 %%
 %% End of file `bxjsja-minimal.def'.

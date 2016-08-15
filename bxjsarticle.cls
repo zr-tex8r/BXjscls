@@ -392,6 +392,17 @@
   \setkeys{#1}{#2}%
   \let\KV@errx\bxjs@KV@errx}
 \def\bxjs@safe@setkeys@a#1{}
+\def\bxjs@set@keyval#1#2#3{%
+  \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
+  \ifx\bxjs@next\relax
+    \bxjs@error@keyval{#1}{#2}%
+    #3%
+  \else \bxjs@next
+  \fi}
+\@onlypreamble\bxjs@error@keyval
+\def\bxjs@error@keyval#1#2{%
+  \ClassError\bxjs@clsname
+   {Invalid value '#2' for option #1}\@ehc}
 \newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
 \def\Cjascale{\jsScale}
@@ -457,6 +468,11 @@
     {Invalid geometry value `#1'}\@ehc
     \let\bxjs@geometry\bxjs@geometry@class
   \fi}
+\newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
+\let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
+\let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
+\define@key{bxjs}{fancyhdr}{%
+  \bxjs@set@keyval{fancyhdr}{#1}{}}
 \newif\ifbxjs@dvi@opt
 \let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
 \let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvimode
