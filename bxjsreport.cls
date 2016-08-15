@@ -61,6 +61,8 @@
   \jsWithupTeXtrue
 \fi\fi
 \let\if@jsc@uplatex\ifjsWithupTeX
+\newif\ifjsWithpTeXng
+\bxjs@test@engine\ngbanner{\jsWithpTeXngtrue}
 \newif\ifjsWitheTeX
 \bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
 \let\bxjs@tmpa\relax
@@ -316,6 +318,13 @@
 \DeclareOption{lualatex}{%
   \def\bxjs@engine@opt{lualatex}%
   \let\bxjs@engine@given=l}
+\DeclareOption{platex-ng}{%
+  \def\bxjs@engine@opt{platex-ng}%
+  \let\bxjs@engine@given=g}
+\DeclareOption{platex-ng*}{%
+  \def\bxjs@engine@opt{platex-ng*}%
+  \let\bxjs@platexng@nodrv=t%
+  \let\bxjs@engine@given=g}
 \let\bxjs@driver@@dvimode=0
 \let\bxjs@driver@@dvipdfmx=1
 \let\bxjs@driver@@pdfmode=2
@@ -429,6 +438,9 @@
 \ifx l\jsEngine \ifnum\luatexversion>86
   \let\bxjs@magstyle@default\bxjs@magstyle@xreal
 \fi\fi
+\ifjsWithpTeXng
+  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+\fi
 \let\bxjs@magstyle\bxjs@magstyle@default
 \define@key{bxjs}{magstyle}{%
   \expandafter\let\expandafter\bxjs@magstyle\csname
@@ -500,6 +512,9 @@
   \let\bxjs@jadriver@given\bxjs@jadriver
 \fi
 \let\bxjs@tmpb\jsEngine
+\ifx j\bxjs@tmpb\ifjsWithpTeXng
+  \let\bxjs@tmpb=g
+\fi\fi
 \ifx j\bxjs@tmpb\ifjsWithupTeX
   \let\bxjs@tmpb=u
 \fi\fi
@@ -520,6 +535,9 @@
     {Option `\bxjs@engine@opt' used on wrong engine}\@ehc
   \fi
 \fi
+\ifjsWithpTeXng
+  \g@addto@macro\@classoptionslist{,uplatex}
+\fi
 \@tempswatrue
 \ifx \bxjs@driver@given\@undefined\else
   \ifjsInPdfMode
@@ -536,6 +554,9 @@
     \else\ifx\bxjs@driver@given\bxjs@driver@@xetex
       \@tempswafalse
     \fi\fi
+    \ifjsWithpTeXng\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx\else
+      \@tempswafalse
+    \fi\fi
   \fi\fi
 \fi
 \if@tempswa\else
@@ -544,8 +565,9 @@
 \fi
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
+\else\ifjsWithpTeXng \@tempswafalse
 \else \@tempswatrue
-\fi\fi
+\fi\fi\fi
 \if@tempswa
   \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@given\@undefined\else
     \ClassWarningNoLine\bxjs@clsname
@@ -559,6 +581,13 @@
        {,\bxjs@driver@opt}%
     }\bxjs@nxt
   \fi
+\fi
+\ifjsWithpTeXng
+  \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \let\bxjs@platexng@nodrv\@undefined
+  \else\ifx t\bxjs@platexng@nodrv\else
+    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \fi\fi
 \fi
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
@@ -898,7 +927,8 @@
 \bxjs@postproc@layout
 \@onlypreamble\bxjs@pre@geometry@hook
 \def\bxjs@pre@geometry@hook{%
-  \@ifpackageloaded{geometry}{\@ifpackagelater{geometry}{2010/02/12}{}{%
+  \@ifpackageloaded{geometry}{%
+    \@ifpackagelater{geometry}{2010/02/12}{}{%else
       \PackageWarningNoLine\bxjs@clsname
        {The 'geometry' package installed\MessageBreak
         is too old (< v5.0)}%
@@ -907,7 +937,13 @@
         \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
         \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
       \fi\fi
-  }}{}}
+    }%
+    \ifjsWithpTeXng
+      \ifx\Gm@driver\@empty
+        \def\Gm@driver{pdftex}%
+      \fi
+    \fi
+  }{}}
 \def\setpagelayout{\@ifstar
   {\bxjs@reset@layout}{\bxjs@modify@layout}}
 \def\bxjs@modify@layout#1{%

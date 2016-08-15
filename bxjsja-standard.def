@@ -269,7 +269,8 @@
 \endgroup}
 \@gtempa
 \bxjs@fix@hyperref@unicode{false}
-\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+\if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
+    \else\ifjsWithpTeXng T\else F\fi\fi T%
   \ifnum\jis"2121="A1A1 %euc
     \bxjs@urgent@special{pdf:tounicode EUC-UCS2}
   \else\ifnum\jis"2121="8140 %sjis

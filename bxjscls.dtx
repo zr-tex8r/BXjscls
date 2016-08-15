@@ -287,6 +287,15 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifjsWithpTeXng}
+% 〔スイッチ〕
+% エンジンが{\pTeX-ng}であるか。
+%    \begin{macrocode}
+\newif\ifjsWithpTeXng
+\bxjs@test@engine\ngbanner{\jsWithpTeXngtrue}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifjsWitheTeX}
 % 〔スイッチ〕
 % エンジンが{\eTeX}拡張をもつか。
@@ -1037,6 +1046,13 @@
 \DeclareOption{lualatex}{%
   \def\bxjs@engine@opt{lualatex}%
   \let\bxjs@engine@given=l}
+\DeclareOption{platex-ng}{%
+  \def\bxjs@engine@opt{platex-ng}%
+  \let\bxjs@engine@given=g}
+\DeclareOption{platex-ng*}{%
+  \def\bxjs@engine@opt{platex-ng*}%
+  \let\bxjs@platexng@nodrv=t%
+  \let\bxjs@engine@given=g}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@driver@given}
@@ -1364,6 +1380,9 @@
 \ifx l\jsEngine \ifnum\luatexversion>86
   \let\bxjs@magstyle@default\bxjs@magstyle@xreal
 \fi\fi
+\ifjsWithpTeXng
+  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+\fi
 \let\bxjs@magstyle\bxjs@magstyle@default
 %    \end{macrocode}
 % \end{macro}
@@ -1518,6 +1537,9 @@
 % それが実際のエンジンと一致するかを検査する。
 %    \begin{macrocode}
 \let\bxjs@tmpb\jsEngine
+\ifx j\bxjs@tmpb\ifjsWithpTeXng
+  \let\bxjs@tmpb=g
+\fi\fi
 \ifx j\bxjs@tmpb\ifjsWithupTeX
   \let\bxjs@tmpb=u
 \fi\fi
@@ -1549,6 +1571,14 @@
 \fi
 %    \end{macrocode}
 %
+% エンジンが{\pTeX-ng}の場合、グローバルオプションに |uplatex| を
+% 追加する。
+%    \begin{macrocode}
+\ifjsWithpTeXng
+  \g@addto@macro\@classoptionslist{,uplatex}
+\fi
+%    \end{macrocode}
+%
 % ドライバ指定のオプションが与えられた場合は、
 % それがエンジンと整合するかを検査する。
 %    \begin{macrocode}
@@ -1568,6 +1598,9 @@
     \else\ifx\bxjs@driver@given\bxjs@driver@@xetex
       \@tempswafalse
     \fi\fi
+    \ifjsWithpTeXng\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx\else
+      \@tempswafalse
+    \fi\fi
   \fi\fi
 \fi
 \if@tempswa\else
@@ -1580,8 +1613,9 @@
 %    \begin{macrocode}
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
+\else\ifjsWithpTeXng \@tempswafalse
 \else \@tempswatrue
-\fi\fi
+\fi\fi\fi
 \if@tempswa
 %    \end{macrocode}
 % ドライバオプションがない場合は警告を出す。
@@ -1605,6 +1639,20 @@
        {,\bxjs@driver@opt}%
     }\bxjs@nxt
   \fi
+\fi
+%    \end{macrocode}
+%
+% エンジンが{\pTeX-ng}の場合、グローバルオプションに |dvipdfmx|
+% を追加する。
+% ただし、エンジンオプションが |platex-ng*|（|*|付）の場合、および
+% 既に |dvipdfmx| が指定されている場合を除く。
+%    \begin{macrocode}
+\ifjsWithpTeXng
+  \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+    \let\bxjs@platexng@nodrv\@undefined
+  \else\ifx t\bxjs@platexng@nodrv\else
+    \g@addto@macro\@classoptionslist{,dvipdfmx}
+  \fi\fi
 \fi
 %    \end{macrocode}
 %
@@ -2633,7 +2681,8 @@
 %    \begin{macrocode}
 \@onlypreamble\bxjs@pre@geometry@hook
 \def\bxjs@pre@geometry@hook{%
-  \@ifpackageloaded{geometry}{\@ifpackagelater{geometry}{2010/02/12}{}{%
+  \@ifpackageloaded{geometry}{%
+    \@ifpackagelater{geometry}{2010/02/12}{}{%else
       \PackageWarningNoLine\bxjs@clsname
        {The 'geometry' package installed\MessageBreak
         is too old (< v5.0)}%
@@ -2642,7 +2691,13 @@
         \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
         \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
       \fi\fi
-  }}{}}
+    }%
+    \ifjsWithpTeXng
+      \ifx\Gm@driver\@empty
+        \def\Gm@driver{pdftex}%
+      \fi
+    \fi
+  }{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -6636,8 +6691,11 @@
 %    \begin{macrocode}
 \def\bxjs@tmpa#1/#2/#3/#4/#5\relax{%
   \def\bxjs@y{#5}}
+\ifjsWithpTeXng \def\bxjs@y{10}%
+\else
 \expandafter\expandafter\expandafter\bxjs@tmpa
  \expandafter\string\the\jfont\relax
+\fi
 \@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
   {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined
@@ -7393,7 +7451,8 @@
 %
 % |tounicode| special命令を出力する。
 %    \begin{macrocode}
-\ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
+\if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
+    \else\ifjsWithpTeXng T\else F\fi\fi T%
   \ifnum\jis"2121="A1A1 %euc
     \bxjs@urgent@special{pdf:tounicode EUC-UCS2}
   \else\ifnum\jis"2121="8140 %sjis

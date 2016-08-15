@@ -147,8 +147,11 @@
 \fi
 \def\bxjs@tmpa#1/#2/#3/#4/#5\relax{%
   \def\bxjs@y{#5}}
+\ifjsWithpTeXng \def\bxjs@y{10}%
+\else
 \expandafter\expandafter\expandafter\bxjs@tmpa
  \expandafter\string\the\jfont\relax
+\fi
 \@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
   {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined
