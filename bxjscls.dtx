@@ -229,7 +229,7 @@
 % \begin{ZRnote}
 %    \begin{macrocode}
 %<*cls>
-%% このファイルは日本語文字を含みます
+%% このファイルは日本語文字を含みます.
 %    \end{macrocode}
 % 長さ値の指定で式を利用可能にするため |calc| を読み込む。
 %    \begin{macrocode}
@@ -252,12 +252,13 @@
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
 % エンジン（{\TeX}の種類）の種別：
-% |n|＝オリジナル\TeX、
-% |j|＝{\pTeX}またはu{\pTeX}、
-% |J|＝NTT j{\TeX}、
+% |j|＝{\pTeX}系、
 % |x|＝{\XeTeX}、
 % |p|＝pdf{\TeX}（含DVIモード）、
-% |l|＝Lua{\TeX}。
+% |l|＝Lua{\TeX}、
+% |J|＝NTT j{\TeX}、
+% |O|＝Omega系、
+% |n|＝以上の何れでもない。
 %
 %    \begin{macrocode}
 \let\jsEngine=n
@@ -267,6 +268,7 @@
   \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
 \bxjs@test@engine\kanjiskip{\let\jsEngine=j}
 \bxjs@test@engine\jintercharskip{\let\jsEngine=J}
+\bxjs@test@engine\Omegaversion{\let\jsEngine=O}
 \bxjs@test@engine\XeTeXversion{\let\jsEngine=x}
 \bxjs@test@engine\pdftexversion{\let\jsEngine=p}
 \bxjs@test@engine\luatexversion{\let\jsEngine=l}
@@ -293,6 +295,21 @@
 \bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
 %    \end{macrocode}
 % \end{macro}
+%
+% 非サポートのエンジンの場合は強制終了させる。
+% \Note NTT j{\TeX}とOmega系。
+%    \begin{macrocode}
+\let\bxjs@tmpa\relax
+\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
+\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
+\ifx\bxjs@tmpa\relax \expandafter\@gobble
+\else
+  \ClassError\@currname
+   {The engine in use (\bxjs@tmpa) is not supported}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+%    \end{macrocode}
 %
 % \begin{macro}{\bxjs@protected}
 % {\eTeX}拡張が有効な場合にのみ |\protected|

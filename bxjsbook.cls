@@ -38,7 +38,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
   [2016/08/01 v1.2 BXJS document classes]
-%% このファイルは日本語文字を含みます
+%% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \IfFileExists{bxjscompat.sty}{%
@@ -52,6 +52,7 @@
   \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
 \bxjs@test@engine\kanjiskip{\let\jsEngine=j}
 \bxjs@test@engine\jintercharskip{\let\jsEngine=J}
+\bxjs@test@engine\Omegaversion{\let\jsEngine=O}
 \bxjs@test@engine\XeTeXversion{\let\jsEngine=x}
 \bxjs@test@engine\pdftexversion{\let\jsEngine=p}
 \bxjs@test@engine\luatexversion{\let\jsEngine=l}
@@ -62,6 +63,16 @@
 \let\if@jsc@uplatex\ifjsWithupTeX
 \newif\ifjsWitheTeX
 \bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
+\let\bxjs@tmpa\relax
+\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
+\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
+\ifx\bxjs@tmpa\relax \expandafter\@gobble
+\else
+  \ClassError\@currname
+   {The engine in use (\bxjs@tmpa) is not supported}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
 \ifjsWitheTeX \let\bxjs@protected\protected
 \else \let\bxjs@protected\@empty
 \fi
