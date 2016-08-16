@@ -495,6 +495,22 @@
   \bxjs@layout@buggyhmarginfalse}
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
+\define@key{bxjs}{textwidth-limit}{%
+  \edef\bxjs@textwidth@limit{#1}}
+\define@key{bxjs}{paragraph-mark}{%
+  \edef\bxjs@paragraph@mark{#1}}
+\newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
+\let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
+\let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
+\define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
+\newif\ifbxjs@dummy@microtype \bxjs@dummy@microtypetrue
+\let\bxjs@kv@dummymicrotype@true\bxjs@dummy@microtypetrue
+\let\bxjs@kv@dummymicrotype@false\bxjs@dummy@microtypefalse
+\define@key{bxjs}{dummy-microtype}{\bxjs@set@keyval{dummymicrotype}{#1}{}}
+\newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
+\let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
+\let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
+\define@key{bxjs}{hyperref-enc}{\bxjs@set@keyval{hyperrefenc}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -1395,6 +1411,9 @@
     {\normalfont\normalsize\headfont}}
 \fi
 \newcommand\jsParagraphMark{\jsJaChar{■}}
+\ifx\bxjs@paragraph@mark\@undefined\else
+  \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
+\fi
 \let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
