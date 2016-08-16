@@ -492,6 +492,13 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
+\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmargintrue
+\@namedef{bxjs@kv@layout@v1}{%
+  \bxjs@layout@buggyhmargintrue}
+\@namedef{bxjs@kv@layout@v2}{%
+  \bxjs@layout@buggyhmarginfalse}
+\define@key{bxjs}{layout}{%
+  \bxjs@set@keyval{layout}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%

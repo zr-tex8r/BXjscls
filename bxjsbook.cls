@@ -492,6 +492,13 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
+\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmargintrue
+\@namedef{bxjs@kv@layout@v1}{%
+  \bxjs@layout@buggyhmargintrue}
+\@namedef{bxjs@kv@layout@v2}{%
+  \bxjs@layout@buggyhmarginfalse}
+\define@key{bxjs}{layout}{%
+  \bxjs@set@keyval{layout}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -883,11 +890,19 @@
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
+\ifbxjs@layout@buggyhmargin
 \def\bxjs@layout{%
   headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
   hmargin=36\jsc@mmm,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
+\else
+\def\bxjs@layout{%
+  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+  hmargin=18\jsc@mmm,%
+  vscale=0.83,vmarginratio=1:1,%
+}
+\fi
 \newdimen\fullwidth
 \newcommand\jsTextWidthLimit{40}
 \def\bxjs@postproc@layout{%

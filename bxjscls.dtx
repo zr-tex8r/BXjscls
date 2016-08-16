@@ -944,6 +944,11 @@
 % \item |geometry=|\{|class|\OR|user|\} ： |geometry| パッケージの読込を自動的に
 %   行うかユーザに任せるか。
 % \item |fancyhdr=|\meta{bool} ： |fancyhdr| パッケージ用の調整を行うか。
+% \item |layout=|\meta{name} ： レイアウト変種の指定。
+% \item |whole-zw-lines|
+% \item |long-lines|
+% \item |dummy-microtype|
+% \item |hyperref-enc|
 % \end{itemize}
 %
 % \begin{macro}{\bxjs@invscale}
@@ -1507,6 +1512,25 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
+%    \end{macrocode}
+%
+% \begin{macro}{\ifbxjs@layout@buggyhmargin}
+% 〔スイッチ〕
+% |bxjsbook| の左右マージンがアレか。
+% \Note 既定はアレだが1.3版で非アレになる予定。
+%    \begin{macrocode}
+\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmargintrue
+%    \end{macrocode}
+% \end{macro}
+%
+% |layout| オプションの処理。
+%    \begin{macrocode}
+\@namedef{bxjs@kv@layout@v1}{%
+  \bxjs@layout@buggyhmargintrue}
+\@namedef{bxjs@kv@layout@v2}{%
+  \bxjs@layout@buggyhmarginfalse}
+\define@key{bxjs}{layout}{%
+  \bxjs@set@keyval{layout}{#1}{}}
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -2598,11 +2622,21 @@
 }
 %</article|report>
 %<*book>
+\ifbxjs@layout@buggyhmargin     %---
+% アレ
 \def\bxjs@layout{%
   headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
   hmargin=36\jsc@mmm,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
+\else                           %---
+% 非アレ
+\def\bxjs@layout{%
+  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+  hmargin=18\jsc@mmm,%
+  vscale=0.83,vmarginratio=1:1,%
+}
+\fi                             %---
 %</book>
 %<*slide>
 \def\bxjs@layout{%
