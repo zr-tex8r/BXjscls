@@ -97,6 +97,10 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.2a 〈2016/08/17〉
+      - fancyhdr パッケージに対する調整を入れた。
+      - `fancyhdr`、`textwidth-limit`、`paragraph-mark` オプションを新設。
+      - `\ascpt` 命令を新設した。
   * Version 1.2  〈2016/08/01〉
       - `geometry` オプションを新設した。
       - `dvi` オプションを新設した。

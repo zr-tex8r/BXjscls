@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.2}
-\newcommand{\PkgDate}{2016/08/01}
+\newcommand{\PkgVersion}{1.2a}
+\newcommand{\PkgDate}{2016/08/16}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -722,6 +722,28 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |nooldfontcommands|（既定）\Means
   “二文字フォント命令”の使用に対して警告を出す。
   詳細については\ref{sec:Old-font-commands}節を参照されたい。
+\item |fancyhdr=|\Meta{真偽値}%
+\footnote{真偽値は |true|（真）または |false|（偽）で指定する。}\Means
+  \Pkg{fancyhdr}パッケージの機能に対する補正を行うか。
+  真の場合、以下の補正が行われる。既定値は真。
+  \begin{itemize}
+  \item ヘッダ・フッタ書式の既定値に含まれる“二文字フォント命令”
+    を除去する。
+  \item \Pkg{bxjsbook}クラスでヘッダ・フッタの横幅を（|\textwidth|
+    ではなく）|\fullwidth| に一致させる。
+  \end{itemize}
+\item |textwidth-limit=|\Meta{整数}\Means
+  \Pkg{bxjsbook}クラスにおける、|\textwidth| の上限の長さ
+  （全角単位）。%
+  \footnote{つまり、\Pkg{bxjsbook}クラスにおいては、\Pkg{geometry}で
+    指定する“width”の値は |\fullwidth| の値と見なされ、それが
+    このオプションで指定する上限値を超えている場合は、|\textwidth|
+    は上限値になる。
+    この場合の本文領域の配置の様式は\Pkg{jsbook}クラスと同様である。} %
+  既定値は40。
+\item |paragraph-mark=|\Meta{文字1つ}\Means
+  パラグラフ（|\paragraph|）の見出し先頭に付く記号。
+  既定値は“■”。
 \end{itemize}
 
 %-------------------
@@ -989,7 +1011,13 @@ headsep=\footskip-\topskip, includeheadfoot,
 hscale=0.76, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
   \item
-    \Pkg{bxjsbook}の場合は次のパラメタ値。
+    \Pkg{bxjsbook}の場合は次のパラメタ値。%
+    \footnote{この設定の中の“|hmargin=36mm,| |hmarginratio=1:1|”の
+      部分は実は不適切で、\Pkg{jsbook}のレイアウトと同様にするには
+      “|hmargin=18mm|”としなければならない。
+      これは近い将来の版（多分1.3版）で修正される予定である。
+      現在の版においても、クラスオプションに |layout=v2| を指定する
+      ことで“修正後”の設定を適用できる。}
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, headsep=6mm, nofoot, includeheadfoot,
 hmargin=36mm, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
@@ -1086,6 +1114,10 @@ standard和文ドライバでは和文に関連する
   \footnote{命令名は“anti-scaled Q”の略。}%
   例えば、|\fontsize{10\ascQ}{16\trueH}|
   で和文のサイズが10\,Qになる。
+\item |\ascpt|\Means
+  1\,true\,ptを和文スケール値で割った長さ。
+  例えば、|\fontsize{9\ascpt}{13truept}|
+  で和文のサイズが9ポイントになる。
 \item |\setxkanjiskip{|\Meta{長さ}|}|\Means
   和欧文間空白の量を指定する。
   {\pLaTeX}での |\setlength{\xkanjiskip}{|\Meta{長さ}|}| に相当する。
