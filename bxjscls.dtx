@@ -99,6 +99,7 @@
 \newcommand{\TODO}{\par\noindent
   {\usefont{OT1}{cmss}{sbc}{n}\color{red}TODO:}\ }
 \newcommand{\Means}{~：\quad}
+\newcommand{\OR}{$\;|\;$}
 \newcommand{\ZRX}{☃}
 \newenvironment{ZRnote}
   {\StartZRnote}{\EndZRnote}
@@ -358,7 +359,7 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@cond}
-% |\bxjs@cond\ifXXX|……|\fi|\Meta{真}\Meta{偽}\par
+% |\bxjs@cond\ifXXX|……|\fi{|\Meta{真}|}{|\Meta{偽}|}|\par
 % {\TeX}のif-文（|\ifXXX|……\Meta{真}|\else|\Meta{偽}|\fi|）を
 % 末尾呼出形式に変換するためのマクロ。
 %    \begin{macrocode}
@@ -377,6 +378,7 @@
 % |\jsBook|=bxjsbook、
 % |\jsReport|=bxjsreport、
 % |\jsSlide|=bxjsslide。
+% \TODO 定義を前方に移動させる。
 %    \begin{macrocode}
 \let\jsArticle=a
 \let\jsBook=b
@@ -396,6 +398,7 @@
 % \begin{macro}{\jsAtEndOfClass}
 % このクラスの読込終了時に対するフック。
 % （補助パッケージ中で用いられる。）
+% \TODO クラス本体中での使用はやめる。
 %    \begin{macrocode}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
@@ -566,9 +569,19 @@
 %
 %    \begin{macrocode}
 \newif\if@slide
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% BXJSではスライド用のクラス |bxjsslide| を用意しているので、
+% 本来はこのスイッチは不要なはずである。
+% しかし、JSクラスの一部のコードをそのまま使うために保持している。
+% \Note この |\if@slide| という制御綴は、ユニークでないにも関わらず、
+% 衝突した場合に正常動作が保たれない、という問題を抱えている。
+%    \begin{macrocode}
 %<!slide>\@slidefalse
 %<slide>\@slidetrue
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{サイズオプション}
 %
@@ -645,7 +658,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |\\ifjsc@mag| は「|\mag| を使うか」を表すスイッチ。
+% |\ifjsc@mag| は「|\mag| を使うか」を表すスイッチ。
 %    \begin{macrocode}
 \newif\ifjsc@mag
 %\let\jsc@magscale\@undefined
@@ -829,12 +842,13 @@
 % \texttt{draft} でoverfull boxの起きた行末に5ptの罫線を引きます。
 %
 % \begin{ZRnote}
+% \begin{macro}{\ifjsDraft}
 % JSクラスは |\ifdraft| という公開名のスイッチを用いているが、
 % これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
 % の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
 % |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
-% \Note |\ifdraft| は2.0版で廃止予定。
-% \end{ZRnote}
+% \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
+% よって |\ifdraft| は2.0版で廃止を予定する。
 %    \begin{macrocode}
 \let\ifjsDraft\iffalse
 \@onlypreamble\bxjs@draft
@@ -848,6 +862,8 @@
      \csname ifjsDraft\endcsname
   \fi}
 %    \end{macrocode}
+% \end{macro}
+% \end{ZRnote}
 %
 % \paragraph{和文フォントメトリックの選択}
 % \mbox{}
@@ -860,14 +876,17 @@
 % \begin{ZRnote}
 % |geometry| パッケージが行う。
 %
+% \begin{macro}{\ifbxjs@papersize}
+% 〔スイッチ〕 papersizeスペシャルを出力するか。
 % 既定で有効であるが、|nopapersize| オプションで無効にできる。
+% \Note JSクラスでは |\ifpapersize| という制御綴だが、これは採用しない。
 %    \begin{macrocode}
 \newif\ifbxjs@papersize
 \bxjs@papersizetrue
 \DeclareOption{nopapersize}{\bxjs@papersizefalse}
 \DeclareOption{papersize}{\bxjs@papersizetrue}
 %    \end{macrocode}
-%
+% \end{macro}
 % \end{ZRnote}
 %
 % \paragraph{英語化}
@@ -924,8 +943,9 @@
 % \item |japaram=|\meta{name} ： 和文フォントパラメタの指定。
 % \item |magstyle=|\meta{name} ： “版面拡大”の実現方法の選択。
 % \item |dvi=|\meta{name} ： DVIモードの時のみに参照されるドライバ指定。
-% \item |geometry=|\meta{name} ： |geometry| パッケージの読込を自動的に
+% \item |geometry=|\{|class|\OR|user|\} ： |geometry| パッケージの読込を自動的に
 %   行うかユーザに任せるか。
+% \item |fancyhdr=|\meta{bool} ： |fancyhdr| パッケージ用の調整を行うか。
 % \end{itemize}
 %
 % \begin{macro}{\bxjs@invscale}
@@ -1248,8 +1268,8 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@set@keyval}
-% |\bxjs@set@keyval{|\Meta{key}|}{|\Meta{value}|}{|\Meta{error}|}| は、
-% |\bxjs@kv@|\Meta{key}|@|\Meta{value} が定義済ならそれを実行し、
+% |\bxjs@set@keyval{|\meta{key}|}{|\meta{value}|}{|\meta{error}|}|\par
+% |\bxjs@kv@|\meta{key}|@|\meta{value} が定義済ならそれを実行し、
 % 未定義ならエラーを出す。
 %    \begin{macrocode}
 \def\bxjs@set@keyval#1#2#3{%
@@ -1274,9 +1294,18 @@
 % \end{macro}
 %
 % \begin{macro}{\jsScale}
-%  和文スケール値。
+% 〔実数値マクロ〕
+% 和文スケール値。
 %    \begin{macrocode}
 \def\jsScale{0.924715}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\Cjascale}
+% 和文クラス共通仕様（※ただしZR氏提唱）における、
+% 和文スケール値の変数。
+% \TODO 展開させるべき。
+%    \begin{macrocode}
 \def\Cjascale{\jsScale}
 %    \end{macrocode}
 % \end{macro}
@@ -1316,6 +1345,7 @@
 %    \end{macrocode}
 %
 % |CJK| オプションは廃止された。
+% \Note 1.3版で宣言そのものを削除する。
 %    \begin{macrocode}
 \DeclareOption{CJK}{%
   \ClassWarning\bxjs@clsname
@@ -1347,7 +1377,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |ja| オプション（|jadriver| オプション）の処理。
+% |ja| オプションの処理。
+% \Note |jadriver| は0.9版で用いられた旧称。
+% \Note 単なる |ja| という指定は無視される（Pandoc 対策）。
 %    \begin{macrocode}
 \define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
 \define@key{bxjs}{ja}[\relax]{%
@@ -1440,7 +1472,7 @@
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@fancyhdr}
-% |fancyhdr| オプションの値。
+% 〔スイッチ〕
 % |fancyhdr| パッケージに対する調整を行うか。
 %    \begin{macrocode}
 \newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
@@ -1552,6 +1584,7 @@
 %
 % |papersize| と |10pt| のオプションは他のパッケージと衝突を
 % 起こす可能性があるため、グローバルオプションから外す。
+% \TODO |noscale| も同様処理。
 %
 %    \begin{macrocode}
 \@expandtwoargs\@removeelement
@@ -1588,7 +1621,7 @@
 \ifx *\bxjs@engine@given
   \let\bxjs@engine@given\bxjs@tmpb
 %    \end{macrocode}
-% エンジン指定が |autodetec-engine| であり、かつ実際のエンジンが
+% エンジン指定が |autodetect-engine| であり、かつ実際のエンジンが
 % {(u)\pLaTeX}だった場合は、本来のエンジンオプションを
 % グローバルオプションに加える。
 %    \begin{macrocode}
@@ -1850,7 +1883,6 @@
 % 設定すべき |\mag| 値を (基底サイズ)/(10\,pt) $\times$ 1000 と算出。
 % BXJSクラスでは、|\mag| を直接指定したい場合は、|geometry| 側では
 % なくクラスのオプションで行うものとする。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifx\bxjs@param@mag\relax
   \@tempdima=\bxjs@param@basefontsize
@@ -1881,6 +1913,7 @@
 %\typeout{\string\ifjsc@mag: \meaning\ifjsc@mag}
 %\typeout{\string\ifbxjs@nfss@patch: \meaning\ifbxjs@nfss@patch}
 %    \end{macrocode}
+% \end{ZRnote}
 %
 % [2016-07-08] |\jsc@mpt| および |\jsc@mmm| に，それぞれ1ptおよび1mmを拡大させた値を格納します。
 % 以降のレイアウト指定ではこちらを使います。
@@ -1891,6 +1924,8 @@
 % その上で、|\mag| する場合は |?| を無視して |\p@| と解釈させ、
 % |\mag| しない場合は |?| を英字扱いにして |\p@?| という制御綴を
 % |\jsc@mpt| と同値にする。
+% \Note （多分2.0版あたりで）JSクラスに合わせるため |\p@?| 表記を
+% 止める予定。
 %    \begin{macrocode}
 \ifjsc@mag
   \let\jsc@mpt\p@
@@ -2241,7 +2276,6 @@
 %
 % \begin{ZRnote}
 % まず |\Cwd| 等の変数を定義する。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifx\Cht\@undefined \newdimen\Cht \fi
 \ifx\Cdp\@undefined \newdimen\Cdp \fi
@@ -2250,7 +2284,6 @@
 \ifx\Chs\@undefined \newdimen\Chs \fi
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % 規約上、現在の |\jsZw| の値が |\Cwd| である。
 % |\Cht| と |\Cdp| は単純に |\Cwd| の88\%と12\%の値とする。
 % \end{ZRnote}
@@ -2516,12 +2549,15 @@
 %
 % \subsection{ページレイアウト}
 %
-% |geometry| パッケージに任せる。
+% \begin{ZRnote}
+% BXJSではページレイアウトの処理は |geometry| パッケージが担当している。
+% \end{ZRnote}
 %
+% \paragraph{準備 \ZRX}
+% \mbox{}
 % \begin{ZRnote}
 % 現状ではここで |\mag| を設定している。\par
 % |\topskip| も指定する。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifjsc@mag
 \mag=\bxjs@param@mag
@@ -2529,10 +2565,8 @@
 \setlength{\topskip}{10\p@?}
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % |\bxjs@param@paper| が長さ指定（|{W}{H}|）の場合、
 % |geometry| の形式（|papersize={W,H}|）に変換する。
-% \end{ZRnote}
 %    \begin{macrocode}
 \def\bxjs@read@a{\futurelet\bxjs@tmpa\bxjs@read@b}
 \def\bxjs@read@b{%
@@ -2543,21 +2577,19 @@
 \expandafter\bxjs@read@a\bxjs@param@paper\@nil
 %    \end{macrocode}
 %
-% \begin{ZRnote}
-% |\bxjs@layout@paper| は |geometry| の用紙設定のオプション。
-% \end{ZRnote}
+% \begin{macro}{\bxjs@layout@paper}
+% |geometry| の用紙設定のオプション。
 %    \begin{macrocode}
 \edef\bxjs@layout@paper{%
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
 %    \end{macrocode}
+% \end{macro}
 %
-%
-% \begin{ZRnote}
-% |\bxjs@layout| は |geometry| のページレイアウトのオプション
-% 列であり、文書クラス毎に異なる。
-% \end{ZRnote}
+% \begin{macro}{\bxjs@layout}
+% |geometry| のページレイアウトのオプション列。
+% 文書クラス毎に異なる。
 %    \begin{macrocode}
 %<*article|report>
 \def\bxjs@layout{%
@@ -2582,16 +2614,27 @@
 }
 %</slide>
 %    \end{macrocode}
+% \end{macro}
 %
-% \begin{ZRnote}
-% |geometry| の後処理。
-%
-% |\jsTextWidthLimit| は |bxjsbook| での |\textwidth| の
-% 上限で、全角単位の実数値マクロ。
-% \end{ZRnote}
+% \begin{macro}{\fullwidth}
+% 〔寸法レジスタ〕
+% ヘッダ・フッタ領域の横幅。
 %    \begin{macrocode}
 \newdimen\fullwidth
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\jsTextWidthLimit}
+% 〔実数値マクロ〕
+% |bxjsbook| における、|\textwidth| の上限の全角単位での値。
+%    \begin{macrocode}
 %<book>\newcommand\jsTextWidthLimit{40}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@postproc@layout}
+% |geometry| の後処理。
+%    \begin{macrocode}
 \def\bxjs@postproc@layout{%
 % ドライバ再設定
   \ifx\bxjs@geometry@driver\relax\else
@@ -2634,32 +2677,31 @@
   \stockheight=\paperheight
 }
 %    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\jsGeometryOptions}
-% \begin{ZRnote}
 % |geometry|パッケージに渡すオプションのリスト。
 % \Note |geometry=user| 指定時にユーザが利用することを想定している。
-% \end{ZRnote}
 %    \begin{macrocode}
 \edef\jsGeometryOptions{%
   \bxjs@layout@paper,\bxjs@layout}
 %    \end{macrocode}
 % \end{macro}
+% \end{ZRnote}
 %
+% \paragraph{geometry パッケージ読込 \ZRX}
+% \mbox{}
 % \begin{ZRnote}
-% ここで|geoemtry|オプションの値に応じて分岐する。
+% |geoemtry| オプションの値に応じて分岐する。
 %
 % まずは|geometry=class|の場合。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifx\bxjs@geometry\bxjs@geometry@class
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
 % ようにする自動調整を行うが、これをどうするかは未検討。
 % 今のところ、単純に回避（無効化）している。
-% \end{ZRnote}
 %    \begin{macrocode}
 \@onlypreamble\bxjs@revert
 \let\bxjs@revert\@empty
@@ -2667,14 +2709,13 @@
 \ht\strutbox=10\p@?
 \g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
 %    \end{macrocode}
-% \begin{ZRnote}
+%
 % |geometry| のドライバオプション指定。
 % |nopapersize| 指定時は、special命令出力を抑止するために
 % ドライバを |none| にする。
 % そうでない場合は、クラスで指定したドライバオプションが引き継がれる
 % ので何もしなくてよいが、例外として、ドライバが |dvipdfmx| の
 % 時は、現状の |geometry| は |dvipdfm| を指定する必要がある。
-% \end{ZRnote}
 %    \begin{macrocode}
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
@@ -2685,11 +2726,10 @@
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
 %    \end{macrocode}
-% \begin{ZRnote}
+%
 % ここで |geometry| を読み込む。
 % \Note |geometry| のbegin-documentフックにおいて、Lua{\TeX}の
 % 旧版互換を有効にする。
-% \end{ZRnote}
 %    \begin{macrocode}
 \edef\bxjs@nxt{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
@@ -2698,21 +2738,20 @@
 \bxjs@nxt \bxjs@revert
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 %    \end{macrocode}
-% \begin{ZRnote}
-% |\bxjs@geometry@driver| は |geometry| が用いるドライバの名前。
+%
+% \begin{macro}{\bxjs@geometry@driver}
+% |geometry| が用いるドライバの名前。
 % \Note この値は一度決めた後は変わってほしくないので、
 % |\bxjs@postproc@layout| において書き戻す処理を入れている。
-% \end{ZRnote}
 %    \begin{macrocode}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 %    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\bxjs@pre@geometry@hook}
-% \begin{ZRnote}
 % 1.2版より、|geometry| の4.x版の使用は非推奨とする。
 % \Note 将来サポートを廃止する予定。
-% \end{ZRnote}
 %    \begin{macrocode}
 \@onlypreamble\bxjs@pre@geometry@hook
 \def\bxjs@pre@geometry@hook{%
@@ -2736,7 +2775,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{ZRnote}
+% \begin{macro}{\setpagelayout}
+% ページレイアウト設定のためのユーザ命令。
 % \begin{itemize}
 % \item |\setpagelayout{|\meta{text}|}| ： 現在の geometry の設定の
 % 一部を修正する。
@@ -2744,7 +2784,6 @@
 % 改めて設定を行う。
 % \end{itemize}
 % どちらも設定の後で後処理 |\bxjs@postproc@layout| を実行する。
-% \end{ZRnote}
 %    \begin{macrocode}
 \def\setpagelayout{\@ifstar
   {\bxjs@reset@layout}{\bxjs@modify@layout}}
@@ -2755,23 +2794,20 @@
   \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
   \bxjs@nxt\bxjs@postproc@layout}
 %    \end{macrocode}
+% \end{macro}
 %
-% \begin{ZRnote}
 % |geometry=class|の場合の処理はここで終わり。
 %
 % 次に、|geometry=user|の場合の処理。
-% \end{ZRnote}
 %    \begin{macrocode}
 \else\ifx\bxjs@geometry\bxjs@geometry@user
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % この場合はユーザが何らかの方法（例えば |geometry| を読み込む）
 % でページレイアウトを設定する必要がある。
 % もし、本体開始時に |\textwidth| がカーネル設定の値（|.5\maxdimen|）
 % になっている場合はエラーを出す。
 % \Note |\jsUseMinimalPageLayout| は動作テスト用。
-% \end{ZRnote}
 %    \begin{macrocode}
 \AtBeginDocument{\bxjs@check@page@layout}
 \@onlypreamble\bxjs@check@page@layout
@@ -2786,9 +2822,7 @@
   \setlength{\textheight}{8in}}
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % |\setpagelayout| はとりあえず無効にしておく。
-% \end{ZRnote}
 %    \begin{macrocode}
 \let\bxjs@geometry@driver\relax
 \def\setpagelayout{\@ifstar
@@ -2799,14 +2833,11 @@
     because 'geometry' value is not 'class'}\@eha}
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % |geometry=user|の場合の処理はここで終わり。
-% \end{ZRnote}
 %    \begin{macrocode}
 \fi\fi
 %    \end{macrocode}
 %
-% \begin{ZRnote}
 % ここからのコードは以下の点を除いて JS クラスのものを踏襲する。
 % \begin{itemize}
 % \item zw の代わりに |\jsZw| を用いる。
@@ -3260,6 +3291,7 @@
 %
 % \begin{ZRnote}
 % \begin{macro}{\subtitle}
+% \begin{macro}{\jsSubtitle}
 % 副題を設定する。
 % \Note プレアンブルにおいて |\newcommand*{\subtitle}{...}| が
 % 行われることへの対策として、
@@ -3284,12 +3316,17 @@
   \fi}
 %    \end{macrocode}
 % \end{macro}
+% \end{macro}
 %
+% \begin{macro}{\bxjs@annihilate@subtitle}
+% |\subtitle| 命令を無効化する。
+% \Note 独自の |\subtitle| が使われている場合は無効化しない。
 %    \begin{macrocode}
 \def\bxjs@annihilate@subtitle{%
   \ifx\subtitle\jsSubtitle \global\let\subtitle\relax \fi
   \global\let\jsSubtitle\relax}
 %    \end{macrocode}
+% \end{macro}
 %
 % \end{ZRnote}
 %

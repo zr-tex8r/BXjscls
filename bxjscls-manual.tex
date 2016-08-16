@@ -19,8 +19,6 @@
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\ }
 \newcommand{\jemph}{\textsf}
-\newcommand{\Ord}[1]{#1$^\circ$}
-\newcommand{\Prn}[1]{\<（#1）\<}
 \providecommand{\pTeX}{p\TeX}
 \providecommand{\pLaTeX}{p\LaTeX}
 \providecommand{\upTeX}{u\pTeX}
@@ -39,9 +37,6 @@
 
 %===========================================================
 \section*{注意}
-
-% 1.2で文言削除予定
-このマニュアルは\textgt{暫定版}であり、内容に不完全な点がある。
 
 BXJS文書クラスについては、“{\TeX} Wiki”中の記事、
 \footnote{\url{https://texwiki.texjp.org/?BXjscls}}%
@@ -977,35 +972,38 @@ BXJSクラスではページレイアウトの設定に\Pkg{geometry}パッケ�
 用いて次の手順で行っている。 
 
 \begin{enumerate}
-\item[\Ord{1}]
+\item
   （基底フォントサイズにより決定されたmag値を実際に設定する。）
-\item[\Ord{2}]
+\item
   \Pkg{geometry}で次のパラメタを設定する。
+  \label{itm:pl-param}
   \begin{enumerate}
-  \item[\Prn{a}]
+  \item
     クラスオプションで指定された用紙サイズ、および|truedimen|。
-  \item[\Prn{ii}]
+    \label{itm:pl-parama}
+  \item
     \Pkg{bxjsarticle}／\Pkg{bxjsreport}の場合は次のパラメタ値。 
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, footskip=0.03367\paperheight,
 headsep=\footskip-\topskip, includeheadfoot,
 hscale=0.76, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
-  \item[\Prn{iii}]
+  \item
     \Pkg{bxjsbook}の場合は次のパラメタ値。
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, headsep=6mm, nofoot, includeheadfoot,
 hmargin=36mm, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
-  \item[\Prn{iv}]
+  \item
     \Pkg{bxjsslide}の場合は次のパラメタ値。
 \begin{quote}\small\begin{verbatim}
 noheadfoot, hscale=0.9, hmarginratio=1:1,
 vscale=0.944, vmarginratio=1:1
 \end{verbatim}\end{quote}
   \end{enumerate}
-\item[\Ord{3}]
+\item
   後処理を行う。
+  \label{itm:pl-post}%
   以下の処理が含まれる。
   \begin{itemize}
   \item |textwidth| を全角幅の整数倍に、|textheight| を整数行分の
@@ -1020,15 +1018,16 @@ vscale=0.944, vmarginratio=1:1
   現在のページレイアウトの設定の一部を修正する。
   \Meta{設定}は\Pkg{geometry}のパラメタの記述であり、
   現在の設定に追記して\Pkg{geometry}が再設定を行った後、
-  再び\Ord{3}の後処理が行われる。
+  再び\ref{itm:pl-post}の後処理が行われる。
 \item |\setpagelayout*{|\Meta{設定}|}|\Means
   用紙以外の設定をリセットして改めてページレイアウトの設定を行う。
-  具体的には、\Ord{2}の\Prn{i}と\Meta{設定}の内容を用いて
-  \Pkg{geometry}が再設定を行った後、再び\Ord{3}の後処理が行われる。
+  具体的には、\ref{itm:pl-parama}と\Meta{設定}の
+  内容を用いて\Pkg{geometry}が再設定を行った後、
+  再び\ref{itm:pl-post}の後処理が行われる。
 \end{itemize}
 
 なお、|\geometry| 命令を直接呼び出すことも可能である。
-当然この場合は\Ord{3}の後処理は行われない。
+当然この場合は\ref{itm:pl-post}の後処理は行われない。
 
 %-------------------
 \subsection{構造マークアップ関連}
@@ -1230,8 +1229,49 @@ Class bxjsarticle Warning: Some old font commands were used in text
   端末に表示されることは一切無い。
 \end{itemize}
 
-
-
 %===========================================================
 \end{document}
+
+%===========================================================
+\appendix
+\section{パッケージレベル公開命令の一覧}
+
+\begin{itemize}
+% \jsAtEndOfClass はBXJSの補助パッケージ専用
+\item |\jsBaseFontSize|
+\item |\jsDocClass|
+  \begin{itemize}
+  \item |\jsArticle|
+  \item |\jsBook|
+  \item |\jsReport|
+  \item |\jsSlide|
+  \end{itemize}
+\item |\ifjsDraft|
+\item |\jsEngine|
+\item |\jsFontSizeChanged|
+\item |\jsGeometryOptions|
+\item |\jsInhibitGlue|
+\item |\jsInhibitGlueAtParTop|
+\item |\jsInJaParen|
+\item |\ifjsInPdfMode|
+\item |\jsJaChar|
+\item |\jsJaFont|
+\item |\jsJaParam|
+\item |\jsKanjiSkip|
+\item |\jsLetHeadChar|
+\item |\jsParagraphMark|
+\item |\jsResetDimen|
+\item |\jsScale|
+\item |\ifjsSeireki|
+\item |\jsSimpleJaSetup|
+\item |\jsSubtitle|
+\item |\jsTextWidthLimit|
+\item |\jsUnusualPtSize|
+% \jsUseMinimalPageLayout はテスト用
+\item |\ifjsWitheTeX|
+\item |\ifjsWithupTeX|
+\item |\jsXKanjiSkip|
+% \jsZw はユーザレベル命令
+\end{itemize}
+
 %% EOF
