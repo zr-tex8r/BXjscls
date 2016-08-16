@@ -250,6 +250,30 @@
 }{}
 %    \end{macrocode}
 %
+% \begin{macro}{\jsDocClass}
+% 〔トークン〕
+% 文書クラスの種別。
+% 以下の定値トークンの何れかと同等：
+% |\jsArticle|=bxjsarticle、
+% |\jsBook|=bxjsbook、
+% |\jsReport|=bxjsreport、
+% |\jsSlide|=bxjsslide。
+%    \begin{macrocode}
+\let\jsArticle=a
+\let\jsBook=b
+\let\jsReport=r
+\let\jsSlide=s
+%<article>\let\jsDocClass\jsArticle
+%<article>\def\bxjs@clsname{bxjsarticle}
+%<book>\let\jsDocClass\jsBook
+%<book>\def\bxjs@clsname{bxjsbook}
+%<report>\let\jsDocClass\jsReport
+%<report>\def\bxjs@clsname{bxjsreport}
+%<slide>\let\jsDocClass\jsSlide
+%<slide>\def\bxjs@clsname{bxjsslide}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
 % エンジン（{\TeX}の種類）の種別：
@@ -370,35 +394,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\jsDocClass}
-% 〔トークン〕
-% 文書クラスの種別。
-% 以下の定値トークンの何れかと同等：
-% |\jsArticle|=bxjsarticle、
-% |\jsBook|=bxjsbook、
-% |\jsReport|=bxjsreport、
-% |\jsSlide|=bxjsslide。
-% \TODO 定義を前方に移動させる。
-%    \begin{macrocode}
-\let\jsArticle=a
-\let\jsBook=b
-\let\jsReport=r
-\let\jsSlide=s
-%<article>\let\jsDocClass\jsArticle
-%<article>\def\bxjs@clsname{bxjsarticle}
-%<book>\let\jsDocClass\jsBook
-%<book>\def\bxjs@clsname{bxjsbook}
-%<report>\let\jsDocClass\jsReport
-%<report>\def\bxjs@clsname{bxjsreport}
-%<slide>\let\jsDocClass\jsSlide
-%<slide>\def\bxjs@clsname{bxjsslide}
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\jsAtEndOfClass}
 % このクラスの読込終了時に対するフック。
 % （補助パッケージ中で用いられる。）
-% \TODO クラス本体中での使用はやめる。
 %    \begin{macrocode}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
@@ -1301,15 +1299,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\Cjascale}
-% 和文クラス共通仕様（※ただしZR氏提唱）における、
-% 和文スケール値の変数。
-% \TODO 展開させるべき。
-%    \begin{macrocode}
-\def\Cjascale{\jsScale}
-%    \end{macrocode}
-% \end{macro}
-%
 % |base| オプションの処理。
 %    \begin{macrocode}
 \define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
@@ -1582,15 +1571,16 @@
 \bxjs@purge@brace@elts
 %    \end{macrocode}
 %
-% |papersize| と |10pt| のオプションは他のパッケージと衝突を
+% |papersize|、|10pt|、|noscale| の各オプションは他のパッケージと衝突を
 % 起こす可能性があるため、グローバルオプションから外す。
-% \TODO |noscale| も同様処理。
 %
 %    \begin{macrocode}
 \@expandtwoargs\@removeelement
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
   {10pt}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement
+  {noscale}\@classoptionslist\@classoptionslist
 %    \end{macrocode}
 %
 % 現在の（正規化前の）和文ドライバの値を\
@@ -1772,6 +1762,14 @@
 \bxjs@do@opt@jbase
 %    \end{macrocode}
 %
+% \begin{macro}{\Cjascale}
+% 和文クラス共通仕様（※ただしZR氏提唱）における、
+% 和文スケール値の変数。
+%    \begin{macrocode}
+\let\Cjascale\jsScale
+%    \end{macrocode}
+% \end{macro}
+%
 % \end{ZRnote}
 %
 % 後処理
@@ -1823,7 +1821,7 @@
 % 命令を実行する。
 %    \begin{macrocode}
 \ifbxjs@oldfontcommands
-  \jsAtEndOfClass{\allowoldfontcommands}
+  \AtEndOfClass{\allowoldfontcommands}
 \fi
 %    \end{macrocode}
 % \end{ZRnote}

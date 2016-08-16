@@ -45,6 +45,12 @@
   \let\jsAtEndOfClass\@gobble
   \RequirePackage{bxjscompat}%
 }{}
+\let\jsArticle=a
+\let\jsBook=b
+\let\jsReport=r
+\let\jsSlide=s
+\let\jsDocClass\jsArticle
+\def\bxjs@clsname{bxjsarticle}
 \let\jsEngine=n
 \def\bxjs@test@engine#1#2{%
   \edef\bxjs@tmpa{\string#1}%
@@ -95,12 +101,6 @@
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
   \fi}
-\let\jsArticle=a
-\let\jsBook=b
-\let\jsReport=r
-\let\jsSlide=s
-\let\jsDocClass\jsArticle
-\def\bxjs@clsname{bxjsarticle}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 \@onlypreamble\bxjs@restore@jltrcc
@@ -405,7 +405,6 @@
    {Invalid value '#2' for option #1}\@ehc}
 \newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
-\def\Cjascale{\jsScale}
 \define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
 \@onlypreamble\bxjs@do@opt@jbase
 \let\bxjs@do@opt@jbase\relax
@@ -520,6 +519,8 @@
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
   {10pt}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement
+  {noscale}\@classoptionslist\@classoptionslist
 \ifx\bxjs@jadriver\relax\else
   \let\bxjs@jadriver@given\bxjs@jadriver
 \fi
@@ -626,6 +627,7 @@
   \fi
 \fi
 \bxjs@do@opt@jbase
+\let\Cjascale\jsScale
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
 \fi
@@ -646,7 +648,7 @@
 \fi
 \g@addto@macro\@classoptionslist{,nosetpagesize}
 \ifbxjs@oldfontcommands
-  \jsAtEndOfClass{\allowoldfontcommands}
+  \AtEndOfClass{\allowoldfontcommands}
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
