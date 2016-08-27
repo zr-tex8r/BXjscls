@@ -339,7 +339,7 @@
 \ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
 \ifx\bxjs@tmpa\relax \expandafter\@gobble
 \else
-  \ClassError\@currname
+  \ClassError\bxjs@clsname
    {The engine in use (\bxjs@tmpa) is not supported}
    {It's a fatal error. I'll quit right now.}
   \expandafter\@firstofone
@@ -439,9 +439,10 @@
 \if@compatibility
   \ClassError\bxjs@clsname
    {Something went chaotic!\MessageBreak
+    (How come '\string\documentstyle' is there?)\MessageBreak
     I cannot go a single step further...}
-   {If the chant of \string\documentstyle\space was just a blunder
-    of yours,\MessageBreak then there'll still be hope....}
+   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
+    then there'll still be hope....}
   \expandafter\@firstofone
 \else \expandafter\@gobble
 \fi{\typeout{Farewell!}\endinput\@@end}
@@ -1341,14 +1342,6 @@
   \def\jsScale{1}}
 %    \end{macrocode}
 %
-% |CJK| オプションは廃止された。
-% \Note 1.3版で宣言そのものを削除する。
-%    \begin{macrocode}
-\DeclareOption{CJK}{%
-  \ClassWarning\bxjs@clsname
-  {Option `CJK' was abolished}}
-%    \end{macrocode}
-%
 % \begin{macro}{\bxjs@param@mag}
 % |mag| オプションの値。
 %    \begin{macrocode}
@@ -1442,7 +1435,7 @@
    bxjs@magstyle@#1\endcsname
   \ifx\bxjs@magstyle\relax
     \ClassError\bxjs@clsname
-    {Invalid magstyle value `#1'}\@ehc
+     {Invalid value '#1' for option magstyle}\@ehc
     \let\bxjs@magstyle\bxjs@magstyle@default
   \fi}
 %    \end{macrocode}
@@ -1463,7 +1456,7 @@
    bxjs@geometry@#1\endcsname
   \ifx\bxjs@geometry\relax
     \ClassError\bxjs@clsname
-    {Invalid geometry value `#1'}\@ehc
+     {Invalid value '#1' for option geometry}\@ehc
     \let\bxjs@geometry\bxjs@geometry@class
   \fi}
 %    \end{macrocode}
@@ -1506,7 +1499,7 @@
    bxjs@dvidriver@@#1\endcsname
   \ifx\bxjs@tmpa\relax
     \ClassError\bxjs@clsname
-    {Invalid dvi value `#1'}\@ehc
+     {Invalid value '#1' for option dvi}\@ehc
   \else
 %    \end{macrocode}
 % |\bxjs@driver@given| を未定義にしていることに注意。
@@ -1700,8 +1693,8 @@
 \fi
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else
-    \ClassError\bxjs@clsname%
-    {Option `\bxjs@engine@opt' used on wrong engine}\@ehc
+    \ClassError\bxjs@clsname
+     {Option '\bxjs@engine@opt' used on wrong engine}\@ehc
   \fi
 \fi
 %    \end{macrocode}
@@ -1739,8 +1732,8 @@
   \fi\fi
 \fi
 \if@tempswa\else
-  \ClassError\bxjs@clsname%
-  {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
+  \ClassError\bxjs@clsname
+   {Option '\bxjs@driver@opt' used on wrong engine}\@ehc
 \fi
 %    \end{macrocode}
 %
@@ -1811,25 +1804,25 @@
 %    \begin{macrocode}
 \ifx\bxjs@jadriver@given\@undefined\else
   \ifx\bxjs@engine@given\@undefined
-    \ClassError\bxjs@clsname%
-    {An engine option must be explicitly given}%
-    {When you employ a Japanese-driver you must specify a
-    correct\MessageBreak engine option.\MessageBreak\@ehc}
+    \ClassError\bxjs@clsname
+     {An engine option must be explicitly given}%
+     {When you use a Japanese-driver you must specify a correct\MessageBreak
+      engine option.\MessageBreak\@ehc}
 \fi\fi
 %    \end{macrocode}
 %
 % 新しいLua{\TeX}（0.87版以降）ではmagがアレなので、
-% |magstyle=mag| が指定されていた場合はエラーを出す。
-% （この場合の既定値は |xreal| であり、
+% |magstyle=usemag| が指定されていた場合はエラーを出す。
+% （この場合の既定値は |nomag*| であり、
 % エラーの場合は既定値に置き換えられる。）
 %    \begin{macrocode}
 \ifx\bxjs@magstyle@default\bxjs@magstyle@mag\else
   \ifx\bxjs@magstyle\bxjs@magstyle@mag
     \let\bxjs@magstyle\bxjs@magstyle@default
-    \ClassError\bxjs@clsname%
-    {The engine does not support 'magstyle=mag'}%
-    {LuaTeX v0.87 or later no longer supports "mag" feature.\MessageBreak
-     The default value is used instead.\MessageBreak \@ehc}
+    \ClassError\bxjs@clsname
+     {The engine does not support 'magstyle=usemag'}%
+     {LuaTeX v0.87 or later no longer supports the "mag" feature of TeX.\MessageBreak
+      The default value 'nomag*' is used instead.\MessageBreak \@ehc}
   \fi
 \fi
 %    \end{macrocode}
@@ -2898,7 +2891,7 @@
 % この場合はユーザが何らかの方法（例えば |geometry| を読み込む）
 % でページレイアウトを設定する必要がある。
 % もし、本体開始時に |\textwidth| がカーネル設定の値（|.5\maxdimen|）
-% になっている場合はエラーを出す。
+% のままになっている場合はエラーを出す。
 % \Note |\jsUseMinimalPageLayout| は動作テスト用。
 %    \begin{macrocode}
 \AtBeginDocument{\bxjs@check@page@layout}
@@ -2906,8 +2899,8 @@
 \def\bxjs@check@page@layout{%
   \ifdim\textwidth=.5\maxdimen
     \ClassError\bxjs@clsname
-     {Page layout is not properly set}
-     \@ehd
+     {Page layout is not properly set}%
+     {\@ehd}
   \fi}
 \def\jsUseMinimalPageLayout{%
   \setlength{\textwidth}{6.5in}%
@@ -2921,7 +2914,7 @@
   {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
 \def\bxjs@pagelayout@a#1{%
   \ClassError\bxjs@clsname
-   {Command \string\setpagelayout\space is not supported,\MessageBreak
+   {Command '\string\setpagelayout' is not supported,\MessageBreak
     because 'geometry' value is not 'class'}\@eha}
 %    \end{macrocode}
 %
@@ -5325,7 +5318,7 @@
 \DeclareRobustCommand*{\jsc@warnoldfontcmd}[1]{%
   \ClassInfo\bxjs@clsname
    {Old font command '\string#1' is used!!\MessageBreak
-    First occurrence is}%
+    The first occurrence is}%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -5368,7 +5361,7 @@
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
      {Some old font commands were used in text\MessageBreak
-      (see the log output for detail)}%
+      (see the log file for detail)}%
     \ClassInfo\bxjs@clsname
      {Some old font commands were used in text:\MessageBreak
       \space\@tempa\MessageBreak
@@ -7089,7 +7082,7 @@
   \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
     \jsSimpleJaSetup
     \ClassInfo\bxjs@clsname
-     {\string\jsSimpleJaSetup\space is applied\@gobble}%
+     {'\string\jsSimpleJaSetup' is applied\@gobble}%
   \fi\fi}
 %    \end{macrocode}
 % \end{macro}
@@ -7449,9 +7442,9 @@
     \let\bxjs@tmpa\jsJaFont
   \fi
   \if f#1\ifx\bxjs@tmpa\bxjs@@noEmbed
-    \ClassWarning\bxjs@clsname
-    {Option 'jafont=noEmbed' is ignored, because no-embed\MessageBreak
-     is not available}%
+    \ClassWarningNoLine\bxjs@clsname
+     {Option 'jafont=noEmbed' is ignored, because it is\MessageBreak
+      not available on the current situation}%
     \let\bxjs@tmpa\@empty
   \fi\fi
 }
@@ -8305,7 +8298,7 @@
 %
 %^^A----------------
 %\subsection{CJKmainfont変数}
-% Lua{\TeX}（+ Lua{{TeX}-ja）の場合に CJKmainfont 変数が
+% Lua{\TeX}（+ Lua{TeX}-ja）の場合に CJKmainfont 変数が
 % 指定された場合は |\setmainjfont| の指定にまわす。
 %    \begin{macrocode}
 \if l\jsEngine

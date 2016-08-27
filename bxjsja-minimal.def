@@ -266,7 +266,7 @@
   \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
     \jsSimpleJaSetup
     \ClassInfo\bxjs@clsname
-     {\string\jsSimpleJaSetup\space is applied\@gobble}%
+     {'\string\jsSimpleJaSetup' is applied\@gobble}%
   \fi\fi}
 \newcommand*{\jsSimpleJaSetup}{%
   \XeTeXlinebreaklocale "ja"\relax

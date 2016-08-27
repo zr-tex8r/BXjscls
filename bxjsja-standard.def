@@ -117,9 +117,9 @@
     \let\bxjs@tmpa\jsJaFont
   \fi
   \if f#1\ifx\bxjs@tmpa\bxjs@@noEmbed
-    \ClassWarning\bxjs@clsname
-    {Option 'jafont=noEmbed' is ignored, because no-embed\MessageBreak
-     is not available}%
+    \ClassWarningNoLine\bxjs@clsname
+     {Option 'jafont=noEmbed' is ignored, because it is\MessageBreak
+      not available on the current situation}%
     \let\bxjs@tmpa\@empty
   \fi\fi
 }

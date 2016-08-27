@@ -76,7 +76,7 @@
 \ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
 \ifx\bxjs@tmpa\relax \expandafter\@gobble
 \else
-  \ClassError\@currname
+  \ClassError\bxjs@clsname
    {The engine in use (\bxjs@tmpa) is not supported}
    {It's a fatal error. I'll quit right now.}
   \expandafter\@firstofone
@@ -119,9 +119,10 @@
 \if@compatibility
   \ClassError\bxjs@clsname
    {Something went chaotic!\MessageBreak
+    (How come '\string\documentstyle' is there?)\MessageBreak
     I cannot go a single step further...}
-   {If the chant of \string\documentstyle\space was just a blunder
-    of yours,\MessageBreak then there'll still be hope....}
+   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
+    then there'll still be hope....}
   \expandafter\@firstofone
 \else \expandafter\@gobble
 \fi{\typeout{Farewell!}\endinput\@@end}
@@ -424,9 +425,6 @@
 \DeclareOption{noscale}{%
   \bxjs@scalesettrue
   \def\jsScale{1}}
-\DeclareOption{CJK}{%
-  \ClassWarning\bxjs@clsname
-  {Option `CJK' was abolished}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
@@ -457,7 +455,7 @@
    bxjs@magstyle@#1\endcsname
   \ifx\bxjs@magstyle\relax
     \ClassError\bxjs@clsname
-    {Invalid magstyle value `#1'}\@ehc
+     {Invalid value '#1' for option magstyle}\@ehc
     \let\bxjs@magstyle\bxjs@magstyle@default
   \fi}
 \let\bxjs@geometry@class=c
@@ -468,7 +466,7 @@
    bxjs@geometry@#1\endcsname
   \ifx\bxjs@geometry\relax
     \ClassError\bxjs@clsname
-    {Invalid geometry value `#1'}\@ehc
+     {Invalid value '#1' for option geometry}\@ehc
     \let\bxjs@geometry\bxjs@geometry@class
   \fi}
 \newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
@@ -486,7 +484,7 @@
    bxjs@dvidriver@@#1\endcsname
   \ifx\bxjs@tmpa\relax
     \ClassError\bxjs@clsname
-    {Invalid dvi value `#1'}\@ehc
+     {Invalid value '#1' for option dvi}\@ehc
   \else
     \def\bxjs@driver@opt{#1}%
     \let\bxjs@driver@given\@undefined
@@ -571,8 +569,8 @@
 \fi
 \ifx\bxjs@engine@given\@undefined\else
   \ifx\bxjs@engine@given\bxjs@tmpb\else
-    \ClassError\bxjs@clsname%
-    {Option `\bxjs@engine@opt' used on wrong engine}\@ehc
+    \ClassError\bxjs@clsname
+     {Option '\bxjs@engine@opt' used on wrong engine}\@ehc
   \fi
 \fi
 \ifjsWithpTeXng
@@ -600,8 +598,8 @@
   \fi\fi
 \fi
 \if@tempswa\else
-  \ClassError\bxjs@clsname%
-  {Option `\bxjs@driver@opt' used on wrong engine}\@ehc
+  \ClassError\bxjs@clsname
+   {Option '\bxjs@driver@opt' used on wrong engine}\@ehc
 \fi
 \ifjsInPdfMode \@tempswafalse
 \else\ifx x\jsEngine \@tempswafalse
@@ -639,18 +637,18 @@
 \fi
 \ifx\bxjs@jadriver@given\@undefined\else
   \ifx\bxjs@engine@given\@undefined
-    \ClassError\bxjs@clsname%
-    {An engine option must be explicitly given}%
-    {When you employ a Japanese-driver you must specify a
-    correct\MessageBreak engine option.\MessageBreak\@ehc}
+    \ClassError\bxjs@clsname
+     {An engine option must be explicitly given}%
+     {When you use a Japanese-driver you must specify a correct\MessageBreak
+      engine option.\MessageBreak\@ehc}
 \fi\fi
 \ifx\bxjs@magstyle@default\bxjs@magstyle@mag\else
   \ifx\bxjs@magstyle\bxjs@magstyle@mag
     \let\bxjs@magstyle\bxjs@magstyle@default
-    \ClassError\bxjs@clsname%
-    {The engine does not support 'magstyle=mag'}%
-    {LuaTeX v0.87 or later no longer supports "mag" feature.\MessageBreak
-     The default value is used instead.\MessageBreak \@ehc}
+    \ClassError\bxjs@clsname
+     {The engine does not support 'magstyle=usemag'}%
+     {LuaTeX v0.87 or later no longer supports the "mag" feature of TeX.\MessageBreak
+      The default value 'nomag*' is used instead.\MessageBreak \@ehc}
   \fi
 \fi
 \bxjs@do@opt@jbase
@@ -999,8 +997,8 @@
 \def\bxjs@check@page@layout{%
   \ifdim\textwidth=.5\maxdimen
     \ClassError\bxjs@clsname
-     {Page layout is not properly set}
-     \@ehd
+     {Page layout is not properly set}%
+     {\@ehd}
   \fi}
 \def\jsUseMinimalPageLayout{%
   \setlength{\textwidth}{6.5in}%
@@ -1010,7 +1008,7 @@
   {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
 \def\bxjs@pagelayout@a#1{%
   \ClassError\bxjs@clsname
-   {Command \string\setpagelayout\space is not supported,\MessageBreak
+   {Command '\string\setpagelayout' is not supported,\MessageBreak
     because 'geometry' value is not 'class'}\@eha}
 \fi\fi
 \footnotesep=11\p@? \footnotesep=0.7\footnotesep
@@ -1709,7 +1707,7 @@
 \DeclareRobustCommand*{\jsc@warnoldfontcmd}[1]{%
   \ClassInfo\bxjs@clsname
    {Old font command '\string#1' is used!!\MessageBreak
-    First occurrence is}%
+    The first occurrence is}%
 }
 \newcommand*{\allowoldfontcommands}{%
   \@jsc@warnoldfontcmdexceptiontrue}
@@ -1736,7 +1734,7 @@
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
      {Some old font commands were used in text\MessageBreak
-      (see the log output for detail)}%
+      (see the log file for detail)}%
     \ClassInfo\bxjs@clsname
      {Some old font commands were used in text:\MessageBreak
       \space\@tempa\MessageBreak
