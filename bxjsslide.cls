@@ -490,7 +490,7 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
-\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmargintrue
+\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmarginfalse
 \@namedef{bxjs@kv@layout@v1}{%
   \bxjs@layout@buggyhmargintrue}
 \@namedef{bxjs@kv@layout@v2}{%
