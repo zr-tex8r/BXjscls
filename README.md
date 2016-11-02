@@ -87,6 +87,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.3  〈2016/11/01〉
+      - Sync with jsclasses 2016/10/08.
   * Version 1.2a 〈2016/08/17〉
   * Version 1.2  〈2016/08/01〉
   * Version 1.1f 〈2016/07/16〉

@@ -97,6 +97,16 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.3  〈2016/11/01〉
+      - bxjsbook について、水平マージンの量が jsbook と大きく異なると
+        いう不具合を修正した。同時に修正前のレイアウトを継続するための
+        オプション `layout` を新設した。
+      - jsclasses の 2016/10/08 と同期。  
+        ※ページレイアウトの修正にはまだ追随てきていない。
+          + `(no)jslogo` オプションを新設。`jslogo` 指定時は（jsclasses
+            の）jslogo パッケージを読みこむ。（既定は `nojslogo`。）
+          + bxjsslide の一部の節見出しのレイアウトを修正。
+          + 和文用の微調整。
   * Version 1.2a 〈2016/08/17〉
       - fancyhdr パッケージに対する調整を入れた。
       - `fancyhdr`、`textwidth-limit`、`paragraph-mark` オプションを新設。

@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.2a}
-\newcommand{\PkgDate}{2016/08/16}
+\newcommand{\PkgVersion}{1.3}
+\newcommand{\PkgDate}{2016/11/01}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -744,6 +744,18 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |paragraph-mark=|\Meta{文字1つ}\Means
   パラグラフ（|\paragraph|）の見出し先頭に付く記号。
   既定値は“■”。
+\item |layout=|\Meta{値}\Means
+  レイアウトの変種を選択する。
+  有効な値は以下の通り。
+  \begin{itemize}
+  \item |v2|（既定）\Means
+    現版の既定のレイアウト。
+  \item |v1|\Means
+    \Pkg{bxjsbook}クラスについて、1.2a版以前の
+    （本来は不適切な）水平マージンの設定を適用する。
+    （詳細は\ref{ssec:page-layout}節を参照。）
+    その他のクラスについては |v2| と全く同じ。
+  \end{itemize}
 \end{itemize}
 
 %-------------------
@@ -1012,16 +1024,17 @@ hscale=0.76, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
   \item
     \Pkg{bxjsbook}の場合は次のパラメタ値。%
-    \footnote{この設定の中の“|hmargin=36mm,| |hmarginratio=1:1|”の
-      部分は実は不適切で、\Pkg{jsbook}のレイアウトと同様にするには
-      “|hmargin=18mm|”としなければならない。
-      これは近い将来の版（多分1.3版）で修正される予定である。
-      現在の版においても、クラスオプションに |layout=v2| を指定する
-      ことで“修正後”の設定を適用できる。}
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, headsep=6mm, nofoot, includeheadfoot,
-hmargin=36mm, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
+hmargin=18mm, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
+    \Note \Pkg{bxjsbook}の1.2a版以前では、この設定の中の
+    “|hmargin=18mm|”の代わりに“|hmargin=36mm,| |hmarginratio=1:1|”
+    を用いていた。
+    これでは\Pkg{jsbook}の水平マージン設定と同等にならないため
+    1.3版で現在の設定に修正された。
+    もし1.2a版以前との互換性を保ちたい場合は、
+    クラスオプションに |layout=v1| を指定してほしい。
   \item
     \Pkg{bxjsslide}の場合は次のパラメタ値。
 \begin{quote}\small\begin{verbatim}
