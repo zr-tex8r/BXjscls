@@ -37,7 +37,7 @@
 %%   Right brace   \}     Tilde         \~}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2016/08/16 v1.2a BXJS document classes]
+  [2016/08/31 v1.3-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -180,6 +180,7 @@
     {You should not use 'true' lengths here}%
   \fi}
 \newif\ifjsc@mag
+\newif\ifjsc@mag@xreal
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
 \DeclareOption{9pt}{\bxjs@setbasefontsize{9pt}}
 \DeclareOption{10pt}{\bxjs@setbasefontsize{10pt}}
@@ -269,6 +270,9 @@
 \newif\if@english
 \@englishfalse
 \DeclareOption{english}{\@englishtrue}
+\newif\if@jslogo \@jslogofalse
+\DeclareOption{jslogo}{\@jslogotrue}
+\DeclareOption{nojslogo}{\@jslogofalse}
 \mathchardef\bxjs@csta=259
 \def\bxjs@invscale#1#2{%
   \begingroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
@@ -673,11 +677,10 @@
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
-\newif\ifbxjs@nfss@patch
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
   \jsc@magtrue
 \else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
-  \bxjs@nfss@patchtrue
+  \jsc@mag@xrealtrue
 \fi\fi
 \ifx\bxjs@param@mag\relax
   \@tempdima=\bxjs@param@basefontsize
@@ -714,45 +717,46 @@
 \ifbxjs@usezw
   \providecommand*\zw{\jsZw}
 \fi
-\ifbxjs@nfss@patch
-\RequirePackage{type1cm}
-\expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
-\expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
-\let\bxjs@get@external@font\get@external@font
-\def\get@external@font{%
-  \bxjs@preadjust@extract@font
-  \bxjs@get@external@font}
-\def\bxjs@fstrunc#1{%
-  \edef\bxjs@tmpa{\strip@pt#1}%
-  \expandafter\bxjs@fstrunc@a\bxjs@tmpa.****\@nil}
-\def\bxjs@fstrunc@a#1.#2#3#4#5#6\@nil{%
-  \if#5*\else
-    \edef\bxjs@tmpa{#1%
-    \ifnum#2#3>\z@ .#2\ifnum#3>\z@ #3\fi\fi}%
-  \fi}
-\def\bxjs@preadjust@extract@font{%
-  \let\bxjs@req@size\f@size
-  \dimen@\f@size\p@ \bxjs@invscale\dimen@\jsc@magscale
-  \advance\dimen@.005pt\relax \bxjs@fstrunc\dimen@
-  \let\bxjs@ref@size\bxjs@tmpa
-  \let\f@size\bxjs@ref@size}
-\def\execute@size@function#1{%
-  \let\bxjs@cref@size\f@size
-  \let\f@size\bxjs@req@size
-  \csname s@fct@#1\endcsname}
-\let\bxjs@DeclareErrorFont\DeclareErrorFont
-\def\DeclareErrorFont#1#2#3#4#5{%
-  \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
-  \edef\bxjs@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
-  \expandafter\bxjs@DeclareErrorFont\bxjs@tmpa}
-\def\gen@sfcnt{%
-  \edef\mandatory@arg{\mandatory@arg\bxjs@cref@size}%
-  \empty@sfcnt}
-\def\genb@sfcnt{%
-  \edef\mandatory@arg{%
-    \mandatory@arg\expandafter\genb@x\bxjs@cref@size..\@@}%
-  \empty@sfcnt}
-\DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+\ifjsc@mag@xreal
+  \RequirePackage{type1cm}
+  \let\jsc@invscale\bxjs@invscale
+  \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+  \let\jsc@get@external@font\get@external@font
+  \def\get@external@font{%
+    \jsc@preadjust@extract@font
+    \jsc@get@external@font}
+  \def\jsc@fstrunc#1{%
+    \edef\jsc@tmpa{\strip@pt#1}%
+    \expandafter\jsc@fstrunc@a\jsc@tmpa.****\@nil}
+  \def\jsc@fstrunc@a#1.#2#3#4#5#6\@nil{%
+    \if#5*\else
+      \edef\jsc@tmpa{#1%
+      \ifnum#2#3>\z@ .#2\ifnum#3>\z@ #3\fi\fi}%
+    \fi}
+  \def\jsc@preadjust@extract@font{%
+    \let\jsc@req@size\f@size
+    \dimen@\f@size\p@ \jsc@invscale\dimen@\jsc@magscale
+    \advance\dimen@.005pt\relax \jsc@fstrunc\dimen@
+    \let\jsc@ref@size\jsc@tmpa
+    \let\f@size\jsc@ref@size}
+  \def\execute@size@function#1{%
+    \let\jsc@cref@size\f@size
+    \let\f@size\jsc@req@size
+    \csname s@fct@#1\endcsname}
+  \let\jsc@DeclareErrorFont\DeclareErrorFont
+  \def\DeclareErrorFont#1#2#3#4#5{%
+    \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
+    \edef\jsc@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
+    \expandafter\jsc@DeclareErrorFont\jsc@tmpa}
+  \def\gen@sfcnt{%
+    \edef\mandatory@arg{\mandatory@arg\jsc@cref@size}%
+    \empty@sfcnt}
+  \def\genb@sfcnt{%
+    \edef\mandatory@arg{%
+      \mandatory@arg\expandafter\genb@x\jsc@cref@size..\@@}%
+    \empty@sfcnt}
+  \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
 \fi
 \chardef\bxjs@periodchar=`\.
 \bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
@@ -1306,7 +1310,9 @@
     \@afterheading
   \fi
   \if@slide
-    {\vskip-6\p@?\maybeblue\hrule height0\p@? depth1\p@?\vskip7\p@?\relax}%
+    {\vskip\if@twocolumn-5\jsc@mpt\else-6\jsc@mpt\fi
+     \maybeblue\hrule height0\jsc@mpt depth1\jsc@mpt
+     \vskip\if@twocolumn 4\jsc@mpt\else 7\jsc@mpt\fi\relax}%
   \fi
   \par  % 2000-12-18
   \ignorespaces}
@@ -1392,7 +1398,7 @@
 \fi
 \if@twocolumn
   \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-    {\z@}{\z@}%
+    {\z@}{\if@slide .4\Cvs \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \else
   \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
@@ -1402,12 +1408,12 @@
 \fi
 \if@twocolumn
   \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-    {\z@}{\z@}%
+    {\z@}{\if@slide .4\Cvs \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \else
   \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
     {\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
-    {\z@}%
+    {\if@slide .5\Cvs \@plus.3\Cdp \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \fi
 \newcommand\jsParagraphMark{\jsJaChar{■}}
@@ -1417,17 +1423,23 @@
 \let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
-    {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
+    {\z@}{\if@slide .4\Cvs \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
     {\normalfont\normalsize\headfont\jsParagraphMark}}
 \else
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {0.5\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
-    {-1\jsZw}% 改行せず 1\jsZw のアキ
+    {\if@slide .5\Cvs \@plus.3\Cdp \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
     {\normalfont\normalsize\headfont\jsParagraphMark}}
 \fi
-\newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
-   {\z@}{-1\jsZw}%
-   {\normalfont\normalsize\headfont}}
+\if@twocolumn
+  \newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
+    {\z@}{\if@slide .4\Cvs \@plus.3\Cdp \else -1\jsZw\fi}%
+    {\normalfont\normalsize\headfont}}
+\else
+  \newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
+    {\z@}{\if@slide .5\Cvs \@plus.3\Cdp \else -1\jsZw\fi}%
+    {\normalfont\normalsize\headfont}}
+\fi
 \if@slide
   \setlength\leftmargini{1\jsZw}
 \else
@@ -1856,10 +1868,12 @@
 \newcommand{\indexspace}{\par \vskip 10\p@? \@plus5\p@? \@minus3\p@?\relax}
 \newcommand\seename{\if@english see\else →\fi}
 \newcommand\alsoname{\if@english see also\else →\fi}
-\let\footnotes@ve=\footnote
-\def\footnote{\jsInhibitGlue\footnotes@ve}
-\let\footnotemarks@ve=\footnotemark
-\def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
+\ifx\pltx@foot@penalty\@undefined
+  \let\footnotes@ve=\footnote
+  \def\footnote{\jsInhibitGlue\footnotes@ve}
+  \let\footnotemarks@ve=\footnotemark
+  \def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
+\fi
 \def\thefootnote{\ifnum\c@footnote>\z@\leavevmode\lower.5ex\hbox{*}\@arabic\c@footnote\fi}
 \renewcommand{\footnoterule}{%
   \kern-2.6\p@? \kern-.4\p@
@@ -1883,7 +1897,14 @@
                                 \else \let\next\f@t\fi \next}
 \def\f@@t{\bgroup\aftergroup\@foot\let\next}
 \def\f@t#1{#1\@foot}
-\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup}
+\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
+  \ifhmode\null\fi
+  \ifx\pltx@foot@penalty\@undefined\else
+    \ifnum\pltx@foot@penalty=\z@\else
+      \penalty\pltx@foot@penalty
+      \pltx@foot@penalty\z@
+    \fi
+  \fi}
 \newcommand\@makefntext[1]{%
   \advance\leftskip 3\jsZw
   \parindent 1\jsZw
@@ -1999,6 +2020,16 @@
     \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
     \jsInhibitGlue \ignorespaces
   \fi}
+\if@jslogo
+  \IfFileExists{jslogo.sty}{%
+    \RequirePackage{jslogo}%
+  }{%
+    \ClassWarningNoLine\bxjs@clsname
+     {The package 'jslogo' is not installed.\MessageBreak
+      It is included in the recent release of\MessageBreak
+      the 'jsclasses' bundle}
+  }
+\fi
 \newcommand{\prepartname}{\if@english Part~\else 第\fi}
 \newcommand{\postpartname}{\if@english\else 部\fi}
 \newcommand{\presectionname}{}%  第

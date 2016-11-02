@@ -70,7 +70,9 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2016/08/16 v1.2a BXJS document classes]
+  [2016/08/31 v1.3-pre BXJS document classes]
+% based on jsclasses [2016/10/08]
+% [2016/08/16 v1.2a BXJS document classes]
 % [2016/08/01 v1.2 BXJS document classes]
 % based on jsclasses [2016/07/18]
 % [2016/07/16 v1.1f BXJS document classes]
@@ -595,7 +597,12 @@
 % [2003-04-18] 12Qオプションを追加しました。
 %
 % [2016-07-08] |\mag| を使わずに各種寸法をスケールさせるためのオプション \texttt{nomag} を新設しました。
-% \texttt{usemag} オプションの指定で従来通りの動作となります．デフォルトは \texttt{usemag} です．
+% \texttt{usemag} オプションの指定で従来通りの動作となります。デフォルトは \texttt{usemag} です。
+%
+% [2016-07-24] オプティカルサイズを調整するためにNFSSへパッチを当てるオプション \texttt{nomag*} を新設しました。
+%
+% [2016-10-08] \texttt{slide} オプションは article 以外では使い物にならなかったので，
+% 簡単のため article のみで使えるオプションとしました。
 %
 % \begin{ZRnote}
 % |\@ptsize| は |10pt|, |11pt|, |12pt| が指定された時のみ従来と同じ値とし、
@@ -659,8 +666,11 @@
 % \end{macro}
 %
 % |\ifjsc@mag| は「|\mag| を使うか」を表すスイッチ。
+%
+% |\ifjsc@mag@xreal| は「NFSSにパッチを当てるか」を表すスイッチ。
 %    \begin{macrocode}
 \newif\ifjsc@mag
+\newif\ifjsc@mag@xreal
 %\let\jsc@magscale\@undefined
 %    \end{macrocode}
 %
@@ -906,6 +916,22 @@
 % \begin{ZRnote}
 % BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
 % \end{ZRnote}
+%
+% \paragraph{jslogoパッケージの読み込み}
+%
+% \LaTeX 関連のロゴを再定義する\texttt{jslogo}パッケージを
+% 読み込まないオプション\texttt{nojslogo}を新設しました。
+% \texttt{jslogo}オプションの指定で従来どおりの動作となります。
+% デフォルトは\texttt{jslogo}で，すなわちパッケージを読み込みます。
+%
+% \begin{ZRnote}
+% BXJSクラスでは、|nojslogo| を既定とする。
+% \end{ZRnote}
+%    \begin{macrocode}
+\newif\if@jslogo \@jslogofalse
+\DeclareOption{jslogo}{\@jslogotrue}
+\DeclareOption{nojslogo}{\@jslogofalse}
+%    \end{macrocode}
 %
 % \paragraph{BXJS特有のオプションの一覧 \ZRX}
 % \mbox{}
@@ -1918,18 +1944,13 @@
 % \paragraph{拡大率の設定}
 % \mbox{}
 % \begin{ZRnote}
-% \begin{macro}{\ifbxjs@nfss@patch}
-% NFSSパッチするか。
-%    \begin{macrocode}
-\newif\ifbxjs@nfss@patch
-%    \end{macrocode}
-% \end{macro}
-%
+% |\bxjs@magstyle| の値に応じてスイッチ |jsc@mag| と |jsc@mag@xreal| を
+% 設定する。
 %    \begin{macrocode}
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
   \jsc@magtrue
 \else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
-  \bxjs@nfss@patchtrue
+  \jsc@mag@xrealtrue
 \fi\fi
 %    \end{macrocode}
 % \end{ZRnote}
@@ -1958,6 +1979,7 @@
   \divide\@tempdima16384\relax \@tempcnta\@tempdima\relax
   \edef\bxjs@param@mag{\the\@tempcnta}
 \else
+% mag値が直接指定された場合
   \let\c@bxjs@cnta\@tempcnta
   \setcounter{bxjs@cnta}{\bxjs@param@mag}
   \ifnum\@tempcnta<\z@ \@tempcnta=\z@ \fi
@@ -1979,7 +2001,7 @@
 %\typeout{\string\bxjs@param@mag: \bxjs@param@mag}
 %\typeout{\string\jsc@magscale: \jsc@magscale}
 %\typeout{\string\ifjsc@mag: \meaning\ifjsc@mag}
-%\typeout{\string\ifbxjs@nfss@patch: \meaning\ifbxjs@nfss@patch}
+%\typeout{\string\ifjsc@mag@xreal: \meaning\ifjsc@mag@xreal}
 %    \end{macrocode}
 % \end{ZRnote}
 %
@@ -2018,55 +2040,55 @@
   \providecommand*\zw{\jsZw}
 \fi
 %    \end{macrocode}
-% \end{ZRnote}
 %
-% \paragraph{NFSSパッチ \ZRX}
-% \mbox{}
-% \begin{ZRnote}
-% ムニャムニャムニャ……。
+% そして、magstyle が |nomag*| の場合は、NFSSにパッチを当てる。
 %    \begin{macrocode}
-\ifbxjs@nfss@patch
-\RequirePackage{type1cm}
-\expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
-\expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
-\let\bxjs@get@external@font\get@external@font
-\def\get@external@font{%
-  \bxjs@preadjust@extract@font
-  \bxjs@get@external@font}
-\def\bxjs@fstrunc#1{%
-  \edef\bxjs@tmpa{\strip@pt#1}%
-  \expandafter\bxjs@fstrunc@a\bxjs@tmpa.****\@nil}
-\def\bxjs@fstrunc@a#1.#2#3#4#5#6\@nil{%
-  \if#5*\else
-    \edef\bxjs@tmpa{#1%
-    \ifnum#2#3>\z@ .#2\ifnum#3>\z@ #3\fi\fi}%
-  \fi}
-\def\bxjs@preadjust@extract@font{%
-  \let\bxjs@req@size\f@size
-  \dimen@\f@size\p@ \bxjs@invscale\dimen@\jsc@magscale
-  \advance\dimen@.005pt\relax \bxjs@fstrunc\dimen@
-  \let\bxjs@ref@size\bxjs@tmpa
-  \let\f@size\bxjs@ref@size}
-\def\execute@size@function#1{%
-  \let\bxjs@cref@size\f@size
-  \let\f@size\bxjs@req@size
-  \csname s@fct@#1\endcsname}
-\let\bxjs@DeclareErrorFont\DeclareErrorFont
-\def\DeclareErrorFont#1#2#3#4#5{%
-  \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
-  \edef\bxjs@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
-  \expandafter\bxjs@DeclareErrorFont\bxjs@tmpa}
-\def\gen@sfcnt{%
-  \edef\mandatory@arg{\mandatory@arg\bxjs@cref@size}%
-  \empty@sfcnt}
-\def\genb@sfcnt{%
-  \edef\mandatory@arg{%
-    \mandatory@arg\expandafter\genb@x\bxjs@cref@size..\@@}%
-  \empty@sfcnt}
-\DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+\ifjsc@mag@xreal
+  \RequirePackage{type1cm}
+  \let\jsc@invscale\bxjs@invscale
+%    \end{macrocode}
+% ムニャムニャムニャ……。
+% \end{ZRnote}
+%    \begin{macrocode}
+  \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+  \let\jsc@get@external@font\get@external@font
+  \def\get@external@font{%
+    \jsc@preadjust@extract@font
+    \jsc@get@external@font}
+  \def\jsc@fstrunc#1{%
+    \edef\jsc@tmpa{\strip@pt#1}%
+    \expandafter\jsc@fstrunc@a\jsc@tmpa.****\@nil}
+  \def\jsc@fstrunc@a#1.#2#3#4#5#6\@nil{%
+    \if#5*\else
+      \edef\jsc@tmpa{#1%
+      \ifnum#2#3>\z@ .#2\ifnum#3>\z@ #3\fi\fi}%
+    \fi}
+  \def\jsc@preadjust@extract@font{%
+    \let\jsc@req@size\f@size
+    \dimen@\f@size\p@ \jsc@invscale\dimen@\jsc@magscale
+    \advance\dimen@.005pt\relax \jsc@fstrunc\dimen@
+    \let\jsc@ref@size\jsc@tmpa
+    \let\f@size\jsc@ref@size}
+  \def\execute@size@function#1{%
+    \let\jsc@cref@size\f@size
+    \let\f@size\jsc@req@size
+    \csname s@fct@#1\endcsname}
+  \let\jsc@DeclareErrorFont\DeclareErrorFont
+  \def\DeclareErrorFont#1#2#3#4#5{%
+    \@tempdimc#5\p@ \@tempdimc\jsc@magscale\@tempdimc
+    \edef\jsc@tmpa{{#1}{#2}{#3}{#4}{\strip@pt\@tempdimc}}
+    \expandafter\jsc@DeclareErrorFont\jsc@tmpa}
+  \def\gen@sfcnt{%
+    \edef\mandatory@arg{\mandatory@arg\jsc@cref@size}%
+    \empty@sfcnt}
+  \def\genb@sfcnt{%
+    \edef\mandatory@arg{%
+      \mandatory@arg\expandafter\genb@x\jsc@cref@size..\@@}%
+    \empty@sfcnt}
+  \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
 \fi
 %    \end{macrocode}
-% \end{ZRnote}
 %
 % \paragraph{pagesizeスペシャルの出力}
 % \mbox{}
@@ -3778,6 +3800,9 @@
 % 二つ挿入した |\everyparhook| のうち後者が |\paragraph| 類の後で2回実行され，
 % それ以降は前者が実行されます。
 %
+% [2016-07-28] \texttt{slide}オプションと\texttt{twocolumn}オプションを
+% 同時に指定した場合の罫線の位置を微調整しました。
+%
 %    \begin{macrocode}
 \def\@xsect#1{%
 % 見出しの後ろの空きを \@tempskipa にセット
@@ -3806,7 +3831,9 @@
     \@afterheading
   \fi
   \if@slide
-    {\vskip-6\p@?\maybeblue\hrule height0\p@? depth1\p@?\vskip7\p@?\relax}%
+    {\vskip\if@twocolumn-5\jsc@mpt\else-6\jsc@mpt\fi
+     \maybeblue\hrule height0\jsc@mpt depth1\jsc@mpt
+     \vskip\if@twocolumn 4\jsc@mpt\else 7\jsc@mpt\fi\relax}%
   \fi
   \par  % 2000-12-18
   \ignorespaces}
@@ -4339,7 +4366,7 @@
 %    \begin{macrocode}
 \if@twocolumn
   \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
-    {\z@}{\z@}%
+    {\z@}{\if@slide .4\Cvs \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \else
   \newcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
@@ -4352,15 +4379,19 @@
 % \end{macro}
 %
 % \begin{macro}{\subsubsection}
+%
+% [2016-07-22] \texttt{slide}オプション指定時に |\subsubsection| の文字列
+% と罫線が重なる問題に対処しました(forum:1982)。
+%
 %    \begin{macrocode}
 \if@twocolumn
   \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
-    {\z@}{\z@}%
+    {\z@}{\if@slide .4\Cvs \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \else
   \newcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
     {\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
-    {\z@}%
+    {\if@slide .5\Cvs \@plus.3\Cdp \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \fi
 %    \end{macrocode}
@@ -4386,13 +4417,13 @@
 \let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
-    {\z@}{-1\jsZw}% 改行せず 1\jsZw のアキ
+    {\z@}{\if@slide .4\Cvs \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
 %<jspf>    {\normalfont\normalsize\headfont}}
 %<!jspf>    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \else
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {0.5\Cvs \@plus.5\Cdp \@minus.2\Cdp}%
-    {-1\jsZw}% 改行せず 1\jsZw のアキ
+    {\if@slide .5\Cvs \@plus.3\Cdp \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
 %<jspf>    {\normalfont\normalsize\headfont}}
 %<!jspf>    {\normalfont\normalsize\headfont\jsParagraphMark}}
 \fi
@@ -4404,9 +4435,15 @@
 %    見出しの後ろで改行されません。
 %
 %    \begin{macrocode}
-\newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
-   {\z@}{-1\jsZw}%
-   {\normalfont\normalsize\headfont}}
+\if@twocolumn
+  \newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
+    {\z@}{\if@slide .4\Cvs \@plus.3\Cdp \else -1\jsZw\fi}%
+    {\normalfont\normalsize\headfont}}
+\else
+  \newcommand{\subparagraph}{\@startsection{subparagraph}{5}{\z@}%
+    {\z@}{\if@slide .5\Cvs \@plus.3\Cdp \else -1\jsZw\fi}%
+    {\normalfont\normalsize\headfont}}
+\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -6034,15 +6071,21 @@
 % \begin{macro}{\footnote}
 % \begin{macro}{\footnotemark}
 %
-% 和文の句読点・閉じかっこ類の直後で用いた際に
-% 余分なアキが入るのを防ぐため，
-% |\jsInhibitGlue| を入れることにします。
+% 和文の句読点・閉じかっこ類の直後で用いた際に余分なアキが入るのを防ぐため，
+% |\inhibitglue| を入れることにします。
+% p\LaTeX の日付が2016/09/03より新しい場合は，このパッチが不要なのであてません。
 %
+% \begin{ZRnote}
+% パッチの必要性は「|\pltx@foot@penalty| が未定義か」で行う。
+% |\inhibitglue| の代わりに |\jsInhibitGlue| を使う。
+% \end{ZRnote}
 %    \begin{macrocode}
-\let\footnotes@ve=\footnote
-\def\footnote{\jsInhibitGlue\footnotes@ve}
-\let\footnotemarks@ve=\footnotemark
-\def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
+\ifx\pltx@foot@penalty\@undefined
+  \let\footnotes@ve=\footnote
+  \def\footnote{\jsInhibitGlue\footnotes@ve}
+  \let\footnotemarks@ve=\footnotemark
+  \def\footnotemark{\jsInhibitGlue\footnotemarks@ve}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -6064,6 +6107,7 @@
 % [2013-05-14] plcore.ltx に倣った形に書き直しました（Thanks: 北川さん）。
 %
 % [2016-07-11] コミュニティ版p\LaTeX の変更に追随しました（Thanks: 角藤さん）。
+% p\LaTeX の日付が2016/04/17より新しい場合は，このパッチが不要なのであてません。
 %
 % \begin{ZRnote}
 % {\pTeX}依存のコードなので、minimal和文ドライバ実装に移動。
@@ -6077,6 +6121,11 @@
 %
 % [2003-08-15] |\textasteriskcentered| ではフォントによって
 % 下がりすぎるので変更しました。
+%
+% [2016-10-08] TODO: 脚注番号が |newtxtext| や |newpxtext| の使用時に
+% おかしくなってしまいます。これらのパッケージは内部で |\thefootnote| を
+% 再定義していますので，気になる場合はパッケージを読み込むときに
+% \texttt{defaultsups} オプションを付けてください(qa:57284, qa:57287)。
 %
 %    \begin{macrocode}
 \def\thefootnote{\ifnum\c@footnote>\z@\leavevmode\lower.5ex\hbox{*}\@arabic\c@footnote\fi}
@@ -6117,6 +6166,12 @@
 % Jeremy Gibbons, \textit{\TeX\ and TUG NEWS},
 %  Vol.~2, No.~4 (1993), p.~9）
 %
+% [2016-08-25] コミュニティ版\pLaTeX の「閉じ括弧類の直後に
+% |\footnotetext| が続く場合に改行が起きることがある問題に対処」
+% と同等のコードを追加しました。
+%
+% [2016-09-08] コミュニティ版\pLaTeX のバグ修正に追随しました。
+%
 %    \begin{macrocode}
 \long\def\@footnotetext{%
   \insert\footins\bgroup
@@ -6136,7 +6191,14 @@
                                 \else \let\next\f@t\fi \next}
 \def\f@@t{\bgroup\aftergroup\@foot\let\next}
 \def\f@t#1{#1\@foot}
-\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup}
+\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
+  \ifhmode\null\fi
+  \ifx\pltx@foot@penalty\@undefined\else
+    \ifnum\pltx@foot@penalty=\z@\else
+      \penalty\pltx@foot@penalty
+      \pltx@foot@penalty\z@
+    \fi
+  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -6355,9 +6417,30 @@
 %
 % \section{いろいろなロゴ}
 %
+% \LaTeX 関連のロゴを作り直します。
+%
+% [2016-07-14] ロゴの定義は\texttt{jslogo}パッケージに移転しました。
+% 後方互換のため，\texttt{jsclasses}ではデフォルトでこれを読み込みます。
+% \texttt{nojslogo}オプションが指定されている場合は読み込みません。
+%
 % \begin{ZRnote}
-% とりあえず削除。
+% BXJSクラスでも |jslogo| オプション指定の場合に jslogo パッケージを
+% 読み込むようにした。
+% ただしJSクラスと異なり、既定では読み込まない。
+% \Note |\小|、|\上小| の制御綴は定義しない。
 % \end{ZRnote}
+%    \begin{macrocode}
+\if@jslogo
+  \IfFileExists{jslogo.sty}{%
+    \RequirePackage{jslogo}%
+  }{%
+    \ClassWarningNoLine\bxjs@clsname
+     {The package 'jslogo' is not installed.\MessageBreak
+      It is included in the recent release of\MessageBreak
+      the 'jsclasses' bundle}
+  }
+\fi
+%    \end{macrocode}
 %
 % \section{\texttt{amsmath} との衝突の回避}
 %
