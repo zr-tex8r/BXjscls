@@ -566,6 +566,9 @@
 %
 % オプション \texttt{slide} を新設しました。
 %
+% [2016-10-08] \texttt{slide} オプションは article 以外では使い物にならなかったので，
+% 簡単のため article のみで使えるオプションとしました。
+%
 %    \begin{macrocode}
 \newif\if@slide
 %    \end{macrocode}
@@ -597,9 +600,6 @@
 % \texttt{usemag} オプションの指定で従来通りの動作となります。デフォルトは \texttt{usemag} です。
 %
 % [2016-07-24] オプティカルサイズを調整するためにNFSSへパッチを当てるオプション \texttt{nomag*} を新設しました。
-%
-% [2016-10-08] \texttt{slide} オプションは article 以外では使い物にならなかったので，
-% 簡単のため article のみで使えるオプションとしました。
 %
 % \begin{ZRnote}
 % |\@ptsize| は |10pt|, |11pt|, |12pt| が指定された時のみ従来と同じ値とし、
@@ -708,6 +708,11 @@
 % 欧文 {\LaTeX} のカーネルではサポートされないため削除。
 %
 % ただしJSクラスとの互換のため以下の変数を用意する。
+%
+% \Note JSクラスでは、2017-01-11の改修で、「トンボオプション指定時
+% のみ |\stockwidth|/|height| を定義する」という仕様に変更された。
+% BXJSでの対応は要検討。
+%
 % \end{ZRnote}
 %    \begin{macrocode}
 \newdimen\stockwidth \newdimen\stockheight
@@ -2086,6 +2091,38 @@
   \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
 \fi
 %    \end{macrocode}
+%
+% [2016-11-16] latex.ltx (ltspace.dtx)で定義されている |\smallskip| の，
+% 単位 |pt| を |\jsc@mpt| に置き換えた |\jsc@smallskip| を定義します。
+% これは |\maketitle| で用いられます。
+% |\jsc@medskip| と |\jsc@bigskip| は必要ないのでコメントアウトしています。
+%
+% \begin{macro}{\jsc@smallskip}
+% \begin{macro}{\jsc@medskip}
+% \begin{macro}{\jsc@bigskip}
+%    \begin{macrocode}
+\def\jsc@smallskip{\vspace\jsc@smallskipamount}
+%\def\jsc@medskip{\vspace\jsc@medskipamount}
+%\def\jsc@bigskip{\vspace\jsc@bigskipamount}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\jsc@smallskipamount}
+% \begin{macro}{\jsc@medskipamount}
+% \begin{macro}{\jsc@bigskipamount}
+%    \begin{macrocode}
+\newskip\jsc@smallskipamount
+\jsc@smallskipamount=3\jsc@mpt plus 1\jsc@mpt minus 1\jsc@mpt
+%\newskip\jsc@medskipamount
+%\jsc@medskipamount =6\jsc@mpt plus 2\jsc@mpt minus 2\jsc@mpt
+%\newskip\jsc@bigskipamount
+%\jsc@bigskipamoun =12\jsc@mpt plus 4\jsc@mpt minus 4\jsc@mpt
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
 %
 % \paragraph{pagesizeスペシャルの出力}
 % \mbox{}
@@ -3484,6 +3521,11 @@
 % 和文のものでは |\Large| になっていましたが，ここでは |\large|
 % にしました。
 %
+% [2016-11-16] 新設された \texttt{nomag} および \texttt{nomag*} オプション
+% の場合をデフォルト（\texttt{usemag} 相当）に合わせるため，|\smallskip| を
+% |\jsc@smallskip| に置き換えました。|\smallskip| のままでは
+% \texttt{nomag(*)} の場合にスケールしなくなり，レイアウトが変わってしまいます。
+%
 %    \begin{macrocode}
 %<*article|book|report|slide>
 \if@titlepage
@@ -3499,13 +3541,13 @@
           \mbox{} \\[1\jsZw]
           \large
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
-          \smallskip
+          \jsc@smallskip
           \@title
           \ifx\bxjs@subtitle\@undefined\else
             \par\vskip\z@
             {\small \bxjs@subtitle\par}
           \fi
-          \smallskip
+          \jsc@smallskip
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
           \vfill
           {\small \@author}%
@@ -4201,13 +4243,20 @@
 % 両面印刷のときは白ページを追加します。
 % 二段組のときには，二段組に戻します。
 %
+% [2016-12-13] \texttt{openany} のときには白ページが追加されるのは変なので，
+% その場合は追加しないようにしました。このバグは\LaTeX では
+% classes.dtx v1.4b (2000/05/19)
+% で修正されています。
+%
 %    \begin{macrocode}
 %<*book|report>
 \def\@endpart{\vfil\newpage
   \if@twoside
+   \if@openright %% added (2016/12/13)
     \null
     \thispagestyle{empty}%
     \newpage
+   \fi %% added (2016/12/13)
   \fi
   \if@restonecol
     \twocolumn
@@ -4398,10 +4447,21 @@
 %
 %    見出しの後ろで改行されません。
 %
+% [2016-11-16] 従来は |\paragraph| の最初に出るマークを「■」に固定して
+% いましたが，このマークを変更可能にするため |\jsParagraphMark| というマクロ
+% に切り出しました。これで，たとえば
+%\begin{verbatim}
+%  \renewcommand{\jsParagraphMark}{★}
+%\end{verbatim}
+% とすれば「★」に変更できますし，マークを空にすることも容易です。
+% なお，某学会クラスでは従来どおりマークは付きません。
+%
 % \begin{ZRnote}
+%
+% \Note BXJSクラスでは、1.1版[2016-02-14]から |\jsParagraphMark| を
+% サポートしている。
+%
 % 段落のマーク（■）が必ず和文フォントで出力されるようにする。
-% さらに、このマークを変更可能にするため |\jsParagraphMark| と
-% いうマクロに切り出した。
 %
 % |\jsJaChar| はstandard和文ドライバが読み込まれた場合は\
 % |\jachar| と同義になるが、それ以外は何もしない。
@@ -5941,17 +6001,17 @@
 % で囲んでください。
 %
 %    \begin{macrocode}
-% \def\@citex[#1]#2{%
+% \def\@citex[#1]#2{\leavevmode
 %   \let\@citea\@empty
 %   \@cite{\@for\@citeb:=#2\do
-%     {\@citea\def\@citea{，\jsInhibitGlue\penalty\@m\ }%
-%      \edef\@citeb{\expandafter\@firstofone\@citeb}%
+%     {\@citea\def\@citea{，\inhibitglue\penalty\@m\ }%
+%      \edef\@citeb{\expandafter\@firstofone\@citeb\@empty}%
 %      \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
 %      \@ifundefined{b@\@citeb}{\mbox{\normalfont\bfseries ?}%
 %        \G@refundefinedtrue
 %        \@latex@warning
 %          {Citation `\@citeb' on page \thepage \space undefined}}%
-%        {\hbox{\csname b@\@citeb\endcsname}}}}{#1}}
+%        {\@cite@ofmt{\csname b@\@citeb\endcsname}}}}{#1}}
 % \def\@cite#1#2{\jsInhibitGlue［{#1\if@tempswa ，#2\fi}］\jsInhibitGlue}
 %    \end{macrocode}
 %
@@ -6169,6 +6229,13 @@
 %
 % [2016-09-08] コミュニティ版\pLaTeX のバグ修正に追随しました。
 %
+% [2016-11-29] 古い\pLaTeX で使用された場合を考慮してコードを改良。
+% ^^A 脚注直後に改行を可能にするために|\null|を入れる場合，
+% ^^A 同時にペナルティも考慮しなければ誤った改行が起きる可能性がある。
+% ^^A このため，|\ifhmode\null\fi|は
+% ^^A   |\ifx\pltx@foot@penalty\@undefined\else ... \fi|
+% ^^A 条件の内側に置いておくのが安全。
+%
 %    \begin{macrocode}
 \long\def\@footnotetext{%
   \insert\footins\bgroup
@@ -6189,8 +6256,8 @@
 \def\f@@t{\bgroup\aftergroup\@foot\let\next}
 \def\f@t#1{#1\@foot}
 \def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
-  \ifhmode\null\fi
   \ifx\pltx@foot@penalty\@undefined\else
+    \ifhmode\null\fi
     \ifnum\pltx@foot@penalty=\z@\else
       \penalty\pltx@foot@penalty
       \pltx@foot@penalty\z@
@@ -6265,26 +6332,48 @@
 \AtBeginDocument{\everypar{\everyparhook}}
 %    \end{macrocode}
 % \end{macro}
+% \end{ZRnote}
 %
+% [2016-07-18] |\inhibitglue| の発行対象を |\inhibitxspcode| が2に
+% 設定されているものすべてに拡大しました。
+%
+% [2016-12-01] すぐ上の変更で |\@tempa| を使っていたのがよくなかった
+% ので，プレフィックスを付けて |\jsc@tempa| にしました(forum:2085)。
+%
+% \begin{ZRnote}
 % \begin{macro}{\@inhibitglue}
 % JSクラスでの |\jsInhibitGlueAtParTop| の実装。
+% （これは{(u)\pTeX}専用である。）
+%
+% \Note |\jsc@tempa| は実はテンポラリではなく「この処理専用の
+% ユニーク制御綴」である（でないと不正である）が、間違って別の箇所で
+% 使う危険性が高いので |\bxjs@ig@temp| に置き換えた。
 %    \begin{macrocode}
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
+\begingroup
+\let\GDEF=\gdef
+\let\CATCODE=\catcode
+\let\ENDGROUP=\endgroup
+\CATCODE`k=12
+\CATCODE`a=12
+\CATCODE`n=12
+\CATCODE`j=12
+\CATCODE`i=12
+\CATCODE`c=12
+\CATCODE`h=12
+\CATCODE`r=12
+\CATCODE`t=12
+\CATCODE`e=12
+\GDEF\KANJI@CHARACTER{kanji character }
+\ENDGROUP
 \def\@@inhibitglue{%
-  \ifx\@let@token「%
-    \jsInhibitGlue
-  \else
-    \ifx\@let@token（%
-      \jsInhibitGlue
-    \else
-      \ifx\@let@token『%
-        \jsInhibitGlue
-      \else
-        \ifx\@let@token［%
-          \jsInhibitGlue
-        \fi
-      \fi
+  \expandafter\expandafter\expandafter\jsc@inhibitglue\expandafter\meaning\expandafter\@let@token\KANJI@CHARACTER\relax\jsc@end}
+\expandafter\def\expandafter\jsc@inhibitglue\expandafter#\expandafter1\KANJI@CHARACTER#2#3\jsc@end{%
+  \def\bxjs@ig@temp{#1}%
+  \ifx\bxjs@ig@temp\@empty
+    \ifnum\the\inhibitxspcode`#2=2\relax
+      \inhibitglue
     \fi
   \fi}
 %    \end{macrocode}
@@ -6297,11 +6386,14 @@
 %
 % まず，環境の直後の段落です。
 %
+% [2016-11-19] ltlists.dtx 2015/05/10 v1.0tの変更に追随して |\clubpenalty| の
+% リセットを追加しました。
+%
 %    \begin{macrocode}
 \def\@doendpe{%
   \@endpetrue
   \def\par{%
-    \@restorepar\everypar{\everyparhook}\par\@endpefalse}%
+    \@restorepar\clubpenalty\@clubpenalty\everypar{\everyparhook}\par\@endpefalse}%
   \everypar{{\setbox\z@\lastbox}\everypar{\everyparhook}\@endpefalse\everyparhook}}
 %    \end{macrocode}
 %
@@ -7039,6 +7131,7 @@
 %    \end{macrocode}
 %
 % |\jsInhibitGlueAtParTop| の定義。
+% 「JSクラスでの定義」を利用する。
 %    \begin{macrocode}
 \let\jsInhibitGlueAtParTop\@inhibitglue
 %    \end{macrocode}
@@ -7971,8 +8064,15 @@
 %
 % \paragraph{段落頭でのグルー挿入禁止}
 %
+% どうやら、\Pkg{zxjatype}の |\inhibitglue| の実装が極めて杜撰なため、
+% 1.0版での実装では全く期待通りの動作をしていないし、
+% そもそも（少なくとも現状の）\Pkg{xeCJK}では、
+% 段落頭での |\inhibitglue| は実行しないほうがJSクラスの出力に
+% 近いものが得られるらしい。
+%
+% 従って、|\jsInhibitGlueAtParTop| は結局何もしないことにする。
 %    \begin{macrocode}
-\let\jsInhibitGlueAtParTop\@inhibitglue
+\let\jsInhibitGlueAtParTop\@empty
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}
