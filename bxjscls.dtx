@@ -6611,6 +6611,13 @@
 % |jarticle| などと違って，標準を西暦にし，余分な空白が入らないように改良しました。
 % 和暦にするには |\和暦| と書いてください。
 %
+% \begin{ZRnote}
+% 環境変数 |SOURCE_DATE_EPOCH_TEX_PRIMITIVES| が設定されている場合は
+% “今日”が過去の日付になる可能性があるが、その場合、
+% 和暦表記は平成2年（1990年）以降でのみサポートする。
+% \Note “新元号”への対応？
+% \end{ZRnote}
+%
 % \begin{macro}{\today}
 %    \begin{macrocode}
 \@tempswafalse
@@ -6622,8 +6629,9 @@
 {%
 % 欧文8bitTeXの場合
 \newif\ifjsSeireki \jsSeirekitrue
-\def\西暦{\jsSeirekitrue}
-\def\和暦{\jsSeirekifalse}
+\def\bxjs@decl@Seireki@cmds{%
+  \def\西暦{\jsSeirekitrue}%
+  \def\和暦{\jsSeirekifalse}}
 \def\Seireki{\jsSeirekitrue}
 \def\Wareki{\jsSeirekifalse}
 \def\bxjs@if@use@seireki{%
@@ -6631,14 +6639,16 @@
   \else \expandafter\@secondoftwo \fi}
 }{%
 \newif\if西暦 \西暦true
-\def\西暦{\西暦true}
-\def\和暦{\西暦false}
+\def\bxjs@decl@Seireki@cmds{%
+  \def\西暦{\西暦true}%
+  \def\和暦{\西暦false}}
 \def\Seireki{\西暦true}
 \def\Wareki{\西暦false}
 \def\bxjs@if@use@seireki{%
   \if西暦 \expandafter\@firstoftwo
   \else \expandafter\@secondoftwo \fi}
 }
+\bxjs@decl@Seireki@cmds
 % \bxjs@unxp
 \let\bxjs@unxp\@firstofone
 \bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
@@ -6650,14 +6660,17 @@
 % \heisei
 \newcount\heisei \heisei\year \advance\heisei-1988\relax
 % \today
-\edef\today{%
+\edef\bxjs@today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \noexpand\bxjs@if@use@seireki{%
+    \ifnum\heisei>\@ne
+      \expandafter\noexpand\expandafter\bxjs@if@use@seireki
+    \else \expandafter\@firstoftwo
+    \fi {%
       \number\year\bxjs@iai\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
@@ -6667,8 +6680,22 @@
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }%
   \fi}
+\let\today\bxjs@today
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{ZRnote}
+% texjporg版の日本語用Babel定義ファイル（|japanese.ldf|）が読み込まれた
+% 場合に影響を受けないようにする。
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \ifx\bbl@jpn@Seirekitrue\@undefined\else
+    \bxjs@decl@Seireki@cmds
+    \g@addto@macro\datejapanese{%
+      \let\today\bxjs@today}%
+  \fi}
+%    \end{macrocode}
+% \end{ZRnote}
 %
 % \paragraph{ハイフネーション例外}
 %
