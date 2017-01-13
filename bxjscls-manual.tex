@@ -699,7 +699,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \Note mag値が$n$の場合、版面が $n/1000$ 倍に拡大される。
 \item |magstyle=|\Meta{値}\Means
   “版面拡大”の実現方法を指定する。
-  有効な値は |mag|、|real|、|xreal| の何れか。
+  有効な値は |usemag|、|nomag|、|nomag*| の何れか。
   詳細は\ref{ssec:magstyle}節を参照。
 \item |geometry=|\Meta{値}\Means
   \Pkg{geometry}パッケージの読込に対する制御。
@@ -852,8 +852,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item BXJSクラス共通\Means
   |a4paper|、|onecolumn|、|final|、
   |ja=minimal|、|jafont|は空、|japaram|は空、
-  |scale=0.924715|、|magstyle=mag|%
-  \footnote{Lua{\TeX}の0.87版以降では |magstyle=xreal| が既定となる。
+  |scale=0.924715|、|magstyle=usemag|%
+  \footnote{Lua{\TeX}の0.87版以降では |magstyle=nomag*| が既定となる。
     \ref{ssec:magstyle}節参照。}
 \item \Pkg{bxjsarticle}\Means
   |10pt|、|oneside|、|notitlepage|
@@ -929,12 +929,12 @@ keyval形式（例えば|magstyle=nomag*|）で書くこともできる。
 
 \Note Lua{\TeX}の0.87版以降では（PDF出力時の）「mag設定」の機能が
 廃止されている。
-そのため、そのようなエンジンでは |mag| はサポートされない
+そのため、そのようなエンジンでは |usemag| はサポートされない
 （エラーになる）。
 
-\Note |magstyle| オプションの既定値は |mag| である。
+\Note |magstyle| オプションの既定値は |usemag| である。
 ただし例外として、Lua{\TeX}の0.87版以降では
-（|mag| が使えないため）|xreal| が既定値となる。
+（|mag| が使えないため）|nomag*| が既定値となる。
 
 %===========================================================
 \section{和文ドライバ}
