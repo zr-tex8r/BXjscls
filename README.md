@@ -87,6 +87,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.3a 〈2017/01/28〉
+      - Sync with jsclasses 2017/01/13.
   * Version 1.3  〈2016/11/01〉
       - Sync with jsclasses 2016/10/08.
   * Version 1.2a 〈2016/08/17〉
@@ -111,4 +113,4 @@ Revision History
 
 --------------------
 Takayuki YATO (aka. "ZR")  
-http://zrbabbler.sp.land.to/
+https://github.com/zr-tex8r

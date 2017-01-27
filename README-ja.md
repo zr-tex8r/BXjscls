@@ -97,6 +97,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.3a 〈2017/01/28〉
+      - jsclasses の 2017/01/13 と同期。
   * Version 1.3  〈2016/11/01〉
       - bxjsbook について、水平マージンの量が jsbook と大きく異なると
         いう不具合を修正した。同時に修正前のレイアウトを継続するための
@@ -187,4 +189,4 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 
 --------------------
 Takayuki YATO (aka. "ZR")  
-http://zrbabbler.sp.land.to/
+https://github.com/zr-tex8r

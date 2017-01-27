@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2016/11/01 v1.3 BXJS document classes]
+  [2017/01/28 v1.3a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -350,7 +350,7 @@
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
   \PassOptionsToPackage{unicode}{hyperref}
 \fi
-\let\jsInhibitGlueAtParTop\@inhibitglue
+\let\jsInhibitGlueAtParTop\@empty
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined

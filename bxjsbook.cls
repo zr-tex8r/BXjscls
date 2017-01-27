@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2016/11/01 v1.3 BXJS document classes]
+  [2017/01/28 v1.3a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -747,6 +747,9 @@
     \empty@sfcnt}
   \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
 \fi
+\def\jsc@smallskip{\vspace\jsc@smallskipamount}
+\newskip\jsc@smallskipamount
+\jsc@smallskipamount=3\jsc@mpt plus 1\jsc@mpt minus 1\jsc@mpt
 \chardef\bxjs@periodchar=`\.
 \bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
 \def\@{\bxjs@SE{}}
@@ -1126,13 +1129,13 @@
           \mbox{} \\[1\jsZw]
           \large
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
-          \smallskip
+          \jsc@smallskip
           \@title
           \ifx\bxjs@subtitle\@undefined\else
             \par\vskip\z@
             {\small \bxjs@subtitle\par}
           \fi
-          \smallskip
+          \jsc@smallskip
           {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
           \vfill
           {\small \@author}%
@@ -1410,9 +1413,11 @@
   \@endpart}
 \def\@endpart{\vfil\newpage
   \if@twoside
+   \if@openright %% added (2016/12/13)
     \null
     \thispagestyle{empty}%
     \newpage
+   \fi %% added (2016/12/13)
   \fi
   \if@restonecol
     \twocolumn
@@ -1972,8 +1977,8 @@
 \def\f@@t{\bgroup\aftergroup\@foot\let\next}
 \def\f@t#1{#1\@foot}
 \def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
-  \ifhmode\null\fi
   \ifx\pltx@foot@penalty\@undefined\else
+    \ifhmode\null\fi
     \ifnum\pltx@foot@penalty=\z@\else
       \penalty\pltx@foot@penalty
       \pltx@foot@penalty\z@
@@ -1989,26 +1994,35 @@
 \AtBeginDocument{\everypar{\everyparhook}}
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
+\begingroup
+\let\GDEF=\gdef
+\let\CATCODE=\catcode
+\let\ENDGROUP=\endgroup
+\CATCODE`k=12
+\CATCODE`a=12
+\CATCODE`n=12
+\CATCODE`j=12
+\CATCODE`i=12
+\CATCODE`c=12
+\CATCODE`h=12
+\CATCODE`r=12
+\CATCODE`t=12
+\CATCODE`e=12
+\GDEF\KANJI@CHARACTER{kanji character }
+\ENDGROUP
 \def\@@inhibitglue{%
-  \ifx\@let@token「%
-    \jsInhibitGlue
-  \else
-    \ifx\@let@token（%
-      \jsInhibitGlue
-    \else
-      \ifx\@let@token『%
-        \jsInhibitGlue
-      \else
-        \ifx\@let@token［%
-          \jsInhibitGlue
-        \fi
-      \fi
+  \expandafter\expandafter\expandafter\jsc@inhibitglue\expandafter\meaning\expandafter\@let@token\KANJI@CHARACTER\relax\jsc@end}
+\expandafter\def\expandafter\jsc@inhibitglue\expandafter#\expandafter1\KANJI@CHARACTER#2#3\jsc@end{%
+  \def\bxjs@ig@temp{#1}%
+  \ifx\bxjs@ig@temp\@empty
+    \ifnum\the\inhibitxspcode`#2=2\relax
+      \inhibitglue
     \fi
   \fi}
 \def\@doendpe{%
   \@endpetrue
   \def\par{%
-    \@restorepar\everypar{\everyparhook}\par\@endpefalse}%
+    \@restorepar\clubpenalty\@clubpenalty\everypar{\everyparhook}\par\@endpefalse}%
   \everypar{{\setbox\z@\lastbox}\everypar{\everyparhook}\@endpefalse\everyparhook}}
 \def\@item[#1]{%
   \if@noparitem
@@ -2127,8 +2141,9 @@
 \fi
 {%
 \newif\ifjsSeireki \jsSeirekitrue
-\def\西暦{\jsSeirekitrue}
-\def\和暦{\jsSeirekifalse}
+\def\bxjs@decl@Seireki@cmds{%
+  \def\西暦{\jsSeirekitrue}%
+  \def\和暦{\jsSeirekifalse}}
 \def\Seireki{\jsSeirekitrue}
 \def\Wareki{\jsSeirekifalse}
 \def\bxjs@if@use@seireki{%
@@ -2136,14 +2151,16 @@
   \else \expandafter\@secondoftwo \fi}
 }{%
 \newif\if西暦 \西暦true
-\def\西暦{\西暦true}
-\def\和暦{\西暦false}
+\def\bxjs@decl@Seireki@cmds{%
+  \def\西暦{\西暦true}%
+  \def\和暦{\西暦false}}
 \def\Seireki{\西暦true}
 \def\Wareki{\西暦false}
 \def\bxjs@if@use@seireki{%
   \if西暦 \expandafter\@firstoftwo
   \else \expandafter\@secondoftwo \fi}
 }
+\bxjs@decl@Seireki@cmds
 \let\bxjs@unxp\@firstofone
 \bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
@@ -2151,14 +2168,17 @@
 \else \def\bxjs@iai{}
 \fi
 \newcount\heisei \heisei\year \advance\heisei-1988\relax
-\edef\today{%
+\edef\bxjs@today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \noexpand\bxjs@if@use@seireki{%
+    \ifnum\heisei>\@ne
+      \expandafter\noexpand\expandafter\bxjs@if@use@seireki
+    \else \expandafter\@firstoftwo
+    \fi {%
       \number\year\bxjs@iai\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
@@ -2167,6 +2187,13 @@
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }%
+  \fi}
+\let\today\bxjs@today
+\AtBeginDocument{%
+  \ifx\bbl@jpn@Seirekitrue\@undefined\else
+    \bxjs@decl@Seireki@cmds
+    \g@addto@macro\datejapanese{%
+      \let\today\bxjs@today}%
   \fi}
 \hyphenation{ado-be post-script ghost-script phe-nom-e-no-log-i-cal man-u-script}
 \pagestyle{headings}%
