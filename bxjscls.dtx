@@ -5448,7 +5448,8 @@
     \fi
   \fi}
 \def\bxjs@warnoldfontcmd@final{%
-  \par
+% \par
+  \global\let\bxjs@warnoldfontcmd@final\@empty
   \let\@tempa\@empty
   \def\do##1{%
     \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
@@ -5469,7 +5470,9 @@
       only for compatibility%
       \@gobble}%
   \fi}
-\AtEndDocument{\bxjs@warnoldfontcmd@final}
+\def\bxjs@warnoldfontcmd@kick@final{%
+  \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
+\AtEndDocument{\bxjs@warnoldfontcmd@kick@final}
 %    \end{macrocode}
 %
 % \end{ZRnote}
