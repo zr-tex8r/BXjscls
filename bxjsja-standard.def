@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2017/01/28 v1.3a BXJS document classes]
+  [2017/01/29 v1.4pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -277,6 +277,22 @@
 \fi
 \@namedef{ver@microtype.sty}{2000/01/01}
 \newcommand*\UseMicrotypeSet[2][]{}
+\ifx f\bxjs@enablejfam\else
+  \@enablejfamtrue
+\fi
+\if@enablejfam
+  \DeclareSymbolFont{mincho}{\jsc@JYn}{mc}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathmc}{mincho}
+  \SetSymbolFont{mincho}{bold}{\jsc@JYn}{gt}{m}{n}
+  \jfam\symmincho
+  \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
+  \AtBeginDocument{%
+    \ifx\reDeclareMathAlphabet\@undefined\else
+      \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
+      \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
+      \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
+    \fi}
+\fi
 \else\if p\jsEngine
 \bxjs@adjust@jafont{f}
 \edef\bxjs@nxt{%
@@ -328,6 +344,11 @@
   \let\CJKecglue\bxjs@CJKecglue}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
+\ifx t\bxjs@enablejfam
+  \ClassWarningNoLine\bxjs@clsname
+   {You cannot use 'enablejfam=true', since the\MessageBreak
+    CJK package does not support Japanese math}
+\fi
 \else\if x\jsEngine
 \RequirePackage{zxjatype}
 \PassOptionsToPackage{no-math}{fontspec}%!
@@ -375,6 +396,12 @@
 \def\bxjs@jachar#1{%
   \xeCJKDeclareCharClass{CJK}{`#1}\relax
   #1}
+\ifx t\bxjs@enablejfam
+  \@enablejfamtrue
+\fi
+\if@enablejfam
+  \xeCJKsetup{CJKmath=true}
+\fi
 \else\if l\jsEngine
 \let\zw\@undefined
 \RequirePackage{luatexja}
@@ -409,7 +436,8 @@
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 \AtBeginDocument{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
-  \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}}%
+  \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
+  \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%
 \bxjs@if@sf@default{%
   \renewcommand\kanjifamilydefault{\gtdefault}}
 \ltjsetparameter{jaxspmode={`！,1}}
@@ -436,9 +464,18 @@
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}
+\ifx f\bxjs@enablejfam
+  \ClassWarningNoLine\bxjs@clsname
+   {You cannot use 'enablejfam=false', since the\MessageBreak
+    LuaTeX-ja always provides Japanese math families}
+\fi
 \fi\fi\fi\fi
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\ifx\mathmc\@undefined
+  \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
+  \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
+\fi
 \setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
 \ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}
 \else \setxkanjiskip{0.25em plus 0.15em minus 0.06em}

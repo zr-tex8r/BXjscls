@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2017/01/28 v1.3a BXJS document classes]
+  [2017/01/29 v1.4pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -113,7 +113,7 @@
 \fi{\typeout{Farewell!}\endinput\@@end}
 \newif\if@restonecol
 \newif\if@titlepage
-\newif\if@enablejfam \@enablejfamtrue
+\newif\if@enablejfam \@enablejfamfalse
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
 \DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
 \DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
@@ -237,6 +237,12 @@
       &\global\@eqcnt\thr@@ \hb@xt@\z@\bgroup\hss##\egroup
     \tabskip\z@skip\cr
     }}
+\def\bxjs@kv@enablejfam@true{\let\bxjs@enablejfam=t}
+\def\bxjs@kv@enablejfam@false{\let\bxjs@enablejfam=f}
+\def\bxjs@kv@enablejfam@default{\let\bxjs@enablejfam\@undefined}
+\define@key{bxjs}{enablejfam}{%
+  \bxjs@set@keyval{enablejfam}{#1}{}}
+\DeclareOption{disablejfam}{\let\bxjs@enablejfam=f}
 \let\ifjsDraft\iffalse
 \@onlypreamble\bxjs@draft
 \def\bxjs@draft#1{%
@@ -701,6 +707,7 @@
 \ifbxjs@usezw
   \providecommand*\zw{\jsZw}
 \fi
+\def\zwspace{\hskip\jsZw\relax}
 \ifjsc@mag@xreal
   \RequirePackage{type1cm}
   \let\jsc@invscale\bxjs@invscale
@@ -1635,9 +1642,9 @@
   \advance\leftskip .0628\linewidth
   \advance\rightskip .0628\linewidth
   \vskip\abovecaptionskip
-  \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
+  \sbox\@tempboxa{#1\zwspace#2}%
   \ifdim \wd\@tempboxa <\hsize \centering \fi
-  #1\hskip1\jsZw\relax #2\par
+  #1\zwspace#2\par
   \vskip\belowcaptionskip}}
 \newif\if@jsc@warnoldfontcmd
 \@jsc@warnoldfontcmdtrue
@@ -1672,7 +1679,7 @@
     \fi
   \fi}
 \def\bxjs@warnoldfontcmd@final{%
-  \par
+  \global\let\bxjs@warnoldfontcmd@final\@empty
   \let\@tempa\@empty
   \def\do##1{%
     \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
@@ -1693,7 +1700,9 @@
       only for compatibility%
       \@gobble}%
   \fi}
-\AtEndDocument{\bxjs@warnoldfontcmd@final}
+\def\bxjs@warnoldfontcmd@kick@final{%
+  \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
+\AtEndDocument{\bxjs@warnoldfontcmd@kick@final}
 \jsc@DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
 \jsc@DeclareOldFontCommand{\gt}{\normalfont\gtfamily}{\mathgt}
 \jsc@DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}

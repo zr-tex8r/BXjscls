@@ -21,13 +21,22 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2017/01/28 v1.3a BXJS document classes]
+  [2017/01/29 v1.4pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
     \relax
     \ifmmode \expandafter\nfss@text \fi
     {#2##1}}%
+}
+\def\DeclareJaMathFontCommand#1#2{%
+  \DeclareRobustCommand#1[1]{%
+    \relax
+    \ifmmode\else \non@alpherr{#1\space}\fi
+    \nfss@text{\fontfamily\familydefault
+        \fontseries{m}\fontshape{n}\selectfont\relax
+        #2##1}%
+  }%
 }
 \long\def\bxjs@@CSsfdefault{\sfdefault}%
 \@onlypreamble\bxjs@if@sf@default

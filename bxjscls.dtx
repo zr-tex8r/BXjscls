@@ -67,7 +67,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/01/28 v1.3a BXJS document classes]
+  [2017/01/29 v1.4pre BXJS document classes]
+% [2017/01/28 v1.3a BXJS document classes]
 % based on jsclasses [2017/01/13]
 % [2016/11/01 v1.3 BXJS document classes]
 % based on jsclasses [2016/10/08]
@@ -502,8 +503,11 @@
 %
 % 和文フォントを数式フォントとして登録するかどうかを示すスイッチです。
 %
+% \begin{ZRnote}
+% JSクラスと異なり、初期値は偽とする。
+% \end{ZRnote}
 %    \begin{macrocode}
-\newif\if@enablejfam \@enablejfamtrue
+\newif\if@enablejfam \@enablejfamfalse
 %    \end{macrocode}
 % \end{macro}
 %
@@ -846,9 +850,47 @@
 %    \end{macrocode}
 %
 % \paragraph{数式フォントとして和文フォントを登録しないオプション}
-% \mbox{}
+%
+% 数式中では16通りのフォントしか使えません。
+% AMSFontsや \texttt{mathptmx} パッケージを使って数式フォントを
+% たくさん使うと ``Too many math alphabets \ldots'' というエラーが
+% 起こってしまいます。\texttt{disablejfam} オプションを付ければ，
+% 明朝・ゴシックを数式用フォントとして登録するのをやめますので，
+% 数式用フォントが二つ節約できます。
+% いずれにしても |\textmc| や |\mbox| や \texttt{amsmath}
+% パッケージの |\text| を使えば数式中で和文フォントが使えますので，
+% この新ドキュメントクラスでは標準で和文フォントを数式用に登録
+% しないことにしていたのですが，従来のドキュメントクラスの仕様に
+% 合わせることにしました。
+%
 % \begin{ZRnote}
-% ここは和文ドライバの管轄。
+% \begin{macro}{\bxjs@enablejfam}
+% 〔暗黙文字トークン〕
+% |enablejfam| オプションの状態：
+%    \begin{macrocode}
+%\let\bxjs@enablejfam\@undefined
+%    \end{macrocode}
+% \end{macro}
+%
+% |fancyhdr| オプションの処理。
+%    \begin{macrocode}
+\def\bxjs@kv@enablejfam@true{\let\bxjs@enablejfam=t}
+\def\bxjs@kv@enablejfam@false{\let\bxjs@enablejfam=f}
+\def\bxjs@kv@enablejfam@default{\let\bxjs@enablejfam\@undefined}
+\define@key{bxjs}{enablejfam}{%
+  \bxjs@set@keyval{enablejfam}{#1}{}}
+%    \end{macrocode}
+%
+% JSクラスとの互換のため |disablejfam| オプションを定義する。
+%    \begin{macrocode}
+\DeclareOption{disablejfam}{\let\bxjs@enablejfam=f}
+%    \end{macrocode}
+%
+% \Note 実際に何らかの設定を行うのは和文ドライバである。
+% 和文ドライバとエンジンの組合せにより、|enablejfam| が |default| である
+% 場合に「数式和文ファミリ」が有効と無効の選択は異なるし、またそもそも
+% 有効と無効の一方しか選択できない場合もある。
+%
 % \end{ZRnote}
 %
 % \paragraph{ドラフト}
@@ -6895,6 +6937,21 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\DeclareJaMathFontCommand}
+% 和文数式フォントが無効な場合に、それをエミュレートするもの。
+%    \begin{macrocode}
+\def\DeclareJaMathFontCommand#1#2{%
+  \DeclareRobustCommand#1[1]{%
+    \relax
+    \ifmmode\else \non@alpherr{#1\space}\fi
+    \nfss@text{\fontfamily\familydefault
+        \fontseries{m}\fontshape{n}\selectfont\relax
+        #2##1}%
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@if@sf@default}
 % |\familydefault| の定義が“|\sfdefault|”である場合に
 % 引数のコードを実行する。
@@ -7646,7 +7703,10 @@
 % \paragraph{和文フォント指定の扱い}
 %
 % \begin{macro}{\bxjs@adjust@jafont}
-% ムニャムニャ…。
+% |\jsJaFont| に入っている和文フォント設定の値を“調整”して、
+% その結果を |\bxjs@tmpa| に返す。
+% |#1| が |f| の場合は“非埋込（|noEmbed|）”の設定が禁止される。
+% この禁止の場合も含め、何か異常がある場合は |\bxjs@tmpa| は空になる。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@adjust@jafont
 \def\bxjs@adjust@jafont#1{%
@@ -7674,7 +7734,7 @@
 %
 % \begin{macro}{\bxjs@kanjiEmbed}
 % 現在の |updmap| の |kanjiEmbed| パラメタの値。
-% |\bxjs@get@kanjiEmbed| により設定される。
+% |\bxjs@get@kanjiEmbed| により実際の設定値が取得されてここに設定される。
 %    \begin{macrocode}
 \let\bxjs@kanjiEmbed\relax
 %    \end{macrocode}
@@ -7949,6 +8009,33 @@
 \newcommand*\UseMicrotypeSet[2][]{}
 %    \end{macrocode}
 %
+% \paragraph{和文数式ファミリ}
+%
+% 和文数式ファミリは既定で有効とする。
+% すなわち |enablejfam=false| 以外の場合は |@enablejfam| を真にする。
+%    \begin{macrocode}
+\ifx f\bxjs@enablejfam\else
+  \@enablejfamtrue
+\fi
+%    \end{macrocode}
+%
+% 実際に和文用の数式ファミリの設定を行う。
+%    \begin{macrocode}
+\if@enablejfam
+  \DeclareSymbolFont{mincho}{\jsc@JYn}{mc}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathmc}{mincho}
+  \SetSymbolFont{mincho}{bold}{\jsc@JYn}{gt}{m}{n}
+  \jfam\symmincho
+  \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
+  \AtBeginDocument{%
+    \ifx\reDeclareMathAlphabet\@undefined\else
+      \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
+      \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
+      \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
+    \fi}
+\fi
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{pdf{\TeX}用設定： CJK + bxcjkjatype}
 %
@@ -8043,6 +8130,18 @@
 %    \begin{macrocode}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
+%    \end{macrocode}
+%
+% \paragraph{和文数式ファミリ}
+%
+% CJKパッケージは（恐らく）数式文字としてCJK文字をサポートしていない。
+% 従って |@enablejfam| は常に偽になる。
+%    \begin{macrocode}
+\ifx t\bxjs@enablejfam
+  \ClassWarningNoLine\bxjs@clsname
+   {You cannot use 'enablejfam=true', since the\MessageBreak
+    CJK package does not support Japanese math}
+\fi
 %    \end{macrocode}
 %
 %^^A----------------
@@ -8159,6 +8258,24 @@
   #1}
 %    \end{macrocode}
 %
+% \paragraph{和文数式ファミリ}
+%
+% 和文数式ファミリは既定で無効とする。
+% すなわち |enablejfam=true| の場合にのみ |@enablejfam| を真にする。
+%    \begin{macrocode}
+\ifx t\bxjs@enablejfam
+  \@enablejfamtrue
+\fi
+%    \end{macrocode}
+%
+% 実際に和文用の数式ファミリの設定を行う。
+% \Note FIXME: 要検討。
+%    \begin{macrocode}
+\if@enablejfam
+  \xeCJKsetup{CJKmath=true}
+\fi
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{Lua{\TeX}用設定： Lua{\TeX}-ja}
 %
@@ -8229,7 +8346,8 @@
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 \AtBeginDocument{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
-  \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}}%
+  \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
+  \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%
 \bxjs@if@sf@default{%
   \renewcommand\kanjifamilydefault{\gtdefault}}
 %    \end{macrocode}
@@ -8287,6 +8405,19 @@
   \ltjjachar`#1\relax}
 %    \end{macrocode}
 %
+% \paragraph{和文数式ファミリ}
+%
+% Lua{\TeX}-jaでは和文数式ファミリは常に有効で、既にこの時点で必要な
+% 設定は済んでいる。
+% 従って |@enablejfam| は常に真になる。
+%    \begin{macrocode}
+\ifx f\bxjs@enablejfam
+  \ClassWarningNoLine\bxjs@clsname
+   {You cannot use 'enablejfam=false', since the\MessageBreak
+    LuaTeX-ja always provides Japanese math families}
+\fi
+%    \end{macrocode}
+%
 %^^A----------------
 % \subsection{共通処理(2)}
 %
@@ -8302,6 +8433,19 @@
 %    \begin{macrocode}
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\mathmc}
+% \begin{macro}{\mathgt}
+% この時点で未定義である場合に限り、
+% |\DeclareJaMathFontCommand| を利用したフォールバックの定義を行う。
+%    \begin{macrocode}
+\ifx\mathmc\@undefined
+  \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
+  \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
