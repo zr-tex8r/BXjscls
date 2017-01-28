@@ -2045,6 +2045,13 @@
 \fi
 %    \end{macrocode}
 %
+% \begin{macro}{\zwspace}
+% 全角幅の水平空き。
+%    \begin{macrocode}
+\def\zwspace{\hskip\jsZw\relax}
+%    \end{macrocode}
+% \end{macro}
+%
 % そして、magstyle が |nomag*| の場合は、NFSSにパッチを当てる。
 %    \begin{macrocode}
 \ifjsc@mag@xreal
@@ -5344,9 +5351,9 @@
   \advance\leftskip .0628\linewidth
   \advance\rightskip .0628\linewidth
   \vskip\abovecaptionskip
-  \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
+  \sbox\@tempboxa{#1\zwspace#2}%
   \ifdim \wd\@tempboxa <\hsize \centering \fi
-  #1\hskip1\jsZw\relax #2\par
+  #1\zwspace#2\par
   \vskip\belowcaptionskip}}
 %</!jspf>
 %<*jspf>
@@ -5470,6 +5477,13 @@
       only for compatibility%
       \@gobble}%
   \fi}
+%    \end{macrocode}
+% 単純に |\AtEndDocument| のフックの中で |\bxjs@warnoldfontcmd@final| を
+% 実行した場合、最終ページのヘッダ・フッタの中にある二文字フォント命令は
+% それより後に実行されるため補足できない。
+% これに対処するため、|\end{document}| 中に実行される |\clearpage| の処理の
+% 直後に |\bxjs....final| が呼ばれるようにする。
+%    \begin{macrocode}
 \def\bxjs@warnoldfontcmd@kick@final{%
   \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
 \AtEndDocument{\bxjs@warnoldfontcmd@kick@final}
