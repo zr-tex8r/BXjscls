@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.3a}
-\newcommand{\PkgDate}{2017/01/28}
+\newcommand{\PkgVersion}{1.4}
+\newcommand{\PkgDate}{2017/02/03}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -639,6 +639,17 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |a4paper| 等と同じ役割で、任意の値を指定できる。
   用紙サイズの既定値はA4縦
   （$\mbox{210\,mm}\times\mbox{294\,mm}$）である。
+\item |enablejfam=|\Meta{値}\Means
+  数式中の和文出力をサポートするか否か。
+  値は |true|（有効）／|false|（無効）／|default|（既定値に従う）
+  の何れかである。
+  エンジンや和文ドライバの種類により、
+  既定値が有効・無効の何れになるかは異なるし、また、
+  そもそも有効・無効の一方しか選択できない場合もある。
+  詳細については\ref{sec:Ja-math-fonts}節を参照されたい。
+\item |disalbejfam|\Means
+  |enablejfam=false| と同値。
+  \Note JSクラスとの互換のため存在する。
 \end{itemize}
 
 以下に挙げるのは上級者向けのオプションである。
@@ -1096,6 +1107,8 @@ vscale=0.944, vmarginratio=1:1
     なお、|\jsZw| は「規約上の全角幅」であり、「実際の全角幅」と本来は
     一致するはずだが、実際には計算誤差のせいで僅かに値が異なる。}%
   ただし |nozw| 指定時は定義されない。
+\item |\zwspace|\Means
+  全角（|\jsZw|）幅の水平空き。
 \end{itemize}
 
 \subsubsection{standard和文ドライバの場合}
@@ -1155,6 +1168,15 @@ standard和文ドライバでは和文に関連する
   {\pLaTeX}の同名の命令と同等。
 \item |\jachar{|\Meta{文字1つ}|]|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
+\item 和文数式フォント命令\Means
+  {\pLaTeX}と同様に、
+  |\mathmc| で「明朝」、|\mathgt| で「ゴシック」の
+  和文数式フォントを指定する。
+\item 欧文数式フォント命令での和文の連動\Means
+  |\mathrm| で和文が「明朝」、
+  |\mathsf| および |\mathtt| で和文が「ゴシック」に指定される。
+  \Note {\pLaTeX}標準やJSクラスとは異なり、“連動の組合せ”は
+  テキストと同一であることに注意。
 \end{itemize}
 
 例えば、{\pLaTeX}において、次のように「和文間空白」を
@@ -1175,6 +1197,57 @@ standard和文ドライバでは和文に関連する
   \setkanjiskip{\fill}%
   \makebox[#1\zw][s]{#2}}}
 \end{verbatim}\end{quote}
+
+%===========================================================
+\section{数式中の和文出力について}
+\label{sec:Ja-math-fonts}
+
+minimal和文ドライバは数式中の和文出力の機能を何も提供しない。
+従って、そのような機能を提供する他のパッケージを併用するので
+ない限り、数式中に和文を書いたときの挙動は未定義である。
+
+standard和文ドライバ（およびそれを継承する和文ドライバ）に
+おける数式中の和文出力の扱いは、エンジンと |enablejfam| オプション
+の値の組合せにより異なり、表\ref{tbl:ja-math}に示すようになる。
+\begin{itemize}
+\item この表にある以外のエンジンと |enablejfam| 値の組合せは
+  許容されない。
+  この場合、警告が出て、|enablejfam| が可能な値に自動的に変更される。
+\item 「直書き」が「可」の場合、数式フォント命令（|\mathXX{}|）の外に
+  書いた和文文字は明朝体で出力される。
+  「不可」の場合、そのような和文文字の扱いは未定義である。
+\item 「|\mathmc|/|gt|」が「サポート有り」の場合、これらの命令は
+  “本物”の数式フォント命令として働く。
+  「フォールバック」の場合は、これらの命令は内部で一旦テキストモードに
+  切り替えて非数式として出力される。
+  このフォールバック機能を実用したい場合は、
+  \Pkg{amstext}（または\Pkg{amsmath}）パッケージの併用が望ましい。%
+  \footnote{\Pkg{amstext}を読み込まない場合、
+    添字中で |\mathmc|/|gt| を用いたときに
+    文字サイズが非添字のものに戻ってしまうという不具合が出る。}
+\end{itemize}
+
+\DeleteShortVerb{\|}
+\MakeShortVerb{\+}
+\begin{table}[t]
+  \caption{standard和文ドライバにおける数式中の和文出力のサポート}
+  \label{tbl:ja-math}
+  \small\centering
+  \begin{tabular}{ll|ccc}
+    \hline
+    エンジン & +enablejfam+ & 直書き & +\mathmc+/+gt+ & 和欧文連動 \\
+    \hline
+    +(u)platex+ & +true+（既定） & 可   & サポート有り    & 有り \\
+                & +false+        & 不可 & フォールバック  & --- \\
+    +lualatex+  & +true+         & 可   & サポート有り    & 有り \\
+    +xelatex+   & +true+         & 可   & フォールバック  & 無し \\
+                & +false+（既定）& 不可 & フォールバック  & --- \\
+    +pdflatex+  & +false+        & 不可 & フォールバック  & --- \\
+    \hline
+  \end{tabular}
+\end{table}
+\DeleteShortVerb{\+}
+\MakeShortVerb{\|}
 
 %===========================================================
 \section{“二文字フォント命令”に対する警告}
