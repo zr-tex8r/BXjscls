@@ -647,7 +647,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   既定値が有効・無効の何れになるかは異なるし、また、
   そもそも有効・無効の一方しか選択できない場合もある。
   詳細については\ref{sec:Ja-math-fonts}節を参照されたい。
-\item |disalbejfam|\Means
+\item |disablejfam|\Means
   |enablejfam=false| と同値。
   \Note JSクラスとの互換のため存在する。
 \end{itemize}
@@ -849,11 +849,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item 和文フォントメトリック指定\Means
   |jis|、|winjis|、|mingoth|。
   \Note 異なるエンジンで汎用的に扱うのが難しい。
-\item 和文数式フォントの登録の制御\Means
-  |disablejfam|。
-  \Note 前項と同じ理由。
-  \footnote{ただし、こちらは一部のエンジンだけでも対応したほうが
-    よいかも知れない。}%
 \end{itemize}
 
 %-------------------
@@ -1169,13 +1164,13 @@ standard和文ドライバでは和文に関連する
 \item |\jachar{|\Meta{文字1つ}|]|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
 \item 和文数式フォント命令\Means
-  {\pLaTeX}と同様に、
+  JSクラスと同様に、
   |\mathmc| で「明朝」、|\mathgt| で「ゴシック」の
   和文数式フォントを指定する。
 \item 欧文数式フォント命令での和文の連動\Means
   |\mathrm| で和文が「明朝」、
   |\mathsf| および |\mathtt| で和文が「ゴシック」に指定される。
-  \Note {\pLaTeX}標準やJSクラスとは異なり、“連動の組合せ”は
+  \Note JSクラスとは異なり、“連動の組合せ”は
   テキストと同一であることに注意。
 \end{itemize}
 
@@ -1209,6 +1204,7 @@ minimal和文ドライバは数式中の和文出力の機能を何も提供し�
 standard和文ドライバ（およびそれを継承する和文ドライバ）に
 おける数式中の和文出力の扱いは、エンジンと |enablejfam| オプション
 の値の組合せにより異なり、表\ref{tbl:ja-math}に示すようになる。
+以下でこの表に関する補足説明を行う。
 \begin{itemize}
 \item この表にある以外のエンジンと |enablejfam| 値の組合せは
   許容されない。

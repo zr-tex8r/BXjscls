@@ -5522,7 +5522,7 @@
 %    \end{macrocode}
 % 単純に |\AtEndDocument| のフックの中で |\bxjs@warnoldfontcmd@final| を
 % 実行した場合、最終ページのヘッダ・フッタの中にある二文字フォント命令は
-% それより後に実行されるため補足できない。
+% それより後に実行されるため捕捉できない。
 % これに対処するため、|\end{document}| 中に実行される |\clearpage| の処理の
 % 直後に |\bxjs....final| が呼ばれるようにする。
 %    \begin{macrocode}
