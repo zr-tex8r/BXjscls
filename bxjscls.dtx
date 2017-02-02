@@ -67,7 +67,7 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/01/29 v1.4pre BXJS document classes]
+  [2017/02/03 v1.4 BXJS document classes]
 % [2017/01/28 v1.3a BXJS document classes]
 % based on jsclasses [2017/01/13]
 % [2016/11/01 v1.3 BXJS document classes]
@@ -8292,12 +8292,14 @@
 % なお、レイアウト定義の「全角幅」は「規定」に基づく |\jsZw| で
 % あることに注意が必要。
 %
+% \Note 1.0b版から
+% 「graphicsパッケージに |pdftex| オプションを渡す」
+% 処理を行っていたが、1.4版で廃止された。
+%
 %    \begin{macrocode}
 \let\zw\@undefined
 \RequirePackage{luatexja}
 \RequirePackage{luatexja-fontspec}
-\PassOptionsToPackage{pdftex}{graphicx}%!
-\PassOptionsToPackage{pdftex}{graphics}%!
 %    \end{macrocode}
 %
 % \paragraph{和文フォント定義}

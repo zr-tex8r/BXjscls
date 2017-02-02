@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2017/01/29 v1.4pre BXJS document classes]
+  [2017/02/03 v1.4 BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
