@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2017/02/03 v1.4 BXJS document classes]
+  [2017/03/03 v1.5-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -114,6 +114,7 @@
 \newif\if@restonecol
 \newif\if@titlepage
 \newif\if@openright
+\newif\if@openleft
 \newif\if@mainmatter \@mainmattertrue
 \newif\if@enablejfam \@enablejfamfalse
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
@@ -198,8 +199,9 @@
 \DeclareOption{twocolumn}{\@twocolumntrue}
 \DeclareOption{titlepage}{\@titlepagetrue}
 \DeclareOption{notitlepage}{\@titlepagefalse}
-\DeclareOption{openright}{\@openrighttrue}
-\DeclareOption{openany}{\@openrightfalse}
+\DeclareOption{openright}{\@openrighttrue\@openleftfalse}
+\DeclareOption{openleft}{\@openlefttrue\@openrightfalse}
+\DeclareOption{openany}{\@openrightfalse\@openleftfalse}
 \def\eqnarray{%
    \stepcounter{equation}%
    \def\@currentlabel{\p@equation\theequation}%
@@ -1033,6 +1035,23 @@
 \setlength\@dblfptop{0\p@? \@plus 1fil}
 \setlength\@dblfpsep{8\p@? \@plus 2fil}
 \setlength\@dblfpbot{0\p@? \@plus 1fil}
+\def\pltx@cleartooddpage{\clearpage\if@twoside
+  \ifodd\c@page\else
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+\def\pltx@cleartoevenpage{\clearpage\if@twoside
+  \ifodd\c@page
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+\let\pltx@cleartorightpage\pltx@cleartooddpage
+\let\pltx@cleartoleftpage\pltx@cleartoevenpage
+\if@openleft
+  \let\cleardoublepage\pltx@cleartoleftpage
+\else\if@openright
+  \let\cleardoublepage\pltx@cleartorightpage
+\fi\fi
 \def\ps@plainfoot{%
   \let\@mkboth\@gobbletwo
   \let\@oddhead\@empty
@@ -1344,15 +1363,23 @@
 \newcommand{\@chapapp}{\prechaptername}
 \newcommand{\@chappos}{\postchaptername}
 \newcommand\frontmatter{%
-  \if@openright
+  \if@openleft
+    \cleardoublepage
+  \else\if@openright
     \cleardoublepage
   \else
     \clearpage
-  \fi
+  \fi\fi
   \@mainmatterfalse
   \pagenumbering{roman}}
 \newcommand\mainmatter{%
+  \if@openleft
     \cleardoublepage
+  \else\if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi\fi
   \@mainmattertrue
   \pagenumbering{arabic}}
 \newcommand\backmatter{%
@@ -1363,11 +1390,13 @@
   \fi
   \@mainmatterfalse}
 \newcommand\part{%
-  \if@openright
+  \if@openleft
+    \cleardoublepage
+  \else\if@openright
     \cleardoublepage
   \else
     \clearpage
-  \fi
+  \fi\fi
   \thispagestyle{empty}% 欧文用標準スタイルでは plain
   \if@twocolumn
     \onecolumn
@@ -1403,17 +1432,18 @@
   \@endpart}
 \def\@endpart{\vfil\newpage
   \if@twoside
-   \if@openright %% added (2016/12/13)
-    \null
-    \thispagestyle{empty}%
-    \newpage
-   \fi %% added (2016/12/13)
+   \if@openleft %% added (2017/02/24)
+    \null\thispagestyle{empty}\newpage
+   \else\if@openright %% added (2016/12/13)
+    \null\thispagestyle{empty}\newpage
+   \fi\fi %% added (2016/12/13, 2017/02/24)
   \fi
   \if@restonecol
     \twocolumn
   \fi}
 \newcommand{\chapter}{%
-  \if@openright\cleardoublepage\else\clearpage\fi
+  \if@openleft\cleardoublepage\else
+  \if@openright\cleardoublepage\else\clearpage\fi\fi
   \plainifnotempty % 元: \thispagestyle{plain}
   \global\@topnum\z@
   \if@english \@afterindentfalse \else \@afterindenttrue \fi
@@ -1633,14 +1663,13 @@
 \def\@opargbegintheorem#1#2#3{\trivlist\labelsep=1\jsZw
       \item[\hskip \labelsep{\headfont #1\ #2（#3）}]}
 \newenvironment{titlepage}{%
-    \cleardoublepage
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
       \@restonecolfalse\newpage
     \fi
     \thispagestyle{empty}%
-    \setcounter{page}\@ne
+    \ifodd\c@page\setcounter{page}\@ne\else\setcounter{page}\z@\fi %% 2017-02-24
   }%
   {\if@restonecol\twocolumn \else \newpage \fi
     \if@twoside\else
@@ -2005,8 +2034,8 @@
 \def\@@inhibitglue{%
   \expandafter\expandafter\expandafter\jsc@inhibitglue\expandafter\meaning\expandafter\@let@token\KANJI@CHARACTER\relax\jsc@end}
 \expandafter\def\expandafter\jsc@inhibitglue\expandafter#\expandafter1\KANJI@CHARACTER#2#3\jsc@end{%
-  \def\bxjs@ig@temp{#1}%
-  \ifx\bxjs@ig@temp\@empty
+  \def\jsc@ig@temp{#1}%
+  \ifx\jsc@ig@temp\@empty
     \ifnum\the\inhibitxspcode`#2=2\relax
       \inhibitglue
     \fi

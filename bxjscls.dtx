@@ -67,7 +67,9 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/02/03 v1.4 BXJS document classes]
+  [2017/03/03 v1.5-pre BXJS document classes]
+% based on jsclasses [2017/02/24]
+% [2017/02/03 v1.4 BXJS document classes]
 % [2017/01/28 v1.3a BXJS document classes]
 % based on jsclasses [2017/01/13]
 % [2016/11/01 v1.3 BXJS document classes]
@@ -189,10 +191,16 @@
 %
 % \iffalse
 % ここでは次のドキュメントクラス（スタイルファイル）を作ります。
+%
+% [2017-02-13] forum:2121の議論を機に，jsreportクラスを新設しました。
+% 従来のjsbookの |report| オプションと比べると，|abstract| 環境の使い方
+% および挙動がアスキーのjreportに近づきました。
+%
 % \begin{quote}
 %   \begin{tabular}{lll}
 %     $\langle$\textsf{article}$\rangle$ & \texttt{jsarticle.cls}  & 論文・レポート用 \\
 %     $\langle$\textsf{book}$\rangle$    & \texttt{jsbook.cls}     & 書籍用 \\
+%     $\langle$\textsf{report}$\rangle$  & \texttt{jsreport.cls}   & レポート用 \\
 %     $\langle$\textsf{jspf}$\rangle$    & \texttt{jspf.cls}       & 某学会誌用 \\
 %     $\langle$\textsf{kiyou}$\rangle$   & \texttt{kiyou.cls}      & 某紀要用
 %   \end{tabular}
@@ -481,11 +489,20 @@
 %
 % \begin{macro}{\if@openright}
 %
-% |\chapter|，|\part| を奇数ページ起こしにするかどうかです。
-% 書籍では真が標準です。
+% |\chapter|，|\part| を右ページ起こしにするかどうかです。
+% 横組の書籍では真が標準で，要するに片起こし，奇数ページ起こしになります。
 %
 %    \begin{macrocode}
 %<book|report>\newif\if@openright
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@openleft}
+%
+% [2017-02-24] |\chapter|，|\part| を左ページ起こしにするかどうかです。
+%
+%    \begin{macrocode}
+%<book|report>\newif\if@openleft
 %    \end{macrocode}
 % \end{macro}
 %
@@ -762,12 +779,20 @@
 %
 % \paragraph{右左起こし}
 %
-% 書籍では章は通常は奇数ページ起こしになりますが，
+% 書籍では章は通常は奇数ページ起こしになりますが，横組ではこれを
+% \texttt{openright} と表すことにしてあります。
 % \texttt{openany} で偶数ページからでも始まるようになります。
 %
+% [2017-02-24] \texttt{openright} は横組では奇数ページ起こし，縦組では
+% 偶数ページ起こしを表します。ややこしいですが，これは\LaTeX の標準クラスが
+% 西欧の横組事情しか考慮せずに，奇数ページ起こしと右起こしを一緒にしてしまっ
+% たせいです。縦組での奇数ページ起こしと横組での偶数ページ起こしも表現したい
+% ので，jsclassesでは新たに \texttt{openleft} も追加しました。
+%
 %    \begin{macrocode}
-%<book|report>\DeclareOption{openright}{\@openrighttrue}
-%<book|report>\DeclareOption{openany}{\@openrightfalse}
+%<book|report>\DeclareOption{openright}{\@openrighttrue\@openleftfalse}
+%<book|report>\DeclareOption{openleft}{\@openlefttrue\@openrightfalse}
+%<book|report>\DeclareOption{openany}{\@openrightfalse\@openleftfalse}
 %    \end{macrocode}
 %
 % \paragraph{eqnarray環境と数式の位置}
@@ -955,12 +980,16 @@
 \DeclareOption{english}{\@englishtrue}
 %    \end{macrocode}
 %
-% \paragraph{jsreport相当}
+% \paragraph{jsbookをjsreportもどきに}
 %
 % オプション \texttt{report} を新設しました。
 %
+% [2017-02-13] 従来は「jsreport相当」をjsbookの \texttt{report} オプションで提供して
+% いましたが，新しくjsreportクラスも作りました。どちらでもお好きな方を使ってください。
+%
 % \begin{ZRnote}
 % BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
+% \Note FIXME：|jsbook|\,+\,|report| と |jsreport|のどちらに合わせるか。
 % \end{ZRnote}
 %
 % \paragraph{jslogoパッケージの読み込み}
@@ -1679,8 +1708,8 @@
 %
 %    \begin{macrocode}
 %<article>\ExecuteOptions{a4paper,oneside,onecolumn,notitlepage,final}
-%<report>\ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 %<book>\ExecuteOptions{a4paper,twoside,onecolumn,titlepage,openright,final}
+%<report>\ExecuteOptions{a4paper,oneside,onecolumn,titlepage,openany,final}
 %<slide>\ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
 \bxjs@composite@proc
@@ -3247,6 +3276,86 @@
 % \end{macro}
 % \end{macro}
 %
+% \section{改ページ（日本語\TeX{}開発コミュニティ版のみ）}\label{sec:cleardoublepage}
+%
+% \begin{macro}{\pltx@cleartorightpage}
+% \begin{macro}{\pltx@cleartoleftpage}
+% \begin{macro}{\pltx@cleartooddpage}
+% \begin{macro}{\pltx@cleartoevenpage}
+% [2017-02-24] コミュニティ版\pLaTeX の標準クラス2017/02/15に合わせて，
+% 同じ命令を追加しました。
+% \begin{enumerate}
+%   \item|\pltx@cleartorightpage|：右ページになるまでページを繰る命令
+%   \item|\pltx@cleartoleftpage|：左ページになるまでページを繰る命令
+%   \item|\pltx@cleartooddpage|：奇数ページになるまでページを繰る命令
+%   \item|\pltx@cleartoevenpage|：偶数ページになるまでページを繰る命令
+% \end{enumerate}
+% となっています。
+%    \begin{macrocode}
+%\def\pltx@cleartorightpage{\clearpage\if@twoside
+%  \ifodd\c@page
+%    \iftdir
+%      \hbox{}\thispagestyle{empty}\newpage
+%      \if@twocolumn\hbox{}\newpage\fi
+%    \fi
+%  \else
+%    \ifydir
+%      \hbox{}\thispagestyle{empty}\newpage
+%      \if@twocolumn\hbox{}\newpage\fi
+%    \fi
+%  \fi\fi}
+%\def\pltx@cleartoleftpage{\clearpage\if@twoside
+%  \ifodd\c@page
+%    \ifydir
+%      \hbox{}\thispagestyle{empty}\newpage
+%      \if@twocolumn\hbox{}\newpage\fi
+%    \fi
+%  \else
+%    \iftdir
+%      \hbox{}\thispagestyle{empty}\newpage
+%      \if@twocolumn\hbox{}\newpage\fi
+%    \fi
+%  \fi\fi}
+\def\pltx@cleartooddpage{\clearpage\if@twoside
+  \ifodd\c@page\else
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+\def\pltx@cleartoevenpage{\clearpage\if@twoside
+  \ifodd\c@page
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+%    \end{macrocode}
+%
+% \begin{ZRnote}
+% BXJSクラスでは |\iftdir| 等が使えないので、
+% 横組を仮定した定義を用いる。
+%    \begin{macrocode}
+\let\pltx@cleartorightpage\pltx@cleartooddpage
+\let\pltx@cleartoleftpage\pltx@cleartoevenpage
+%    \end{macrocode}
+% \end{ZRnote}
+%
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\cleardoublepage}
+% [2017-02-24] コミュニティ版\pLaTeX の標準クラス2017/02/15に合わせて，
+% reportとbookクラスの場合に|\cleardoublepage|を再定義します。
+%    \begin{macrocode}
+%<*book|report>
+\if@openleft
+  \let\cleardoublepage\pltx@cleartoleftpage
+\else\if@openright
+  \let\cleardoublepage\pltx@cleartorightpage
+\fi\fi
+%</book|report>
+%    \end{macrocode}
+% \end{macro}
+%
 % \section{ページスタイル}\label{sec:pagestyle}
 %
 % ページスタイルとして，\LaTeXe （欧文版）の標準クラス
@@ -3389,7 +3498,7 @@
 %</article|slide>
 %    \end{macrocode}
 %
-% 次は book の場合です。
+% 次は book および report の場合です。
 % [2011-05-10] しっぽ愛好家さん [qa:6370] のパッチを取り込ませていただきました
 % （北見さん [qa:55896] のご指摘ありがとうございます）。
 %
@@ -4097,11 +4206,13 @@
 %    \begin{macrocode}
 %<*book|report>
 \newcommand\frontmatter{%
-  \if@openright
+  \if@openleft
+    \cleardoublepage
+  \else\if@openright
     \cleardoublepage
   \else
     \clearpage
-  \fi
+  \fi\fi
   \@mainmatterfalse
   \pagenumbering{roman}}
 %    \end{macrocode}
@@ -4113,11 +4224,13 @@
 %
 %    \begin{macrocode}
 \newcommand\mainmatter{%
-% \if@openright
+  \if@openleft
     \cleardoublepage
-% \else
-%   \clearpage
-% \fi
+  \else\if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi\fi
   \@mainmattertrue
   \pagenumbering{arabic}}
 %    \end{macrocode}
@@ -4165,7 +4278,7 @@
 %   \def\CMDB    #1{....}     % \chapter*{...} の定義
 %\end{verbatim}
 %
-% まず |book| クラス以外です。
+% まず |book| と |report| のクラス以外です。
 %
 %    \begin{macrocode}
 %<*!book&!report>
@@ -4178,16 +4291,18 @@
 %</!book&!report>
 %    \end{macrocode}
 %
-% |book| スタイルの場合は，少し複雑です。
+% |book| および |report| クラスの場合は，少し複雑です。
 %
 %    \begin{macrocode}
 %<*book|report>
 \newcommand\part{%
-  \if@openright
+  \if@openleft
+    \cleardoublepage
+  \else\if@openright
     \cleardoublepage
   \else
     \clearpage
-  \fi
+  \fi\fi
   \thispagestyle{empty}% 欧文用標準スタイルでは plain
   \if@twocolumn
     \onecolumn
@@ -4206,7 +4321,7 @@
 % 部の見出しを出力します。
 % |\bfseries| を |\headfont| に変えました。
 %
-% |book| クラス以外では |secnumdepth| が $-1$ より大きいとき
+% |book| および |report| クラス以外では |secnumdepth| が $-1$ より大きいとき
 % 部番号を付けます。
 %
 %    \begin{macrocode}
@@ -4236,7 +4351,7 @@
 %</!book&!report>
 %    \end{macrocode}
 %
-% |book| クラスでは |secnumdepth| が $-2$ より大きいとき部番号を付けます。
+% |book| および |report| クラスでは |secnumdepth| が $-2$ より大きいとき部番号を付けます。
 %
 %    \begin{macrocode}
 %<*book|report>
@@ -4303,11 +4418,11 @@
 %<*book|report>
 \def\@endpart{\vfil\newpage
   \if@twoside
-   \if@openright %% added (2016/12/13)
-    \null
-    \thispagestyle{empty}%
-    \newpage
-   \fi %% added (2016/12/13)
+   \if@openleft %% added (2017/02/24)
+    \null\thispagestyle{empty}\newpage
+   \else\if@openright %% added (2016/12/13)
+    \null\thispagestyle{empty}\newpage
+   \fi\fi %% added (2016/12/13, 2017/02/24)
   \fi
   \if@restonecol
     \twocolumn
@@ -4328,7 +4443,8 @@
 %    \begin{macrocode}
 %<*book|report>
 \newcommand{\chapter}{%
-  \if@openright\cleardoublepage\else\clearpage\fi
+  \if@openleft\cleardoublepage\else
+  \if@openright\cleardoublepage\else\clearpage\fi\fi
   \plainifnotempty % 元: \thispagestyle{plain}
   \global\@topnum\z@
   \if@english \@afterindentfalse \else \@afterindenttrue \fi
@@ -5032,16 +5148,24 @@
 %
 % タイトルを独立のページに出力するのに使われます。
 %
+% [2017-02-24] コミュニティ版\pLaTeX の標準クラス2017/02/15に合わせて，
+% bookクラスでタイトルを必ず奇数ページに送るようにしました。といっても，
+% 横組クラスしかありませんでしたので，従来の挙動は何も変わっていません。
+% また，book以外の場合のページ番号のリセットもコミュニティ版\pLaTeX の
+% 標準クラス2017/02/15に合わせましたが，こちらも片面印刷あるいは
+% 独立のタイトルページを作らないクラスばかりでしたので，従来の挙動は
+% 何も変わらずに済みました。
+%
 %    \begin{macrocode}
 \newenvironment{titlepage}{%
-%<book|report>    \cleardoublepage
+%<book>    \pltx@cleartooddpage %% 2017-02-24
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
       \@restonecolfalse\newpage
     \fi
     \thispagestyle{empty}%
-    \setcounter{page}\@ne
+    \ifodd\c@page\setcounter{page}\@ne\else\setcounter{page}\z@\fi %% 2017-02-24
   }%
   {\if@restonecol\twocolumn \else \newpage \fi
     \if@twoside\else
@@ -6401,14 +6525,14 @@
 % [2016-12-01] すぐ上の変更で |\@tempa| を使っていたのがよくなかった
 % ので，プレフィックスを付けて |\jsc@tempa| にしました(forum:2085)。
 %
+% [2017-02-13] |\jsc@tempa| は実はテンポラリではなく「この処理専用の
+% ユニーク制御綴」である必要があります。間違って別の箇所で使う危険性が
+% 高いので，専用の命令 |\jsc@ig@temp| に置き換えました(Issue \#54)。
+%
 % \begin{ZRnote}
 % \begin{macro}{\@inhibitglue}
 % JSクラスでの |\jsInhibitGlueAtParTop| の実装。
 % （これは{(u)\pTeX}専用である。）
-%
-% \Note |\jsc@tempa| は実はテンポラリではなく「この処理専用の
-% ユニーク制御綴」である（でないと不正である）が、間違って別の箇所で
-% 使う危険性が高いので |\bxjs@ig@temp| に置き換えた。
 %    \begin{macrocode}
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
@@ -6431,8 +6555,8 @@
 \def\@@inhibitglue{%
   \expandafter\expandafter\expandafter\jsc@inhibitglue\expandafter\meaning\expandafter\@let@token\KANJI@CHARACTER\relax\jsc@end}
 \expandafter\def\expandafter\jsc@inhibitglue\expandafter#\expandafter1\KANJI@CHARACTER#2#3\jsc@end{%
-  \def\bxjs@ig@temp{#1}%
-  \ifx\bxjs@ig@temp\@empty
+  \def\jsc@ig@temp{#1}%
+  \ifx\jsc@ig@temp\@empty
     \ifnum\the\inhibitxspcode`#2=2\relax
       \inhibitglue
     \fi

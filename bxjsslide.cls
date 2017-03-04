@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2017/02/03 v1.4 BXJS document classes]
+  [2017/03/03 v1.5-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -1027,6 +1027,18 @@
 \setlength\@dblfptop{0\p@? \@plus 1fil}
 \setlength\@dblfpsep{8\p@? \@plus 2fil}
 \setlength\@dblfpbot{0\p@? \@plus 1fil}
+\def\pltx@cleartooddpage{\clearpage\if@twoside
+  \ifodd\c@page\else
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+\def\pltx@cleartoevenpage{\clearpage\if@twoside
+  \ifodd\c@page
+    \hbox{}\thispagestyle{empty}\newpage
+    \if@twocolumn\hbox{}\newpage\fi
+  \fi\fi}
+\let\pltx@cleartorightpage\pltx@cleartooddpage
+\let\pltx@cleartoleftpage\pltx@cleartoevenpage
 \def\ps@plainfoot{%
   \let\@mkboth\@gobbletwo
   \let\@oddhead\@empty
@@ -1588,7 +1600,7 @@
       \@restonecolfalse\newpage
     \fi
     \thispagestyle{empty}%
-    \setcounter{page}\@ne
+    \ifodd\c@page\setcounter{page}\@ne\else\setcounter{page}\z@\fi %% 2017-02-24
   }%
   {\if@restonecol\twocolumn \else \newpage \fi
     \if@twoside\else
@@ -1929,8 +1941,8 @@
 \def\@@inhibitglue{%
   \expandafter\expandafter\expandafter\jsc@inhibitglue\expandafter\meaning\expandafter\@let@token\KANJI@CHARACTER\relax\jsc@end}
 \expandafter\def\expandafter\jsc@inhibitglue\expandafter#\expandafter1\KANJI@CHARACTER#2#3\jsc@end{%
-  \def\bxjs@ig@temp{#1}%
-  \ifx\bxjs@ig@temp\@empty
+  \def\jsc@ig@temp{#1}%
+  \ifx\jsc@ig@temp\@empty
     \ifnum\the\inhibitxspcode`#2=2\relax
       \inhibitglue
     \fi
