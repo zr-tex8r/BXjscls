@@ -506,10 +506,6 @@
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
 \define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
-\newif\ifbxjs@dummy@microtype \bxjs@dummy@microtypetrue
-\let\bxjs@kv@dummymicrotype@true\bxjs@dummy@microtypetrue
-\let\bxjs@kv@dummymicrotype@false\bxjs@dummy@microtypefalse
-\define@key{bxjs}{dummy-microtype}{\bxjs@set@keyval{dummymicrotype}{#1}{}}
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse

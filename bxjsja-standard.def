@@ -275,8 +275,6 @@
   \fi\fi\fi
   \let\bxToUnicodeSpecialDone=t
 \fi
-\@namedef{ver@microtype.sty}{2000/01/01}
-\newcommand*\UseMicrotypeSet[2][]{}
 \ifx f\bxjs@enablejfam\else
   \@enablejfamtrue
 \fi

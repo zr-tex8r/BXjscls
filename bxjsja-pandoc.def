@@ -94,7 +94,13 @@
 \if j\jsEngine
   \bxjs@mark@as@loaded{cmap.sty}
 \fi
-\PassOptionsToPackage{verbose=silent}{microtype}
+\if j\jsEngine \else
+  \PassOptionsToPackage{verbose=silent}{microtype}
+\fi
+\if j\jsEngine
+  \bxjs@mark@as@loaded{microtype.sty}
+  \newcommand*\UseMicrotypeSet[2][]{}
+\fi
 \endinput
 %%
 %% End of file `bxjsja-pandoc.def'.

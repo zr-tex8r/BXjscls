@@ -1052,7 +1052,6 @@
 %   |\textwidth| の上限の全角単位での値。
 % \item |paragraph-mark=|\meta{char} ： パラグラフのマーク。
 % \item |whole-zw-lines| ： （予定）
-% \item |dummy-microtype| ： （予定）
 % \item |hyperref-enc| ： （予定）
 % \end{itemize}
 %
@@ -1673,16 +1672,6 @@
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
 \define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\ifbxjs@dummy@microtype}
-% 〔スイッチ〕 |dummy-microtype| の指定値。
-%    \begin{macrocode}
-\newif\ifbxjs@dummy@microtype \bxjs@dummy@microtypetrue
-\let\bxjs@kv@dummymicrotype@true\bxjs@dummy@microtypetrue
-\let\bxjs@kv@dummymicrotype@false\bxjs@dummy@microtypefalse
-\define@key{bxjs}{dummy-microtype}{\bxjs@set@keyval{dummymicrotype}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -8178,13 +8167,6 @@
 \fi
 %    \end{macrocode}
 %
-% \paragraph{microtype対策}
-%
-%    \begin{macrocode}
-\@namedef{ver@microtype.sty}{2000/01/01}
-\newcommand*\UseMicrotypeSet[2][]{}
-%    \end{macrocode}
-%
 % \paragraph{和文数式ファミリ}
 %
 % 和文数式ファミリは既定で有効とする。
@@ -8886,7 +8868,21 @@
 % 警告が多すぎなので消す。
 %
 %    \begin{macrocode}
-\PassOptionsToPackage{verbose=silent}{microtype}
+\if j\jsEngine \else
+  \PassOptionsToPackage{verbose=silent}{microtype}
+\fi
+%    \end{macrocode}
+%
+% エンジンが{(u)\pLaTeX}のときに |microtype| パッケージが
+% 読み込まれるのを阻止し、さらにテンプレートで使われている命令を
+% 通すためにダミーの定義を行う。
+% \Note 昔はstandardドライバでこの処理を行っていたが、
+% 元来はPandoc用の処理なので、1.5版でpandocに移動。
+%    \begin{macrocode}
+\if j\jsEngine
+  \bxjs@mark@as@loaded{microtype.sty}
+  \newcommand*\UseMicrotypeSet[2][]{}
+\fi
 %    \end{macrocode}
 %
 %^^A----------------
