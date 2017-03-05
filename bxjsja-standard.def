@@ -258,7 +258,9 @@
   \closein\@inputcheck
 \endgroup}
 \@gtempa
-\bxjs@fix@hyperref@unicode{false}
+\ifbxjs@hyperref@enc
+  \bxjs@fix@hyperref@unicode{false}
+\fi
 \if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
     \else\ifjsWithpTeXng T\else F\fi\fi T%
   \ifnum\jis"2121="A1A1 %euc
@@ -299,7 +301,9 @@
       whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
 \bxjs@nxt
 \bxjs@cjk@loaded
-\PassOptionsToPackage{unicode}{hyperref}
+\ifbxjs@hyperref@enc
+  \PassOptionsToPackage{unicode}{hyperref}
+\fi
 \ifx\bxcjkjatypeHyperrefPatchDone\@undefined
 \begingroup
   \CJK@input{UTF8.bdg}
@@ -367,7 +371,9 @@
   \bxjs@nxt
 \fi
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
-  \PassOptionsToPackage{unicode}{hyperref}
+  \ifbxjs@hyperref@enc
+    \PassOptionsToPackage{unicode}{hyperref}
+  \fi
 \fi
 \let\jsInhibitGlueAtParTop\@empty
 \newskip\jsKanjiSkip
@@ -445,7 +451,9 @@
     luatexja.jfmglue.create_beginpar_node()}}
 \let\bxjs@ltj@inhibitglue\@inhibitglue
 \let\@@inhibitglue\@undefined
-\bxjs@fix@hyperref@unicode{true}
+\ifbxjs@hyperref@enc
+  \bxjs@fix@hyperref@unicode{true}
+\fi
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}
 \protected\def\noautospacing{%

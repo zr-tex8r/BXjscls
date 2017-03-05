@@ -916,12 +916,14 @@
   \ifx\bxjs@geometry@driver\relax\else
     \let\Gm@driver\bxjs@geometry@driver
   \fi
-  \@tempdimb=\textwidth
-  \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
-  \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
-  \advance\@tempdimb-\textwidth
-  \advance\oddsidemargin 0.5\@tempdimb
-  \advance\evensidemargin 0.5\@tempdimb
+  \ifbxjs@whole@zw@lines
+    \@tempdimb=\textwidth
+    \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
+    \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
+    \advance\@tempdimb-\textwidth
+    \advance\oddsidemargin 0.5\@tempdimb
+    \advance\evensidemargin 0.5\@tempdimb
+  \fi
   \fullwidth=\textwidth
   \@tempdimb=\textheight
   \advance\textheight-\topskip
@@ -936,7 +938,9 @@
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
       -\textwidth-10\jsc@mmm-\marginparsep}
-  \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
+  \ifbxjs@whole@zw@lines
+    \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
+  \fi
   \maxdepth=.5\topskip
   \stockwidth=\paperwidth
   \stockheight=\paperheight

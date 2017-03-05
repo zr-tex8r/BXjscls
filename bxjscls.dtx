@@ -1051,8 +1051,8 @@
 % \item |textwidth-limit=|\meta{number} ： |bxjsbook| における、
 %   |\textwidth| の上限の全角単位での値。
 % \item |paragraph-mark=|\meta{char} ： パラグラフのマーク。
-% \item |whole-zw-lines| ： （予定）
-% \item |hyperref-enc| ： （予定）
+% \item |whole-zw-lines=|\meta{bool} ： 行長を全角単位に丸めるか。
+% \item |hyperref-enc=|\meta{bool} ： |hyperref| の文字コード指定補正を行うか。
 % \end{itemize}
 %
 % \begin{macro}{\bxjs@invscale}
@@ -2867,12 +2867,14 @@
     \let\Gm@driver\bxjs@geometry@driver
   \fi
 % textwidth 調整
-  \@tempdimb=\textwidth
-  \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
-  \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
-  \advance\@tempdimb-\textwidth
-  \advance\oddsidemargin 0.5\@tempdimb
-  \advance\evensidemargin 0.5\@tempdimb
+  \ifbxjs@whole@zw@lines
+    \@tempdimb=\textwidth
+    \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
+    \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
+    \advance\@tempdimb-\textwidth
+    \advance\oddsidemargin 0.5\@tempdimb
+    \advance\evensidemargin 0.5\@tempdimb
+  \fi
   \fullwidth=\textwidth
 %<*book>
   \ifdim\textwidth>\jsTextWidthLimit\Cwd
@@ -2896,7 +2898,9 @@
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
       -\textwidth-10\jsc@mmm-\marginparsep}
-  \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
+  \ifbxjs@whole@zw@lines
+    \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
+  \fi
 % 連動する変数
   \maxdepth=.5\topskip
   \stockwidth=\paperwidth
@@ -8144,7 +8148,9 @@
 %
 % |unicode| にしてはいけない。
 %    \begin{macrocode}
-\bxjs@fix@hyperref@unicode{false}
+\ifbxjs@hyperref@enc
+  \bxjs@fix@hyperref@unicode{false}
+\fi
 %    \end{macrocode}
 %
 % |tounicode| special命令を出力する。
@@ -8222,7 +8228,9 @@
 % |bxcjkjatype| 使用時は |unicode| にするべき。
 % \Note 取りあえず固定はしない。
 %    \begin{macrocode}
-\PassOptionsToPackage{unicode}{hyperref}
+\ifbxjs@hyperref@enc
+  \PassOptionsToPackage{unicode}{hyperref}
+\fi
 %    \end{macrocode}
 %
 % |\hypersetup| 命令で（|CJK*| 環境に入れなくても）日本語文字を
@@ -8361,7 +8369,9 @@
 % \Note 取りあえず固定はしない。
 %    \begin{macrocode}
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
-  \PassOptionsToPackage{unicode}{hyperref}
+  \ifbxjs@hyperref@enc
+    \PassOptionsToPackage{unicode}{hyperref}
+  \fi
 \fi
 %    \end{macrocode}
 %
@@ -8539,7 +8549,9 @@
 %
 % |unicode| にするべき。
 %    \begin{macrocode}
-\bxjs@fix@hyperref@unicode{true}
+\ifbxjs@hyperref@enc
+  \bxjs@fix@hyperref@unicode{true}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}
