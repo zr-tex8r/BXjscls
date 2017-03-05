@@ -487,11 +487,15 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
-\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmarginfalse
+\newif\ifbxjs@layout@buggyhmargin
+\newif\ifbxjs@force@chapterabstract
+\bxjs@force@chapterabstracttrue
 \@namedef{bxjs@kv@layout@v1}{%
-  \bxjs@layout@buggyhmargintrue}
+\bxjs@force@chapterabstracttrue
+}
 \@namedef{bxjs@kv@layout@v2}{%
-  \bxjs@layout@buggyhmarginfalse}
+\bxjs@force@chapterabstractfalse
+}
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
@@ -1635,12 +1639,65 @@
     \advance \labelwidth by -\labelsep
     \let \makelabel=\descriptionlabel}}{\endlist}
 \newcommand*\descriptionlabel[1]{\normalfont\headfont #1\hfil}
-\newenvironment{abstract}{%
+\newenvironment{chapterabstract}{%
   \begin{list}{}{%
     \listparindent=1\jsZw
     \itemindent=\listparindent
     \rightmargin=\z@
     \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
+\newbox\@abstractbox
+\if@titlepage
+  \newenvironment{abstract}{%
+    \titlepage
+    \null\vfil
+    \@beginparpenalty\@lowpenalty
+    \begin{center}%
+      \headfont \abstractname
+      \@endparpenalty\@M
+    \end{center}%
+    \par}%
+  {\par\vfil\null\endtitlepage}
+\else
+  \newenvironment{abstract}{%
+    \if@twocolumn
+      \ifx\maketitle\relax
+        \section*{\abstractname}%
+      \else
+        \global\setbox\@abstractbox\hbox\bgroup
+        \begin{minipage}[b]{\textwidth}
+          \small\parindent1\jsZw
+          \begin{center}%
+            {\headfont \abstractname\vspace{-.5em}\vspace{\z@}}%
+          \end{center}%
+          \list{}{%
+            \listparindent\parindent
+            \itemindent \listparindent
+            \rightmargin \leftmargin}%
+          \item\relax
+      \fi
+    \else
+      \small
+      \begin{center}%
+        {\headfont \abstractname\vspace{-.5em}\vspace{\z@}}%
+      \end{center}%
+      \list{}{%
+        \listparindent\parindent
+        \itemindent \listparindent
+        \rightmargin \leftmargin}%
+      \item\relax
+    \fi}{\if@twocolumn
+      \ifx\maketitle\relax
+      \else
+        \endlist\end{minipage}\egroup
+      \fi
+    \else
+      \endlist
+    \fi}
+\fi
+\ifbxjs@force@chapterabstract
+  \let\abstract\chapterabstract
+  \let\endabstract\endchapterabstract
+\fi
 \newenvironment{verse}{%
   \let \\=\@centercr
   \list{}{%
@@ -2154,6 +2211,7 @@
 \newcommand{\figurename}{\if@english Fig.~\else 図\fi}
 \newcommand{\tablename}{\if@english Table~\else 表\fi}
 \newcommand{\appendixname}{\if@english \else 付録\fi}
+\newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi

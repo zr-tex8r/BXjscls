@@ -1614,18 +1614,34 @@
 % \begin{macro}{\ifbxjs@layout@buggyhmargin}
 % 〔スイッチ〕
 % |bxjsbook| の左右マージンがアレか。
-% \Note 既定はアレだが1.3版で非アレになる予定。
+% \Note |layout| が |v1| の場合はアレになる。
 %    \begin{macrocode}
-\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmarginfalse
+\newif\ifbxjs@layout@buggyhmargin
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@force@chapterabstract}
+% 〔スイッチ〕
+% abstract環境をchapterabstractにするか。
+% \Note |bxjsbook| では常に真。
+% |bxjsreport| では |layout| が |v1| の場合に真になる。
+% \Note ただし1.5版では移行措置のため |bxjsreport| の既定値を真にする。
+%    \begin{macrocode}
+\newif\ifbxjs@force@chapterabstract
+%<book|report>\bxjs@force@chapterabstracttrue
 %    \end{macrocode}
 % \end{macro}
 %
 % |layout| オプションの処理。
 %    \begin{macrocode}
 \@namedef{bxjs@kv@layout@v1}{%
-  \bxjs@layout@buggyhmargintrue}
+%<book>\bxjs@layout@buggyhmargintrue
+%<report>\bxjs@force@chapterabstracttrue
+}
 \@namedef{bxjs@kv@layout@v2}{%
-  \bxjs@layout@buggyhmarginfalse}
+%<book>\bxjs@layout@buggyhmarginfalse
+%<report>\bxjs@force@chapterabstractfalse
+}
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 %    \end{macrocode}
@@ -4982,16 +4998,34 @@
 %
 % JSPFスタイルでは実際の出力は |\maketitle| で行われます。
 %
+% \begin{ZRnote}
+% |bxjsreport| クラスのabstract環境は：
+% \begin{itemize}
+% \item |layout=v1| の場合は |jsbook|\,+\,|report| の動作を継承する。
+%   つまり |jsbook| と同じになる。
+% \item |layout=v2| の場合は新設の |jsreport| の動作を継承する。
+%   つまり |jsarticle|（+\,|titlapage|）と同じになる。
+% \end{itemize}
+%
+% \begin{environment}{chapterabstract}
+% |jsbook| のabstract環境
+% （「各章の初めにちょっとしたことを書く」ためのもの）
+% をchapterabstractと呼ぶことにする。
 %    \begin{macrocode}
 %<*book|report>
-\newenvironment{abstract}{%
+\newenvironment{chapterabstract}{%
   \begin{list}{}{%
     \listparindent=1\jsZw
     \itemindent=\listparindent
     \rightmargin=\z@
     \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
 %</book|report>
-%<*article|slide>
+%    \end{macrocode}
+% \end{environment}
+%
+% “普通の”abstract環境の定義。
+%    \begin{macrocode}
+%<*article|report|slide>
 \newbox\@abstractbox
 \if@titlepage
   \newenvironment{abstract}{%
@@ -5001,7 +5035,12 @@
     \begin{center}%
       \headfont \abstractname
       \@endparpenalty\@M
-    \end{center}}%
+    \end{center}%
+%    \end{macrocode}
+% BXJSクラスでは、
+% 概要の最初の段落に段落下げが入るようにする。
+%    \begin{macrocode}
+    \par}%
   {\par\vfil\null\endtitlepage}
 \else
   \newenvironment{abstract}{%
@@ -5040,7 +5079,7 @@
       \endlist
     \fi}
 \fi
-%</article|slide>
+%</article|report|slide>
 %<*jspf>
 \newbox\@abstractbox
 \newenvironment{abstract}{%
@@ -5051,6 +5090,19 @@
   {\end{minipage}\egroup}
 %</jspf>
 %    \end{macrocode}
+%
+% |bxjs@force@chapterabstract| が真の場合は、abstract環境を
+% chapterabstract環境と等価にする。
+%    \begin{macrocode}
+%<*book|report>
+\ifbxjs@force@chapterabstract
+  \let\abstract\chapterabstract
+  \let\endabstract\endchapterabstract
+\fi
+%</book|report>
+%    \end{macrocode}
+% \end{ZRnote}
+%
 % \end{environment}
 %
 % \paragraph{キーワード}
@@ -6785,7 +6837,7 @@
 %    \begin{macrocode}
 % \newcommand{\appendixname}{\if@english Appendix~\else 付録\fi}
 \newcommand{\appendixname}{\if@english \else 付録\fi}
-%<!book&!report>\newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
+%<!book>\newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}

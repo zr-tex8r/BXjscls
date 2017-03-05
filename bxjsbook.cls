@@ -487,11 +487,15 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
-\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmarginfalse
+\newif\ifbxjs@layout@buggyhmargin
+\newif\ifbxjs@force@chapterabstract
+\bxjs@force@chapterabstracttrue
 \@namedef{bxjs@kv@layout@v1}{%
-  \bxjs@layout@buggyhmargintrue}
+\bxjs@layout@buggyhmargintrue
+}
 \@namedef{bxjs@kv@layout@v2}{%
-  \bxjs@layout@buggyhmarginfalse}
+\bxjs@layout@buggyhmarginfalse
+}
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
@@ -1652,12 +1656,16 @@
     \advance \labelwidth by -\labelsep
     \let \makelabel=\descriptionlabel}}{\endlist}
 \newcommand*\descriptionlabel[1]{\normalfont\headfont #1\hfil}
-\newenvironment{abstract}{%
+\newenvironment{chapterabstract}{%
   \begin{list}{}{%
     \listparindent=1\jsZw
     \itemindent=\listparindent
     \rightmargin=\z@
     \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
+\ifbxjs@force@chapterabstract
+  \let\abstract\chapterabstract
+  \let\endabstract\endchapterabstract
+\fi
 \newenvironment{verse}{%
   \let \\=\@centercr
   \list{}{%

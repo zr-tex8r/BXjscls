@@ -481,11 +481,12 @@
     \let\bxjs@driver@given\@undefined
     \bxjs@dvi@opttrue
   \fi}
-\newif\ifbxjs@layout@buggyhmargin \bxjs@layout@buggyhmarginfalse
+\newif\ifbxjs@layout@buggyhmargin
+\newif\ifbxjs@force@chapterabstract
 \@namedef{bxjs@kv@layout@v1}{%
-  \bxjs@layout@buggyhmargintrue}
+}
 \@namedef{bxjs@kv@layout@v2}{%
-  \bxjs@layout@buggyhmarginfalse}
+}
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
@@ -1535,7 +1536,8 @@
     \begin{center}%
       \headfont \abstractname
       \@endparpenalty\@M
-    \end{center}}%
+    \end{center}%
+    \par}%
   {\par\vfil\null\endtitlepage}
 \else
   \newenvironment{abstract}{%
