@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.4}
-\newcommand{\PkgDate}{2017/02/03}
+\newcommand{\PkgVersion}{1.5-pre}
+\newcommand{\PkgDate}{2017/03/03}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -49,7 +49,7 @@ BXJS文書クラスについては、“{\TeX} Wiki”中の記事、
 本パッケージに含まれる文書クラス集
 （以下では\jemph{BXJS（文書）クラス}と呼ぶ）
 は、奥村晴彦氏および“日本語{\TeX}開発コミュニティ”により作製された
-「p{\LaTeXe}新ドキュメントクラス」
+\Pkg{jsclasses}パッケージの文書クラス集
 （以下では\jemph{JS（文書）クラス}と呼ぶ）
 の拡張版に相当する。
 JSクラスのレイアウトデザインと機能をほぼ踏襲しているが、
@@ -405,7 +405,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
   従って、BXJSクラスにおいて |\ifdraft| スイッチの使用を
   非推奨とし、将来的に廃止を予定する。
-\item 1.2版より、|\bf| や |\it| 等の旧式のフォント選択命令の使用が
+\item 1.2版より、|\bf| や |\it| 等の
+  {\pLaTeX}\,2.09方式のフォント選択命令の使用が
   非推奨となり、これらの命令を使うと警告が出るようになった。
   詳細は\ref{sec:Old-font-commands}節を参照。
 % TODO: \@ptsize の話
@@ -536,7 +537,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item エンジンオプション\Means
   実際に使用するエンジン（{\LaTeX}コマンド名）を指定する。
   有効な値は |latex|、|platex|、|uplatex|、|pdflatex|、|xelatex|、
-  |lualatex| である。
+  |lualatex|、|platex-ng| である。
   エンジンオプション（と次項の |autodetect-engine| の何れか）
   の指定は必須である。
 \item |autodetect-engine|\Means
@@ -644,7 +645,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   値は |true|（有効）／|false|（無効）／|default|（既定値に従う）
   の何れかである。
   エンジンや和文ドライバの種類により、
-  既定値が有効・無効の何れになるかは異なるし、また、
+  既定値が有効・無効の何れになるかは異なり、また、
   そもそも有効・無効の一方しか選択できない場合もある。
   詳細については\ref{sec:Ja-math-fonts}節を参照されたい。
 \item |disablejfam|\Means
@@ -755,17 +756,36 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |paragraph-mark=|\Meta{文字1つ}\Means
   パラグラフ（|\paragraph|）の見出し先頭に付く記号。
   既定値は“■”。
+\item |whole-zw-lines=|\Meta{真偽値}\Means
+  ページレイアウト策定において「行長を全角幅の整数倍に丸める処理」
+  を行うか否か。
+\item |hyperref-enc=|\Meta{真偽値}\Means
+  \Pkg{hyperref}パッケージについて
+  「PDF文字列の文字コード設定を補正する処理」
+  を行うか否か。
 \item |layout=|\Meta{値}\Means
   レイアウトの変種を選択する。
+  現状では、過去の版との互換性を維持するために用いられている。
   有効な値は以下の通り。
   \begin{itemize}
-  \item |v2|（既定）\Means
-    現版の既定のレイアウト。
-  \item |v1|\Means
-    \Pkg{bxjsbook}クラスについて、1.2a版以前の
-    （本来は不適切な）水平マージンの設定を適用する。
-    （詳細は\ref{ssec:page-layout}節を参照。）
-    その他のクラスについては |v2| と全く同じ。
+  \item \Pkg{bxjsbook}クラスの場合：
+    \begin{itemize}
+    \item |v2|（既定）\Means
+      現版の既定のレイアウト。
+    \item |v1|\Means
+      1.2a版以前の（本来は不適切な）水平マージンの設定を適用する。
+      （詳細は\ref{ssec:page-layout}節を参照。）
+    \end{itemize}
+  \item \Pkg{bxjsreport}クラスの場合：
+    \begin{itemize}
+    \item |v2|\Means
+      JSクラスに新設された\Pkg{jsreport}クラスのレイアウトを継承する。
+      \Note 近い将来に、既定値が |v2| に変更される予定。
+    \item |v1|（既定）\Means
+      従来の「\Pkg{jsbook}クラス\,+\,|report|オプション」の
+      レイアウトを継承する。
+    \end{itemize}
+  \item それ以外のクラスでは、本オプションは無効である。
   \end{itemize}
 \end{itemize}
 
@@ -816,9 +836,10 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 |titlepage|、|notitlepage|。
 
 \paragraph{起こし}
-|openright|、|openany|。
-\Note \Pkg{jsbook}のみ（BXJSでは\Pkg{bxjsreport}と\Pkg{bxjsbook}）
-にのみ存在するオプション。
+|openright|、|openleft|、|openany|。
+\Note \Pkg{jsreport}と\Pkg{jsbook}にのみ存在するオプション。
+\Note |openleft| は部・章の開始を見開き左側のページ
+（偶数ページ）に強制する（左起こし）。
 
 \paragraph{数式配置}
 |leqno|、|fleqn|。
@@ -832,6 +853,25 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 
 \paragraph{英語化}
 |english|。
+
+\paragraph{エンジン種別}
+|uplatex|、|autodetect-engine|。
+\Note 既に\ref{ssec:BXJS-specific-option}節で述べた通り。
+
+\paragraph{magstyle指定}
+|usemag|、|nomag|、|nomag*|。
+\Note BXJSクラスでは、これらは“|magstyle=|”を前置したものと
+同等に扱われる。
+詳細は\ref{ssec:magstyle}節を参照。
+
+\paragraph{和文数式ファミリ不使用}
+|disablejfam|。
+\Note BXJSクラスでは |enablejfam=false| と同値。
+詳細は\ref{sec:Ja-math-fonts}節を参照。
+
+\paragraph{ロゴ命令パッケージの読込}
+|jslogo|、|nojslogo|。
+\Note BXJSクラスでは |nojslogo| が既定値である。
 
 %-------------------
 \subsection{JSクラスのオプションで使用不可能なもの}
@@ -939,8 +979,8 @@ keyval形式（例えば|magstyle=nomag*|）で書くこともできる。
 （エラーになる）。
 
 \Note |magstyle| オプションの既定値は |usemag| である。
-ただし例外として、Lua{\TeX}の0.87版以降では
-（|mag| が使えないため）|nomag*| が既定値となる。
+ただし例外として、|usemag| がサポートされない
+エンジンでは |nomag*| が既定値となる。
 
 %===========================================================
 \section{和文ドライバ}
@@ -954,7 +994,7 @@ BXJSクラスでは様々なエンジンについて、そのエンジンおよ�
 これを\jemph{和文ドライバ}と呼ぶ。
 \footnote{\Pkg{graphicx}パッケージ等の「ドライバ」と類似した概念
 のためこの名称を用いた。}%
-\Pkg{BXjscls}のバンドルでは次の2つの和文ドライバを提供している。
+\Pkg{BXjscls}のバンドルでは以下に挙げる和文ドライバを提供している。
 
 \begin{itemize}
 \item standard和文ドライバ\Means
@@ -971,7 +1011,7 @@ BXJSクラスでは様々なエンジンについて、そのエンジンおよ�
 用いることを想定している。
 \item pandoc和文ドライバ\Means
 「Pandocモード」で仕様される和文ドライバ。
-基本的にstandardと同じ設定を用いるが、
+standardドライバの機能を継承するが、
 「Pandocの既定のlatexテンプレート」が使われることを前提として、
 それとBXJSの設定を整合させるための措置を加えている。
 \end{itemize}
@@ -981,7 +1021,9 @@ BXJSクラスでは様々なエンジンについて、そのエンジンおよ�
   情報については、ソースコード説明書（bxjscls.pdf）
   の付録Aを参照してほしい。}%
 |bxjsja-XXX.def|（|XXX| は任意の文字列
-\footnote{カテゴリコード11または12の文字からなる必要がある。}%
+\footnote{{\LaTeX}の非特殊文字
+（{\TeX}言語でいうとカテゴリコードが11または12の文字）
+からなる必要がある。}%
 ）の名前のファイルに実装コードを書いてそのファイルを配置すると、
 |ja=XXX| のオプション指定でその和文ドライバを利用できる。
 
@@ -1083,8 +1125,26 @@ vscale=0.944, vmarginratio=1:1
 \item |\subtitle{|\Meta{テキスト}|}|\Means
   サブタイトルを設定する。
   \Note |\maketitle| の出力にサブタイトルが含まれるようになる。
+\item |chapterabstract| 環境\Means
+  \Pkg{jsbook}クラスの |abstract| 環境
+  \footnote{article系やreport系のクラスにあるような
+    （文書要旨のための）abstract 環境は、book系クラスでは
+    用意されていないことが多いことに注意。}%
+  と等価な環境で、
+  “各章の初めにちょっとしたことを書く”用途を想定したもの。
+  （ただし使用可能な場所に特に制限はない。）
 \end{itemize}
 
+なお、|abstract| 環境の機能については継承元のJSクラスと同一に
+なるため以下のようになる。
+\begin{itemize}
+\item \Pkg{bxjsarticle}および|layout=v2|指定の\Pkg{bxjsreport}\Means
+  \Pkg{jsarticle}／\Pkg{jsreport}クラスと同じ、
+  つまり「文書要旨」のための環境。
+\item \Pkg{bxjsbook}および|layout=v1|指定の\Pkg{bxjsreport}\Means
+  \Pkg{jsbook}クラスと同じ、
+  つまり |chapterabstract| 環境と等価。
+\end{itemize}
 
 %-------------------
 \subsection{和文用設定関連}
@@ -1092,13 +1152,14 @@ vscale=0.944, vmarginratio=1:1
 \begin{itemize}
 \item |\jsZw|\Means
   和文の全角幅を表す。
+  例えば |2\jsZw| が pLaTeX の |2zw| に相当する。
 \item |\zw|\Means
   |\jsZw| の別名。
   \footnote{\Pkg{\LuaTeX-ja}では「実際の全角幅」を表す
     命令 |\zw|（{\pLaTeX}の |zw| と本当に等価）が規定されている。
     |lualatex| エンジン指定かつ和文ドライバが |standard| の場合は
     この |\zw| の定義がそのまま使われる。
-    （従って |nozw| は実質的に無効である。）
+    （従って |zw|／|nozw| は実質的に意味を持たない。）
     なお、|\jsZw| は「規約上の全角幅」であり、「実際の全角幅」と本来は
     一致するはずだが、実際には計算誤差のせいで僅かに値が異なる。}%
   ただし |nozw| 指定時は定義されない。
@@ -1108,12 +1169,10 @@ vscale=0.944, vmarginratio=1:1
 
 \subsubsection{standard和文ドライバの場合}
 
-standard和文ドライバでは和文に関連する
+standard和文ドライバ（およびそれを継承するドライバ）では和文に関連する
 文書ソース記述をエンジンに依らずに共通になることを目指している。
-従って、和文関連の組版パラメタの設定*1についても
+従って、和文関連の組版パラメタの設定についても
 「共通の命令」が提供される。
-\footnote{pandoc和文ドライバはstandard和文ドライバの設定を
-引き継ぐため、pandocモードでもこれらの命令を使用できる。}
 
 \begin{itemize}
 \item 和文ファミリ変更命令\Means
@@ -1125,9 +1184,6 @@ standard和文ドライバでは和文に関連する
   \footnote{ちなみに、(u){\pLaTeX}の既定ではこの連動は起こらない。}%
   に、|\rmfamily| で和文が「明朝」、
   |\sffamily| および |\ttfamily| で和文が「ゴシック」に変更される。
-\item |\zw|\Means
-  和文の全角幅を表す。
-  例えば |2\zw| が pLaTeX の |2zw| に相当する。
 \item |\jQ|、|\jH|、|\trueQ|、|\trueH|\Means
   それぞれ{\pLaTeX}の単位Q、H、trueQ、trueHに相当する長さ。
 \item |\ascQ|\Means
