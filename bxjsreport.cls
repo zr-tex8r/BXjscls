@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2017/03/03 v1.5-pre BXJS document classes]
+  [2017/03/11 v1.5 BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -1366,17 +1366,14 @@
    \theparagraph.\@arabic\c@subparagraph}
 \newcommand{\@chapapp}{\prechaptername}
 \newcommand{\@chappos}{\postchaptername}
-\newcommand\frontmatter{%
-  \if@openleft
-    \cleardoublepage
-  \else\if@openright
-    \cleardoublepage
-  \else
-    \clearpage
-  \fi\fi
+  \pltx@cleartooddpage
   \@mainmatterfalse
   \pagenumbering{roman}}
 \newcommand\mainmatter{%
+  \pltx@cleartooddpage
+  \@mainmattertrue
+  \pagenumbering{arabic}}
+\newcommand\backmatter{%
   \if@openleft
     \cleardoublepage
   \else\if@openright
@@ -1384,14 +1381,6 @@
   \else
     \clearpage
   \fi\fi
-  \@mainmattertrue
-  \pagenumbering{arabic}}
-\newcommand\backmatter{%
-  \if@openright
-    \cleardoublepage
-  \else
-    \clearpage
-  \fi
   \@mainmatterfalse}
 \newcommand\part{%
   \if@openleft
@@ -1537,9 +1526,11 @@
     {\normalfont\normalsize\headfont}}
 \fi
 \newcommand\jsParagraphMark{\jsJaChar{■}}
-\ifx\bxjs@paragraph@mark\@undefined\else
+\ifx\bxjs@paragraph@mark\@empty
+  \let\jsParagraphMark\@empty
+\else\ifx\bxjs@paragraph@mark\@undefined\else
   \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
-\fi
+\fi\fi
 \let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%

@@ -97,6 +97,15 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.5  〈2017/03/11〉
+      - jsreport の `layout=v2` 指定で、従来の jsbook + report に代わって、
+        jsclasses で新設された jsreport のレイアウトを継承する。
+      - pLaTeX-ng のためのエンジンオプション `platex-ng` を新設。
+      - `chapterabstract` 環境を新設。
+      - `hyperref-enc`、`whole-zw-lines` オプションを新設。
+      - jsclasses の 2017/03/05 と同期。
+          + `openleft` オプションを新設。
+          + `\frontmatter`、`\backmatter` の仕様の変更。
   * Version 1.4  〈2017/02/03〉
       - `\zwapace` 命令を追加。
       - 数式中の和文出力をサポートした。
