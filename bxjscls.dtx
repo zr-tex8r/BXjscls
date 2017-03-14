@@ -43,9 +43,9 @@
 %
 %  Copyright 1995-1999 ASCII Corporation.
 %  Copyright 1999-2016 Haruhiko Okumura
-%  Copyright 2016 Japanese TeX Development Community
+%  Copyright 2016-2017 Japanese TeX Development Community
 %
-%  Copyright 2013-2016 Takayuki YATO (aka."ZR")
+%  Copyright 2013-2017 Takayuki YATO (aka. "ZR")
 %
 % \fi
 % \CheckSum{0}
@@ -67,7 +67,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/03/11 v1.5 BXJS document classes]
+  [2017/03/14 v1.5a BXJS document classes]
+% [2017/03/11 v1.5 BXJS document classes]
 % based on jsclasses [2017/03/05]
 % [2017/02/03 v1.4 BXJS document classes]
 % [2017/01/28 v1.3a BXJS document classes]
@@ -4223,6 +4224,7 @@
 %
 %    \begin{macrocode}
 %<*book|report>
+\newcommand\frontmatter{%
   \pltx@cleartooddpage
   \@mainmatterfalse
   \pagenumbering{roman}}

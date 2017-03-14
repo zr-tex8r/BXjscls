@@ -97,6 +97,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.5a 〈2017/03/14〉
+      - バグ修正。
   * Version 1.5  〈2017/03/11〉
       - jsreport の `layout=v2` 指定で、従来の jsbook + report に代わって、
         jsclasses で新設された jsreport のレイアウトを継承する。

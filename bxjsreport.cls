@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2017/03/11 v1.5 BXJS document classes]
+  [2017/03/14 v1.5a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -1366,6 +1366,7 @@
    \theparagraph.\@arabic\c@subparagraph}
 \newcommand{\@chapapp}{\prechaptername}
 \newcommand{\@chappos}{\postchaptername}
+\newcommand\frontmatter{%
   \pltx@cleartooddpage
   \@mainmatterfalse
   \pagenumbering{roman}}
