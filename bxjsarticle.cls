@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2017/09/28 v1.6b BXJS document classes]
+  [2017/09/28 v1.7-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsarticle}
 \newif\ifjsc@needsp@tch
@@ -550,6 +550,18 @@
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
 \define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
+\chardef\bxjs@everyparhook@none=0
+\chardef\bxjs@everyparhook@compat=1
+\chardef\bxjs@everyparhook@modern=2
+\if j\jsEngine
+  \let\bxjs@everyparhook\bxjs@everyparhook@compat
+\else
+  \let\bxjs@everyparhook\bxjs@everyparhook@modern
+\fi
+\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@none}
+\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@compat}
+\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@modern}
+\define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -1324,6 +1336,10 @@
   \@ifstar
     {\@ssect{#3}{#4}{#5}{#6}}%
     {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+  \let\bxjs@if@ceph\@firstofone
+\else \let\bxjs@if@ceph\@gobble
+\fi
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \ifnum #2>\c@secnumdepth
     \let\@svsec\@empty
@@ -1371,11 +1387,10 @@
         \unskip
         \@tempskipa #1\relax
         \hskip -\@tempskipa
-        \bxjs@ltj@inhibitglue
       \else
         \clubpenalty \@clubpenalty
-        \everypar{\everyparhook}%
-      \fi\everyparhook}%
+        \everypar\expandafter{\bxjs@if@ceph\everyparhook}%
+      \fi\bxjs@if@ceph\everyparhook}%
   \else
     \par \nobreak
     \vskip \@tempskipa
@@ -1400,7 +1415,6 @@
     \endgroup
   \fi
   \@xsect{#3}}
-\let\bxjs@ltj@inhibitglue\@empty
 \newcommand*\chaptermark[1]{}
 \setcounter{secnumdepth}{3}
 \newcounter{part}
@@ -1990,7 +2004,10 @@
   \llap{\@makefnmark\hskip0.3\jsZw}#1}
 \let\jsInhibitGlueAtParTop\@empty
 \def\everyparhook{\jsInhibitGlueAtParTop}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
 \AtBeginDocument{\everypar{\everyparhook}}
+\fi
+\ifx j\jsEngine
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
 \begingroup
@@ -2018,6 +2035,8 @@
       \inhibitglue
     \fi
   \fi}
+\fi
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
 \def\@doendpe{%
   \@endpetrue
   \def\par{%
@@ -2070,7 +2089,6 @@
       \clubpenalty \@clubpenalty
       \everypar{\everyparhook}%
     \fi
-    \bxjs@ltj@inhibitglue
     \everyparhook}%
   \if@noitemarg
     \@noitemargfalse
@@ -2104,6 +2122,9 @@
       \clubpenalty \@clubpenalty
       \everypar{\everyparhook}%
     \fi\everyparhook}}
+\fi
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none\else
+\AtEndOfPackage{%
 \def\@gnewline #1{%
   \ifvmode
     \@nolnerr
@@ -2111,6 +2132,8 @@
     \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
     \jsInhibitGlue \ignorespaces
   \fi}
+}
+\fi
 \if@jslogo
   \IfFileExists{jslogo.sty}{%
     \RequirePackage{jslogo}%

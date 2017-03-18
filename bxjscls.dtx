@@ -68,7 +68,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/09/28 v1.6b BXJS document classes]
+  [2017/09/28 v1.7-pre BXJS document classes]
+% [2017/09/28 v1.6b BXJS document classes]
 % [2017/09/24 v1.6a BXJS document classes]
 % [2017/09/09 v1.6  BXJS document classes]
 % based on jsclasses [2017/09/03]
@@ -1807,6 +1808,24 @@
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
 \define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@everyparhook}
+% |everyparhook| の指定値。
+%    \begin{macrocode}
+\chardef\bxjs@everyparhook@none=0
+\chardef\bxjs@everyparhook@compat=1
+\chardef\bxjs@everyparhook@modern=2
+\if j\jsEngine
+  \let\bxjs@everyparhook\bxjs@everyparhook@compat
+\else
+  \let\bxjs@everyparhook\bxjs@everyparhook@modern
+\fi
+\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@none}
+\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@compat}
+\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@modern}
+\define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -4576,6 +4595,19 @@
 % 前のアキがちょうどゼロの場合にもうまくいくように，多少変えてあります。
 % |\everyparhook| も挿入しています。
 %
+% \begin{ZRnote}
+% |\everyparhook| の挿入は |everyparhook=compat| の時のみ行う。
+% \begin{macro}{\bxjs@if@ceph}
+% |everyparhook=compat| である場合にのみ直後のトークンを実行する。
+%    \begin{macrocode}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+  \let\bxjs@if@ceph\@firstofone
+\else \let\bxjs@if@ceph\@gobble
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{ZRnote}
+%
 %    \begin{macrocode}
 \def\@sect#1#2#3#4#5#6[#7]#8{%
   \ifnum #2>\c@secnumdepth
@@ -4638,11 +4670,10 @@
         \unskip
         \@tempskipa #1\relax
         \hskip -\@tempskipa
-        \bxjs@ltj@inhibitglue
       \else
         \clubpenalty \@clubpenalty
-        \everypar{\everyparhook}%
-      \fi\everyparhook}%
+        \everypar\expandafter{\bxjs@if@ceph\everyparhook}%
+      \fi\bxjs@if@ceph\everyparhook}%
   \else
     \par \nobreak
     \vskip \@tempskipa
@@ -4668,14 +4699,6 @@
   \fi
   \@xsect{#3}}
 %    \end{macrocode}
-%
-% \begin{ZRnote}
-% 上記の定義中の |\bxjs@ltj@inhibitglue| は{Lua\TeX-ja}で
-% 用いられるフック。
-%    \begin{macrocode}
-\let\bxjs@ltj@inhibitglue\@empty
-%    \end{macrocode}
-% \end{ZRnote}
 %
 % \paragraph{柱関係の命令}
 %
@@ -7172,7 +7195,9 @@
 % これの初期値を先述の |\jsInhibitGlueAtParTop| とする。
 %    \begin{macrocode}
 \def\everyparhook{\jsInhibitGlueAtParTop}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
 \AtBeginDocument{\everypar{\everyparhook}}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \end{ZRnote}
@@ -7188,10 +7213,12 @@
 % 高いので，専用の命令 |\jsc@ig@temp| に置き換えました(Issue \#54)。
 %
 % \begin{ZRnote}
-% \begin{macro}{\@inhibitglue}
-% JSクラスでの |\jsInhibitGlueAtParTop| の実装。
-% （これは{(u)\pTeX}専用である。）
+% 次の |\@inhibitglue| はJSクラスでの |\jsInhibitGlueAtParTop| の
+% 実装である。
+% エンジンが |(u)platex| の場合はこれを採用する。
+% \end{ZRnote}
 %    \begin{macrocode}
+\ifx j\jsEngine
 \def\@inhibitglue{%
   \futurelet\@let@token\@@inhibitglue}
 \begingroup
@@ -7219,10 +7246,18 @@
       \inhibitglue
     \fi
   \fi}
+\fi
 %    \end{macrocode}
-% \end{macro}
 %
+% \begin{ZRnote}
+% ここからしばらく
+% 「（本物の）|\everypar| に追加した |\everyparhook| を保持する」
+% ためのパッチ処理が続く。
+% これは、|everyparhook=compat| の場合にのみ実行する。
 % \end{ZRnote}
+%    \begin{macrocode}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+%    \end{macrocode}
 %
 % これだけではいけないようです。あちこちに |\everypar| を初期化するコマンドが
 % 隠されていました。
@@ -7295,7 +7330,6 @@
       \clubpenalty \@clubpenalty
       \everypar{\everyparhook}%
     \fi
-    \bxjs@ltj@inhibitglue
     \everyparhook}%
   \if@noitemarg
     \@noitemargfalse
@@ -7337,6 +7371,13 @@
     \fi\everyparhook}}
 %    \end{macrocode}
 %
+% \begin{ZRnote}
+% 「|\everyparhook| 用のパッチ処理」はここまで。
+% \end{ZRnote}
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
 % |\@gnewline| についてはちょっと複雑な心境です。
 % もともとのp\LaTeXe は段落の頭にグルーが入る方で統一されていました。
 % しかし |\\| の直後にはグルーが入らず，不統一でした。
@@ -7346,7 +7387,13 @@
 %
 % しかし単に戻すだけでも駄目みたいなので，ここでも最後にグルーを消しておきます。
 %
+% \begin{ZRnote}
+% \Note |luatexja| を読みこんだ場合に lltjcore.sty によって上書きされる
+% のを防ぐため遅延させる。
+% \end{ZRnote}
 %    \begin{macrocode}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none\else
+\AtEndOfPackage{%
 \def\@gnewline #1{%
   \ifvmode
     \@nolnerr
@@ -7354,6 +7401,8 @@
     \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
     \jsInhibitGlue \ignorespaces
   \fi}
+}
+\fi
 %    \end{macrocode}
 %
 % \section{いろいろなロゴ}
@@ -8232,6 +8281,43 @@
   \else
     \bxjs@do@precisetext
   \fi
+\fi
+%    \end{macrocode}
+%
+% \paragraph{段落頭でのグルー挿入禁止}
+%
+% \begin{macro}{\bxjs@check@everyparhook}
+% 本体開始時において |\everyparhook| を検査して、
+% “結局何もしない”ことになっている場合は、
+% 副作用を完全に無くすために |\everyparhook| を空にする。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@check@everyparhook
+\def\bxjs@check@everyparhook{%
+  \ifx\jsInhibitGlueAtParTop\@empty
+    \def\bxjs@tmpa{\jsInhibitGlueAtParTop}%
+    \ifx\everyparhook\bxjs@tmpa
+      \let\everyparhook\@empty
+    \fi
+  \fi}
+\AtBeginDocument{\bxjs@check@everyparhook}
+%    \end{macrocode}
+% \end{macro}
+%
+% |everyparhook=modern| の場合の、|\everyparhook| の有効化の実装。
+% \Note 本体開始時ではなく最初から有効化していることに注意。
+%    \begin{macrocode}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@modern
+%    \end{macrocode}
+% まず |\everypar| を“乗っ取る”処理を行う。
+%    \begin{macrocode}
+  \let\bxjs@everypar\everypar
+  \newtoks\everypar
+  \everypar\bxjs@everypar
+%    \end{macrocode}
+% そして本物の |\everypar| では、最後で常に |\everyparhook| が実行される
+% ようにする。
+%    \begin{macrocode}
+  \bxjs@everypar{\the\expandafter\everypar\everyparhook}%
 \fi
 %    \end{macrocode}
 %
@@ -9260,8 +9346,19 @@
 % 近いものが得られるらしい。
 %
 % 従って、|\jsInhibitGlueAtParTop| は結局何もしないことにする。
+%
+% 強制改行直後のグルー禁止処理、のような怪しげな何か。
+%
 %    \begin{macrocode}
-\let\jsInhibitGlueAtParTop\@empty
+\AtEndOfPackage{%
+\def\@gnewline #1{%
+  \ifvmode \@nolnerr
+  \else
+    \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
+    \nobreak \hskip-1sp\hskip1sp\relax
+    \ignorespaces
+  \fi}
+}
 %    \end{macrocode}
 %
 % \paragraph{共通命令の実装}
@@ -9420,12 +9517,43 @@
 %
 % \paragraph{段落頭でのグルー挿入禁止}
 %
+% 基本的に現状の |ltjs*| クラスの処理に合わせる。
+% \Note |\jsInhibitGlueAtParTop| は使わない。
+%
+% \begin{macro}{\ltjfakeparbegin}
+% 現在の{\LuaTeX-ja}で定義されているマクロで、
+% 段落中で段落冒頭用の処理を発動する。
+% 未定義である場合にに備えて同等のものを用意する。
 %    \begin{macrocode}
-\protected\def\@inhibitglue{%
-  \directlua{%
-    luatexja.jfmglue.create_beginpar_node()}}
-\let\bxjs@ltj@inhibitglue\@inhibitglue
-\let\@@inhibitglue\@undefined
+\ifx\ltjfakeparbegin\@undefined
+  \protected\def\ltjfakeparbegin{%
+    \ifhmode
+      \relax\directlua{%
+        luatexja.jfmglue.create_beginpar_node()}}
+    \fi}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% |ltjs*| クラスの定義と同等になるようにパッチを当てる。
+%    \begin{macrocode}
+\unless\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none
+\begingroup
+  \let\%\@percentchar \def\@#1{[[\detokenize{#1}]]}
+  \@gobble\if\def\bxjs@tmpa{\@{\everypar{}\fi}}
+  \ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+    \@gobble\if\def\bxjs@tmpa{\@{\everypar{\everyparhook}\fi}}\fi
+  \directlua{
+    local function patchcmd(cs, code, from, to)
+      tex.sprint(code:gsub(from:gsub("\%W", "\%\%\%0"), "\%0"..to)
+        :gsub("macro:", \@\gdef..cs, 1):gsub("->", "{", 1).."}")
+    end
+    patchcmd(\@\@xsect, [[\meaning\@xsect]],
+      \@{\hskip-\@tempskipa}, \@\ltjfakeparbegin)
+    patchcmd(\@\@item, [[\meaning\@item]],
+      \bxjs@tmpa, \@\ltjfakeparbegin)}
+\endgroup
+\fi
 %    \end{macrocode}
 %
 % \paragraph{hyperref対策}

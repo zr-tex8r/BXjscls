@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2017/09/28 v1.6b BXJS document classes]
+  [2017/09/28 v1.7-pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -285,6 +285,21 @@
   \else
     \bxjs@do@precisetext
   \fi
+\fi
+\@onlypreamble\bxjs@check@everyparhook
+\def\bxjs@check@everyparhook{%
+  \ifx\jsInhibitGlueAtParTop\@empty
+    \def\bxjs@tmpa{\jsInhibitGlueAtParTop}%
+    \ifx\everyparhook\bxjs@tmpa
+      \let\everyparhook\@empty
+    \fi
+  \fi}
+\AtBeginDocument{\bxjs@check@everyparhook}
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@modern
+  \let\bxjs@everypar\everypar
+  \newtoks\everypar
+  \everypar\bxjs@everypar
+  \bxjs@everypar{\the\expandafter\everypar\everyparhook}%
 \fi
 \ifbxjs@fancyhdr
 \@onlypreamble\bxjs@adjust@fancyhdr

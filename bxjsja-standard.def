@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2017/09/28 v1.6b BXJS document classes]
+  [2017/09/28 v1.7-pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -451,7 +451,15 @@
     \PassOptionsToPackage{unicode}{hyperref}
   \fi
 \fi
-\let\jsInhibitGlueAtParTop\@empty
+\AtEndOfPackage{%
+\def\@gnewline #1{%
+  \ifvmode \@nolnerr
+  \else
+    \unskip \reserved@e {\reserved@f#1}\nobreak \hfil \break \null
+    \nobreak \hskip-1sp\hskip1sp\relax
+    \ignorespaces
+  \fi}
+}
 \newskip\jsKanjiSkip
 \newskip\jsXKanjiSkip
 \ifx\CJKecglue\@undefined
@@ -525,11 +533,30 @@
 \ltjsetparameter{jaxspmode={`〒,2}}
 \ltjsetparameter{alxspmode={`+,3}}
 \ltjsetparameter{alxspmode={`\%,3}}
-\protected\def\@inhibitglue{%
-  \directlua{%
-    luatexja.jfmglue.create_beginpar_node()}}
-\let\bxjs@ltj@inhibitglue\@inhibitglue
-\let\@@inhibitglue\@undefined
+\ifx\ltjfakeparbegin\@undefined
+  \protected\def\ltjfakeparbegin{%
+    \ifhmode
+      \relax\directlua{%
+        luatexja.jfmglue.create_beginpar_node()}}
+    \fi}
+\fi
+\unless\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none
+\begingroup
+  \let\%\@percentchar \def\@#1{[[\detokenize{#1}]]}
+  \@gobble\if\def\bxjs@tmpa{\@{\everypar{}\fi}}
+  \ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+    \@gobble\if\def\bxjs@tmpa{\@{\everypar{\everyparhook}\fi}}\fi
+  \directlua{
+    local function patchcmd(cs, code, from, to)
+      tex.sprint(code:gsub(from:gsub("\%W", "\%\%\%0"), "\%0"..to)
+        :gsub("macro:", \@\gdef..cs, 1):gsub("->", "{", 1).."}")
+    end
+    patchcmd(\@\@xsect, [[\meaning\@xsect]],
+      \@{\hskip-\@tempskipa}, \@\ltjfakeparbegin)
+    patchcmd(\@\@item, [[\meaning\@item]],
+      \bxjs@tmpa, \@\ltjfakeparbegin)}
+\endgroup
+\fi
 \ifbxjs@hyperref@enc
   \bxjs@fix@hyperref@unicode{true}
 \fi
