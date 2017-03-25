@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2017/03/14 v1.5a BXJS document classes]
+  [2017/03/25 v1.6-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -1073,16 +1073,18 @@
   \def\@oddhead{%
     \hbox to \fullwidth{\hfil\textbf{\thepage}}\hss}}
 \let\ps@plain\ps@plainfoot
+\def\bxjs@maybe@autoxspacing{%
+  \ifx\autoxspacing\@undefined\else \autoxspacing \fi}
 \newif\if@omit@number
 \def\ps@headings{%
   \let\@oddfoot\@empty
   \let\@evenfoot\@empty
   \def\@evenhead{%
     \if@mparswitch \hss \fi
-    \underline{\hbox to \fullwidth{\autoxspacing
+    \underline{\hbox to \fullwidth{\bxjs@maybe@autoxspacing
         \textbf{\thepage}\hfil\leftmark}}%
     \if@mparswitch\else \hss \fi}%
-  \def\@oddhead{\underline{\hbox to \fullwidth{\autoxspacing
+  \def\@oddhead{\underline{\hbox to \fullwidth{\bxjs@maybe@autoxspacing
         {\if@twoside\rightmark\else\leftmark\fi}\hfil\textbf{\thepage}}}\hss}%
   \let\@mkboth\markboth
   \def\chaptermark##1{\markboth{%

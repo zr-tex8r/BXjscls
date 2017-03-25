@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-modern.def}
-  [2017/03/14 v1.5a BXJS document classes]
+  [2017/03/25 v1.6-pre BXJS document classes]
 \input{bxjsja-standard.def}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi=\z@
 \def\encodingdefault{T1}%
