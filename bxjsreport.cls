@@ -334,9 +334,11 @@
 \let\bxjs@driver@@dvipdfmx=1
 \let\bxjs@driver@@pdfmode=2
 \let\bxjs@driver@@xetex=3
+\let\bxjs@driver@@dvips=4
+\let\bxjs@driver@@none=5
 \DeclareOption{dvips}{%
   \def\bxjs@driver@opt{dvips}%
-  \let\bxjs@driver@given\bxjs@driver@@dvimode}
+  \let\bxjs@driver@given\bxjs@driver@@dvips}
 \DeclareOption{dviout}{%
   \def\bxjs@driver@opt{dviout}%
   \let\bxjs@driver@given\bxjs@driver@@dvimode}
@@ -346,6 +348,9 @@
 \DeclareOption{dvipdfmx}{%
   \def\bxjs@driver@opt{dvipdfmx}%
   \let\bxjs@driver@given\bxjs@driver@@dvipdfmx}
+\DeclareOption{nodvidriver}{%
+  \def\bxjs@driver@opt{nodvidriver}%
+  \let\bxjs@driver@given\bxjs@driver@@none}
 \DeclareOption{pdftex}{%
   \def\bxjs@driver@opt{pdftex}%
   \let\bxjs@driver@given\bxjs@driver@@pdfmode}
@@ -480,9 +485,10 @@
   \bxjs@set@keyval{fancyhdr}{#1}{}}
 \newif\ifbxjs@dvi@opt
 \let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
-\let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvips
 \let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
+\let\bxjs@dvidriver@@nodvidriver=\bxjs@driver@@none
 \define@key{bxjs}{dvi}{%
   \expandafter\let\expandafter\bxjs@tmpa\csname
    bxjs@dvidriver@@#1\endcsname
@@ -634,6 +640,9 @@
   \else\ifx t\bxjs@platexng@nodrv\else
     \g@addto@macro\@classoptionslist{,dvipdfmx}
   \fi\fi
+\fi
+\ifx\bxjs@driver@given\bxjs@driver@@none
+  \bxjs@papersizefalse
 \fi
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
@@ -967,7 +976,9 @@
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \PassOptionsToPackage{dvipdfm}{geometry}
-  \fi
+  \else\ifx\bxjs@driver@given\bxjs@driver@@dvimode
+    \PassOptionsToPackage{dvipdfm}{geometry}
+  \fi\fi
   \let\bxPapersizeSpecialDone=t
 \else
   \PassOptionsToPackage{driver=none}{geometry}
