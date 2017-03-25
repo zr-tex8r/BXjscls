@@ -1685,6 +1685,16 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@xkanjiskip@cmd}
+% 〔スイッチ〕 |xkanjiskip-cmd| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
+\let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
+\let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
+\define@key{bxjs}{xkanjiskip-cmd}{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifbxjs@hyperref@enc}
 % 〔スイッチ〕 |hyperref-enc| の指定値。
 %    \begin{macrocode}
@@ -8103,6 +8113,20 @@
 \fi
 %    \end{macrocode}
 %
+% 和欧文間空白の命令 |\>| の実装。
+%    \begin{macrocode}
+\ifbxjs@xkanjiskip@cmd
+  \def\bxjs@put@xkanjiskip{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \hskip\xkanjiskip
+    \fi}
+  \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
+  \else \def\>{\protect\bxjs@put@xkanjiskip}
+  \fi
+\fi
+%    \end{macrocode}
+%
+%
 % \paragraph{和文フォント指定の扱い}
 %
 % {\pTeX}は既定で |kanji-config-updmap| の設定に従うため、
@@ -8317,6 +8341,14 @@
   \CJKforced{#1}}
 %    \end{macrocode}
 %
+% |\>| は |bxcjkjatype| で定義されているが、保護付のマクロに変換する。
+%    \begin{macrocode}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\fi
+%    \end{macrocode}
+%
 % \paragraph{和文数式ファミリ}
 %
 % CJKパッケージは（恐らく）数式文字としてCJK文字をサポートしていない。
@@ -8443,6 +8475,15 @@
 \def\bxjs@jachar#1{%
   \xeCJKDeclareCharClass{CJK}{`#1}\relax
   #1}
+%    \end{macrocode}
+%
+% |\>| は |zxjatype| で定義されているが、standardの仕様に合わせて変更する。
+% \Note 元は |\ignorespaces| でなく |\relax|（|\scan_stop:|）だった。
+%    \begin{macrocode}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{和文数式ファミリ}
@@ -8594,6 +8635,16 @@
 %    \begin{macrocode}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}
+%    \end{macrocode}
+%
+% |\>| の実装。
+%    \begin{macrocode}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \hskip\ltjgetparameter{xkanjiskip}\ignorespaces
+    \fi}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{和文数式ファミリ}

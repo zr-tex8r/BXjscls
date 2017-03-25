@@ -513,6 +513,10 @@
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
 \define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
+\newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
+\let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
+\let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
+\define@key{bxjs}{xkanjiskip-cmd}{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse

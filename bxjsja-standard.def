@@ -218,6 +218,15 @@
       \bxUInt{\@tempcnta}%
     \fi}
 \fi
+\ifbxjs@xkanjiskip@cmd
+  \def\bxjs@put@xkanjiskip{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \hskip\xkanjiskip
+    \fi}
+  \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
+  \else \def\>{\protect\bxjs@put@xkanjiskip}
+  \fi
+\fi
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
   \let\bxjs@tmpa\@empty
@@ -346,6 +355,10 @@
   \let\CJKecglue\bxjs@CJKecglue}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\fi
 \ifx t\bxjs@enablejfam
   \ClassWarningNoLine\bxjs@clsname
    {You cannot use 'enablejfam=true', since the\MessageBreak
@@ -400,6 +413,10 @@
 \def\bxjs@jachar#1{%
   \xeCJKDeclareCharClass{CJK}{`#1}\relax
   #1}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\fi
 \ifx t\bxjs@enablejfam
   \@enablejfamtrue
 \fi
@@ -468,6 +485,12 @@
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}
+\ifbxjs@xkanjiskip@cmd
+  \protected\def\>{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \hskip\ltjgetparameter{xkanjiskip}\ignorespaces
+    \fi}
+\fi
 \ifx f\bxjs@enablejfam
   \ClassWarningNoLine\bxjs@clsname
    {You cannot use 'enablejfam=false', since the\MessageBreak
