@@ -264,16 +264,23 @@
 \newif\if@jslogo \@jslogofalse
 \DeclareOption{jslogo}{\@jslogotrue}
 \DeclareOption{nojslogo}{\@jslogofalse}
-\mathchardef\bxjs@csta=259
+\mathchardef\bxjs@isc@ll=128
+\mathchardef\bxjs@isc@sl=259
+\def\bxjs@isc@sl@h{65539 }
 \def\bxjs@invscale#1#2{%
   \begingroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
-    \@tempcnta\@tempdima \multiply\@tempcnta\@cclvi
-    \divide\@tempcnta\@tempdimb \multiply\@tempcnta\@cclvi
+    \ifdim\@tempdima<\bxjs@isc@ll\p@
+      \@tempcnta\@tempdima \multiply\@tempcnta\@cclvi
+      \divide\@tempcnta\@tempdimb \multiply\@tempcnta\@cclvi
+    \else
+      \@tempcnta\@tempdima \divide\@tempcnta\@tempdimb
+      \multiply\@tempcnta\p@ \let\bxjs@isc@sl\bxjs@isc@sl@h
+    \fi
     \@tempcntb\p@ \divide\@tempcntb\@tempdimb
     \advance\@tempcnta-\@tempcntb \advance\@tempcnta-\tw@
     \@tempdimb\@tempcnta\@ne
     \advance\@tempcnta\@tempcntb \advance\@tempcnta\@tempcntb
-    \advance\@tempcnta\bxjs@csta \@tempdimc\@tempcnta\@ne
+    \advance\@tempcnta\bxjs@isc@sl \@tempdimc\@tempcnta\@ne
     \@whiledim\@tempdimb<\@tempdimc\do{%
       \@tempcntb\@tempdimb \advance\@tempcntb\@tempdimc
       \advance\@tempcntb\@ne \divide\@tempcntb\tw@
