@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.5a}
-\newcommand{\PkgDate}{2017/03/14}
+\newcommand{\PkgVersion}{1.5b}
+\newcommand{\PkgDate}{2017/04/01}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -557,9 +557,15 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   DVI出力のエンジンを用いる場合に、実際に使用するDVIウェアの名前を
   指定する。
   有効な値は |dvips|、|dvipdfmx|、|dviout|、|xdvi| である。
-  ドライバオプションの指定は必須である。
+  DVI出力時はドライバオプション（と次項の |nodvidriver| の何れか）
+  の指定は必須である。
   \footnote{ただし現状では、ドライバオプションが無い場合には
     エラーではなく警告が出る。}
+\item |nodvidriver|\Means
+  特殊なドライバオプションの一種で、BXJSクラスが持つ
+  ドライバ依存の機能を全て抑止することを指定する。%
+  \footnote{従って、ドライバ依存のパッケージを使用しなければ、
+    出力されるDVIファイルは特定のDVIウェアに依存しないものになる。}
 \item |dvi=|\Meta{ドライバ名}\Means
   エンジンがDVI出力の場合に限り、指定のドライバオプションを
   有効にする。
@@ -763,6 +769,9 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \Pkg{hyperref}パッケージについて
   「PDF文字列の文字コード設定を補正する処理」
   を行うか否か。
+\item |xkanjiskip-cmd=|\Meta{真偽値}\Means
+  |\>| を和欧文間空白を挿入する命令として定義するか否か。
+  （詳しくは\ref{ssec:ja-settings}節を参照。）
 \item |layout=|\Meta{値}\Means
   レイアウトの変種を選択する。
   現状では、過去の版との互換性を維持するために用いられている。
@@ -1148,6 +1157,7 @@ vscale=0.944, vmarginratio=1:1
 
 %-------------------
 \subsection{和文用設定関連}
+\label{ssec:ja-settings}
 
 \begin{itemize}
 \item |\jsZw|\Means
@@ -1217,6 +1227,18 @@ standard和文ドライバ（およびそれを継承するドライバ）では
 \item |\autospacing|／|\noautospacing|\Means
   和文間空白の挿入を有効／無効にする。
   {\pLaTeX}の同名の命令と同等。
+\item |\>|\Means
+  和欧文間空白を挿入する。%
+  \footnote{|\>| という命令名は、plain {\TeX}では数式中の空白
+    （{\LaTeX}の |\:| と同等）を表す。
+    このため、実際には{\LaTeX}でも |\>| は |\:| と同等の命令として
+    定義されている。
+    この「plain互換の |\>|」を利用したコードが影響を受けるのを避ける
+    ため、数式中では |\>| は従来通り |\:| と同等の動作を行う。}
+  ただし |xkanjiskip-cmd=false| 指定時は定義されない。%
+  \footnote{ただし、standard和文ドライバで自動的に読み込まれる
+    \Pkg{zxjatype}や\Pkg{bxcjkjatype}のパッケージは、
+    それ自体が同様の機能の |\>| を提供することにも注意を要する。}
 \item |\jachar{|\Meta{文字1つ}|]|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
 \item 和文数式フォント命令\Means
