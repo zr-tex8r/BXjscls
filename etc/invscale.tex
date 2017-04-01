@@ -1,0 +1,269 @@
+\documentclass[a4paper]{jsarticle}
+\usepackage{amsmath}
+\usepackage{mathpazo}
+\newcommand*{\Flr}[1]{\lfloor#1\rfloor}
+\newcommand*{\Rnd}[1]{[#1]}
+\newcommand*{\Lft}{\biggl}
+\newcommand*{\Rgt}{\biggr}
+\newcommand*{\bFlr}[1]{\Lft\lfloor#1\Rgt\rfloor}
+\newcommand*{\bRnd}[1]{\Lft[#1\Rgt]}
+\newcommand*{\VN}[1]{\mathit{#1}}
+\newcommand*{\meta}[1]{\mbox{$\langle$\textsl{#1}$\rangle$}}
+\newcommand*{\xUL}[1]{\mbox{}\underline{#1}\mbox{}}
+\newcommand*{\wbr}{\allowbreak}
+\renewcommand*{\*}{\cdot}
+\newcommand*{\Ceq}{:=}
+\begin{document}
+
+%-----------------------------------------------------------
+\section{準備}
+
+\noindent
+\meta{decimal constant}\meta{unit of measure} の計算方法。
+\begin{itemize}
+\item \meta{decimal constant} の表す実数に $2^{16}$ を乗じて%
+\xUL{四捨五入}した値を $A$ とする。
+\item \meta{unit of measure} の換算整数を $B$ とする。
+\item $(A \times B)/2^{16}$ を切り捨てた値を結果とする。
+\end{itemize}
+
+\noindent
+切り捨て（$\Flr{x}$）、四捨五入（$\Rnd{x}$）に関する性質。
+\begin{itemize}
+\item $x - 1 < \Flr{x} \leq x$
+\item $x - 1/2 \leq \Rnd{x} \leq x + 1/2$\\
+（四捨五入の定義によって片方の $\leq$ は $<$ になりうる。）
+\end{itemize}
+
+\subsection{表記}
+
+「{\TeX} 上のアルゴリズムを記述する数式」
+で、$+$、$\times$、$\div$ は各々 {\TeX} の\ 
+\verb|\advance|、\verb|\multiply|、\verb|\divide| を表し、
+$*$ は倍数表記（\meta{factor}\wbr\meta{unit of measure}）を表す。
+また小文字の変数は {\TeX} 上の整数値を表すが、
+大文字の変数は必ずしもそうでないものも表すものとする。
+
+%-----------------------------------------------------------
+\section{本論}
+
+\subsection{問題}
+
+$X$ を整数、$Y$ を実数とする。
+{\TeX} で許される精度の限りで $X/Y$ をできるだけ精確に求めたい。
+すなわち
+\begin{gather}
+z = \max \{ z' \mid Y*z' \leq X \}
+\end{gather}
+を求めたい。
+
+\subsection{方針}
+
+予め、$l < z < r$ でありかつ $r - l$ がなるべく小さい $l$, $r$
+を求めておいてから、$Y*z' \leq X$ のテストを用いて二分探索
+を行う。
+
+\subsubsection{上限・下限を得る}
+
+$y = \Rnd{Y\*2^{16}}$ とする（この $y$ は {\TeX} では $Y*2^{16}$
+として求められる）。
+$z$ の定義より
+\begin{gather*}
+Y * z \leq X < Y * (z+1)
+\end{gather*}
+が成立するので
+\begin{align}
+&\frac{y\*z}{2^{16}} - 1 < \bFlr{\frac{y\*z}{2^{16}}} \leq X
+< \bFlr{\frac{y\*(z+1)}{2^{16}}} \leq \frac{y\*(z+1)}{2^{16}} + 1
+\notag\\
+&\iff
+\frac{2^{16}\*X}{y} - \frac{2^{16}}{y} - 1 < z
+<  \frac{2^{16}\*X}{y} + \frac{2^{16}}{y}
+\label{eq:z-1}
+\end{align}
+
+$2^{16}\*X/y$ と $2^{16}/y$ を次の手順で求める。
+\begin{enumerate}
+\item $t_1 = X \times 2^8 \div y$
+\item $t_2 = t_1 \times 2^8$
+\item $t_3 = 2^{16} \div y$
+\end{enumerate}
+$t_1 = \Flr{2^8\*X/y}$、$t_2 = 2^8\*t_1$、$t_3 = \Flr{2^{16}/y}$
+より次が成立。
+\begin{align}
+&\frac{2^8\*X}{y} - 1 < t_1 \leq \frac{2^8\*X}{y}
+\notag\\
+&\iff \frac{2^{16}\*X}{y} - 2^8 < t_2 \leq \frac{2^{16}\*X}{y}
+\label{eq:t2}\\
+&\frac{2^{16}}{y} - 1 < t_3 \leq \frac{2^{16}}{y}
+\label{eq:t3}
+\end{align}
+
+\eqref{eq:z-1}, \eqref{eq:t2}, \eqref{eq:t3} より以下が成立。
+\begin{align}
+&t_2 - (t_3 + 1) - 1 < z
+<  t_2 + 2^8 + (t_3 + 1)
+\notag\\
+&\iff t_2 - t_3 - 2 < z
+<  t_2 + t_3 + (2^8 + 1)
+\label{eq:z-2}
+\end{align}
+以上より、$l = t_2 - t_3 - 2$、$r = t_2 + t_3 + (2^8 + 1)$
+とおけばよいことになる。
+
+\subsubsection{二分探索}
+
+$[l, r]$ の範囲の二分探索で $z$ を求める手順は以下のようになる。
+\begin{enumerate}
+\item $l < u$ である間、以下を反復する。
+\begin{enumerate}
+\item $m \Ceq (l + u + 1) \div 2$
+\item $v \Ceq Y*m$
+\item もし $v \leq X$ ならば $l := m$ とする。\\
+そうでなければ $u := m - 1$ とする。
+\end{enumerate}
+\item $z = l\;(= u)$ とする。
+\end{enumerate}
+
+ここで中点を求める時に切り上げ（$\lceil(l+r)/2\rceil$）に
+しているのは $l < m$ を保証するためである。
+
+
+\section{アルゴリズム}
+
+全体のアルゴリズムは以下のようになる。
+\begin{enumerate}
+\item $x = X$; $y = Y*2^{16}$
+\item $t_1 = X \times 2^8 \div y$; $t_2 = t_1 \times 2^8$;
+$t_3 = 2^{16} \div y$
+\item $l \Ceq t_2 - t_3 - 2$; $u \Ceq t_2 + t_3 + (2^8 + 1)$
+\item $l < u$ である間、以下を反復する。
+\begin{enumerate}
+\item $m \Ceq (l + u + 1) \div 2$
+\item $v \Ceq Y*m$
+\item もし $v \leq X$ ならば $l := m$ とする。\\
+そうでなければ $u := m - 1$ とする。
+\end{enumerate}
+\item $z = l\;(= u)$ とする。
+\end{enumerate}
+
+\end{document}
+\pagebreak
+%-----------------------------------------------------------
+\section{ボツ}
+
+\subsection{アルゴリズム1}
+
+\begin{enumerate}
+\item $y = Y * 2^{16}$
+\item $t_1 = X \times 2^8 \div y$
+\item $t_2 = t_1 \times 2^8$
+\end{enumerate}
+
+この場合、
+$y = \Rnd{2^{16}\*Y}$ より次が成立。
+\begin{gather}
+2^{16}\*Y -1/2 \leq y \leq 2^{16}\*Y + 1/2
+\label{eq2:y}
+\end{gather}
+また、$t_1 = \Flr{2^8\*X/y}$、$t_2 = 2^8\*t_1$ より次が成立。
+\begin{gather}
+\frac{2^8\*X}{y} - 1 < t_1 \leq \frac{2^8\*X}{y}
+\label{eq2:t1}\\
+\frac{2^{16}\*X}{y} - 2^8 < t_2 \leq \frac{2^{16}\*X}{y}
+\label{eq2:t2}
+\end{gather}
+\eqref{eq2:y} と \eqref{eq2:t2} より
+\begin{align}
+&\frac{2^{16}\*X}{2^{16}\*Y + 1/2} - 2^8 < t_2
+\leq \frac{2^{16}\*X}{2^{16}\*Y -1/2}
+\notag\\
+&\iff \frac{X}{Y + 2^{-17}} - 2^8 < t_2
+\leq \frac{X}{Y - 2^{-17}}
+\notag\\
+&\iff \frac{X}{Y}\*\frac{1}{1 + 2^{-17}/Y} - 2^8 < t_2
+\leq \frac{X}{Y}\*\frac{1}{1 - 2^{-17}/Y}
+\label{eq2:t2-1}
+\end{align}
+$2^{-17}/Y \ll 1$ より $1/(1 \pm 2^{-17}/Y)$
+を $1 \mp 2^{-17}/Y$ で近似して
+\begin{align}
+\eqref{eq2:t2-1}
+&\stackrel{\sim}{\iff}
+\frac{X}{Y}\*\Lft(1 - \frac{2^{-17}}{Y}\Rgt) - 2^8 < t_2
+\leq \frac{X}{Y}\*\Lft(1 + \frac{2^{-17}}{Y}\Rgt)
+\notag\\
+&\iff
+\frac{X}{Y} - (\frac{X}{2^{17}\*Y^2} + 2^8\biggr) < t_2
+\leq \frac{X}{Y} + \frac{X}{2^{17}\*Y^2}
+\label{eq2:t2-2}
+\end{align}
+そこで $z = X/2^{17}Y^2$ とし、$z$ の過大評価を $z'$ とすると、
+\begin{gather}
+\frac{X}{Y} - (z' + 2^8) < t_2 \leq \frac{X}{Y} + z'
+\notag
+\end{gather}
+となるので、
+\begin{gather}
+l = t_2 - z'; \qquad u = t_2 + z' + 2^8
+\end{gather}
+とおくと、$l \leq X/Y < u$ が保証される。
+
+\subsection{アルゴリズム2}
+
+$z = X/2^{17}Y^2$ の過大評価 $z'$ を求める方法。
+\begin{enumerate}
+\item $s \Ceq 2^{17}$; $y' \Ceq Y*2^{16}$ とする。
+\item $y' < 2^{16}$ である限り、以下を反復する。
+\begin{itemize}
+\item $y' \Ceq y' \times 2$; $s \Ceq s \div 4$
+\end{itemize}
+\item $z = X \div s + 1$ とおく。
+\end{enumerate}
+
+%-----------------------------------------------------------
+
+\makeatletter
+\mathchardef\bxjs@csta=259
+\def\bxjs@invscale#1#2{%
+  \bgroup \@tempdima=#1\relax \@tempdimb#2\p@\relax
+    \@tempcnta\@tempdima \multiply\@tempcnta\@cclvi
+    \divide\@tempcnta\@tempdimb \multiply\@tempcnta\@cclvi
+    \@tempcntb\p@ \divide\@tempcntb\@tempdimb
+    \advance\@tempcnta-\@tempcntb \advance\@tempcnta-\tw@
+    \@tempdimb\@tempcnta\@ne
+    \advance\@tempcnta\@tempcntb \advance\@tempcnta\@tempcntb
+    \advance\@tempcnta\bxjs@csta \@tempdimc\@tempcnta\@ne
+\typeout{*1:\the\@tempdimb/\the\@tempdimc}%
+    \@whiledim\@tempdimb<\@tempdimc\do{%
+      \@tempcntb\@tempdimb \advance\@tempcntb\@tempdimc
+      \advance\@tempcntb\@ne \divide\@tempcntb\tw@
+      \ifdim #2\@tempcntb>\@tempdima
+        \advance\@tempcntb\m@ne \@tempdimc=\@tempcntb\@ne
+      \else \@tempdimb=\@tempcntb\@ne \fi}%
+\typeout{*2:\the\@tempdimb/\the\@tempdimc}%
+    \bgroup \@tempdimb=#2\@tempdimb
+      \advance\@tempdimc\@ne\@ne \@tempdimc=#2\@tempdimc
+\typeout{*3:\the\@tempdimb/\the\@tempdima/\the\@tempdimc}%
+    \egroup
+    \xdef\bxjs@gtmpa{\the\@tempdimb}%
+  \egroup #1=\bxjs@gtmpa\relax}
+\newdimen\testdim
+\errorcontextlines=9
+\def\bxjs@invscaletest#1{%
+  \testdim=3.1415926pt \bxjs@invscale\testdim{#1}}
+\bxjs@invscaletest{0.1}\typeout{\the\testdim}
+\bxjs@invscaletest{0.3}
+\bxjs@invscaletest{0.5}
+\bxjs@invscaletest{0.7}
+\bxjs@invscaletest{0.9}
+\bxjs@invscaletest{1.0}
+\bxjs@invscaletest{1.1}
+\bxjs@invscaletest{1.3}
+\bxjs@invscaletest{1.5}
+\bxjs@invscaletest{1.7}
+\bxjs@invscaletest{1.9}
+\bxjs@invscaletest{2}
+\makeatother
+
+\end{document}
