@@ -7976,8 +7976,13 @@
       \loop\if@tempswa
         \read\@inputcheck to\bxjs@tmpa
         \expandafter\bxjs@get@ke@a\bxjs@tmpa\@nil kanjiEmbed \@nil\@nnil
-        \ifx\bxjs@tmpa\relax\else
-          \global\let\bxjs@g@tmpa\bxjs@tmpa
+        \ifx\bxjs@tmpb\relax\else
+          \global\let\bxjs@g@tmpa\bxjs@tmpb
+          \@tempswafalse
+        \fi
+        \expandafter\bxjs@get@ke@b\bxjs@tmpa\@nil jaEmbed \@nil\@nnil
+        \ifx\bxjs@tmpb\relax\else
+          \global\let\bxjs@g@tmpa\bxjs@tmpb
           \@tempswafalse
         \fi
         \ifeof\@inputcheck \@tempswafalse \fi
@@ -7988,8 +7993,13 @@
 }
 \@onlypreamble\bxjs@get@ke@a
 \def\bxjs@get@ke@a#1kanjiEmbed #2\@nil#3\@nnil{%
-  \ifx$#1$\def\bxjs@tmpa{#2}%
-  \else \let\bxjs@tmpa\relax
+  \ifx$#1$\def\bxjs@tmpb{#2}%
+  \else \let\bxjs@tmpb\relax
+  \fi}
+\@onlypreamble\bxjs@get@ke@b
+\def\bxjs@get@ke@b#1jaEmbed #2\@nil#3\@nnil{%
+  \ifx$#1$\def\bxjs@tmpb{#2}%
+  \else \let\bxjs@tmpb\relax
   \fi}
 %    \end{macrocode}
 % \end{macro}
