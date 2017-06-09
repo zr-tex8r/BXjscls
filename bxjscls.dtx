@@ -7180,6 +7180,16 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\jsInverseScale}
+% |\jsScale| の逆数。
+% \Note |\CS=\jsInverseScale\CS| は |\bxjs@invscale\CS\jsScale|
+% よりも精度が劣るが処理が軽い。
+%    \begin{macrocode}
+\@tempdima\p@ \bxjs@invscale\@tempdima\jsScale
+\edef\jsInverseScale{\strip@pt\@tempdima}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsLetHeadChar}
 % |\jsLetHeadChar\CS{|\Meta{トークン列}|}|\Means
 % トークン列の先頭の文字を抽出し、|\CS| をその文字トークン
@@ -7805,6 +7815,83 @@
 % \end{macro}
 % \end{macro}
 %
+% \begin{macro}{\jsSetQHLength}
+% |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
+% |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
+% \Meta{実数}|Q|・\Meta{実数}|H|・\Meta{実数}|trueQ|・\Meta{実数}|trueH|
+% が記述できる。
+%    \begin{macrocode}
+\def\jsSetQHLength#1#2{%
+  \begingroup
+    \bxjs@parse@qh{#2}%
+    \ifx\bxjs@tmpb\relax \setlength\@tempdima{#2}%
+    \else \@tempdima\bxjs@tmpb\relax
+    \fi
+    \xdef\bxjs@g@tmpa{\the\@tempdima}%
+  \endgroup
+  #1=\bxjs@g@tmpa\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@parse@qh}
+% |jsSetQHLength| の下請け。
+% |#1| が |Q|/|H|/|trueQ|/|trueH| で終わる場合、
+% |\bxjs@tmpb| にそれに等しい寸法の表現を返す。
+% それ以外では、|\bxjs@tmpb| は |\relax| になる。
+%    \begin{macrocode}
+\if j\jsEngine
+%    \end{macrocode}
+% {(u)\pLaTeX}ではこの処理は不要なので無効化する。
+%    \begin{macrocode}
+\def\bxjs@parse@qh#1{%
+  \let\bxjs@tmpb\relax}
+\else
+\def\bxjs@parse@qh#1{%
+  \def\bxjs@tmpa{#1}\let\bxjs@tmpb\relax
+  \bxjs@parse@qh@a{trueQ}\trueQ
+  \bxjs@parse@qh@a{trueH}\trueH
+  \bxjs@parse@qh@a{Q}\jQ
+  \bxjs@parse@qh@a{H}\jH}
+\def\bxjs@parse@qh@a#1#2{%
+  \ifx\bxjs@tmpb\relax
+    \def\bxjs@next##1#1\@nil##2\@nnil{\bxjs@parse@qh@b{##1}{##2}}%
+    \expandafter\bxjs@next\bxjs@tmpa\@nil#1\@nil\@nnil{#2}%
+  \fi}
+\def\bxjs@parse@qh@b#1#2#3{%
+  \ifx\@nnil#2\@nnil\else \def\bxjs@tmpb{#1#3}\fi}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jafontsize}
+% \begin{macro}{\jsJaFontSize}
+% |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
+% 和文フォント規準で、すなわち、1\,zwが\Meta{フォントサイズ}に
+% 等しくなるようにフォントサイズを指定する。
+% この命令の引数では、|Q|/|H| の単位が使用できる。
+% \Note 命令名衝突を回避するため、本文開始時まで定義を遅延させている。
+% プレアンブルでは代わりに |\jsJaFontSize| を用いる。
+%    \begin{macrocode}
+\def\jsJaFontSize#1#2{%
+  \begingroup
+    \bxjs@jafontsize@a{#1}%
+    \@tempdimb\jsInverseScale\@tempdima
+    \bxjs@jafontsize@a{#2}%
+    \xdef\bxjs@g@tmpa{%
+      \noexpand\fontsize{\the\@tempdimb}{\the\@tempdima}}%
+  \endgroup\bxjs@g@tmpa}
+\def\bxjs@jafontsize@a#1{%
+  \bxjs@parse@qh{#1}%
+  \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
+  \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
+\AtBeginDocument{%
+  \ifx\jafontsize\@undefined
+    \global\let\jafontsize\jsJaFontSize
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% 
 % 続いて、和文間空白・和欧文間空白関連の命令を実装する。
 % （エンジン依存のコード。）
 %

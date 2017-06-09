@@ -45,6 +45,8 @@
   \AtBeginDocument{%
     \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
 }
+\@tempdima\p@ \bxjs@invscale\@tempdima\jsScale
+\edef\jsInverseScale{\strip@pt\@tempdima}
 \def\jsLetHeadChar#1#2{%
   \begingroup
     \escapechar=`\\ %
