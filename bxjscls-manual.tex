@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.5b}
-\newcommand{\PkgDate}{2017/04/01}
+\newcommand{\PkgVersion}{1.5c}
+\newcommand{\PkgDate}{2017/06/10}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -604,14 +604,14 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   「|ja=|\Meta{名前}」の（0.9版以前で使われていた）別名。
 \item |jafont=|\Meta{名前}\Means
   “和文フォントプリセット指定”の名雨を設定する。
-\item |japaram=|\Meta{値}\Means
+  \Note \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
+  の値が利用される。
+\item |japaram={|\Meta{キー}|=|\Meta{値}|,...}|\Means
   “和文ドライバパラメタ”の値を設定する。
+  詳しくは\ref{sec:Ja-Driver-Param}節を参照。
   \Note |jafont| と |japaram| の値がどのように解釈されるかは
   和文ドライバの仕様次第である。
   minimal和文ドライバではこの2つの値は全く参照されない。
-  \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
-  の値が利用される。
-  現状では |japaram| は参照されない。
 \item |base=|\Meta{長さ}\Means
   基底フォントサイズ（|\normalsize| のフォントのサイズ）を指定する。
   JSクラスの |10pt|、|11pt| 等と同じ役割で、任意の値を指定できる。
@@ -1023,6 +1023,8 @@ BXJSクラスでは様々なエンジンについて、そのエンジンおよ�
 standardドライバの機能を継承するが、
 「Pandocの既定のlatexテンプレート」が使われることを前提として、
 それとBXJSの設定を整合させるための措置を加えている。
+\Note 本マニュアルで「standard和文ドライバの場合」という場合、
+特に明示がない限りはpandoc和文ドライバも含まれる。
 \end{itemize}
 
 和文ドライバは自分で作製することも可能である。
@@ -1047,6 +1049,42 @@ standardドライバの機能を継承するが、
 minimalに配置している。}%
 |minimal| を用いる意義がほとんどないため、
 |standard| が既定値になっている。
+
+
+%===========================================================
+\section{和文ドライバパラメタ}
+\label{sec:Ja-Driver-Param}
+
+和文ドライバパラメタ（|japaram| オプション）は
+和文ドライバに依存する設定を指定するために用意されている。
+|japaram| オプションの値はそれ自身がキー値ペアのリストであり、
+一般的に次のような形式で指定される。
+\begin{quote}\small\begin{verbatim}
+\usepackage[...,japaram={key=value,...},...]{bxjsarticle}
+\end{verbatim}\end{quote}
+
+minimal和文ドライバには有効な和文ドライバパラメタは存在しない。
+
+%-------------------
+\subsection{standard和文ドライバの場合}
+
+以下の和文ドライバパラメタが存在する。
+
+\begin{itemize}
+\item |jis2004=|\Meta{真偽値}\Means
+  漢字の字形について「2004JIS字形を優先させる」処理を行うか。
+  真の場合、以下の処理が行われる。既定値は偽。
+  \begin{itemize}
+  \item グローバルオプションに |jis2004| を追加する。%
+    \footnote{\Pkg{japanese-otf}や\Pkg{luatexja-preset}などの
+      パッケージが |jis2004| オプションを利用する。}
+  \item エンジンが{(u)\pLaTeX}の場合、|pxchfon| と |pxbabel|
+    パッケージに予め |prefer2004jis| オプションが渡される。
+  \end{itemize}
+\item |font={|\Meta{文字列}|}|\Means
+  standard和文ドライバが利用する和文フォントパッケージについて
+  追加のオプションを指定する。
+\end{itemize}
 
 
 %===========================================================
@@ -1241,6 +1279,12 @@ standard和文ドライバ（およびそれを継承するドライバ）では
     それ自体が同様の機能の |\>| を提供することにも注意を要する。}
 \item |\jachar{|\Meta{文字1つ}|]|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
+\item |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
+  “和文規準”でフォントサイズを指定する。
+  すなわち、和文の1\,zwが\Meta{フォントサイズ}と等しくなるように
+  フォントサイズを設定する。
+  \Note 命令の引数の長さ指定ではエンジンの種類に関わらず |Q|／|H|
+  の単位が使用できる。
 \item 和文数式フォント命令\Means
   JSクラスと同様に、
   |\mathmc| で「明朝」、|\mathgt| で「ゴシック」の

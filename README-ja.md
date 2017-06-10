@@ -97,6 +97,13 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.5c 〈2017/06/10〉
+      - `\jafontsize` 命令を追加。
+      - 和文パラメタ `jis2004` を新設。
+      - 和文パラメタ `font` を新設。
+      - `jafont=auto` 設定で updmap.cfg を読む際に `kanjiEmbed` に加えて
+        `jaEmbed` も読み取る。
+      - バグ修正。
   * Version 1.5b 〈2017/04/01〉
       - 全エンジンについて、`\>` で和欧文間空白を挿入するようにした。
       - `xkanjiskip-cmd` オプションを新設。
