@@ -240,7 +240,7 @@
 \def\bxjs@kv@enablejfam@true{\let\bxjs@enablejfam=t}
 \def\bxjs@kv@enablejfam@false{\let\bxjs@enablejfam=f}
 \def\bxjs@kv@enablejfam@default{\let\bxjs@enablejfam\@undefined}
-\define@key{bxjs}{enablejfam}{%
+\define@key{bxjs}{enablejfam}[true]{%
   \bxjs@set@keyval{enablejfam}{#1}{}}
 \DeclareOption{disablejfam}{\let\bxjs@enablejfam=f}
 \let\ifjsDraft\iffalse
@@ -475,7 +475,7 @@
 \newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
 \let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
 \let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
-\define@key{bxjs}{fancyhdr}{%
+\define@key{bxjs}{fancyhdr}[true]{%
   \bxjs@set@keyval{fancyhdr}{#1}{}}
 \newif\ifbxjs@dvi@opt
 \let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
@@ -509,15 +509,15 @@
 \newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
-\define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
+\define@key{bxjs}{whole-zw-lines}[true]{\bxjs@set@keyval{wholezwlines}{#1}{}}
 \newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
 \let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
 \let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
-\define@key{bxjs}{xkanjiskip-cmd}{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
-\define@key{bxjs}{hyperref-enc}{\bxjs@set@keyval{hyperrefenc}{#1}{}}
+\define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%

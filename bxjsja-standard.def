@@ -25,6 +25,13 @@
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
+\newif\ifbxjs@jismmiv
+\let\bxjs@kv@jismmiv@true\bxjs@jismmivtrue
+\let\bxjs@kv@jismmiv@false\bxjs@jismmivfalse
+\define@key{bxjsStd}{jis2004}[true]{%
+  \bxjs@set@keyval{jismmiv}{#1}{}}
+\def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
+\expandafter\bxjs@next\expandafter{\jsJaParam}
 \ifjsWitheTeX
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}

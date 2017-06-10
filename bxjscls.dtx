@@ -899,12 +899,12 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% |fancyhdr| オプションの処理。
+% |enablejfam| オプションの処理。
 %    \begin{macrocode}
 \def\bxjs@kv@enablejfam@true{\let\bxjs@enablejfam=t}
 \def\bxjs@kv@enablejfam@false{\let\bxjs@enablejfam=f}
 \def\bxjs@kv@enablejfam@default{\let\bxjs@enablejfam\@undefined}
-\define@key{bxjs}{enablejfam}{%
+\define@key{bxjs}{enablejfam}[true]{%
   \bxjs@set@keyval{enablejfam}{#1}{}}
 %    \end{macrocode}
 %
@@ -1588,7 +1588,7 @@
 %    \begin{macrocode}
 \let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
 \let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
-\define@key{bxjs}{fancyhdr}{%
+\define@key{bxjs}{fancyhdr}[true]{%
   \bxjs@set@keyval{fancyhdr}{#1}{}}
 %    \end{macrocode}
 %
@@ -1687,7 +1687,7 @@
 \newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
-\define@key{bxjs}{whole-zw-lines}{\bxjs@set@keyval{wholezwlines}{#1}{}}
+\define@key{bxjs}{whole-zw-lines}[true]{\bxjs@set@keyval{wholezwlines}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1697,7 +1697,7 @@
 \newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
 \let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
 \let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
-\define@key{bxjs}{xkanjiskip-cmd}{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1707,7 +1707,7 @@
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
-\define@key{bxjs}{hyperref-enc}{\bxjs@set@keyval{hyperrefenc}{#1}{}}
+\define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7757,6 +7757,32 @@
 \bxjs@simplejasetupfalse
 %    \end{macrocode}
 %
+% \paragraph{japaramオプションの処理}
+%
+% |japaram| の値をkey-valueリストとして解釈する。
+% keyvalのファミリは |bxjsStd| とする。
+%
+% \begin{macro}{\bxjs@jismmiv}
+% 2004JIS字形を優先させるか。
+%    \begin{macrocode}
+\newif\ifbxjs@jismmiv
+%    \end{macrocode}
+% \end{macro}
+%
+% |jis2004| オプションの処理。
+%    \begin{macrocode}
+\let\bxjs@kv@jismmiv@true\bxjs@jismmivtrue
+\let\bxjs@kv@jismmiv@false\bxjs@jismmivfalse
+\define@key{bxjsStd}{jis2004}[true]{%
+  \bxjs@set@keyval{jismmiv}{#1}{}}
+%    \end{macrocode}
+%
+% 実際の |japaram| の値を適用する。
+%    \begin{macrocode}
+\def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
+\expandafter\bxjs@next\expandafter{\jsJaParam}
+%    \end{macrocode}
+%
 % \paragraph{共通命令の実装}
 %
 % |\jQ| 等の「単位」系の共通命令を実装する。
@@ -8238,7 +8264,6 @@
   \fi
 \fi
 %    \end{macrocode}
-%
 %
 % \paragraph{和文フォント指定の扱い}
 %
