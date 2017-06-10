@@ -25,14 +25,17 @@
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
-\newif\ifbxjs@jismmiv
-\let\bxjs@kv@jismmiv@true\bxjs@jismmivtrue
-\let\bxjs@kv@jismmiv@false\bxjs@jismmivfalse
+\newif\ifbxjs@jp@jismmiv
+\bxjs@cslet{bxjs@kv@jis2004@true}\bxjs@jp@jismmivtrue
+\bxjs@cslet{bxjs@kv@jis2004@false}\bxjs@jp@jismmivfalse
 \define@key{bxjsStd}{jis2004}[true]{%
-  \bxjs@set@keyval{jismmiv}{#1}{}}
+  \bxjs@set@keyval{jis2004}{#1}{}}
+\let\bxjs@jp@font\@empty
+\define@key{bxjsStd}{font}{%
+  \edef\bxjs@jp@font{#1}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
-\ifbxjs@jismmiv
+\ifbxjs@jp@jismmiv
   \g@addto@macro\@classoptionslist{,jis2004}
   \PassOptionsToPackage{jis2004}{otf}
 \fi
@@ -287,7 +290,7 @@
   \else \def\>{\protect\bxjs@put@xkanjiskip}
   \fi
 \fi
-\ifbxjs@jismmiv
+\ifbxjs@jp@jismmiv
   \PassOptionsToPackage{prefer2004jis}{pxchfon}
   \PassOptionsToPackage{prefer2004jis}{pxbabel}
 \fi
@@ -297,11 +300,11 @@
 \else\ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi\fi
-\ifx\jsJaFont\@empty\else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]
-        {pxchfon}[2010/05/12]}% v0.5
-  \bxjs@nxt
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
+\ifx\bxjs@tmpa\@empty\else
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{pxchfon}[2010/05/12]% v0.5
+  }\bxjs@next
 \fi
 \begingroup
   \global\let\@gtempa\relax
@@ -368,11 +371,11 @@
 \fi
 \else\if p\jsEngine
 \bxjs@adjust@jafont{f}
-\edef\bxjs@nxt{%
-  \noexpand\RequirePackage[%
-      \ifx\bxjs@tmpa\@empty\else \bxjs@tmpa,\fi
-      whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
-\bxjs@nxt
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole,autotilde}}
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[\bxjs@tmpa]{bxcjkjatype}[2013/10/15]% v0.2c
+}\bxjs@next
 \bxjs@cjk@loaded
 \ifbxjs@hyperref@enc
   \PassOptionsToPackage{unicode}{hyperref}
@@ -438,14 +441,14 @@
   {xeCJK or zxjatype is too old}\@ehc
 \fi
 \bxjs@adjust@jafont{f}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
   \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
 \else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]%
-        {zxjafont}[2013/01/28]}% v0.2a
-  \bxjs@nxt
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]}% v0.2a
+  }\bxjs@next
 \fi
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
   \ifbxjs@hyperref@enc
@@ -498,15 +501,15 @@
 \ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }
   \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
   \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
 \else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]
-        {luatexja-preset}}%
-  \bxjs@nxt
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{luatexja-preset}%
+  }\bxjs@next
 \fi
 \DeclareRobustCommand\rmfamily
   {\not@math@alphabet\rmfamily\mathrm

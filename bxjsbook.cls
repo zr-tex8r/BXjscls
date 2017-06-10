@@ -86,6 +86,12 @@
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
   \fi}
+\def\bxjs@cslet#1{%
+  \expandafter\let\csname#1\endcsname}
+\def\bxjs@csletcs#1#2{%
+  \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+\def\bxjs@catopt#1#2{%
+  #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 \@onlypreamble\bxjs@restore@jltrcc

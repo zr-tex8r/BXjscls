@@ -407,6 +407,33 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@cslet}
+% |\bxjs@cslet{|\Meta{名前1}|}\制御綴|\Means
+%    \begin{macrocode}
+\def\bxjs@cslet#1{%
+  \expandafter\let\csname#1\endcsname}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@csletcs}
+% |\bxjs@csletcs{|\Meta{名前1}|}{|\Meta{名前2}|}|\Means
+%    \begin{macrocode}
+\def\bxjs@csletcs#1#2{%
+  \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@catopt}
+% |\bxjs@catopt{|\Meta{文字列1}|}{|\Meta{文字列2}|}|\Means
+% 2つの文字列を |,| で繋いだ文字列。
+% ただし片方が空の場合は |,| を入れない。
+% 完全展開可能。
+%    \begin{macrocode}
+\def\bxjs@catopt#1#2{%
+  #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsAtEndOfClass}
 % このクラスの読込終了時に対するフック。
 % （補助パッケージ中で用いられる。）
@@ -7762,19 +7789,32 @@
 % |japaram| の値をkey-valueリストとして解釈する。
 % keyvalのファミリは |bxjsStd| とする。
 %
-% \begin{macro}{\bxjs@jismmiv}
+% \begin{macro}{\bxjs@jp@jismmiv}
 % 2004JIS字形を優先させるか。
 %    \begin{macrocode}
-\newif\ifbxjs@jismmiv
+\newif\ifbxjs@jp@jismmiv
 %    \end{macrocode}
 % \end{macro}
 %
 % |jis2004| オプションの処理。
 %    \begin{macrocode}
-\let\bxjs@kv@jismmiv@true\bxjs@jismmivtrue
-\let\bxjs@kv@jismmiv@false\bxjs@jismmivfalse
+\bxjs@cslet{bxjs@kv@jis2004@true}\bxjs@jp@jismmivtrue
+\bxjs@cslet{bxjs@kv@jis2004@false}\bxjs@jp@jismmivfalse
 \define@key{bxjsStd}{jis2004}[true]{%
-  \bxjs@set@keyval{jismmiv}{#1}{}}
+  \bxjs@set@keyval{jis2004}{#1}{}}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@jp@font}
+% フォントパッケージの追加オプション。
+%    \begin{macrocode}
+\let\bxjs@jp@font\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% |jis2004| オプションの処理。
+%    \begin{macrocode}
+\define@key{bxjsStd}{font}{%
+  \edef\bxjs@jp@font{#1}}
 %    \end{macrocode}
 %
 % 実際の |japaram| の値を適用する。
@@ -7790,7 +7830,7 @@
 % \Note |otf| や |luatexja-preset| 等のパッケージがこのオプションを
 % 利用する。
 %    \begin{macrocode}
-\ifbxjs@jismmiv
+\ifbxjs@jp@jismmiv
   \g@addto@macro\@classoptionslist{,jis2004}
 % \@ifpackagewith 判定への対策
   \PassOptionsToPackage{jis2004}{otf}
@@ -8276,7 +8316,7 @@
 % |pxchfon| と |pxbabel| では2004JISを指定するオプションの
 % 名が |prefer2004jis| である。
 %    \begin{macrocode}
-\ifbxjs@jismmiv
+\ifbxjs@jp@jismmiv
   \PassOptionsToPackage{prefer2004jis}{pxchfon}
   \PassOptionsToPackage{prefer2004jis}{pxbabel}
 \fi
@@ -8288,6 +8328,8 @@
 % |\jsJaFont| が |auto| の場合は何もする必要がない。
 % 無指定でも |auto| でもない場合は、|\jsJaFont| をオプションに
 % して |pxchfon| パッケージを読み込む。
+% ここで、和文ドライバパラメタ |font| が指定されいる場合は、
+% その値を |pxchfon| のオプションに追加する。
 %    \begin{macrocode}
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
@@ -8295,11 +8337,11 @@
 \else\ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi\fi
-\ifx\jsJaFont\@empty\else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]
-        {pxchfon}[2010/05/12]}% v0.5
-  \bxjs@nxt
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
+\ifx\bxjs@tmpa\@empty\else
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{pxchfon}[2010/05/12]% v0.5
+  }\bxjs@next
 \fi
 %    \end{macrocode}
 %
@@ -8413,11 +8455,11 @@
 % スケール値（|\jsScale|）の反映は bxcjkjatype の側で行われる。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
-\edef\bxjs@nxt{%
-  \noexpand\RequirePackage[%
-      \ifx\bxjs@tmpa\@empty\else \bxjs@tmpa,\fi
-      whole,autotilde]{bxcjkjatype}[2013/10/15]}% v0.2c
-\bxjs@nxt
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole,autotilde}}
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[\bxjs@tmpa]{bxcjkjatype}[2013/10/15]% v0.2c
+}\bxjs@next
 \bxjs@cjk@loaded
 %    \end{macrocode}
 %
@@ -8544,14 +8586,14 @@
 % 非指定の場合はIPAexフォントを使用する。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
   \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
 \else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]%
-        {zxjafont}[2013/01/28]}% v0.2a
-  \bxjs@nxt
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]}% v0.2a
+  }\bxjs@next
 \fi
 %    \end{macrocode}
 %
@@ -8705,15 +8747,15 @@
 \ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }
   \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
   \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
 \else
-  \edef\bxjs@nxt{%
-    \noexpand\RequirePackage[\bxjs@tmpa]
-        {luatexja-preset}}%
-  \bxjs@nxt
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@tmpa]{luatexja-preset}%
+  }\bxjs@next
 \fi
 %    \end{macrocode}
 %
