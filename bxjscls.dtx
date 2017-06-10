@@ -7783,6 +7783,20 @@
 \expandafter\bxjs@next\expandafter{\jsJaParam}
 %    \end{macrocode}
 %
+% \paragraph{jis2004パラメタ}
+%
+% |jis2004| パラメタが有効の場合は、グローバルオプションに |jis2004|
+% を追加する。
+% \Note |otf| や |luatexja-preset| 等のパッケージがこのオプションを
+% 利用する。
+%    \begin{macrocode}
+\ifbxjs@jismmiv
+  \g@addto@macro\@classoptionslist{,jis2004}
+% \@ifpackagewith 判定への対策
+  \PassOptionsToPackage{jis2004}{otf}
+\fi
+%    \end{macrocode}
+%
 % \paragraph{共通命令の実装}
 %
 % |\jQ| 等の「単位」系の共通命令を実装する。
@@ -8262,6 +8276,17 @@
   \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
   \else \def\>{\protect\bxjs@put@xkanjiskip}
   \fi
+\fi
+%    \end{macrocode}
+%
+% \paragraph{jis2004パラメタ}
+%
+% |pxchfon| と |pxbabel| では2004JISを指定するオプションの
+% 名が |prefer2004jis| である。
+%    \begin{macrocode}
+\ifbxjs@jismmiv
+  \PassOptionsToPackage{prefer2004jis}{pxchfon}
+  \PassOptionsToPackage{prefer2004jis}{pxbabel}
 \fi
 %    \end{macrocode}
 %

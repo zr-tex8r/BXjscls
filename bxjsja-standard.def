@@ -32,6 +32,10 @@
   \bxjs@set@keyval{jismmiv}{#1}{}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
+\ifbxjs@jismmiv
+  \g@addto@macro\@classoptionslist{,jis2004}
+  \PassOptionsToPackage{jis2004}{otf}
+\fi
 \ifjsWitheTeX
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
@@ -286,6 +290,10 @@
   \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
   \else \def\>{\protect\bxjs@put@xkanjiskip}
   \fi
+\fi
+\ifbxjs@jismmiv
+  \PassOptionsToPackage{prefer2004jis}{pxchfon}
+  \PassOptionsToPackage{prefer2004jis}{pxbabel}
 \fi
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
