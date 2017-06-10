@@ -84,7 +84,7 @@
 \def\bxjs@parse@qh@b#1#2#3{%
   \ifx\@nnil#2\@nnil\else \def\bxjs@tmpb{#1#3}\fi}
 \fi
-\def\jsJaFontSize#1#2{%
+\def\jafontsize#1#2{%
   \begingroup
     \bxjs@jafontsize@a{#1}%
     \@tempdimb\jsInverseScale\@tempdima
@@ -96,10 +96,6 @@
   \bxjs@parse@qh{#1}%
   \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
   \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
-\AtBeginDocument{%
-  \ifx\jafontsize\@undefined
-    \global\let\jafontsize\jsJaFontSize
-  \fi}
 \def\bxjs@kanjiskip{0pt}
 \newcommand*\setkanjiskip[1]{%
   \edef\bxjs@kanjiskip{#1}%

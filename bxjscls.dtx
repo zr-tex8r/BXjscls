@@ -7904,15 +7904,12 @@
 % \end{macro}
 %
 % \begin{macro}{\jafontsize}
-% \begin{macro}{\jsJaFontSize}
 % |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
 % 和文フォント規準で、すなわち、1\,zwが\Meta{フォントサイズ}に
 % 等しくなるようにフォントサイズを指定する。
 % この命令の引数では、|Q|/|H| の単位が使用できる。
-% \Note 命令名衝突を回避するため、本文開始時まで定義を遅延させている。
-% プレアンブルでは代わりに |\jsJaFontSize| を用いる。
 %    \begin{macrocode}
-\def\jsJaFontSize#1#2{%
+\def\jafontsize#1#2{%
   \begingroup
     \bxjs@jafontsize@a{#1}%
     \@tempdimb\jsInverseScale\@tempdima
@@ -7924,14 +7921,9 @@
   \bxjs@parse@qh{#1}%
   \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
   \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
-\AtBeginDocument{%
-  \ifx\jafontsize\@undefined
-    \global\let\jafontsize\jsJaFontSize
-  \fi}
 %    \end{macrocode}
 % \end{macro}
-% \end{macro}
-% 
+%
 % 続いて、和文間空白・和欧文間空白関連の命令を実装する。
 % （エンジン依存のコード。）
 %
