@@ -534,7 +534,6 @@
   \fi}
 \newif\ifbxjs@layout@buggyhmargin
 \newif\ifbxjs@force@chapterabstract
-\bxjs@force@chapterabstracttrue
 \@namedef{bxjs@kv@layout@v1}{%
 \bxjs@force@chapterabstracttrue
 }
