@@ -628,6 +628,11 @@
 \DeclareOption{b5j}{\bxjs@setpaper{{182truemm}{257truemm}}}
 \DeclareOption{a4var}{\bxjs@setpaper{{210truemm}{283truemm}}}
 \DeclareOption{b5var}{\bxjs@setpaper{{182truemm}{230truemm}}}
+%    \end{macrocode}
+% \Note |...var| をPandocで使えるように後ろに |paper| をつけた形を用意する。
+%    \begin{macrocode}
+\DeclareOption{a4varpaper}{\bxjs@setpaper{{210truemm}{283truemm}}}
+\DeclareOption{b5varpaper}{\bxjs@setpaper{{182truemm}{230truemm}}}
 \DeclareOption{letterpaper}{\bxjs@setpaper{letterpaper}}
 \DeclareOption{legalpaper}{\bxjs@setpaper{legalpaper}}
 \DeclareOption{executivepaper}{\bxjs@setpaper{executivepaper}}
