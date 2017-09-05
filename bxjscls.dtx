@@ -67,7 +67,9 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/07/07 v1.5d BXJS document classes]
+  [2017/09/06 v1.6  BXJS document classes]
+% based on jsclasses [2017/09/03]
+% [2017/07/07 v1.5d BXJS document classes]
 % [2017/06/10 v1.5c BXJS document classes]
 % [2017/04/01 v1.5b BXJS document classes]
 % [2017/03/14 v1.5a BXJS document classes]
@@ -239,6 +241,33 @@
 %
 % 以下では実際のコードに即して説明します。
 %
+% \begin{macro}{\bxjs@clsname}
+%
+% 文書クラスの名前です。エラーメッセージ表示などで使われます。
+%
+%    \begin{macrocode}
+%<article>\def\bxjs@clsname{bxjsarticle}
+%<book>\def\bxjs@clsname{bxjsbook}
+%<report>\def\bxjs@clsname{bxjsreport}
+%<slide>\def\bxjs@clsname{bxjsslide}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifjsc@needsp@tch}
+%
+% [2016-08-22] 従来\texttt{jsclasses}では，\pLaTeX や\LaTeX の
+% 不都合な点に対して，クラスファイル内で独自に対策を施していま
+% した。しかし，2016年以降，コミュニティ版\pLaTeX が次第に対策
+% コードをカーネル内に取り込むようになりました。そこで，新しい
+% \pLaTeX カーネルと衝突しないように，日付が古い場合だけパッチ
+% をあてる場合があります。この処理に使用するフラグを定義します。
+%
+%    \begin{macrocode}
+\newif\ifjsc@needsp@tch
+\jsc@needsp@tchfalse
+%    \end{macrocode}
+% \end{macro}
+%
 % \paragraph{BXJSクラス特有の設定 \ZRX}
 %
 % \mbox{}
@@ -279,13 +308,9 @@
 \let\jsReport=r
 \let\jsSlide=s
 %<article>\let\jsDocClass\jsArticle
-%<article>\def\bxjs@clsname{bxjsarticle}
 %<book>\let\jsDocClass\jsBook
-%<book>\def\bxjs@clsname{bxjsbook}
 %<report>\let\jsDocClass\jsReport
-%<report>\def\bxjs@clsname{bxjsreport}
 %<slide>\let\jsDocClass\jsSlide
-%<slide>\def\bxjs@clsname{bxjsslide}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -542,6 +567,9 @@
 % 真なら本文，偽なら前付け・後付けです。
 % 偽なら |\chapter| で章番号が出ません。
 %
+% \begin{ZRnote}
+% BXJSではreport系でも定義されることに注意。
+% \end{ZRnote}
 %    \begin{macrocode}
 %<book|report>\newif\if@mainmatter \@mainmattertrue
 %    \end{macrocode}
@@ -576,7 +604,7 @@
 % \pLaTeXe の \texttt{b5paper}
 % は $257\,\mathrm{mm} \times 182\,\mathrm{mm}$ になっています。
 % ここでは\pLaTeXe にならってJISに従いました。
-%
+% 
 % デフォルトは \texttt{a4paper} です。
 %
 % \texttt{b5var}（B5変形，182mm×230mm），
@@ -757,26 +785,56 @@
 % \end{ZRnote}
 %
 % \paragraph{トンボオプション}
-% \mbox{}
-% \begin{ZRnote}
-% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
 %
-% ただしJSクラスとの互換のため以下の変数を用意する。
+% トンボ（crop marks）を出力します。
+% 実際の処理は\pLaTeXe 本体で行います（\texttt{plcore.dtx} 参照）。
+% オプション \texttt{tombow} で日付付きのトンボ，
+% オプション \texttt{tombo} で日付なしのトンボを出力します。
+% これらはアスキー版のままです。
+% カウンタ |\hour|，|\minute| はp\LaTeXe 本体で宣言されています。
 %
-% \Note JSクラスでは、2017-01-11の改修で、「トンボオプション指定時
-% のみ |\stockwidth|/|height| を定義する」という仕様に変更された。
-% BXJSでの対応は要検討。
-%
-% \end{ZRnote}
 %    \begin{macrocode}
-\newdimen\stockwidth \newdimen\stockheight
+\ifx\hour\@undefined   \newcount\hour \fi
+\ifx\minute\@undefined \newcount\minute \fi
+\hour\time \divide\hour by 60\relax
+\@tempcnta\hour \multiply\@tempcnta 60\relax
+\minute\time \advance\minute-\@tempcnta
+\DeclareOption{tombow}{%
+  \tombowtrue \tombowdatetrue
+  \setlength{\@tombowwidth}{.1\p@}%
+  \@bannertoken{%
+     \jobname\space(\number\year-\two@digits\month-\two@digits\day
+     \space\two@digits\hour:\two@digits\minute)}%
+  \maketombowbox}
+\DeclareOption{tombo}{%
+  \tombowtrue \tombowdatefalse
+  \setlength{\@tombowwidth}{.1\p@}%
+  \maketombowbox}
 %    \end{macrocode}
 %
-% \paragraph{面付け}
-% \mbox{}
 % \begin{ZRnote}
-% 欧文 {\LaTeX} のカーネルではサポートされないため削除。
+% 現在のBXJSクラスはトンボ関連のオプションをサポートしない。
+% 従って、|tombow| スイッチが有効の場合には警告を出す。
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \iftombow
+    \ClassWarningNoLine\bxjs@clsname
+     {Tombow output is not (yet) supported}%
+  \fi}
+%    \end{macrocode}
 % \end{ZRnote}
+%
+% \paragraph{面付け}
+%
+% オプション \texttt{mentuke} で幅ゼロのトンボを出力します。
+% 面付けに便利です。これもアスキー版のままです。
+%
+%    \begin{macrocode}
+\DeclareOption{mentuke}{%
+  \tombowtrue \tombowdatefalse
+  \setlength{\@tombowwidth}{\z@}%
+  \maketombowbox}
+%    \end{macrocode}
 %
 % \paragraph{両面，片面オプション}
 %
@@ -953,14 +1011,16 @@
 %
 % \texttt{draft} でoverfull boxの起きた行末に5ptの罫線を引きます。
 %
+% [2016-07-13] |\ifdraft| を定義するのをやめました。
+%
 % \begin{ZRnote}
 % \begin{macro}{\ifjsDraft}
 % JSクラスは |\ifdraft| という公開名のスイッチを用いているが、
 % これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
 % の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
 % |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
-% \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
-% よって |\ifdraft| は2.0版で廃止を予定する。
+% \Note JSクラスの |\ifdraft| が廃止されたので、
+% |\ifdraft| は2.0版で廃止を予定する。
 %    \begin{macrocode}
 \let\ifjsDraft\iffalse
 \@onlypreamble\bxjs@draft
@@ -978,15 +1038,23 @@
 % \end{ZRnote}
 %
 % \paragraph{和文フォントメトリックの選択}
-% \mbox{}
+%
+% ここでは新しい \texttt{jis} フォントメトリックを標準で使いますが，
+% 古い \texttt{min10}，\texttt{goth10} などを使いたいときは \texttt{mingoth}
+% というオプションを指定します。
+% また，\texttt{winjis} オプションで \texttt{winjis} メトリックが使えます。
+%
 % \begin{ZRnote}
-% ここは和文ドライバの管轄。
+% BXJSクラスではここは和文ドライバの管轄。
 % \end{ZRnote}
 %
 % \paragraph{papersizeスペシャルの利用}
-% \mbox{}
+%
+% dvipsやdvioutで用紙設定を自動化するには
+% オプション \texttt{papersize} を与えます。
+%
 % \begin{ZRnote}
-% |geometry| パッケージが行う。
+% BXJSクラスでは |geometry| パッケージがこの処理を行う。
 %
 % \begin{macro}{\ifbxjs@papersize}
 % 〔スイッチ〕 papersizeスペシャルを出力するか。
@@ -1019,8 +1087,7 @@
 % いましたが，新しくjsreportクラスも作りました。どちらでもお好きな方を使ってください。
 %
 % \begin{ZRnote}
-% BXJS では `|report|' 相当のものは別に |bxjsreport| クラスとして用意する。
-% \Note FIXME：|jsbook|\,+\,|report| と |jsreport|のどちらに合わせるか。
+% BXJSでは当初から |bxjsreport| クラスが用意されている。
 % \end{ZRnote}
 %
 % \paragraph{jslogoパッケージの読み込み}
@@ -1775,6 +1842,21 @@
 \bxjs@composite@proc
 %    \end{macrocode}
 %
+% 後処理
+%
+%    \begin{macrocode}
+\if@slide
+  \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
+\fi
+\if@landscape
+  \setlength\@tempdima  {\paperheight}
+  \setlength\paperheight{\paperwidth}
+  \setlength\paperwidth {\@tempdima}
+\fi
+%    \end{macrocode}
+%
+% \paragraph{グローバルオプションの整理 \ZRX}
+%
 % \begin{ZRnote}
 %
 % グローバルオプションのトークン列に |{ }| が含まれていると、
@@ -1813,6 +1895,27 @@
 \@expandtwoargs\@removeelement
   {noscale}\@classoptionslist\@classoptionslist
 %    \end{macrocode}
+%
+% \end{ZRnote}
+%
+% \paragraph{使用エンジンの検査・自動判定}
+%
+% ユーザが |uplatex| オプションの有無により指定したエンジンが，実際に
+% 使われているものと一致しているかを検査し，一致しない場合はエラー
+% メッセージを表示します。
+%
+% [2016-11-09] p\LaTeX / up\LaTeX を自動判別するオプション |autodetect-engine| を新設しました。
+% up\LaTeX の場合は，グローバルオプションに |uplatex| を追加することで，
+% 自動判定に応じて |otf| パッケージにも |uplatex| オプションが渡るようにします。
+%
+%    \begin{macrocode}
+%    \end{macrocode}
+%
+% [2016-11-11] p\LaTeX の場合は，オプション |uplatex| が指定されていれば必ずエラーを出します。
+% |autodetect-engine| が有効になっていてもエラーを出しますが，これは |otf| パッケージに
+% |uplatex| オプションが渡ってしまうのを防ぐためです。
+%
+% \begin{ZRnote}
 %
 % 現在の（正規化前の）和文ドライバの値を\
 % |\bxjs@jadriver@given| に保存する。
@@ -1867,6 +1970,8 @@
   \g@addto@macro\@classoptionslist{,uplatex}
 \fi
 %    \end{macrocode}
+%
+% \paragraph{ドライバ指定 \ZRX}
 %
 % ドライバ指定のオプションが与えられた場合は、
 % それがエンジンと整合するかを検査する。
@@ -1953,6 +2058,8 @@
 \fi
 %    \end{macrocode}
 %
+% \paragraph{その他のBXJS特有の後処理 \ZRX}
+%
 % |\bxjs@jadriver| の正規化。
 % 値が未指定の場合は |minimal| に変える。
 % ただしエンジンが{(u)\pTeX}である場合は |standard|
@@ -2010,20 +2117,6 @@
 % \end{macro}
 %
 % \end{ZRnote}
-%
-% 後処理
-%
-%    \begin{macrocode}
-\if@slide
-  \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
-\fi
-\if@landscape
-  \setlength\@tempdima  {\paperheight}
-  \setlength\paperheight{\paperwidth}
-  \setlength\paperwidth {\@tempdima}
-\fi
-%    \end{macrocode}
-%
 % \begin{ZRnote}
 %
 % 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
@@ -2066,10 +2159,42 @@
 % \end{ZRnote}
 %
 % \paragraph{papersizeスペシャルの出力}
-% \mbox{}
+%
+% dvipsのpapersizeスペシャルを出力します。
+% これでdvipsや新しいdvioutで出力領域が自動設定できます。
+% トンボの付いたときの用紙サイズは無意味ですが，
+% いわゆる「ノビ」サイズという縦横1インチずつ長い用紙に出力することを考えて，
+% 1インチずつ加えました。
+% ところが\pLaTeXe はトンボ出力幅を両側に1インチとっていますので，
+% dvips使用時に
+% \begin{quote}
+%   |-O -0.5in,-0.5in|
+% \end{quote}
+% というオプションを与えて両側0.5インチのトンボにするといいでしょう。
+%
+% [2003-05-17] トンボをプレビューに使うことを考えて1インチを2インチにしました。
+%
+% [2016-07-11] memoirクラスのマニュアルによると，トンボを含めた用紙の寸法は
+% |\stockwidth|，|\stockheight|と呼ぶようですので，これを使うことにしました。
+%
+% [2017-01-11] トンボオプションが指定されているとき「だけ」|\stockwidth|，
+% |\stockheight|を定義するようにしました。
+%
 % \begin{ZRnote}
-% |geometry| パッケージが行う。
+% BXJSでは出力用紙サイズ記録は |geometry| パッケージが行う。
+%
+% また、JSクラスと異なり、|\stockwidth|、|\stockheight| は常に定義される。
 % \end{ZRnote}
+%    \begin{macrocode}
+\newdimen\stockwidth \newdimen\stockheight
+\iftombow
+% \newdimen\stockwidth \newdimen\stockheight
+  \setlength{\stockwidth}{\paperwidth}
+  \setlength{\stockheight}{\paperheight}
+  \advance \stockwidth 2in
+  \advance \stockheight 2in
+\fi
+%    \end{macrocode}
 %
 % \paragraph{基準となる行送り}
 %
@@ -2160,13 +2285,15 @@
 % \Note （多分2.0版あたりで）JSクラスに合わせるため |\p@?| 表記を
 % 止める予定。
 %    \begin{macrocode}
+\newdimen\jsc@mpt
+\newdimen\jsc@mmm
 \ifjsc@mag
-  \let\jsc@mpt\p@
-  \newdimen\jsc@mmm \jsc@mmm=1mm
+  \jsc@mpt=1\p@
+  \jsc@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\jsc@mpt \jsc@mpt=\jsc@magscale \p@
-  \newdimen\jsc@mmm \jsc@mmm=\jsc@magscale mm
+  \jsc@mpt=\jsc@magscale\p@
+  \jsc@mmm=\jsc@magscale mm
   \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
@@ -2272,11 +2399,32 @@
 % \end{macro}
 % \end{macro}
 %
+% [2016-07-11] 新しく追加した|\stockwidth|，|\stockheight|も|\mag|にあわせて
+% スケールします。
+%
+% [2017-01-11] トンボオプションが指定されているとき「だけ」|\stockwidth|，
+% |\stockheight|が定義されています。
+%
+%    \begin{macrocode}
+%    \end{macrocode}
+%
 % \paragraph{pagesizeスペシャルの出力}
-% \mbox{}
-% \begin{ZRnote}
-% 削除。
-% \end{ZRnote}
+%
+% [2003-05-17] dvipdfm(x)のpagesizeスペシャルを出力します。
+%
+% [2004-08-08] 今のdvipdfmxはdvips用スペシャルを理解するようなので外しました。
+%
+%    \begin{macrocode}
+% \ifpapersize
+%   \setlength{\@tempdima}{\paperwidth}
+%   \setlength{\@tempdimb}{\paperheight}
+%   \iftombow
+%     \advance \@tempdima 2truein
+%     \advance \@tempdimb 2truein
+%   \fi
+%   \AtBeginDvi{\special{pdf: pagesize width \the\@tempdima\space height \the\@tempdimb}}
+% \fi
+%    \end{macrocode}
 %
 % \section{和文フォントの変更}
 %
@@ -2289,6 +2437,9 @@
 % 欧文といえば，\LaTeX の |\def\@{\spacefactor\@m}| という定義（|\@m| は1000）
 % では |I watch TV\@.| と書くと V とピリオドのペアカーニングが効かなくなります。
 % そこで，次のような定義に直し，|I watch TV.\@| と書くことにします。
+%
+% [2016-07-14] 2015-01-01の\LaTeX で，auxiliary filesに書き出されたときに
+% スペースが食われないようにする修正が入りました。これに合わせて |{}| を補いました。
 %
 %    \begin{macrocode}
 \chardef\bxjs@periodchar=`\.
@@ -2546,8 +2697,11 @@
 % パラメータに実際の値を設定します。
 % たとえば |\Cwd| は |\normalfont| の全角幅（1zw）です。
 %
+% [2017-08-31] 基準とする文字を「全角空白」（EUCコード\texttt{0xA1A1}）から
+% 「漢」（JISコード\texttt{0x3441}）へ変更しました。
+%
 % \begin{ZRnote}
-% まず |\Cwd| 等の変数を定義する。
+% |\Cwd| 等の変数は{\pTeX}系以外では未定義なのでここで定義する。
 %    \begin{macrocode}
 \ifx\Cht\@undefined \newdimen\Cht \fi
 \ifx\Cdp\@undefined \newdimen\Cdp \fi
@@ -2557,7 +2711,7 @@
 %    \end{macrocode}
 %
 % 規約上、現在の |\jsZw| の値が |\Cwd| である。
-% |\Cht| と |\Cdp| は単純に |\Cwd| の88\%と12\%の値とする。
+% BXJSでは |\Cht| と |\Cdp| は単純に |\Cwd| の88\%と12\%の値とする。
 % \end{ZRnote}
 %    \begin{macrocode}
 \setlength\Cht{0.88\jsZw}
@@ -2721,7 +2875,7 @@
 %    \begin{macrocode}
 %<!kiyou>\setlength\columnsep{2\Cwd}
 %<kiyou>\setlength\columnsep{28truebp}
-\setlength\columnseprule{0\p@}
+\setlength\columnseprule{0\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -2739,10 +2893,10 @@
 % \texttt{normal...} の付いた方は保存用です。
 %
 %    \begin{macrocode}
-\setlength\lineskip{1\p@?}
-\setlength\normallineskip{1\p@?}
-\setlength\lineskiplimit{1\p@?}
-\setlength\normallineskiplimit{1\p@?}
+\setlength\lineskip{1\jsc@mpt}
+\setlength\normallineskip{1\jsc@mpt}
+\setlength\lineskiplimit{1\jsc@mpt}
+\setlength\normallineskiplimit{1\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -2773,7 +2927,7 @@
 % |\parindent| は段落の先頭の字下げ幅です。
 %
 %    \begin{macrocode}
-\setlength\parskip{0\p@}
+\setlength\parskip{0\jsc@mpt}
 \if@slide
   \setlength\parindent{0\p@}
 \else
@@ -3140,6 +3294,385 @@
 % \end{itemize}
 % \end{ZRnote}
 %
+% \begin{ZRnote}
+% \Note diffが崩壊するのを避けるためオリジナルのコードを無効化した状態で
+% 挿入しておく。
+% \end{ZRnote}
+%<*jsclasses>
+%
+% \paragraph{縦方向のスペース}
+%
+% \begin{macro}{\headheight}
+% \begin{macro}{\topskip}
+%
+% |\topskip| は本文領域上端と本文1行目のベースラインとの距離です。
+% あまりぎりぎりの値にすると，本文中に $\int$ のような高い文字が
+% 入ったときに1行目のベースラインが他のページより下がってしまいます。
+% ここでは本文の公称フォントサイズ（10pt）にします。
+%
+% [2003-06-26] |\headheight| はヘッダの高さで，
+% 元は12ptでしたが，新ドキュメントクラスでは |\topskip|
+% と等しくしていました。ところが，|fancyhdr| パッケージ
+% で |\headheight| が小さいとおかしいことになるようです
+% ので，2倍に増やしました。代わりに，版面の上下揃えの
+% 計算では |\headheight| ではなく |\topskip| を使う
+% ことにしました。
+%
+% [2016-08-17] 圏点やルビが一行目に来た場合に下がるのを防ぐた
+% め，|\topskip| を10ptから1.38zwに増やしました。
+% |\headheight| は従来と同じ20ptのままとします。
+%
+%    \begin{macrocode}
+\setlength\topskip{1.38zw}%% from 10\jsc@mpt (2016-08-17)
+\if@slide
+  \setlength\headheight{0\jsc@mpt}
+\else
+  \setlength\headheight{20\jsc@mpt}%% from 2\topskip (2016-08-17); from \topskip (2003-06-26)
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\footskip}
+%
+% |\footskip| は本文領域下端とフッタ下端との距離です。
+% 標準クラスファイルでは，book で0.35in（約8.89mm），
+% book 以外で30pt（約10.54mm）となっていましたが，
+% ここではA4判のときちょうど1cmとなるように，
+% |\paperheight| の0.03367倍（最小 |\baselineskip|）としました。
+% 書籍については，フッタは使わないことにして，ゼロにしました。
+%
+%    \begin{macrocode}
+%<*article|kiyou>
+\if@slide
+  \setlength\footskip{0pt}
+\else
+  \setlength\footskip{0.03367\paperheight}
+  \ifdim\footskip<\baselineskip
+    \setlength\footskip{\baselineskip}
+  \fi
+\fi
+%</article|kiyou>
+%<jspf>\setlength\footskip{9\jsc@mmm}
+%<*book>
+\if@report
+  \setlength\footskip{0.03367\paperheight}
+  \ifdim\footskip<\baselineskip
+    \setlength\footskip{\baselineskip}
+  \fi
+\else
+  \setlength\footskip{0pt}
+\fi
+%</book>
+%<*report>
+\setlength\footskip{0.03367\paperheight}
+\ifdim\footskip<\baselineskip
+  \setlength\footskip{\baselineskip}
+\fi
+%</report>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\headsep}
+%
+% |\headsep| はヘッダ下端と本文領域上端との距離です。
+% 元は book で18pt（約6.33mm），
+% それ以外で25pt（約8.79mm）になっていました。
+% ここでは article は |\footskip| $-$ |\topskip| としました。
+%
+% [2016-10-08] article の \texttt{slide} のとき，
+% および book の非 \texttt{report} と kiyou のときに |\headsep| を
+% 減らしそこねていたのを修正しました（2016-08-17での修正漏れ）。
+%
+%    \begin{macrocode}
+%<*article>
+\if@slide
+  \setlength\headsep{0\jsc@mpt}
+  \addtolength\headsep{-\topskip}%% added (2016-10-08)
+  \addtolength\headsep{10\jsc@mpt}%% added (2016-10-08)
+\else
+  \setlength\headsep{\footskip}
+  \addtolength\headsep{-\topskip}
+\fi
+%</article>
+%<*book>
+\if@report
+  \setlength\headsep{\footskip}
+  \addtolength\headsep{-\topskip}
+\else
+  \setlength\headsep{6\jsc@mmm}
+  \addtolength\headsep{-\topskip}%% added (2016-10-08)
+  \addtolength\headsep{10\jsc@mpt}%% added (2016-10-08)
+\fi
+%</book>
+%<*report>
+\setlength\headsep{\footskip}
+\addtolength\headsep{-\topskip}
+%</report>
+%<*jspf>
+\setlength\headsep{9\jsc@mmm}
+\addtolength\headsep{-\topskip}
+%</jspf>
+%<*kiyou>
+\setlength\headheight{0\jsc@mpt}
+\setlength\headsep{0\jsc@mpt}
+\addtolength\headsep{-\topskip}%% added (2016-10-08)
+\addtolength\headsep{10\jsc@mpt}%% added (2016-10-08)
+%</kiyou>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\maxdepth}
+%
+% |\maxdepth| は本文最下行の最大の深さで，
+% plain \TeX や\LaTeX~2.09では4ptに固定でした。
+% \LaTeX2e では |\maxdepth| $+$ |\topskip| を本文フォントサイズ
+% の1.5倍にしたいのですが，|\topskip| は本文フォントサイズ
+% （ここでは10pt）に等しいので，結局 |\maxdepth| は |\topskip|
+% の半分の値（具体的には5pt）にします。
+%
+%    \begin{macrocode}
+\setlength\maxdepth{.5\topskip}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{本文の幅と高さ}
+%
+% \begin{macro}{\fullwidth}
+%
+% 本文の幅が全角40文字を超えると読みにくくなります。
+% そこで，書籍の場合に限って，
+% 紙の幅が広いときは外側のマージンを余分にとって全角40文字に押え，
+% ヘッダやフッタは本文領域より広く取ることにします。
+% このときヘッダやフッタの幅を表す |\fullwidth| という長さを定義します。
+%
+%    \begin{macrocode}
+\newdimen\fullwidth
+%    \end{macrocode}
+%
+% この |\fullwidth| は article では紙幅 |\paperwidth|の0.76倍を超えない
+% 全角幅の整数倍（二段組では全角幅の偶数倍）にします。0.76倍という数値は
+% A4縦置きの場合に紙幅から約2インチを引いた値になるように選びました。
+% book では紙幅から36ミリを引いた値にしました。
+%
+% \begin{macro}{\textwidth}
+%
+% 書籍以外では本文領域の幅 |\textwidth| は |\fullwidth| と等しくします。
+% |article| ではA4縦置きで49文字となります。
+% 某学会誌スタイルでは50zw（25文字×2段）＋段間8mmとします。
+%
+%    \begin{macrocode}
+%<*article>
+\if@slide
+  \setlength\fullwidth{0.9\paperwidth}
+\else
+  \setlength\fullwidth{0.76\paperwidth}
+\fi
+\if@twocolumn \@tempdima=2zw \else \@tempdima=1zw \fi
+\divide\fullwidth\@tempdima \multiply\fullwidth\@tempdima
+\setlength\textwidth{\fullwidth}
+%</article>
+%<*book>
+\if@report
+  \setlength\fullwidth{0.76\paperwidth}
+\else
+  \setlength\fullwidth{\paperwidth}
+  \addtolength\fullwidth{-36\jsc@mmm}
+\fi
+\if@twocolumn \@tempdima=2zw \else \@tempdima=1zw \fi
+\divide\fullwidth\@tempdima \multiply\fullwidth\@tempdima
+\setlength\textwidth{\fullwidth}
+\if@report \else
+  \if@twocolumn \else
+    \ifdim \fullwidth>40zw
+      \setlength\textwidth{40zw}
+    \fi
+  \fi
+\fi
+%</book>
+%<*report>
+\setlength\fullwidth{0.76\paperwidth}
+\if@twocolumn \@tempdima=2zw \else \@tempdima=1zw \fi
+\divide\fullwidth\@tempdima \multiply\fullwidth\@tempdima
+\setlength\textwidth{\fullwidth}
+%</report>
+%<*jspf>
+\setlength\fullwidth{50zw}
+\addtolength\fullwidth{8\jsc@mmm}
+\setlength\textwidth{\fullwidth}
+%</jspf>
+%<*kiyou>
+\setlength\fullwidth{48zw}
+\addtolength\fullwidth{\columnsep}
+\setlength\textwidth{\fullwidth}
+%</kiyou>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\textheight}
+%
+% 紙の高さ |\paperheight| は，1インチと |\topmargin|
+% と |\headheight| と |\headsep| と |\textheight|
+% と |\footskip| とページ下部の余白を加えたものです。
+%
+% 本文部分の高さ |\textheight| は，
+% 紙の高さ |\paperheight| の0.83倍から，
+% ヘッダの高さ，ヘッダと本文の距離，本文とフッタ下端の距離，
+% |\topskip| を引き，
+% それを |\baselineskip| の倍数に切り捨て，
+% 最後に |\topskip| を加えます。
+% 念のため0.1ポイント余分に加えておきます。
+% 0.83倍という数値は，A4縦置きの場合に紙の高さから
+% 上下マージン各約1インチを引いた値になるように選びました。
+%
+% 某学会誌スタイルでは44行にします。
+%
+% [2003-06-26] |\headheight| を |\topskip| に直しました。
+% 以前はこの二つは値が同じであったので，変化はないはずです。
+%
+% [2016-08-26] |\topskip| を10ptから1.38zwに増やしましたので，
+% その分 |\textheight| を増やします（2016-08-17での修正漏れ）。
+%
+% [2016-10-08] article の slide のときに |\headheight| はゼロ
+% なので，さらに修正しました（2016-08-17での修正漏れ）。
+%
+%    \begin{macrocode}
+%<*article|book|report>
+\if@slide
+  \setlength{\textheight}{0.95\paperheight}
+\else
+  \setlength{\textheight}{0.83\paperheight}
+\fi
+\addtolength{\textheight}{-10\jsc@mpt}%% from -\topskip (2016-10-08); from -\headheight (2003-06-26)
+\addtolength{\textheight}{-\headsep}
+\addtolength{\textheight}{-\footskip}
+\addtolength{\textheight}{-\topskip}
+\divide\textheight\baselineskip
+\multiply\textheight\baselineskip
+%</article|book|report>
+%<jspf>\setlength{\textheight}{51\baselineskip}
+%<kiyou>\setlength{\textheight}{47\baselineskip}
+\addtolength{\textheight}{\topskip}
+\addtolength{\textheight}{0.1\jsc@mpt}
+%<jspf>\setlength{\mathindent}{10\jsc@mmm}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\flushbottom}
+%
+% [2016-07-18] |\textheight| に念のため0.1ポイント余裕を持たせて
+% いるのと同様に，|\flushbottom| にも余裕を持たせます。
+% 元の\LaTeXe での完全な |\flushbottom| の定義は
+%\begin{verbatim}
+%  \def\flushbottom{%
+%    \let\@textbottom\relax \let\@texttop\relax}
+%\end{verbatim}
+% ですが，次のようにします。
+%
+%    \begin{macrocode}
+\def\flushbottom{%
+  \def\@textbottom{\vskip \z@ \@plus.1\jsc@mpt}%
+  \let\@texttop\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\marginparsep}
+% \begin{macro}{\marginparpush}
+%
+% |\marginparsep| は欄外の書き込みと本文との間隔です。
+% |\marginparpush| は欄外の書き込みどうしの最小の間隔です。
+%
+%    \begin{macrocode}
+\setlength\marginparsep{\columnsep}
+\setlength\marginparpush{\baselineskip}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\oddsidemargin}
+% \begin{macro}{\evensidemargin}
+%
+% それぞれ奇数ページ，偶数ページの左マージンから1インチ引いた値です。
+% 片面印刷では |\oddsidemargin| が使われます。
+% \TeX は上・左マージンに |1truein| を挿入しますが，
+% トンボ関係のオプションが指定されるとp\LaTeXe （|plcore.ltx|）
+% はトンボの内側に |1in| のスペース（|1truein| ではなく）を挿入するので，
+% 場合分けしています。
+%
+%    \begin{macrocode}
+\setlength{\oddsidemargin}{\paperwidth}
+\addtolength{\oddsidemargin}{-\fullwidth}
+\setlength{\oddsidemargin}{.5\oddsidemargin}
+\iftombow
+  \addtolength{\oddsidemargin}{-1in}
+\else
+  \addtolength{\oddsidemargin}{-\inv@mag in}
+\fi
+\setlength{\evensidemargin}{\oddsidemargin}
+\if@mparswitch
+  \addtolength{\evensidemargin}{\fullwidth}
+  \addtolength{\evensidemargin}{-\textwidth}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\marginparwidth}
+%
+% |\marginparwidth| は欄外の書き込みの横幅です。
+% 外側マージンの幅（|\evensidemargin| $+$ 1インチ）から1センチを引き，
+% さらに |\marginparsep|（欄外の書き込みと本文のアキ）を引いた値に
+% しました。最後に1\,zwの整数倍に切り捨てます。
+%
+%    \begin{macrocode}
+\setlength\marginparwidth{\paperwidth}
+\addtolength\marginparwidth{-\oddsidemargin}
+\addtolength\marginparwidth{-\inv@mag in}
+\addtolength\marginparwidth{-\textwidth}
+\addtolength\marginparwidth{-10\jsc@mmm}
+\addtolength\marginparwidth{-\marginparsep}
+\@tempdima=1zw
+\divide\marginparwidth\@tempdima
+\multiply\marginparwidth\@tempdima
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\topmargin}
+%
+% 上マージン（紙の上端とヘッダ上端の距離）
+% から1インチ引いた値です。
+%
+% [2003-06-26] |\headheight| を |\topskip| に直しました。
+% 以前はこの二つは値が同じであったので，変化はないはずです。
+%
+% [2016-08-17] |\topskip| を10ptから1.38zwに直しましたが，
+% |\topmargin| は従来の値から変わらないように調節しました。
+% …のつもりでしたが，|\textheight| を増やし忘れていたので
+% 変わってしまっていました（2016-08-26修正済み）。
+%
+%    \begin{macrocode}
+\setlength\topmargin{\paperheight}
+\addtolength\topmargin{-\textheight}
+\if@slide
+  \addtolength\topmargin{-\headheight}
+\else
+  \addtolength\topmargin{-10\jsc@mpt}%% from -\topskip (2016-10-08); from -\headheight (2003-06-26)
+\fi
+\addtolength\topmargin{-\headsep}
+\addtolength\topmargin{-\footskip}
+\setlength\topmargin{0.5\topmargin}
+%<kiyou>\setlength\topmargin{81truebp}
+\iftombow
+  \addtolength\topmargin{-1in}
+\else
+  \addtolength\topmargin{-\inv@mag in}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+%</jsclasses>
+%
 % \paragraph{脚注}
 %
 % \begin{macro}{\footnotesep}
@@ -3435,7 +3968,7 @@
 % ページスタイルとして，\LaTeXe （欧文版）の標準クラス
 % では |empty|，|plain|，|headings|，|myheadings| があります。
 % このうち |empty|，|plain| スタイルは\LaTeXe 本体
-% で定義されています。
+% で定義されています。 
 %
 % アスキーのクラスファイルでは |headnombre|，|footnombre|，
 % |bothstyle|，|jpl@in| が追加されていますが，
@@ -3953,7 +4486,7 @@
   \centerline{\box\@abstractbox}
   \ifx\@keywords\@undefined\else
     \vskip 1.5em
-    \centerline{\parbox{157mm}{\textsf{Keywords:}\\ \small\@keywords}}
+    \centerline{\parbox{157\jsc@mmm}{\textsf{Keywords:}\\ \small\@keywords}}
   \fi
   \vskip 1.5em}
 %</jspf>
@@ -5151,9 +5684,9 @@
 \newbox\@abstractbox
 \newenvironment{abstract}{%
   \global\setbox\@abstractbox\hbox\bgroup
-  \begin{minipage}[b]{157mm}{\sffamily Abstract}\par
+  \begin{minipage}[b]{157\jsc@mmm}{\sffamily Abstract}\par
     \small
-    \if@english \parindent6mm \else \parindent1\jsZw \fi}%
+    \if@english \parindent6\jsc@mmm \else \parindent1\jsZw \fi}%
   {\end{minipage}\egroup}
 %</jspf>
 %    \end{macrocode}
@@ -5184,7 +5717,7 @@
 %\newbox\@keywordsbox
 %\newenvironment{keywords}{%
 %  \global\setbox\@keywordsbox\hbox\bgroup
-%  \begin{minipage}[b]{157mm}{\sffamily Keywords:}\par
+%  \begin{minipage}[b]{1570\jsc@mmm}{\sffamily Keywords:}\par
 %    \small\parindent0\jsZw}%
 %  {\end{minipage}\egroup}
 %</jspf>
@@ -5621,8 +6154,8 @@
 %    \begin{macrocode}
 %<*!jspf>
 % \long\def\@makecaption#1#2{{\small
-%   \advance\leftskip1cm
-%   \advance\rightskip1cm
+%   \advance\leftskip 10\jsc@mmm
+%   \advance\rightskip 10\jsc@mmm
 %   \vskip\abovecaptionskip
 %   \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
 %   \ifdim \wd\@tempboxa >\hsize
@@ -5652,9 +6185,9 @@
         \itemsep    \z@
         \itemindent \z@
         \labelsep   \z@
-        \labelwidth 11mm
+        \labelwidth 11\jsc@mmm
         \listparindent\z@
-        \leftmargin 11mm}\item\relax #2\endlist}
+        \leftmargin 11\jsc@mmm}\item\relax #2\endlist}
   \else
     \global \@minipagefalse
     \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
@@ -6062,6 +6595,7 @@
 % \newcommand*{\l@paragraph}    {\@dottedtocline{4}{7.0em}{4.1em}}
 % \newcommand*{\l@subparagraph} {\@dottedtocline{5}{10em}{5em}}
 %
+% \newcommand*{\l@subsection}   {\@dottedtocline{2}{1zw}{3zw}}
 % \newcommand*{\l@subsubsection}{\@dottedtocline{3}{2\jsZw}{3\jsZw}}
 % \newcommand*{\l@paragraph}    {\@dottedtocline{4}{3\jsZw}{3\jsZw}}
 % \newcommand*{\l@subparagraph} {\@dottedtocline{5}{4\jsZw}{3\jsZw}}
@@ -6138,7 +6672,7 @@
    \@lnumwidth #3\relax
    \advance\leftskip \@lnumwidth \null\nobreak\hskip -\leftskip
     {#4}\nobreak
-    \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+    \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep 
        mu$}\hfill \nobreak\hb@xt@\@pnumwidth{%
          \hfil\normalfont \normalcolor #5}\par}\fi}
 %    \end{macrocode}
@@ -6701,6 +7235,15 @@
   \everypar{{\setbox\z@\lastbox}\everypar{\everyparhook}\@endpefalse\everyparhook}}
 %    \end{macrocode}
 %
+% [2017-08-31] minipage環境にも対策します。
+%
+%    \begin{macrocode}
+\def\@setminipage{%
+  \@minipagetrue
+  \everypar{\@minipagefalse\everypar{\everyparhook}}%
+}
+%    \end{macrocode}
+%
 % |\item| 命令の直後です。
 %
 %    \begin{macrocode}
@@ -6837,9 +7380,38 @@
 %
 % \section{\texttt{amsmath} との衝突の回避}
 %
-% \begin{ZRnote}
-% 最近の |\LaTeX| では該当の問題は対処されているので削除。
-% \end{ZRnote}
+% \begin{macro}{\ltx@ifnextchar}
+% \begin{macro}{\ProvidesFile}
+%
+% \texttt{amsmath} パッケージでは行列中で |\@ifnextchar|
+% を再定義していますが，これが\LaTeX の |\ProvidesFile|
+% で悪さをする例がFTeXで報告されています。
+% これを避けるためのtDBさんのフィックスを挿入しておきます。
+% 副作用がありましたらお知らせください。
+%
+% この現象については私のTeX掲示板 4273〜，16058〜 で議論がありました。
+% なお，AMS関係のパッケージを読み込む際に psamsfonts オプションを
+% 与えても回避できます（Thanks: しっぽ愛好家さん）。
+%
+% [2016-11-19] 本家の ltclass.dtx 2004/01/28 v1.1g で修正されているので
+% コメントアウトしました。
+%
+%    \begin{macrocode}
+%\let\ltx@ifnextchar\@ifnextchar
+%\def\ProvidesFile#1{%
+%  \begingroup
+%    \catcode`\ 10 %
+%    \ifnum \endlinechar<256 %
+%      \ifnum \endlinechar>\m@ne
+%        \catcode\endlinechar 10 %
+%      \fi
+%    \fi
+%    \@makeother\/%
+%    \@makeother\&%
+%    \ltx@ifnextchar[{\@providesfile{#1}}{\@providesfile{#1}[]}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
 %
 % \section{初期設定}
 %
@@ -6893,8 +7465,10 @@
 % \begin{macro}{\figurename}
 % \begin{macro}{\tablename}
 %    \begin{macrocode}
-\newcommand{\figurename}{\if@english Fig.~\else 図\fi}
-\newcommand{\tablename}{\if@english Table~\else 表\fi}
+%<!jspf>\newcommand{\figurename}{\if@english Fig.~\else 図\fi}
+%<jspf>\newcommand{\figurename}{Fig.~}
+%<!jspf>\newcommand{\tablename}{\if@english Table~\else 表\fi}
+%<jspf>\newcommand{\tablename}{Table~}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -7457,8 +8031,10 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\fi
 \bxjs@if@sf@default{%
   \renewcommand\kanjifamilydefault{\gtdefault}}
 %    \end{macrocode}
@@ -8872,8 +9448,10 @@
 % minimal ドライバ実装中で定義した |\DeclareJaTextFontCommand|
 % を利用する。
 %    \begin{macrocode}
+\ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}

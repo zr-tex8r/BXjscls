@@ -22,7 +22,10 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2017/07/07 v1.5d BXJS document classes]
+  [2017/09/06 v1.6  BXJS document classes]
+\def\bxjs@clsname{bxjsslide}
+\newif\ifjsc@needsp@tch
+\jsc@needsp@tchfalse
 %% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
@@ -35,7 +38,6 @@
 \let\jsReport=r
 \let\jsSlide=s
 \let\jsDocClass\jsSlide
-\def\bxjs@clsname{bxjsslide}
 \let\jsEngine=n
 \def\bxjs@test@engine#1#2{%
   \edef\bxjs@tmpa{\string#1}%
@@ -194,7 +196,31 @@
 \DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@usemag}
 \DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@nomag}
 \DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@xreal}
-\newdimen\stockwidth \newdimen\stockheight
+\ifx\hour\@undefined   \newcount\hour \fi
+\ifx\minute\@undefined \newcount\minute \fi
+\hour\time \divide\hour by 60\relax
+\@tempcnta\hour \multiply\@tempcnta 60\relax
+\minute\time \advance\minute-\@tempcnta
+\DeclareOption{tombow}{%
+  \tombowtrue \tombowdatetrue
+  \setlength{\@tombowwidth}{.1\p@}%
+  \@bannertoken{%
+     \jobname\space(\number\year-\two@digits\month-\two@digits\day
+     \space\two@digits\hour:\two@digits\minute)}%
+  \maketombowbox}
+\DeclareOption{tombo}{%
+  \tombowtrue \tombowdatefalse
+  \setlength{\@tombowwidth}{.1\p@}%
+  \maketombowbox}
+\AtBeginDocument{%
+  \iftombow
+    \ClassWarningNoLine\bxjs@clsname
+     {Tombow output is not (yet) supported}%
+  \fi}
+\DeclareOption{mentuke}{%
+  \tombowtrue \tombowdatefalse
+  \setlength{\@tombowwidth}{\z@}%
+  \maketombowbox}
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -533,6 +559,14 @@
 \ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
 \bxjs@composite@proc
+\if@slide
+  \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
+\fi
+\if@landscape
+  \setlength\@tempdima  {\paperheight}
+  \setlength\paperheight{\paperwidth}
+  \setlength\paperwidth {\@tempdima}
+\fi
 \@onlypreamble\bxjs@purge@brace@elts
 \def\bxjs@purge@brace@elts{%
   \def\bxjs@tmpa{\@gobble}%
@@ -667,14 +701,6 @@
 \fi
 \bxjs@do@opt@jbase
 \let\Cjascale\jsScale
-\if@slide
-  \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
-\fi
-\if@landscape
-  \setlength\@tempdima  {\paperheight}
-  \setlength\paperheight{\paperwidth}
-  \setlength\paperwidth {\@tempdima}
-\fi
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \@tempcnta="80 \loop \ifnum\@tempcnta<"100
     \catcode\@tempcnta\active
@@ -688,6 +714,13 @@
 \g@addto@macro\@classoptionslist{,nosetpagesize}
 \ifbxjs@oldfontcommands
   \AtEndOfClass{\allowoldfontcommands}
+\fi
+\newdimen\stockwidth \newdimen\stockheight
+\iftombow
+  \setlength{\stockwidth}{\paperwidth}
+  \setlength{\stockheight}{\paperheight}
+  \advance \stockwidth 2in
+  \advance \stockheight 2in
 \fi
 \def\n@baseline{13}%
 \ifx\bxjs@magstyle\bxjs@magstyle@mag
@@ -715,13 +748,15 @@
 \expandafter\bxjs@tmpa\the\@tempcnta\@nil
 \edef\jsc@magscale{\strip@pt\@tempdima}
 \let\jsBaseFontSize\bxjs@param@basefontsize
+\newdimen\jsc@mpt
+\newdimen\jsc@mmm
 \ifjsc@mag
-  \let\jsc@mpt\p@
-  \newdimen\jsc@mmm \jsc@mmm=1mm
+  \jsc@mpt=1\p@
+  \jsc@mmm=1mm
   \catcode`\?=9 % \p@? read as \p@
 \else
-  \newdimen\jsc@mpt \jsc@mpt=\jsc@magscale \p@
-  \newdimen\jsc@mmm \jsc@mmm=\jsc@magscale mm
+  \jsc@mpt=\jsc@magscale\p@
+  \jsc@mmm=\jsc@magscale mm
   \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
@@ -891,13 +926,13 @@
 \everydisplay=\expandafter{\the\everydisplay \narrowbaselines}
 \newcommand{\headfont}{\sffamily}
 \setlength\columnsep{2\Cwd}
-\setlength\columnseprule{0\p@}
-\setlength\lineskip{1\p@?}
-\setlength\normallineskip{1\p@?}
-\setlength\lineskiplimit{1\p@?}
-\setlength\normallineskiplimit{1\p@?}
+\setlength\columnseprule{0\jsc@mpt}
+\setlength\lineskip{1\jsc@mpt}
+\setlength\normallineskip{1\jsc@mpt}
+\setlength\lineskiplimit{1\jsc@mpt}
+\setlength\normallineskiplimit{1\jsc@mpt}
 \renewcommand{\baselinestretch}{}
-\setlength\parskip{0\p@}
+\setlength\parskip{0\jsc@mpt}
 \if@slide
   \setlength\parindent{0\p@}
 \else
@@ -1984,6 +2019,10 @@
   \def\par{%
     \@restorepar\clubpenalty\@clubpenalty\everypar{\everyparhook}\par\@endpefalse}%
   \everypar{{\setbox\z@\lastbox}\everypar{\everyparhook}\@endpefalse\everyparhook}}
+\def\@setminipage{%
+  \@minipagetrue
+  \everypar{\@minipagefalse\everypar{\everyparhook}}%
+}
 \def\@item[#1]{%
   \if@noparitem
     \@donoparitem

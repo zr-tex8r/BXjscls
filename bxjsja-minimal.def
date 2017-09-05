@@ -21,7 +21,9 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2017/07/07 v1.5d BXJS document classes]
+  [2017/09/06 v1.6  BXJS document classes]
+\newif\ifjsc@needsp@tch
+\jsc@needsp@tchfalse
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -188,8 +190,10 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\fi
 \bxjs@if@sf@default{%
   \renewcommand\kanjifamilydefault{\gtdefault}}
 \selectfont

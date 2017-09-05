@@ -21,7 +21,9 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2017/07/07 v1.5d BXJS document classes]
+  [2017/09/06 v1.6  BXJS document classes]
+\newif\ifjsc@needsp@tch
+\jsc@needsp@tchfalse
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -564,8 +566,10 @@
     LuaTeX-ja always provides Japanese math families}
 \fi
 \fi\fi\fi\fi
+\ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
+\fi
 \ifx\mathmc\@undefined
   \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
   \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
