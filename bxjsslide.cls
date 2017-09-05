@@ -198,8 +198,7 @@
 \DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@usemag}
 \DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@nomag}
 \DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@xreal}
-\ifx\hour\@undefined   \newcount\hour \fi
-\ifx\minute\@undefined \newcount\minute \fi
+\if j\jsEngine
 \hour\time \divide\hour by 60\relax
 \@tempcnta\hour \multiply\@tempcnta 60\relax
 \minute\time \advance\minute-\@tempcnta
@@ -214,15 +213,13 @@
   \tombowtrue \tombowdatefalse
   \setlength{\@tombowwidth}{.1\p@}%
   \maketombowbox}
-\AtBeginDocument{%
-  \iftombow
-    \ClassWarningNoLine\bxjs@clsname
-     {Tombow output is not (yet) supported}%
-  \fi}
+\fi
+\if j\jsEngine
 \DeclareOption{mentuke}{%
   \tombowtrue \tombowdatefalse
   \setlength{\@tombowwidth}{\z@}%
   \maketombowbox}
+\fi
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue \@mparswitchtrue}
 \DeclareOption{vartwoside}{\@twosidetrue \@mparswitchfalse}
@@ -718,7 +715,8 @@
   \AtEndOfClass{\allowoldfontcommands}
 \fi
 \newdimen\stockwidth \newdimen\stockheight
-\iftombow
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname iftombow\expandafter\endcsname\csname iftrue\endcsname
   \setlength{\stockwidth}{\paperwidth}
   \setlength{\stockheight}{\paperheight}
   \advance \stockwidth 2in

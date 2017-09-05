@@ -798,9 +798,13 @@
 % これらはアスキー版のままです。
 % カウンタ |\hour|，|\minute| はp\LaTeXe 本体で宣言されています。
 %
+% \begin{ZRnote}
+% 取りあえず、{\pTeX}系の場合に限り、JSクラスのトンボ関連の
+% コードをそのまま活かしておく。
+% 正常に動作する保証はない。
+% \end{ZRnote}
 %    \begin{macrocode}
-\ifx\hour\@undefined   \newcount\hour \fi
-\ifx\minute\@undefined \newcount\minute \fi
+\if j\jsEngine
 \hour\time \divide\hour by 60\relax
 \@tempcnta\hour \multiply\@tempcnta 60\relax
 \minute\time \advance\minute-\@tempcnta
@@ -815,19 +819,8 @@
   \tombowtrue \tombowdatefalse
   \setlength{\@tombowwidth}{.1\p@}%
   \maketombowbox}
+\fi
 %    \end{macrocode}
-%
-% \begin{ZRnote}
-% 現在のBXJSクラスはトンボ関連のオプションをサポートしない。
-% 従って、|tombow| スイッチが有効の場合には警告を出す。
-%    \begin{macrocode}
-\AtBeginDocument{%
-  \iftombow
-    \ClassWarningNoLine\bxjs@clsname
-     {Tombow output is not (yet) supported}%
-  \fi}
-%    \end{macrocode}
-% \end{ZRnote}
 %
 % \paragraph{面付け}
 %
@@ -835,10 +828,12 @@
 % 面付けに便利です。これもアスキー版のままです。
 %
 %    \begin{macrocode}
+\if j\jsEngine
 \DeclareOption{mentuke}{%
   \tombowtrue \tombowdatefalse
   \setlength{\@tombowwidth}{\z@}%
   \maketombowbox}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{両面，片面オプション}
@@ -2191,7 +2186,8 @@
 % \end{ZRnote}
 %    \begin{macrocode}
 \newdimen\stockwidth \newdimen\stockheight
-\iftombow
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname iftombow\expandafter\endcsname\csname iftrue\endcsname
 % \newdimen\stockwidth \newdimen\stockheight
   \setlength{\stockwidth}{\paperwidth}
   \setlength{\stockheight}{\paperheight}
