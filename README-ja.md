@@ -13,7 +13,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 
 ### 前提環境
 
-  * TeX エンジン： pdfTeX / XeTeX / LuaTeX / pTeX / upTeX
+  * TeX エンジン： pdfTeX / XeTeX / LuaTeX / pTeX / upTeX / pTeX-ng
       - e-TeX 拡張は必須でない
       - XeTeX は 0.997 版以降が必要
   * フォーマット： LaTeX
@@ -97,6 +97,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.6  〈2017/09/09〉
+      - bxjsreport の継承元を jsbook + report から jsreport に変更した。
+      - jsclasses の 2017/09/03 版と同期。
   * Version 1.5d 〈2017/07/07〉
       - バグ修正。
   * Version 1.5c 〈2017/06/10〉

@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.5d}
-\newcommand{\PkgDate}{2017/07/07}
+\newcommand{\PkgVersion}{1.6}
+\newcommand{\PkgDate}{2017/09/09}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -452,11 +452,12 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   \end{itemize}
 
   コマンド行は次のようになる
-  \footnote{もちろん、実際には改行を含めず1行で書く。}%
-  （Pandoc 1.16版の場合
-  \footnote{少し古い版の場合、変数 |papersize| の値は |a4|
-    ではなく |a4paper| と書くことになる。}%
-  ）：
+  \footnote{もちろん、実際には改行を含めず1行で書く。
+    なお、Pandoc 1.16版以降では、用紙サイズオプションについては、
+    変数 |papersize| の値に“|paper|”を付加したもの
+    （|-V papersize=a4| ならば |a4paper|）が使われる。
+    ここで |a4var| や |b5var| を使えるようにするため、
+    BXJSクラスでは |a4varpaper| 等を別名として用意している。}：
   \begin{quote}
   |pandoc| \Meta{入力ファイル名}
     |-o| \Meta{出力ファイル名}|.pdf|
@@ -540,6 +541,15 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |lualatex|、|platex-ng| である。
   エンジンオプション（と次項の |autodetect-engine| の何れか）
   の指定は必須である。
+  \Note |platex-ng| は{\pTeX-ng}エンジン
+    （別名“A\pTeX”、“Asiatic \pTeX”）のためのオプションである。
+    現時点では |platex-ng| 指定時の仕様は流動的であり詳細を述べる
+    ことは避けるが、大体は |uplatex| と同様になる。
+    {\pTeX-ng}はPDF出力を行うので、ドライバオプションは指定しない。
+    \footnote{現状の実装では、自動的に |dvipdfmx| が
+      グローバルオプションに追加される。
+      また、|platex-ng| オプションの変種に |platex-ng*| があり、
+      こちらは |dvipdfmx| の自動追加を行わない。}
 \item |autodetect-engine|\Means
   使用しているエンジンを判定して、自動的に適切なエンジンオプションを
   設定する。
@@ -711,6 +721,9 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   読み込まれるため、このオプションは無意味である。
 \item |nosimplejasetup|\Means
   |simplejasetup| の否定。
+\item |a4varpaper|、|b5varpaper|\Means
+  用紙サイズ指定オプション |a4var|、|b5var| の別名。
+  \Note Pandocで |-V papersize=a4var| の指定を可能にするため。
 \item |mag=|\Meta{整数}\Means
   版面拡大率（mag値）の直接設定。
   既定は |base| から算出する。
@@ -787,10 +800,10 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
     \end{itemize}
   \item \Pkg{bxjsreport}クラスの場合：
     \begin{itemize}
-    \item |v2|\Means
+    \item |v2|（既定
+      \footnote{1.6版より既定値が |v2| に変更された。}）\Means
       JSクラスに新設された\Pkg{jsreport}クラスのレイアウトを継承する。
-      \Note 近い将来に、既定値が |v2| に変更される予定。
-    \item |v1|（既定）\Means
+    \item |v1|\Means
       従来の「\Pkg{jsbook}クラス\,+\,|report|オプション」の
       レイアウトを継承する。
     \end{itemize}

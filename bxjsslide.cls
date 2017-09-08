@@ -22,11 +22,11 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2017/09/06 v1.6  BXJS document classes]
+  [2017/09/09 v1.6  BXJS document classes]
+%% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
 \jsc@needsp@tchfalse
-%% このファイルは日本語文字を含みます.
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \IfFileExists{bxjscompat.sty}{%

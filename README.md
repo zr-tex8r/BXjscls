@@ -13,7 +13,7 @@ packages that provide capability of Japanese typesetting.
 
 ### SYSTEM REQUIREMENTS
 
-  * TeX engine: pdfTeX, XeTeX, LuaTeX, pTeX, or upTeX.
+  * TeX engine: pdfTeX, XeTeX, LuaTeX, pTeX, upTeX or pTeX-ng.
       - e-TeX extension is not needed.
       - XeTeX must be of version 0.997 or later.
   * TeX format: LaTeX.
@@ -87,6 +87,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.6  〈2017/09/09〉
+      - Sync with jsclasses 2017/09/03.
   * Version 1.5d 〈2017/07/07〉
   * Version 1.5c 〈2017/06/10〉
   * Version 1.5b 〈2017/04/01〉
