@@ -19,6 +19,7 @@
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\ }
 \newcommand{\jemph}{\textsf}
+\newcommand{\wbr}{\linebreak[0]}
 \providecommand{\pTeX}{p\TeX}
 \providecommand{\pLaTeX}{p\LaTeX}
 \providecommand{\upTeX}{u\pTeX}
@@ -790,9 +791,13 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \Pkg{hyperref}パッケージについて
   「PDF文字列の文字コード設定を補正する処理」
   を行うか否か。
-\item |xkanjiskip-cmd=|\Meta{真偽値}\Means
-  |\>| を和欧文間空白を挿入する命令として定義するか否か。
+\item |jaspace-cmd=|\Meta{真偽値}\Means
+  以下に挙げる和文空白命令を定義するか否か。
   （詳しくは\ref{ssec:ja-settings}節を参照。）
+  \begin{quote}
+    |\jaenspace|、|\jathinspace|、|\>|、
+    |\＿|（|\|\,+\,全角空白）
+  \end{quote}
 \item |layout=|\Meta{値}\Means
   レイアウトの変種を選択する。
   現状では、過去の版との互換性を維持するために用いられている。
@@ -1234,6 +1239,14 @@ vscale=0.944, vmarginratio=1:1
   ただし |nozw| 指定時は定義されない。
 \item |\zwspace|\Means
   全角（|\jsZw|）幅の水平空き。
+\item |\＿|（|\|\,の後に全角空白文字）\Means
+  |\zwspace| の別名。
+  全角幅の水平空き。
+  \Note \Pkg{jlreq}クラスと互換の命令。
+  ただしBXJSクラスはJLREQの和字間隔の規定とは無関係であり、
+  この命令は単純に |\hspace|\wbr|{\jsZw}| と等価である。
+\item |\jaenspace|\Means
+  半角（0.5|\jsZw|）幅の水平空き。
 \end{itemize}
 
 \subsubsection{standard和文ドライバの場合}
@@ -1286,15 +1299,18 @@ standard和文ドライバ（およびそれを継承するドライバ）では
 \item |\autospacing|／|\noautospacing|\Means
   和文間空白の挿入を有効／無効にする。
   {\pLaTeX}の同名の命令と同等。
+\item |\jathinspace|\Means
+  和欧文間空白を挿入する。
 \item |\>|\Means
-  和欧文間空白を挿入する。%
+  （非数式モードで
   \footnote{|\>| という命令名は、plain {\TeX}では数式中の空白
     （{\LaTeX}の |\:| と同等）を表す。
     このため、実際には{\LaTeX}でも |\>| は |\:| と同等の命令として
     定義されている。
     この「plain互換の |\>|」を利用したコードが影響を受けるのを避ける
-    ため、数式中では |\>| は従来通り |\:| と同等の動作を行う。}
-  ただし |xkanjiskip-cmd=false| 指定時は定義されない。%
+    ため、数式中では |\>| は従来通り |\:| と同等の動作を行う。}%
+    ）和欧文間空白を挿入する。
+  \Note |jaspace-cmd=false| 指定時は定義されない。%
   \footnote{ただし、standard和文ドライバで自動的に読み込まれる
     \Pkg{zxjatype}や\Pkg{bxcjkjatype}のパッケージは、
     それ自体が同様の機能の |\>| を提供することにも注意を要する。}

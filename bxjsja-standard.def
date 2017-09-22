@@ -281,14 +281,8 @@
       \bxUInt{\@tempcnta}%
     \fi}
 \fi
-\ifbxjs@xkanjiskip@cmd
-  \def\bxjs@put@xkanjiskip{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \hskip\xkanjiskip
-    \fi}
-  \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
-  \else \def\>{\protect\bxjs@put@xkanjiskip}
-  \fi
+\ifbxjs@jaspace@cmd
+  \def\jathinspace{\hskip\xkanjiskip}
 \fi
 \ifbxjs@jp@jismmiv
   \PassOptionsToPackage{prefer2004jis}{pxchfon}
@@ -425,9 +419,8 @@
   \let\CJKecglue\bxjs@CJKecglue}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{\CJKecglue}
 \fi
 \ifx t\bxjs@enablejfam
   \ClassWarningNoLine\bxjs@clsname
@@ -483,9 +476,8 @@
 \def\bxjs@jachar#1{%
   \xeCJKDeclareCharClass{CJK}{`#1}\relax
   #1}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{\CJKecglue}
 \fi
 \ifx t\bxjs@enablejfam
   \@enablejfamtrue
@@ -555,11 +547,9 @@
   \ltjsetparameter{xkanjiskip={\@tempskipa}}}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \hskip\ltjgetparameter{xkanjiskip}\ignorespaces
-    \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{%
+    \hskip\ltjgetparameter{xkanjiskip}\relax}
 \fi
 \ifx f\bxjs@enablejfam
   \ClassWarningNoLine\bxjs@clsname
@@ -574,6 +564,16 @@
 \ifx\mathmc\@undefined
   \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
   \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
+\fi
+\ifbxjs@jaspace@cmd
+  \bxjs@protected\def\bxjs@choice@jathinspace{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \jathinspace\ignorespaces
+    \fi}
+  \jsAtEndOfClass{%
+    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
+    \else \def\>{\protect\bxjs@choice@jathinspace}%
+    \fi}
 \fi
 \setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
 \ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}

@@ -1789,13 +1789,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\ifbxjs@xkanjiskip@cmd}
-% 〔スイッチ〕 |xkanjiskip-cmd| の指定値。
+% \begin{macro}{\ifbxjs@jaspace@cmd}
+% 〔スイッチ〕 |jaspace-cmd| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
-\let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
-\let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
-\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
+\newif\ifbxjs@jaspace@cmd \bxjs@jaspace@cmdtrue
+\let\bxjs@kv@jaspacecmd@true\bxjs@jaspace@cmdtrue
+\let\bxjs@kv@jaspacecmd@false\bxjs@jaspace@cmdfalse
+\define@key{bxjs}{jaspace-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -8313,6 +8314,54 @@
   \global\let\bxjs@pagestyle@hook\relax}
 %    \end{macrocode}
 %
+% \paragraph{和文空白命令}
+%    \begin{macrocode}
+\ifbxjs@jaspace@cmd
+%    \end{macrocode}
+%
+% \begin{macro}{\jaenspace}
+% 半角幅の水平空き。
+%    \begin{macrocode}
+  \def\jaenspace{\hskip.5\jsZw\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jathinspace}
+% 和欧文間空白を入れるユーザ命令。
+% \Note minimalではダミー定義。
+%    \begin{macrocode}
+  \def\jathinspace{\hskip\z@skip}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\＿}
+% 全角空白文字1つからなる名前の制御綴。
+% |\zwspace| と等価になる。
+%    \begin{macrocode}
+  \def\　{\zwspace}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jaspace}
+% |jlreq| クラスと互換の命令。
+%    \begin{macrocode}
+  \DeclareRobustCommand*{\jaspace}[1]{%
+    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
+      \ClassError\bxjs@clsname
+       {Unknown jaspace: #1}{\@eha}%
+    \else
+      \csname bxjs@jaspace@@#1\endcsname
+    \fi}
+  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
+  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
+  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
 % 終わり。
 %    \begin{macrocode}
 \fi
@@ -8880,16 +8929,10 @@
 \fi
 %    \end{macrocode}
 %
-% 和欧文間空白の命令 |\>| の実装。
+% 和欧文間空白の命令 |\jathinspace| の実装。
 %    \begin{macrocode}
-\ifbxjs@xkanjiskip@cmd
-  \def\bxjs@put@xkanjiskip{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \hskip\xkanjiskip
-    \fi}
-  \ifjsWitheTeX \protected\def\>{\bxjs@put@xkanjiskip}
-  \else \def\>{\protect\bxjs@put@xkanjiskip}
-  \fi
+\ifbxjs@jaspace@cmd
+  \def\jathinspace{\hskip\xkanjiskip}
 \fi
 %    \end{macrocode}
 %
@@ -9124,11 +9167,10 @@
   \CJKforced{#1}}
 %    \end{macrocode}
 %
-% |\>| は |bxcjkjatype| で定義されているが、保護付のマクロに変換する。
+% 和欧文間空白の命令 |\jathinspace| の実装。
 %    \begin{macrocode}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{\CJKecglue}
 \fi
 %    \end{macrocode}
 %
@@ -9260,12 +9302,10 @@
   #1}
 %    \end{macrocode}
 %
-% |\>| は |zxjatype| で定義されているが、standardの仕様に合わせて変更する。
-% \Note 元は |\ignorespaces| でなく |\relax|（|\scan_stop:|）だった。
+% |\jathinspace| の実装。
 %    \begin{macrocode}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip \else \CJKecglue\ignorespaces \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{\CJKecglue}
 \fi
 %    \end{macrocode}
 %
@@ -9420,13 +9460,11 @@
   \ltjjachar`#1\relax}
 %    \end{macrocode}
 %
-% |\>| の実装。
+% |\jathinspace| の実装。
 %    \begin{macrocode}
-\ifbxjs@xkanjiskip@cmd
-  \protected\def\>{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \hskip\ltjgetparameter{xkanjiskip}\ignorespaces
-    \fi}
+\ifbxjs@jaspace@cmd
+  \protected\def\jathinspace{%
+    \hskip\ltjgetparameter{xkanjiskip}\relax}
 \fi
 %    \end{macrocode}
 %
@@ -9475,6 +9513,24 @@
 \fi
 %    \end{macrocode}
 % \end{macro}
+% \end{macro}
+%
+% \paragraph{和文空白命令}
+% \begin{macro}{\>}
+% 非数式中では |\jathinspace| と等価になるように再定義する。
+% \Note 数式中では従来通り（|\:| と等価）。
+%    \begin{macrocode}
+\ifbxjs@jaspace@cmd
+  \bxjs@protected\def\bxjs@choice@jathinspace{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \jathinspace\ignorespaces
+    \fi}
+  \jsAtEndOfClass{%
+    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
+    \else \def\>{\protect\bxjs@choice@jathinspace}%
+    \fi}
+\fi
+%    \end{macrocode}
 % \end{macro}
 %
 % \paragraph{和文・和欧文間空白の初期値}

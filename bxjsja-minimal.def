@@ -323,6 +323,21 @@
 \AtBeginDocument{%
   \bxjs@pagestyle@hook
   \global\let\bxjs@pagestyle@hook\relax}
+\ifbxjs@jaspace@cmd
+  \def\jaenspace{\hskip.5\jsZw\relax}
+  \def\jathinspace{\hskip\z@skip}
+  \def\　{\zwspace}
+  \DeclareRobustCommand*{\jaspace}[1]{%
+    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
+      \ClassError\bxjs@clsname
+       {Unknown jaspace: #1}{\@eha}%
+    \else
+      \csname bxjs@jaspace@@#1\endcsname
+    \fi}
+  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
+  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
+  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
+\fi
 \fi
 \endinput
 %%

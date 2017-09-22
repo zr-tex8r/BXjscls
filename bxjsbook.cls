@@ -550,10 +550,11 @@
 \let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
 \let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
 \define@key{bxjs}{whole-zw-lines}[true]{\bxjs@set@keyval{wholezwlines}{#1}{}}
-\newif\ifbxjs@xkanjiskip@cmd \bxjs@xkanjiskip@cmdtrue
-\let\bxjs@kv@xkanjiskipcmd@true\bxjs@xkanjiskip@cmdtrue
-\let\bxjs@kv@xkanjiskipcmd@false\bxjs@xkanjiskip@cmdfalse
-\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{xkanjiskipcmd}{#1}{}}
+\newif\ifbxjs@jaspace@cmd \bxjs@jaspace@cmdtrue
+\let\bxjs@kv@jaspacecmd@true\bxjs@jaspace@cmdtrue
+\let\bxjs@kv@jaspacecmd@false\bxjs@jaspace@cmdfalse
+\define@key{bxjs}{jaspace-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
