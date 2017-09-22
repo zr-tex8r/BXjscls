@@ -5248,7 +5248,8 @@
 % |\jachar| と同義になるが、それ以外は何もしない。
 % \end{ZRnote}
 %    \begin{macrocode}
-\newcommand\jsParagraphMark{\jsJaChar{■}}
+\newcommand\jsParagraphMark{\relax\jsJaChar{■}}
+\let\bxjs@org@paragraph@mark\jsParagraphMark
 \ifx\bxjs@paragraph@mark\@empty
   \let\jsParagraphMark\@empty
 \else\ifx\bxjs@paragraph@mark\@undefined\else
@@ -9742,6 +9743,46 @@
   \bxjs@mark@as@loaded{microtype.sty}
   \newcommand*\UseMicrotypeSet[2][]{}
 \fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{paragraphのマーク}
+%
+% BXJSクラスでは |\paragraph| の見出しの前に |\jsParagraphMark|
+% で指定したマークが付加され、既定ではこれは“■”である。
+% しかし、この規定は |\paragraph| が本来のレイアウトを保っている、
+% すなわち「行内見出しである」「節番号が付かない」ことが前提になって
+% いると考えられる。
+% Pandocはこの規定を変更することがある
+% （特に既定で |\paragraph| を別行見出しに再定義する）
+% ため、変更された場合は |\jsParagraphMark| の既定値を空にする。
+%
+% Pandocがプレアンブルで行う再定義の結果を調べるため、
+% begin-documentフックを利用する。
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \@tempswafalse
+%    \end{macrocode}
+% まず、マーク変更が必要かを調べる。
+% |\oldparagraph| という制御綴が定義済の場合、Pandocが |\paragraph|
+% の様式を変更したということなので、マーク変更が必要である。
+%    \begin{macrocode}
+  \ifx\oldparagraph\@undefined\else
+    \@tempswatrue
+  \fi
+%    \end{macrocode}
+% |\paragraph| が番号付きの場合は、マーク変更が必要である。
+%    \begin{macrocode}
+  \ifnum\c@secnumdepth>3
+    \@tempswatrue
+  \fi
+%    \end{macrocode}
+% 「マーク変更が必要」である場合、|\jsParagraphMark| が既定値のままで
+% あれば空に変更する。
+%    \begin{macrocode}
+  \if@tempswa\ifx\jsParagraphMark\bxjs@org@paragraph@mark
+    \let\jsParagraphMark\@empty
+  \fi\fi}
 %    \end{macrocode}
 %
 %^^A----------------

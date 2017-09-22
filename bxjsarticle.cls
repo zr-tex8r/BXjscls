@@ -1487,7 +1487,8 @@
     {\if@slide .5\Cvs \@plus.3\Cdp \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \fi
-\newcommand\jsParagraphMark{\jsJaChar{■}}
+\newcommand\jsParagraphMark{\relax\jsJaChar{■}}
+\let\bxjs@org@paragraph@mark\jsParagraphMark
 \ifx\bxjs@paragraph@mark\@empty
   \let\jsParagraphMark\@empty
 \else\ifx\bxjs@paragraph@mark\@undefined\else

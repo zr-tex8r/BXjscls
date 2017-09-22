@@ -101,6 +101,17 @@
   \bxjs@mark@as@loaded{microtype.sty}
   \newcommand*\UseMicrotypeSet[2][]{}
 \fi
+\AtBeginDocument{%
+  \@tempswafalse
+  \ifx\oldparagraph\@undefined\else
+    \@tempswatrue
+  \fi
+  \ifnum\c@secnumdepth>3
+    \@tempswatrue
+  \fi
+  \if@tempswa\ifx\jsParagraphMark\bxjs@org@paragraph@mark
+    \let\jsParagraphMark\@empty
+  \fi\fi}
 \endinput
 %%
 %% End of file `bxjsja-pandoc.def'.
