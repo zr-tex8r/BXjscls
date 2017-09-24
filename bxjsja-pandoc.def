@@ -23,6 +23,7 @@
 \ProvidesFile{bxjsja-pandoc.def}
   [2017/09/09 v1.6  BXJS document classes]
 \input{bxjsja-standard.def}
+\RequirePackage{bxjspandoc}
 \@onlypreamble\bxjs@set@dupload@proc
 \def\bxjs@set@dupload@proc#1{%
   \expandafter\bxjs@set@dupload@proc@a\csname bxjs@dlp/#1\endcsname}
@@ -48,16 +49,8 @@
 \def\bxjs@do@dupload@proc#1#2#3{%
   \csname bxjs@dlp/#2.#1\endcsname{#3}%
   \@firstoftwo}
-\def\bxjs@mark@as@loaded#1{%
-  \expandafter\bxjs@mal@a\csname ver@#1\endcsname{#1}}
-\def\bxjs@mal@a#1#2{%
-  \ifx#1\relax
-    \def#1{2001/01/01}%
-    \ClassInfo\bxjs@clsname
-     {File '#2' marked as loaded\@gobble}%
-  \fi}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
-\bxjs@mark@as@loaded{polyglossia.sty}
+\pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \ClassWarning\bxjs@clsname
    {Loading of polyglossia is blocked}}
@@ -74,7 +67,7 @@
     \setotherlangauge{\bxjs@tmpa}}}
 \fi
 \else
-\bxjs@mark@as@loaded{babel.sty}
+\pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \ClassWarning\bxjs@clsname
    {Loading of babel is blocked}}
@@ -85,21 +78,8 @@
 \bxjs@set@dupload@proc{geometry.sty}{%
   \setpagelayout*{#1}}
 \if l\jsEngine
-  \bxjs@mark@as@loaded{xeCJK.sty}
+  \pandocSkipLoadPackage{xeCJK}
   \providecommand*{\setCJKmainfont}{\setmainjfont}
-\fi
-\ifx\@IncludeInRelease\@undefined\else
-  \bxjs@mark@as@loaded{fixltx2e.sty}
-\fi
-\if j\jsEngine
-  \bxjs@mark@as@loaded{cmap.sty}
-\fi
-\if j\jsEngine \else
-  \PassOptionsToPackage{verbose=silent}{microtype}
-\fi
-\if j\jsEngine
-  \bxjs@mark@as@loaded{microtype.sty}
-  \newcommand*\UseMicrotypeSet[2][]{}
 \fi
 \AtBeginDocument{%
   \@tempswafalse

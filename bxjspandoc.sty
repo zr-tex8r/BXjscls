@@ -1,0 +1,62 @@
+%%
+%% This is file `bxjspandoc.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bxjscls.dtx  (with options: `anc,ancpandoc')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from bxjspandoc.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bxjscls.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+\ProvidesPackage{bxjspandoc}
+  [2017/09/09 v1.6  BXJS document classes]
+%% このファイルは日本語文字を含みます.
+\def\bxjsp@pkgname{bxjscjkcat}
+\let\bxjsp@engine=n
+\@onlypreamble\bxjsp@do
+\def\bxjsp@do#1#2{%
+  \edef\bxjsp@tmpa{\string#1}%
+  \edef\bxjsp@tmpb{\meaning#1}%
+  \ifx\bxjsp@tmpa\bxjsp@tmpb #2\fi}
+\bxjsp@do\kanjiskip{\let\bxjsp@engine=j}
+\bxjsp@do\XeTeXversion{\let\bxjsp@engine=x}
+\bxjsp@do\pdftexversion{\let\bxjsp@engine=p}
+\bxjsp@do\luatexversion{\let\bxjsp@engine=l}
+\newcommand*\pandocSkipLoadFile[1]{%
+  \expandafter\bxjsp@skip@load@file@a\csname ver@#1\endcsname{#1}}
+\def\bxjsp@skip@load@file@a#1#2{%
+  \ifx#1\relax
+    \def#1{2001/01/01}%
+    \PackageInfo\bxjsp@pkgname
+     {File '#2' marked as loaded\@gobble}%
+  \fi}
+\newcommand*\pandocSkipLoadPackage[1]{%
+  \pandocSkipLoadFile{#1.sty}}
+\ifx\@IncludeInRelease\@undefined\else
+  \pandocSkipLoadPackage{fixltx2e}
+\fi
+\if j\bxjsp@engine
+  \pandocSkipLoadPackage{cmap}
+\fi
+\if j\bxjsp@engine \else
+  \PassOptionsToPackage{verbose=silent}{microtype}
+\fi
+\if j\bxjsp@engine
+  \pandocSkipLoadPackage{microtype}
+  \newcommand*\UseMicrotypeSet[2][]{}
+\fi
+\endinput
+%%
+%% End of file `bxjspandoc.sty'.

@@ -64,6 +64,7 @@
 %<pandoc>\ProvidesFile{bxjsja-pandoc.def}
 %<compat>\ProvidesPackage{bxjscompat}
 %<cjkcat>\ProvidesPackage{bxjscjkcat}
+%<ancpandoc>\ProvidesPackage{bxjspandoc}
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
@@ -9568,6 +9569,7 @@
 %    \begin{macrocode}
 %<*pandoc>
 \input{bxjsja-standard.def}
+\RequirePackage{bxjspandoc}
 %    \end{macrocode}
 %
 %^^A----------------
@@ -9618,22 +9620,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\bxjs@mark@as@loaded}
-% |\bxjs@mark@as@loaded{|\Meta{ファイル名}|}|\Means
-% 特定のファイルに対して、（|\@filewithoptions| の処理に関して）
-% 読込済であるとマークする。
-%    \begin{macrocode}
-\def\bxjs@mark@as@loaded#1{%
-  \expandafter\bxjs@mal@a\csname ver@#1\endcsname{#1}}
-\def\bxjs@mal@a#1#2{%
-  \ifx#1\relax
-    \def#1{2001/01/01}%
-    \ClassInfo\bxjs@clsname
-     {File '#2' marked as loaded\@gobble}%
-  \fi}
-%    \end{macrocode}
-% \end{macro}
-%
 %^^A----------------
 %\subsection{lang変数}
 % |lang=ja| という言語指定が行われると、
@@ -9646,7 +9632,7 @@
 %    \end{macrocode}
 % Polyglossiaについて。
 %    \begin{macrocode}
-\bxjs@mark@as@loaded{polyglossia.sty}
+\pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \ClassWarning\bxjs@clsname
    {Loading of polyglossia is blocked}}
@@ -9666,7 +9652,7 @@
 %    \end{macrocode}
 % Babelについて。
 %    \begin{macrocode}
-\bxjs@mark@as@loaded{babel.sty}
+\pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \ClassWarning\bxjs@clsname
    {Loading of babel is blocked}}
@@ -9692,56 +9678,8 @@
 % 指定された場合は |\setmainjfont| の指定にまわす。
 %    \begin{macrocode}
 \if l\jsEngine
-  \bxjs@mark@as@loaded{xeCJK.sty}
+  \pandocSkipLoadPackage{xeCJK}
   \providecommand*{\setCJKmainfont}{\setmainjfont}
-\fi
-%    \end{macrocode}
-%
-%^^A----------------
-%\subsection{fixltx2eパッケージ}
-% テンプレートでは |fixltx2e| パッケージを読み込むが、
-% 最近（2015年版以降）の{\LaTeX}ではこれで警告が出る。
-% これを抑止する。
-%
-% {\LaTeX}カーネルが新しい場合は |fixltx2e| を
-% 読込済にする。
-%    \begin{macrocode}
-\ifx\@IncludeInRelease\@undefined\else
-  \bxjs@mark@as@loaded{fixltx2e.sty}
-\fi
-%    \end{macrocode}
-%
-%^^A----------------
-%\subsection{cmapパッケージ}
-% エンジンが{(u)\pLaTeX}のときに |cmap| パッケージが
-% 読み込まれるのを阻止する。
-% （実際は警告が出るだけで無害であるが。）
-%
-%    \begin{macrocode}
-\if j\jsEngine
-  \bxjs@mark@as@loaded{cmap.sty}
-\fi
-%    \end{macrocode}
-%
-%^^A----------------
-%\subsection{microtypeパッケージ}
-% 警告が多すぎなので消す。
-%
-%    \begin{macrocode}
-\if j\jsEngine \else
-  \PassOptionsToPackage{verbose=silent}{microtype}
-\fi
-%    \end{macrocode}
-%
-% エンジンが{(u)\pLaTeX}のときに |microtype| パッケージが
-% 読み込まれるのを阻止し、さらにテンプレートで使われている命令を
-% 通すためにダミーの定義を行う。
-% \Note 昔はstandardドライバでこの処理を行っていたが、
-% 元来はPandoc用の処理なので、1.5版でpandocに移動。
-%    \begin{macrocode}
-\if j\jsEngine
-  \bxjs@mark@as@loaded{microtype.sty}
-  \newcommand*\UseMicrotypeSet[2][]{}
 \fi
 %    \end{macrocode}
 %
@@ -9804,7 +9742,9 @@
 % 他のクラスの文書で読み込んで利用することもできる。
 %
 % \begin{itemize}
+% \item bxjscompat : ムニャムニャムニャ。
 % \item bxjscjkcat： modernドライバ用の和文カテゴリを適用する。
+% \item bxjspandoc : Pandoc用のナニカ。
 % \end{itemize}
 %
 %    \begin{macrocode}
@@ -10449,6 +10389,124 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 % おしまい。
 %    \begin{macrocode}
 %</cjkcat>
+%    \end{macrocode}
+%
+%^^A========================================================
+% \section{補助パッケージ：bxjspandoc \ZRX}
+%
+% Pandocの{\LaTeX}用標準テンプレートをより幸せに使うための設定。
+% BXJSクラスのpandocドライバのコードの中の、“汎用的”に使える
+% 部分を切り出したもの。
+% つまり現在のpandocドライバはこのパッケージを読みこむ。
+% \Note テンプレートの{\TeX}コードより前に読み込む必要があるため、
+% 専ら文書クラス内での読込に限られる。
+%
+%^^A----------------
+% \subsection{準備}
+%
+%    \begin{macrocode}
+%<*ancpandoc>
+%% このファイルは日本語文字を含みます.
+\def\bxjsp@pkgname{bxjscjkcat}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjsp@engine}
+% エンジンの種別。
+%    \begin{macrocode}
+\let\bxjsp@engine=n
+\@onlypreamble\bxjsp@do
+\def\bxjsp@do#1#2{%
+  \edef\bxjsp@tmpa{\string#1}%
+  \edef\bxjsp@tmpb{\meaning#1}%
+  \ifx\bxjsp@tmpa\bxjsp@tmpb #2\fi}
+\bxjsp@do\kanjiskip{\let\bxjsp@engine=j}
+\bxjsp@do\XeTeXversion{\let\bxjsp@engine=x}
+\bxjsp@do\pdftexversion{\let\bxjsp@engine=p}
+\bxjsp@do\luatexversion{\let\bxjsp@engine=l}
+%    \end{macrocode}
+% \end{macro}
+%
+%^^A----------------
+%\subsection{パッケージ読込の阻止}
+%
+% \begin{macro}{\pandocSkipLoadFile}
+% |\pandocSkipLoadFile{|\Meta{ファイル名}|}|\Means
+% 特定のファイルを（|\@filewithoptions| の処理に関して）
+% 読込済であるとマークする。
+%    \begin{macrocode}
+\newcommand*\pandocSkipLoadFile[1]{%
+  \expandafter\bxjsp@skip@load@file@a\csname ver@#1\endcsname{#1}}
+\def\bxjsp@skip@load@file@a#1#2{%
+  \ifx#1\relax
+    \def#1{2001/01/01}%
+    \PackageInfo\bxjsp@pkgname
+     {File '#2' marked as loaded\@gobble}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\pandocSkipLoadPackage}
+% |\pandocSkipLoadPackage{|\Meta{パッケージ名}|}|\Means
+% |\pandocSkipLoadFile| の機能を用いてパッケージの読込を阻止する。
+%    \begin{macrocode}
+\newcommand*\pandocSkipLoadPackage[1]{%
+  \pandocSkipLoadFile{#1.sty}}
+%    \end{macrocode}
+% \end{macro}
+%
+%^^A----------------
+%\subsection{fixltx2eパッケージ}
+% テンプレートでは |fixltx2e| パッケージを読み込むが、
+% 最近（2015年版以降）の{\LaTeX}ではこれで警告が出る。
+% これを抑止する。
+%
+% {\LaTeX}カーネルが新しい場合は |fixltx2e| を
+% 読込済にする。
+%    \begin{macrocode}
+\ifx\@IncludeInRelease\@undefined\else
+  \pandocSkipLoadPackage{fixltx2e}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{cmapパッケージ}
+% エンジンが{(u)\pLaTeX}のときに |cmap| パッケージが
+% 読み込まれるのを阻止する。
+% （実際は警告が出るだけで無害であるが。）
+%
+%    \begin{macrocode}
+\if j\bxjsp@engine
+  \pandocSkipLoadPackage{cmap}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{microtypeパッケージ}
+% 警告が多すぎなので消す。
+%
+%    \begin{macrocode}
+\if j\bxjsp@engine \else
+  \PassOptionsToPackage{verbose=silent}{microtype}
+\fi
+%    \end{macrocode}
+%
+% エンジンが{(u)\pLaTeX}のときに |microtype| パッケージが
+% 読み込まれるのを阻止し、さらにテンプレートで使われている命令を
+% 通すためにダミーの定義を行う。
+% \Note 昔はstandardドライバでこの処理を行っていたが、
+% 元来はPandoc用の処理なので、1.5版でpandocに移動。
+%    \begin{macrocode}
+\if j\bxjsp@engine
+  \pandocSkipLoadPackage{microtype}
+  \newcommand*\UseMicrotypeSet[2][]{}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{完了}
+% おしまい。
+%    \begin{macrocode}
+%</ancpandoc>
 %    \end{macrocode}
 %
 % 補助パッケージ実装はここまで。
