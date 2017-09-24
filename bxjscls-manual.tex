@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.6}
-\newcommand{\PkgDate}{2017/09/09}
+\newcommand{\PkgVersion}{1.6a}
+\newcommand{\PkgDate}{2017/09/24}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -459,9 +459,11 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
     ここで |a4var| や |b5var| を使えるようにするため、
     BXJSクラスでは |a4varpaper| 等を別名として用意している。}：
   \begin{quote}
-  |pandoc| \Meta{入力ファイル名}
+  |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
-    |--latex-engine=xelatex|\\\quad
+    |-t latex|\\\quad
+    |--latex-engine=xelatex|
+    |--no-tex-ligatures|\\\quad
     |-V papersize=a4|
     |-V documentclass=bxjsarticle|
     |-V classoption=pandoc|\\\quad
@@ -486,15 +488,17 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
 
   コマンド行は次のようになる：
   \begin{quote}
-  |pandoc| \Meta{入力ファイル名}
+  |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
-    |--chapters|
-    |-N|\\\quad
-    |--latex-engine=lualatex|
+    |-N|
+    |-t latex|\\\quad
+    |--top-level-division=chapter|
+    |--latex-engine=xelatex|
+    |--no-tex-ligatures|\\\quad
     |-V papersize=b5|
-    |-V documentclass=bxjsbook|\\\quad
-    |-V classoption=pandoc|
-    |-V classoption=jbase=11Q|\\\quad
+    |-V documentclass=bxjsbook|
+    |-V classoption=pandoc|\\\quad
+    |-V classoption=jbase=11Q|
     |-V classoption=jafont=ipaex|\\\quad
     |-V mainfont="TeX Gyre Termes"|
     |-V sansfont="TeX Gyre Heros"|
@@ -503,7 +507,11 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   注意事項：
   \begin{itemize}
   \item \Pkg{bxjsbook}クラスは「章（|\chapter|）」をもつクラスなので、
-    Pandocで |--chapters| の指定が必要。
+    Pandocで |--top-level-division=|\linebreak[0]|chapter| の指定
+    \footnote{|--top-level-division| はPandocの1.18版で新設された
+      オプションで、それより前は代わりに |--chapters| オプションを
+      指定していた。}%
+    が必要。
   \end{itemize}
 
 \item Pandocで（{\LaTeX}経由で）PDFを出力する場合、

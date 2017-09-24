@@ -68,6 +68,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * `bxjsja-modern.def`: modern 和文ドライバファイル
   * `bxjscompat.sty`: bxjscompat パッケージファイル
   * `bxjscjkcat.sty`: bxjscjkcat パッケージファイル
+  * `bxjspandoc.sty`: bxjspandoc パッケージファイル
 
 その後、各ファイルを次の場所に移動する。
 （TDS 1.1 に従ったシステムの場合。）
@@ -97,6 +98,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.6a 〈2017/09/24〉
+      - `bxjspandoc` パッケージを新設。
+      - Pandoc モードで起こる細かい不具合に対処した。
   * Version 1.6  〈2017/09/09〉
       - bxjsreport の継承元を jsbook + report から jsreport に変更した。
       - jsclasses の 2017/09/03 版と同期。

@@ -65,6 +65,7 @@ This command will generate the following files:
   * `bxjsja-modern.def`: the `modern` ja-driver file
   * `bxjscompat.sty`: the `bxjscompat` package file
   * `bxjscjkcat.sty`: the `bxjscjkcat` package file
+  * `bxjspandoc.sty`: the `bxjspandoc` package file
 
 After that, move the files as follows (in a system compliant to
 TDS 1.1):
@@ -87,6 +88,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.6a 〈2017/09/24〉
   * Version 1.6  〈2017/09/09〉
       - Sync with jsclasses 2017/09/03.
   * Version 1.5d 〈2017/07/07〉
