@@ -10503,6 +10503,76 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 %    \end{macrocode}
 %
 %^^A----------------
+%\subsection{Unicode文字変換対策}
+%
+% Pandocで{\LaTeX}形式に書き出す場合は、元データ中の一部のUnicode文字を
+% 「{\LaTeX}の表記」に置き換える。
+% その中には日本語文書で問題になるものが含まれる。
+% \begin{quote}
+% \mbox{…}→|\ldots{}|\quad
+% \mbox{‘}→|`|\quad
+% \mbox{’}→|'|\quad
+% \mbox{“}→|``|\quad
+% \mbox{”}→|''|\quad
+% \end{quote}
+% 日本語{\LaTeX}では「{\LaTeX}の表記」は欧文扱い、
+% Unicode文字は和文扱いとして使い分ける習慣があるので、
+% このような置換が行われるのは好ましくない。
+%
+% これらの置換のうち、後の4つはPandocの |--no-tex-ligatures| オプションを
+% 指定すれば抑止できるが、「…」の置換を抑止する機能はないようである。
+% そこで、「|\ldots{}| を『…』に戻す」という処置を行う。
+%
+% \begin{macro}{\pandocLdots}
+% Pandoc用の |\ldots| の実装。
+% 非数式でありかつ後続が |{}| の場合は代わりに |…| を実行する。
+%    \begin{macrocode}
+\DeclareRobustCommand{\pandocLdots}{%
+  \relax\ifmmode \expandafter\bxjsp@org@ldots
+  \else \expandafter\bxjsp@ldots@a
+  \fi}
+\def\bxjsp@ja@ellipsis{…}
+\let\bxjsp@org@ldots\ldots
+\def\bxjsp@ldots@a{%
+  \futurelet\bxjsp@tok\bxjsp@ldots@b}
+\def\bxjsp@ldots@b{%
+  \ifx\bxjsp@tok\bgroup \expandafter\bxjsp@ldots@c
+  \else \expandafter\bxjsp@org@ldots
+  \fi}
+\def\bxjsp@ldots@c{%
+  \afterassignment\bxjsp@ldots@d \let\bxjsp@tok=}
+\def\bxjsp@ldots@d{%
+  \futurelet\bxjsp@tok\bxjsp@ldots@e}
+\def\bxjsp@ldots@e{%
+  \ifx\bxjsp@tok\egroup \expandafter\bxjsp@ldots@f
+  \else \expandafter\bxjsp@ldots@g
+  \fi}
+\def\bxjsp@ldots@f{%
+  \bxjsp@ja@ellipsis \let\bxjsp@tok=}
+\def\bxjsp@ldots@g{%
+  \expandafter\bxjsp@org@ldots\expandafter{\romannumeral-`} }
+%    \end{macrocode}
+% \end{macro}
+%
+% |\ldots| の実装を置き換える。
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \let\bxjsp@org@ldots\ldots
+  \let\ldots\pandocLdots}
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{PandoLaモジュール}
+% インストール済であれば読み込む。
+%    \begin{macrocode}
+\IfFileExists{bxpandola.sty}{%
+  \RequirePackage{bxpandola}\relax
+  \PackageInfo\bxjsp@pkgname
+   {PandoLa module is loaded\@gobble}
+}{}
+%    \end{macrocode}
+%
+%^^A----------------
 % \subsection{完了}
 % おしまい。
 %    \begin{macrocode}

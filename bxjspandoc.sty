@@ -57,6 +57,38 @@
   \pandocSkipLoadPackage{microtype}
   \newcommand*\UseMicrotypeSet[2][]{}
 \fi
+\DeclareRobustCommand{\pandocLdots}{%
+  \relax\ifmmode \expandafter\bxjsp@org@ldots
+  \else \expandafter\bxjsp@ldots@a
+  \fi}
+\def\bxjsp@ja@ellipsis{…}
+\let\bxjsp@org@ldots\ldots
+\def\bxjsp@ldots@a{%
+  \futurelet\bxjsp@tok\bxjsp@ldots@b}
+\def\bxjsp@ldots@b{%
+  \ifx\bxjsp@tok\bgroup \expandafter\bxjsp@ldots@c
+  \else \expandafter\bxjsp@org@ldots
+  \fi}
+\def\bxjsp@ldots@c{%
+  \afterassignment\bxjsp@ldots@d \let\bxjsp@tok=}
+\def\bxjsp@ldots@d{%
+  \futurelet\bxjsp@tok\bxjsp@ldots@e}
+\def\bxjsp@ldots@e{%
+  \ifx\bxjsp@tok\egroup \expandafter\bxjsp@ldots@f
+  \else \expandafter\bxjsp@ldots@g
+  \fi}
+\def\bxjsp@ldots@f{%
+  \bxjsp@ja@ellipsis \let\bxjsp@tok=}
+\def\bxjsp@ldots@g{%
+  \expandafter\bxjsp@org@ldots\expandafter{\romannumeral-`} }
+\AtBeginDocument{%
+  \let\bxjsp@org@ldots\ldots
+  \let\ldots\pandocLdots}
+\IfFileExists{bxpandola.sty}{%
+  \RequirePackage{bxpandola}\relax
+  \PackageInfo\bxjsp@pkgname
+   {PandoLa module is loaded\@gobble}
+}{}
 \endinput
 %%
 %% End of file `bxjspandoc.sty'.
