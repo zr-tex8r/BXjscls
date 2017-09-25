@@ -98,6 +98,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.6b 〈2017/09/28〉
+      - Pandoc モードでは bxcjkjatype に autotilde を付けない。
   * Version 1.6a 〈2017/09/24〉
       - `bxjspandoc` パッケージを新設。
       - Pandoc モードで起こる細かい不具合に対処した。
