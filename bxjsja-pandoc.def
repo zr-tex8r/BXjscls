@@ -92,6 +92,13 @@
   \if@tempswa\ifx\jsParagraphMark\bxjs@org@paragraph@mark
     \let\jsParagraphMark\@empty
   \fi\fi}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
+  \catcode"3000=\active
+  \protected\def^^^^3000{\zwspace}
+\else\ifx\DeclareUnicodeCharacter\@undefined\else
+  \DeclareUnicodeCharacter{3000}{\bxjs@zsp@char}
+  \bxjs@protected\def\bxjs@zsp@char{\zwspace}
+\fi\fi
 \endinput
 %%
 %% End of file `bxjsja-pandoc.def'.

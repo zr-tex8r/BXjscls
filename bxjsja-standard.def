@@ -372,7 +372,10 @@
 \else\if p\jsEngine
 \bxjs@adjust@jafont{f}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
-\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole,autotilde}}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
+\def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
+  \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{autotilde}}
+\fi
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@tmpa]{bxcjkjatype}[2013/10/15]% v0.2c
 }\bxjs@next

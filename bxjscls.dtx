@@ -9034,10 +9034,14 @@
 % オプション（プリセット指定）に渡す。
 % （|auto| ならば |\bxjs@get@kanjiEmbed| を実行する。）
 % スケール値（|\jsScale|）の反映は bxcjkjatype の側で行われる。
+% \Note Pandocモードでは |autotilde| を指定しない。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
-\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole,autotilde}}
+\edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
+\def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
+  \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{autotilde}}
+\fi
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@tmpa]{bxcjkjatype}[2013/10/15]% v0.2c
 }\bxjs@next
@@ -9722,6 +9726,19 @@
   \if@tempswa\ifx\jsParagraphMark\bxjs@org@paragraph@mark
     \let\jsParagraphMark\@empty
   \fi\fi}
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{全角空白文字}
+%
+%    \begin{macrocode}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
+  \catcode"3000=\active
+  \protected\def^^^^3000{\zwspace}
+\else\ifx\DeclareUnicodeCharacter\@undefined\else
+  \DeclareUnicodeCharacter{3000}{\bxjs@zsp@char}
+  \bxjs@protected\def\bxjs@zsp@char{\zwspace}
+\fi\fi
 %    \end{macrocode}
 %
 %^^A----------------
