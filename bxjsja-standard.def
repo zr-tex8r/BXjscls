@@ -235,6 +235,26 @@
     }%
   }%
 }
+\@onlypreamble\jsCheckHyperrefUnicode
+\let\jsCheckHyperrefUnicode\@empty
+\AtBeginDocument{\jsCheckHyperrefUnicode}
+\@onlypreamble\bxjs@check@hyperref@unicode
+\def\bxjs@check@hyperref@unicode#1{%
+  \g@addto@macro\jsCheckHyperrefUnicode{%
+    \@tempswafalse
+    \begingroup
+      \expandafter\ifx\csname ifHy@unicode\endcsname\relax
+        \aftergroup\@tempswatrue \fi
+      \expandafter\ifx\csname ifHy@unicode\expandafter\endcsname
+          \csname if#1\endcsname
+        \aftergroup\@tempswatrue \fi
+    \endgroup
+    \if@tempswa\else
+      \ClassError\bxjs@clsname
+       {The value of hyperref 'unicode' key is not suitable\MessageBreak
+        for the present engine (must be #1)}%
+       {\@ehc}%
+    \fi}}
 \@onlypreamble\bxjs@urgent@special
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
@@ -329,7 +349,7 @@
 \endgroup}
 \@gtempa
 \ifbxjs@hyperref@enc
-  \bxjs@fix@hyperref@unicode{false}
+  \bxjs@check@hyperref@unicode{false}
 \fi
 \if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
     \else\ifjsWithpTeXng T\else F\fi\fi T%
@@ -558,7 +578,8 @@
 \endgroup
 \fi
 \ifbxjs@hyperref@enc
-  \bxjs@fix@hyperref@unicode{true}
+  \PassOptionsToPackage{unicode}{hyperref}
+  \bxjs@check@hyperref@unicode{true}
 \fi
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}

@@ -8937,6 +8937,39 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\jsCheckHyperrefUnicode}
+% 「|hyperref| の |unicode| オプションの値を検証する」ための
+% 本体開始時のフック。
+%    \begin{macrocode}
+\@onlypreamble\jsCheckHyperrefUnicode
+\let\jsCheckHyperrefUnicode\@empty
+\AtBeginDocument{\jsCheckHyperrefUnicode}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@check@hyperref@unicode}
+% |hyperref| の |unicode| オプションの値を本体開始時に検証する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@check@hyperref@unicode
+\def\bxjs@check@hyperref@unicode#1{%
+  \g@addto@macro\jsCheckHyperrefUnicode{%
+    \@tempswafalse
+    \begingroup
+      \expandafter\ifx\csname ifHy@unicode\endcsname\relax
+        \aftergroup\@tempswatrue \fi
+      \expandafter\ifx\csname ifHy@unicode\expandafter\endcsname
+          \csname if#1\endcsname
+        \aftergroup\@tempswatrue \fi
+    \endgroup
+    \if@tempswa\else
+      \ClassError\bxjs@clsname
+       {The value of hyperref 'unicode' key is not suitable\MessageBreak
+        for the present engine (must be #1)}%
+       {\@ehc}%
+    \fi}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@urgent@special}
 % DVIのなるべく早い位置にspecialを出力する。
 %    \begin{macrocode}
@@ -9100,7 +9133,7 @@
 % |unicode| にしてはいけない。
 %    \begin{macrocode}
 \ifbxjs@hyperref@enc
-  \bxjs@fix@hyperref@unicode{false}
+  \bxjs@check@hyperref@unicode{false}
 \fi
 %    \end{macrocode}
 %
@@ -9559,9 +9592,11 @@
 % \paragraph{hyperref対策}
 %
 % |unicode| にするべき。
+% \Note 1.6c版より、固定ではなく既定設定＋検証に切り替えた。
 %    \begin{macrocode}
 \ifbxjs@hyperref@enc
-  \bxjs@fix@hyperref@unicode{true}
+  \PassOptionsToPackage{unicode}{hyperref}
+  \bxjs@check@hyperref@unicode{true}
 \fi
 %    \end{macrocode}
 %
@@ -9926,6 +9961,18 @@
   \DeclareUnicodeCharacter{3000}{\bxjs@zsp@char}
   \bxjs@protected\def\bxjs@zsp@char{\zwspace}
 \fi\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \paragraph{hyperref対策}
+%
+% |hyperref| の |unicode| オプションの固定を行う。
+%    \begin{macrocode}
+\if j\jsEngine
+  \bxjs@fix@hyperref@unicode{false}
+\else
+  \bxjs@fix@hyperref@unicode{true}
+\fi
 %    \end{macrocode}
 %
 %^^A----------------
