@@ -2466,7 +2466,10 @@
 %
 %    \begin{macrocode}
 \chardef\bxjs@periodchar=`\.
-\bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
+\bxjs@protected\def\bxjs@SE{%
+  \ifnum\spacefactor<\m@ \spacefactor\m@
+  \else \spacefactor\sfcode\bxjs@periodchar
+  \fi}
 \def\@{\bxjs@SE{}}
 %    \end{macrocode}
 % \end{macro}
