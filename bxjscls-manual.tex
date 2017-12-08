@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.7}
-\newcommand{\PkgDate}{2017/10/21}
+\newcommand{\PkgVersion}{1.7a}
+\newcommand{\PkgDate}{2017/12/09}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -798,6 +798,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
     |\jaenspace|、|\jathinspace|、|\>|、
     |\＿|（|\|\,+\,全角空白）
   \end{quote}
+\item |fix-at-cmd=|\Meta{真偽値}\Means
+  |\@| 命令に対してJSクラスと同様の拡張を施すか否か。
 \item |layout=|\Meta{値}\Means
   レイアウトの変種を選択する。
   現状では、過去の版との互換性を維持するために用いられている。

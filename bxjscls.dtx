@@ -68,7 +68,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2017/10/21 v1.7 BXJS document classes]
+  [2017/12/09 v1.7a BXJS document classes]
+% [2017/10/21 v1.7 BXJS document classes]
 % [2017/09/28 v1.6b BXJS document classes]
 % [2017/09/24 v1.6a BXJS document classes]
 % [2017/09/09 v1.6  BXJS document classes]
@@ -1801,6 +1802,16 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@fix@at@cmd}
+% 〔スイッチ〕 |fix-at-cmd| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@fix@at@cmd \bxjs@fix@at@cmdtrue
+\let\bxjs@kv@fixatcmd@true\bxjs@fix@at@cmdtrue
+\let\bxjs@kv@fixatcmd@false\bxjs@fix@at@cmdfalse
+\define@key{bxjs}{fix-at-cmd}[true]{\bxjs@set@keyval{fixatcmd}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifbxjs@hyperref@enc}
 % 〔スイッチ〕 |hyperref-enc| の指定値。
 %    \begin{macrocode}
@@ -2464,13 +2475,25 @@
 % [2016-07-14] 2015-01-01の\LaTeX で，auxiliary filesに書き出されたときに
 % スペースが食われないようにする修正が入りました。これに合わせて |{}| を補いました。
 %
+% \begin{ZRnote}
+% BXJSクラスでの変更点：
+% \begin{itemize}
+% \item |fix-at-cmd| オプションが偽の場合は再定義しない。
+% \item 固定の3000でなく実際のピリオドのsfcode値を使う。
+% \item 「防御的な |\@|」での不具合を防ぐため、大文字直後の |\@|
+%   は標準と同等の動作にする。
+% \end{itemize}
+% \end{ZRnote}
+%
 %    \begin{macrocode}
 \chardef\bxjs@periodchar=`\.
 \bxjs@protected\def\bxjs@SE{%
-  \ifnum\spacefactor<\m@ \spacefactor\m@
+  \ifnum\spacefactor<\@m \spacefactor\@m
   \else \spacefactor\sfcode\bxjs@periodchar
   \fi}
-\def\@{\bxjs@SE{}}
+\ifbxjs@fix@at@cmd
+  \def\@{\bxjs@SE{}}
+\fi
 %    \end{macrocode}
 % \end{macro}
 %

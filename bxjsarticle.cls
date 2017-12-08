@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2017/10/21 v1.7 BXJS document classes]
+  [2017/12/09 v1.7a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsarticle}
 \newif\ifjsc@needsp@tch
@@ -546,6 +546,10 @@
 \let\bxjs@kv@jaspacecmd@false\bxjs@jaspace@cmdfalse
 \define@key{bxjs}{jaspace-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
 \define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
+\newif\ifbxjs@fix@at@cmd \bxjs@fix@at@cmdtrue
+\let\bxjs@kv@fixatcmd@true\bxjs@fix@at@cmdtrue
+\let\bxjs@kv@fixatcmd@false\bxjs@fix@at@cmdfalse
+\define@key{bxjs}{fix-at-cmd}[true]{\bxjs@set@keyval{fixatcmd}{#1}{}}
 \newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
 \let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
@@ -825,8 +829,13 @@
 \newskip\jsc@smallskipamount
 \jsc@smallskipamount=3\jsc@mpt plus 1\jsc@mpt minus 1\jsc@mpt
 \chardef\bxjs@periodchar=`\.
-\bxjs@protected\def\bxjs@SE{\spacefactor\sfcode\bxjs@periodchar}
-\def\@{\bxjs@SE{}}
+\bxjs@protected\def\bxjs@SE{%
+  \ifnum\spacefactor<\@m \spacefactor\@m
+  \else \spacefactor\sfcode\bxjs@periodchar
+  \fi}
+\ifbxjs@fix@at@cmd
+  \def\@{\bxjs@SE{}}
+\fi
 \def\bxjs@tmpa{\def\set@fontsize##1##2##3}
 \expandafter\bxjs@tmpa\expandafter{%
   \set@fontsize{#1}{#2}{#3}%
