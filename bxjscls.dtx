@@ -7544,13 +7544,12 @@
 % 和暦にするには |\和暦| と書いてください。
 %
 % \begin{ZRnote}
-% 環境変数 |SOURCE_DATE_EPOCH_TEX_PRIMITIVES| が設定されている場合は
-% “今日”が過去の日付になる可能性があるが、その場合、
-% 和暦表記は平成2年（1990年）以降でのみサポートする。
-% \Note “新元号”への対応？
+% 環境変数 |SOURCE_DATE_EPOCH|／|FORCE_SOURCE_DATE| が
+% 設定されている場合は“今日”が過去・未来の日付になる可能性がある。
+% その場合、和暦表記は1970年から平成の終わりまでの期間でのみサポートする。
+% \Note 新元号が公表されたら対応する。
 % \end{ZRnote}
 %
-% \begin{macro}{\today}
 %    \begin{macrocode}
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
@@ -7581,17 +7580,51 @@
   \else \expandafter\@secondoftwo \fi}
 }
 \bxjs@decl@Seireki@cmds
-% \bxjs@unxp
-\let\bxjs@unxp\@firstofone
-\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
-% \bxjs@iai
+\let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
+\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded
+  \def\bxjs@onxp{\unexpanded\expandafter}}
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \def\bxjs@iai{\noexpand~}
 \else \def\bxjs@iai{}
 \fi
-% \heisei
-\newcount\heisei \heisei\year \advance\heisei-1988\relax
-% \today
+%    \end{macrocode}
+%
+% \begin{macro}{\jayear}
+% 和暦における年の表記（元号+年数）。
+% \begin{macro}{\heisei}
+% 年数を表す整数レジスタで、
+% 元号が「平成」である場合にのみ定義される。
+% \Note 一般の年数の整数レジスタは |\bxjs@jayear| で、
+% |\heisei| はこれの別名になる。
+%    \begin{macrocode}
+\newcount\bxjs@jayear
+\let\bxjs@gengo\@empty \bxjs@jayear\year
+\@tempcnta=\the\year\two@digits\month\two@digits\day\relax
+\ifnum\@tempcnta<19700101
+\else\ifnum\@tempcnta<19890108
+  \def\bxjs@gengo{昭和}\advance\bxjs@jayear-1925\relax
+  \let\heisei\bxjs@jayear
+\else\ifnum\@tempcnta<20190501
+  \def\bxjs@gengo{平成}\advance\bxjs@jayear-1988\relax
+  \let\heisei\bxjs@jayear
+\else
+%  新元号対応
+%  \def\bxjs@gengo{新元号}\advance\bxjs@jayear-2018\relax
+\fi\fi\fi
+\edef\jayear{%
+  \ifx\bxjs@gengo\@empty \the\bxjs@jayear\bxjs@iai
+  \else \bxjs@onxp{\bxjs@gengo}%
+    \ifnum\bxjs@jayear=\@ne \bxjs@unxp{元}%
+    \else \bxjs@iai\the\bxjs@jayear\bxjs@iai
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\today}
+% 英語、西暦、和暦で場合分けをする。
+%    \begin{macrocode}
 \edef\bxjs@today{%
   \if@english
     \ifcase\month\or
@@ -7599,15 +7632,12 @@
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \ifnum\heisei>\@ne
-      \expandafter\noexpand\expandafter\bxjs@if@use@seireki
-    \else \expandafter\@firstoftwo
-    \fi {%
+    \noexpand\bxjs@if@use@seireki{%
       \number\year\bxjs@iai\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }{%
-      \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@onxp{\jayear}\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }%

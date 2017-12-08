@@ -2186,13 +2186,32 @@
   \else \expandafter\@secondoftwo \fi}
 }
 \bxjs@decl@Seireki@cmds
-\let\bxjs@unxp\@firstofone
-\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded}
+\let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
+\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded
+  \def\bxjs@onxp{\unexpanded\expandafter}}
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \def\bxjs@iai{\noexpand~}
 \else \def\bxjs@iai{}
 \fi
-\newcount\heisei \heisei\year \advance\heisei-1988\relax
+\newcount\bxjs@jayear
+\let\bxjs@gengo\@empty \bxjs@jayear\year
+\@tempcnta=\the\year\two@digits\month\two@digits\day\relax
+\ifnum\@tempcnta<19700101
+\else\ifnum\@tempcnta<19890108
+  \def\bxjs@gengo{昭和}\advance\bxjs@jayear-1925\relax
+  \let\heisei\bxjs@jayear
+\else\ifnum\@tempcnta<20190501
+  \def\bxjs@gengo{平成}\advance\bxjs@jayear-1988\relax
+  \let\heisei\bxjs@jayear
+\else
+\fi\fi\fi
+\edef\jayear{%
+  \ifx\bxjs@gengo\@empty \the\bxjs@jayear\bxjs@iai
+  \else \bxjs@onxp{\bxjs@gengo}%
+    \ifnum\bxjs@jayear=\@ne \bxjs@unxp{元}%
+    \else \bxjs@iai\the\bxjs@jayear\bxjs@iai
+    \fi
+  \fi}
 \edef\bxjs@today{%
   \if@english
     \ifcase\month\or
@@ -2200,15 +2219,12 @@
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \ifnum\heisei>\@ne
-      \expandafter\noexpand\expandafter\bxjs@if@use@seireki
-    \else \expandafter\@firstoftwo
-    \fi {%
+    \noexpand\bxjs@if@use@seireki{%
       \number\year\bxjs@iai\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }{%
-      \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
+      \bxjs@onxp{\jayear}\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
     }%
