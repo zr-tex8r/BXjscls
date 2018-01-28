@@ -268,6 +268,15 @@
     }{}%
   }%
 }
+\def\bxjs@resolve@jafont@paren#1{%
+  \def\bxjs@tmpb{\let#1}%
+  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
+  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
+  \else
+    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
+    \bxjs@tmpb\bxjs@tmpa
+  \fi}
 \if j\jsEngine
 \def\bxjs@apply@kanjiskip{%
   \kanjiskip\@tempskipa}
@@ -308,12 +317,14 @@
   \PassOptionsToPackage{prefer2004jis}{pxchfon}
   \PassOptionsToPackage{prefer2004jis}{pxbabel}
 \fi
+\let\bxjs@jafont@paren\@firstofone
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
   \let\bxjs@tmpa\@empty
 \else\ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi\fi
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty\else
   \edef\bxjs@next{%
@@ -385,6 +396,8 @@
 \fi
 \else\if p\jsEngine
 \bxjs@adjust@jafont{f}
+\let\bxjs@jafont@paren\@firstofone
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
 \def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
@@ -457,6 +470,8 @@
   {xeCJK or zxjatype is too old}\@ehc
 \fi
 \bxjs@adjust@jafont{f}
+\let\bxjs@jafont@paren\@gobble
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
@@ -524,6 +539,8 @@
 \ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi
+\let\bxjs@jafont@paren\@gobble
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }

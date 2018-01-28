@@ -9045,6 +9045,21 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@resolve@jafont@paren}
+% |jafont|パラメタ値内の|()|を解決する。
+%    \begin{macrocode}
+\def\bxjs@resolve@jafont@paren#1{%
+  \def\bxjs@tmpb{\let#1}%
+  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
+  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
+  \else
+    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
+    \bxjs@tmpb\bxjs@tmpa
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
 %^^A----------------
 % \subsection{{\pTeX}用設定}
 %
@@ -9131,12 +9146,14 @@
 % ここで、和文ドライバパラメタ |font| が指定されいる場合は、
 % その値を |pxchfon| のオプションに追加する。
 %    \begin{macrocode}
+\let\bxjs@jafont@paren\@firstofone
 \let\bxjs@tmpa\jsJaFont
 \ifx\bxjs@tmpa\bxjs@@auto
   \let\bxjs@tmpa\@empty
 \else\ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi\fi
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty\else
   \edef\bxjs@next{%
@@ -9256,6 +9273,8 @@
 % \Note Pandocモードでは |autotilde| を指定しない。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
+\let\bxjs@jafont@paren\@firstofone
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
 \def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
@@ -9389,6 +9408,8 @@
 % 非指定の場合はIPAexフォントを使用する。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
+\let\bxjs@jafont@paren\@gobble
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
@@ -9559,6 +9580,8 @@
 \ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
 \fi
+\let\bxjs@jafont@paren\@gobble
+\bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }
