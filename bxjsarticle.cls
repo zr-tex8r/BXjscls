@@ -858,6 +858,13 @@
 \else
   \def\jsc@setfontsize#1#2#3{%
     \@setfontsize#1{#2\jsc@mpt}{#3\jsc@mpt}}
+  \ifjsWitheTeX\if j\jsEngine\else
+    \def\jsc@setfontsize#1#2#3{%
+      \edef\bxjs@sfs@next{%
+        \unexpanded{\@setfontsize#1}%
+           {\the\dimexpr#2\jsc@mpt\relax}{\the\dimexpr#3\jsc@mpt\relax}%
+      }\bxjs@sfs@next}
+  \fi\fi
 \fi
 \emergencystretch 3\jsZw
 \newif\ifnarrowbaselines

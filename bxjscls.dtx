@@ -2594,6 +2594,14 @@
 \else
   \def\jsc@setfontsize#1#2#3{%
     \@setfontsize#1{#2\jsc@mpt}{#3\jsc@mpt}}
+% microtype対策
+  \ifjsWitheTeX\if j\jsEngine\else
+    \def\jsc@setfontsize#1#2#3{%
+      \edef\bxjs@sfs@next{%
+        \unexpanded{\@setfontsize#1}%
+           {\the\dimexpr#2\jsc@mpt\relax}{\the\dimexpr#3\jsc@mpt\relax}%
+      }\bxjs@sfs@next}
+  \fi\fi
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -9557,18 +9565,12 @@
 %    \begin{macrocode}
 \let\zw\@undefined
 \RequirePackage{luatexja}
-\RequirePackage{luatexja-fontspec}
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[scale=\jsScale]{luatexja-fontspec}[2015/08/26]%
+}\bxjs@next
 %    \end{macrocode}
 %
 % \paragraph{和文フォント定義}
-%
-% |luatexja-fontspec| で使用する和文スケール値を |\jsScale| と合致
-% させたいのだが……もっと良い方法はないのか？
-%    \begin{macrocode}
-\ExplSyntaxOn
-\fp_gset:Nn \g_ltj_fontspec_scale_fp { \jsScale }
-\ExplSyntaxOff
-%    \end{macrocode}
 %
 % |\jsJaFont| が指定された場合は、その値をオプションと
 % して |luatexja-preset| を読み込む。

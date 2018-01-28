@@ -531,10 +531,9 @@
 \else\if l\jsEngine
 \let\zw\@undefined
 \RequirePackage{luatexja}
-\RequirePackage{luatexja-fontspec}
-\ExplSyntaxOn
-\fp_gset:Nn \g_ltj_fontspec_scale_fp { \jsScale }
-\ExplSyntaxOff
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[scale=\jsScale]{luatexja-fontspec}[2015/08/26]%
+}\bxjs@next
 \bxjs@adjust@jafont{t}
 \ifx\bxjs@tmpa\bxjs@@noEmbed
   \def\bxjs@tmpa{noembed}
