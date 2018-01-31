@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2017/12/09 v1.7a BXJS document classes]
+  [2018/01/28 v1.7b BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%

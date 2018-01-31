@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.7a}
-\newcommand{\PkgDate}{2017/12/09}
+\newcommand{\PkgVersion}{v1.7b}
+\newcommand{\PkgDate}{2018/01/28}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -92,8 +92,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \begin{itemize}
 \item \Meta{エンジン}の指定は必須で、実際に使っている
   「{\LaTeX}のコマンド名」を書く。
-  |latex|、|platex|、|uplatex|、
-  |pdflatex|、|xelatex|、|lualatex|が指定できる。
+  |platex|、|uplatex|、
+  |pdflatex|、|xelatex|、|lualatex|等が指定できる。
 \item DVI出力のエンジンを使う場合は、\Meta{ドライバ}の指定が必須で、
   これは実際に使っている「DVIウェアの名前」を書く。
   |dvips|、|dvipdfmx|、|dviout|、|xdvi|が指定できる。
@@ -388,8 +388,9 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \usepackage[colorlinks]{hyperref}
 \hypersetup{pdftitle={日本語タイトル}}
 \end{verbatim}\end{quote}
-  \Pkg{hyperref}のパッケージオプションで和文文字を含む文書情報を
+  \Note \Pkg{hyperref}のパッケージオプションで和文文字を含む文書情報を
   指定することはできない。
+  （\Pkg{hyperref}の制限仕様。）
 \item |jafont| が無い場合の“既定のフォント設定”は多くのエンジンに
   おいて「IPAexフォント使用」であるが、(u){\pLaTeX}だけは異なっていて
   「何も指定しない状態」（JSクラスと同様）である。
@@ -454,20 +455,15 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
 
   コマンド行は次のようになる
   \footnote{もちろん、実際には改行を含めず1行で書く。
-    なお、Pandoc 1.16版以降では、用紙サイズオプションについては、
-    変数 |papersize| の値に“|paper|”を付加したもの
-    （|-V papersize=a4| ならば |a4paper|）が使われる。
-    ここで |a4var| や |b5var| を使えるようにするため、
-    BXJSクラスでは |a4varpaper| 等を別名として用意している。}：
+  なお、以下の記述はPandoc 2.x版に従う。}
   \begin{quote}
   |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
-    |-t latex|\\\quad
-    |--latex-engine=xelatex|
-    |--no-tex-ligatures|\\\quad
+    |-t latex-smart|\\\quad
+    |--pdf-engine=xelatex|
     |-V papersize=a4|
-    |-V documentclass=bxjsarticle|
-    |-V classoption=pandoc|\\\quad
+    |-V documentclass=bxjsarticle|\\\quad
+    |-V classoption=pandoc|
     |-V classoption=jafont=ipaex|
   \end{quote}
 
@@ -492,10 +488,9 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
     |-N|
-    |-t latex|\\\quad
+    |-t latex-smart|\\\quad
     |--top-level-division=chapter|
-    |--latex-engine=xelatex|
-    |--no-tex-ligatures|\\\quad
+    |--pdf-engine=xelatex|\\\quad
     |-V papersize=b5|
     |-V documentclass=bxjsbook|
     |-V classoption=pandoc|\\\quad
@@ -509,14 +504,11 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   \begin{itemize}
   \item \Pkg{bxjsbook}クラスは「章（|\chapter|）」をもつクラスなので、
     Pandocで |--top-level-division=|\linebreak[0]|chapter| の指定
-    \footnote{|--top-level-division| はPandocの1.18版で新設された
-      オプションで、それより前は代わりに |--chapters| オプションを
-      指定していた。}%
     が必要。
   \end{itemize}
 
-\item Pandocで（{\LaTeX}経由で）PDFを出力する場合、
-  エンジン指定（|--latex-engine|）は
+\item Pandocで{\LaTeX}経由でPDFを出力する場合、
+  エンジン指定（|--pdf-engine|）は
   |pdflatex|、|xelatex|、|lualatex|のみがサポートされる。
   しかし、Pandocの出力を「単体の{\LaTeX}文書」とすることで、
   {\LaTeX}エンジンに(u){\pLaTeX}を使用することができる。
@@ -1109,6 +1101,15 @@ minimal和文ドライバには有効な和文ドライバパラメタは存在�
   \item エンジンが{(u)\pLaTeX}の場合、|pxchfon| と |pxbabel|
     パッケージに予め |prefer2004jis| オプションが渡される。
   \end{itemize}
+\item |units=|\Meta{真偽値}\Means
+  これを真にすると、
+  {\LaTeX}における長さ指定において、{\pTeX}の和文用の単位
+  （|zw|、|zh|、|(true)Q|、|(true)H|）
+  を全てのエンジンで使用できるようにする。
+  既定値は偽。
+  \Note \Pkg{bxcalc}パッケージを読み込む。
+  \Note 厳密にいうと、「\Pkg{calc}の長さ数式が使える箇所」
+  において和文用の単位が使用できるようになる。
 \item |font={|\Meta{文字列}|}|\Means
   standard和文ドライバが利用する和文フォントパッケージについて
   追加のオプションを指定する。
@@ -1208,17 +1209,22 @@ vscale=0.944, vmarginratio=1:1
   と等価な環境で、
   “各章の初めにちょっとしたことを書く”用途を想定したもの。
   （ただし使用可能な場所に特に制限はない。）
-\end{itemize}
 
-なお、|abstract| 環境の機能については継承元のJSクラスと同一に
-なるため以下のようになる。
-\begin{itemize}
-\item \Pkg{bxjsarticle}および|layout=v2|指定の\Pkg{bxjsreport}\Means
-  \Pkg{jsarticle}／\Pkg{jsreport}クラスと同じ、
-  つまり「文書要旨」のための環境。
-\item \Pkg{bxjsbook}および|layout=v1|指定の\Pkg{bxjsreport}\Means
-  \Pkg{jsbook}クラスと同じ、
-  つまり |chapterabstract| 環境と等価。
+  なお、|abstract| 環境の機能については継承元のJSクラスと同一に
+  なるため以下のようになる。
+  \begin{itemize}
+  \item \Pkg{bxjsarticle}および|layout=v2|指定の\Pkg{bxjsreport}\Means
+    \Pkg{jsarticle}／\Pkg{jsreport}クラスと同じ、
+    つまり「文書要旨」のための環境。
+  \item \Pkg{bxjsbook}および|layout=v1|指定の\Pkg{bxjsreport}\Means
+    \Pkg{jsbook}クラスと同じ、
+    つまり |chapterabstract| 環境と等価。
+  \end{itemize}
+
+\item |\jayear|\Means
+  和暦表示（|\和暦| が有効）の時の |\today| における年号
+  （「年」より前の部分、例えば「平成28」）
+  のテキストを表すマクロ。
 \end{itemize}
 
 %-------------------
