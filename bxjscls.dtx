@@ -8637,10 +8637,17 @@
 %
 % \paragraph{和文用単位のサポート}
 %
+% エンジンが{(u)\pTeX}の場合は |units| を無効にする。
+%    \begin{macrocode}
+\if j\jsEngine
+  \bxjs@jp@unitsfalse
+\fi
+%    \end{macrocode}
+%
 % |units| パラメタが有効の場合は、|bxcalc| パッケージを読みこんで、
 % |\usepTeXunits| 命令を実行する。
 %    \begin{macrocode}
-\ifbxjs@jp@units\if j\jsEngine\else
+\ifbxjs@jp@units
   \IfFileExists{bxcalc.sty}{%
     \RequirePackage{bxcalc}[2018/01/28]%v1.0a
     \ifx\usepTeXunits\@undefined
@@ -8654,8 +8661,22 @@
      {Cannot support pTeX units (zw etc.), since\MessageBreak
       the package 'bxcalc' is unavailable}%
   }
-\fi\fi
+\fi
 %    \end{macrocode}
+%
+% \begin{macro}{\bxjs@let@lenexpr}
+% |\bxjs@let@lenexpr\CS{|\Meta{長さ式}|}|\Means
+% 長さ式に |bxcalc| の展開を適用した結果のトークン列を |\CS| に代入する。
+%    \begin{macrocode}
+\ifbxjs@jp@units
+  \def\bxjs@let@lenexpr#1#2{%
+    \edef#1{#2}%
+    \expandafter\CUXParseExpr\expandafter#1\expandafter{#1}}
+\else
+  \def\bxjs@let@lenexpr{\edef}
+\fi
+%    \end{macrocode}
+% \end{macro}
 %
 % \paragraph{共通命令の実装}
 %
@@ -8801,7 +8822,7 @@
 % 和文間空白の量を設定する。
 %    \begin{macrocode}
 \newcommand*\setkanjiskip[1]{%
-  \edef\bxjs@kanjiskip{#1}%
+  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
   \bxjs@reset@kanjiskip}
 %    \end{macrocode}
 % \end{macro}
@@ -8860,7 +8881,7 @@
 %    \begin{macrocode}
 \def\bxjs@xkanjiskip{0pt}
 \newcommand*\setxkanjiskip[1]{%
-  \edef\bxjs@xkanjiskip{#1}%
+  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
   \bxjs@reset@xkanjiskip}
 \newcommand*\getxkanjiskip{%
   \bxjs@xkanjiskip}

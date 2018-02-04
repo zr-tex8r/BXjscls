@@ -44,7 +44,10 @@
   \g@addto@macro\@classoptionslist{,jis2004}
   \PassOptionsToPackage{jis2004}{otf}
 \fi
-\ifbxjs@jp@units\if j\jsEngine\else
+\if j\jsEngine
+  \bxjs@jp@unitsfalse
+\fi
+\ifbxjs@jp@units
   \IfFileExists{bxcalc.sty}{%
     \RequirePackage{bxcalc}[2018/01/28]%v1.0a
     \ifx\usepTeXunits\@undefined
@@ -58,7 +61,14 @@
      {Cannot support pTeX units (zw etc.), since\MessageBreak
       the package 'bxcalc' is unavailable}%
   }
-\fi\fi
+\fi
+\ifbxjs@jp@units
+  \def\bxjs@let@lenexpr#1#2{%
+    \edef#1{#2}%
+    \expandafter\CUXParseExpr\expandafter#1\expandafter{#1}}
+\else
+  \def\bxjs@let@lenexpr{\edef}
+\fi
 \ifjsWitheTeX
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
@@ -124,7 +134,7 @@
   \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
 \def\bxjs@kanjiskip{0pt}
 \newcommand*\setkanjiskip[1]{%
-  \edef\bxjs@kanjiskip{#1}%
+  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
   \bxjs@reset@kanjiskip}
 \newcommand*\getkanjiskip{%
   \bxjs@kanjiskip}
@@ -143,7 +153,7 @@
   \bxjs@apply@kanjiskip}
 \def\bxjs@xkanjiskip{0pt}
 \newcommand*\setxkanjiskip[1]{%
-  \edef\bxjs@xkanjiskip{#1}%
+  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
   \bxjs@reset@xkanjiskip}
 \newcommand*\getxkanjiskip{%
   \bxjs@xkanjiskip}
