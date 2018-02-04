@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{v1.7b}
-\newcommand{\PkgDate}{2018/01/28}
+\newcommand{\PkgVersion}{v1.7c}
+\newcommand{\PkgDate}{2018/02/04}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -792,6 +792,24 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \end{quote}
 \item |fix-at-cmd=|\Meta{真偽値}\Means
   |\@| 命令に対してJSクラスと同様の拡張を施すか否か。
+\item |label-section=|\Meta{値}\Means
+  節番号の書式出力、特に
+  「|\pre|/|postsectionname|」
+  「\Pkg{bxjsarticle}での付録部における |\appendixname|」
+  の語句の付加の方法を選択する。
+  \begin{itemize}
+  \item |compat|（既定）\Means
+    JSクラスと同じ実装を用いる。
+    この場合、節のカウンタの書式（|\thesection|）そのものに語句が
+    付加されるため、|\thesection| を参照する他のカウンタ書式が
+    奇妙になる可能性がある。
+  \item |modern|\Means
+    節のカウンタの書式（|\thesection|）には語句の付加を行わず、
+    実際にそれが節番号として出力される際に語句を付加する。
+  \item |none|\Means
+    節番号に対する語句の付加を抑止する。
+    欧文・和文の標準文書クラスと同等になる。
+  \end{itemize}
 \item |layout=|\Meta{値}\Means
   レイアウトの変種を選択する。
   現状では、過去の版との互換性を維持するために用いられている。
