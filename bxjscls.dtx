@@ -1841,6 +1841,20 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@label@section}
+% |label-section| の指定値。
+%    \begin{macrocode}
+\chardef\bxjs@label@section@none=0
+\chardef\bxjs@label@section@compat=1
+\chardef\bxjs@label@section@modern=2
+\let\bxjs@label@section\bxjs@label@section@compat
+\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@none}
+\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
+\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
+\define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
@@ -4143,10 +4157,10 @@
         \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
     \let\@mkboth\markboth
     \def\sectionmark##1{\markboth{%
-       \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+       \ifnum \c@secnumdepth >\z@ \bxjs@label@sect{section}\hskip1\jsZw\fi
        ##1}{}}%
     \def\subsectionmark##1{\markright{%
-       \ifnum \c@secnumdepth >\@ne \thesubsection \hskip1\jsZw\fi
+       \ifnum \c@secnumdepth >\@ne \bxjs@label@sect{subsection}\hskip1\jsZw\fi
        ##1}}%
   }
 \else % if not twoside
@@ -4157,7 +4171,7 @@
         \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
     \let\@mkboth\markboth
     \def\sectionmark##1{\markright{%
-        \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+        \ifnum \c@secnumdepth >\z@ \bxjs@label@sect{section}\hskip1\jsZw\fi
         ##1}}}
 \fi
 %</article|slide>
@@ -4199,7 +4213,7 @@
     \fi
     ##1}{}}%
   \def\sectionmark##1{\markright{%
-    \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+    \ifnum \c@secnumdepth >\z@ \bxjs@label@sect{section}\hskip1\jsZw\fi
     ##1}}}%
 %</book|report>
 %    \end{macrocode}
@@ -4553,6 +4567,44 @@
 %
 % \subsection{章・節}
 %
+% \begin{ZRnote}
+% ムニャムニャ……。
+% \begin{macro}{\bxjs@label@sect}
+% 節付 |#1| の番号を出力する。
+% 節付 |XXX| に対して、|\labelXXX| が定義済ならそれが出力書式を表す。
+% 未定義ならばカウンタの出力書式 |\theXXX| が使われる。
+%    \begin{macrocode}
+\def\bxjs@label@sect#1{%
+  \expandafter\ifx\csname label#1\endcsname\relax
+    \csname the#1\endcsname
+  \else \csname label#1\endcsname
+  \fi}
+\def\@seccntformat#1{\bxjs@label@sect{#1}\quad}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\@secapp}
+% 節番号の接頭辞。
+% \begin{macro}{\@secpos}
+% 節番号の接尾辞。
+%    \begin{macrocode}
+\ifnum\bxjs@label@section=\bxjs@label@section@compat\else
+\def\@secapp{\presectionname}
+\def\@secpos{\postsectionname}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\labelsection}
+% 節番号の出力書式。
+%    \begin{macrocode}
+\ifnum\bxjs@label@section=\bxjs@label@section@modern
+\def\labelsection{\@secapp\thesection\@secpos}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \end{ZRnote}
+%
 % \paragraph{構成要素}
 %
 % |\@startsection| マクロは6個の必須引数と，オプションとして |*| と
@@ -4661,7 +4713,7 @@
       \csname #1mark\endcsname{#7}%
       \addcontentsline{toc}{#1}{%
         \ifnum #2>\c@secnumdepth \else
-          \protect\numberline{\csname the#1\endcsname}%
+          \protect\numberline{\bxjs@label@sect{#1}}%
         \fi
         #7}}% 目次にフルネームを載せるなら #8
   \else
@@ -4675,7 +4727,7 @@
     \csname #1mark\endcsname{#7}%
     \addcontentsline{toc}{#1}{%
       \ifnum #2>\c@secnumdepth \else
-        \protect\numberline{\csname the#1\endcsname}%
+        \protect\numberline{\bxjs@label@sect{#1}}%
       \fi
       #7}% 目次にフルネームを載せるならここは #8
   \fi
@@ -4829,9 +4881,15 @@
 %
 %    \begin{macrocode}
 \renewcommand{\thepart}{\@Roman\c@part}
-%<!book&!report>% \renewcommand{\thesection}{\@arabic\c@section}
-%<!book&!report>\renewcommand{\thesection}{\presectionname\@arabic\c@section\postsectionname}
-%<!book&!report>\renewcommand{\thesubsection}{\@arabic\c@section.\@arabic\c@subsection}
+%<*!book&!report>
+\ifnum\bxjs@label@section=\bxjs@label@section@compat
+\renewcommand{\thesection}{\presectionname\@arabic\c@section\postsectionname}
+\renewcommand{\thesubsection}{\@arabic\c@section.\@arabic\c@subsection}
+\else
+\renewcommand{\thesection}{\@arabic\c@section}
+\renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+\fi
+%</!book&!report>
 %<*book|report>
 \renewcommand{\thechapter}{\@arabic\c@chapter}
 \renewcommand{\thesection}{\thechapter.\@arabic\c@section}
@@ -5900,11 +5958,17 @@
 \newcommand{\appendix}{\par
   \setcounter{section}{0}%
   \setcounter{subsection}{0}%
+  \ifnum\bxjs@label@section=\bxjs@label@section@compat
   \gdef\presectionname{\appendixname}%
   \gdef\postsectionname{}%
 % \gdef\thesection{\@Alph\c@section}% [2003-03-02]
   \gdef\thesection{\presectionname\@Alph\c@section\postsectionname}%
-  \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}}
+  \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}%
+  \else
+  \gdef\@secapp{\appendixname}%
+  \gdef\@secpos{}%
+  \gdef\thesection{\@Alph\c@section}%
+  \fi}
 %</!book&!report>
 %<*book|report>
 \newcommand{\appendix}{\par

@@ -566,6 +566,14 @@
 \def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@compat}
 \def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@modern}
 \define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
+\chardef\bxjs@label@section@none=0
+\chardef\bxjs@label@section@compat=1
+\chardef\bxjs@label@section@modern=2
+\let\bxjs@label@section\bxjs@label@section@compat
+\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@none}
+\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
+\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
+\define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
 \let\bxjs@ltx@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -1161,10 +1169,10 @@
         \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
     \let\@mkboth\markboth
     \def\sectionmark##1{\markboth{%
-       \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+       \ifnum \c@secnumdepth >\z@ \bxjs@label@sect{section}\hskip1\jsZw\fi
        ##1}{}}%
     \def\subsectionmark##1{\markright{%
-       \ifnum \c@secnumdepth >\@ne \thesubsection \hskip1\jsZw\fi
+       \ifnum \c@secnumdepth >\@ne \bxjs@label@sect{subsection}\hskip1\jsZw\fi
        ##1}}%
   }
 \else % if not twoside
@@ -1175,7 +1183,7 @@
         \hbox to \fullwidth{{\rightmark}\hfil\textbf{\thepage}}}\hss}%
     \let\@mkboth\markboth
     \def\sectionmark##1{\markright{%
-        \ifnum \c@secnumdepth >\z@ \thesection \hskip1\jsZw\fi
+        \ifnum \c@secnumdepth >\z@ \bxjs@label@sect{section}\hskip1\jsZw\fi
         ##1}}}
 \fi
 \def\ps@myheadings{%
@@ -1326,6 +1334,19 @@
     \ifvoid\@abstractbox\else\centerline{\box\@abstractbox}\vskip1.5em\fi
   }
 \fi
+\def\bxjs@label@sect#1{%
+  \expandafter\ifx\csname label#1\endcsname\relax
+    \csname the#1\endcsname
+  \else \csname label#1\endcsname
+  \fi}
+\def\@seccntformat#1{\bxjs@label@sect{#1}\quad}
+\ifnum\bxjs@label@section=\bxjs@label@section@compat\else
+\def\@secapp{\presectionname}
+\def\@secpos{\postsectionname}
+\fi
+\ifnum\bxjs@label@section=\bxjs@label@section@modern
+\def\labelsection{\@secapp\thesection\@secpos}
+\fi
 \def\@startsection#1#2#3#4#5#6{%
   \if@noskipsec \leavevmode \fi
   \par
@@ -1369,7 +1390,7 @@
       \csname #1mark\endcsname{#7}%
       \addcontentsline{toc}{#1}{%
         \ifnum #2>\c@secnumdepth \else
-          \protect\numberline{\csname the#1\endcsname}%
+          \protect\numberline{\bxjs@label@sect{#1}}%
         \fi
         #7}}% 目次にフルネームを載せるなら #8
   \else
@@ -1382,7 +1403,7 @@
     \csname #1mark\endcsname{#7}%
     \addcontentsline{toc}{#1}{%
       \ifnum #2>\c@secnumdepth \else
-        \protect\numberline{\csname the#1\endcsname}%
+        \protect\numberline{\bxjs@label@sect{#1}}%
       \fi
       #7}% 目次にフルネームを載せるならここは #8
   \fi
@@ -1438,9 +1459,13 @@
 \newcounter{paragraph}[subsubsection]
 \newcounter{subparagraph}[paragraph]
 \renewcommand{\thepart}{\@Roman\c@part}
-% \renewcommand{\thesection}{\@arabic\c@section}
+\ifnum\bxjs@label@section=\bxjs@label@section@compat
 \renewcommand{\thesection}{\presectionname\@arabic\c@section\postsectionname}
 \renewcommand{\thesubsection}{\@arabic\c@section.\@arabic\c@subsection}
+\else
+\renewcommand{\thesection}{\@arabic\c@section}
+\renewcommand{\thesubsection}{\thesection.\@arabic\c@subsection}
+\fi
 \renewcommand{\thesubsubsection}{%
    \thesubsection.\@arabic\c@subsubsection}
 \renewcommand{\theparagraph}{%
@@ -1708,10 +1733,16 @@
 \newcommand{\appendix}{\par
   \setcounter{section}{0}%
   \setcounter{subsection}{0}%
+  \ifnum\bxjs@label@section=\bxjs@label@section@compat
   \gdef\presectionname{\appendixname}%
   \gdef\postsectionname{}%
   \gdef\thesection{\presectionname\@Alph\c@section\postsectionname}%
-  \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}}
+  \gdef\thesubsection{\@Alph\c@section.\@arabic\c@subsection}%
+  \else
+  \gdef\@secapp{\appendixname}%
+  \gdef\@secpos{}%
+  \gdef\thesection{\@Alph\c@section}%
+  \fi}
 \setlength\arraycolsep{5\p@?}
 \setlength\tabcolsep{6\p@?}
 \setlength\arrayrulewidth{.4\p@}
