@@ -8075,14 +8075,14 @@
 %
 % |\jsLetHeadChar| を和文文字トークンに対応させる。
 %    \begin{macrocode}
-\def\bxjs@let@hchar@chr@pp#1{%
-  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#1\relax#1}
-\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3{%
-%\message{(#1)}%
-  \bxjs@cond\if#1t\fi{%
-    \bxjs@let@hchar@chr@ue#3%
+\def\bxjs@let@hchar@chr@pp#1#2{%
+  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#2\relax#1#2}
+\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3#4{%
+%\message{(\meaning#3:\meaning#4)}%
+  \bxjs@cond\if#1k\fi{%
+    \bxjs@let@hchar@out\def{{#4}}%
   }{%else
-    \bxjs@let@hchar@out\def{{#3}}%
+    \bxjs@let@hchar@chr@ue#3#4%
   }}
 \let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@pp
 %    \end{macrocode}

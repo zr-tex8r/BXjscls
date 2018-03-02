@@ -111,13 +111,13 @@
 \def\bxjs@let@hchar@chr@ue@d#1#2#3#4{%
   \bxjs@let@hchar@out\def{{#1#2#3#4}}}
 \ifx j\jsEngine
-\def\bxjs@let@hchar@chr@pp#1{%
-  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#1\relax#1}
-\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3{%
-  \bxjs@cond\if#1t\fi{%
-    \bxjs@let@hchar@chr@ue#3%
+\def\bxjs@let@hchar@chr@pp#1#2{%
+  \expandafter\bxjs@let@hchar@chr@pp@a\meaning#2\relax#1#2}
+\def\bxjs@let@hchar@chr@pp@a#1#2\relax#3#4{%
+  \bxjs@cond\if#1k\fi{%
+    \bxjs@let@hchar@out\def{{#4}}%
   }{%else
-    \bxjs@let@hchar@out\def{{#3}}%
+    \bxjs@let@hchar@chr@ue#3#4%
   }}
 \let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@pp
 \edef\jsc@JYn{\ifjsWithupTeX JY2\else JY1\fi}
