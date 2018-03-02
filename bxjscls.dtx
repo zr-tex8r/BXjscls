@@ -20,24 +20,12 @@
 %  provided by the original authors.)
 %---------------------------------------
 %
-%  pLaTeX2ε新ドキュメントクラス
-%
-%  これは LaTeX3 Project の classes.dtx と株式会社アスキーの jclasses.dtx
-%  に基づいて，もともと奥村晴彦 <okumura@okumuralab.org> により
-%  作成されたものです。
-%  現在は日本語\TeX 開発コミュニティにより管理されています。
-%
-%  [2002-12-19] いろいろなものに収録していただく際にライセンスを明確にする
-%  必要が生じてきました。アスキーのものが最近はmodified BSDライセンスになっ
-%  ていますので，私のものもそれに準じてmodified BSDとすることにします。
-%
-%  [2016-07-11] abenoriさんによる\texttt{nomag}オプションをマージしました。
-%  なお，ソースコードの管理はGitHubで行うことにしました。
-%
-%  [2016-07-13] 日本語\TeX 開発コミュニティによる管理に移行しました。
+%  pLaTeX2ε新ドキュメントクラス（日本語 TeX 開発コミュニティ版）
+%  原作者：奥村晴彦 <okumura@okumuralab.org>
 %
 %---------------------------------------
-%  Copyright 1993 1994 1995 1996 1997 1998 1999
+%
+%  Copyright 1993-2016
 %  The LaTeX3 Project and any individual authors listed elsewhere
 %  in this file.
 %
@@ -45,7 +33,7 @@
 %  Copyright 1999-2016 Haruhiko Okumura
 %  Copyright 2016-2017 Japanese TeX Development Community
 %
-%  Copyright 2013-2017 Takayuki YATO (aka. "ZR")
+%  Copyright 2013-2018 Takayuki YATO (aka. "ZR")
 %
 % \fi
 % \CheckSum{0}
@@ -68,7 +56,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2018/02/04 v1.7c BXJS document classes]
+  [2018/03/03 v1.8  BXJS document classes]
+% [2018/02/04 v1.7c BXJS document classes]
 % [2018/01/28 v1.7b BXJS document classes]
 % [2017/12/09 v1.7a BXJS document classes]
 % [2017/10/21 v1.7 BXJS document classes]
@@ -196,13 +185,20 @@
 %
 % これは\LaTeX3 Projectの \texttt{classes.dtx} と
 % 株式会社アスキーの \texttt{jclasses.dtx} に基づいて
-% 奥村が改変したものです。
-% 権利については両者のものに従います。
-% 奥村は何の権利も主張しません。
+% もともと奥村晴彦により作成されたものです。
+% 現在は日本語\TeX 開発コミュニティによりGitHubで管理されています。
+% \begin{quote}
+% |https://github.com/texjporg/jsclasses|
+% \end{quote}
+%
+% [2002-12-19] いろいろなものに収録していただく際にライセンスを明確にする
+% 必要が生じてきました。アスキーのものが最近はmodified BSDライセンスになっ
+% ていますので，私のものもそれに準じてmodified BSDとすることにします。
+%
+% [2016-07-13] 日本語\TeX 開発コミュニティによる管理に移行しました。
 %
 % [2009-02-22] 田中琢爾氏によるup\LaTeX 対応パッチを取り込みました。
 %
-% \iffalse
 % ここでは次のドキュメントクラス（スタイルファイル）を作ります。
 %
 % [2017-02-13] forum:2121の議論を機に，jsreportクラスを新設しました。
@@ -218,6 +214,8 @@
 %     $\langle$\textsf{kiyou}$\rangle$   & \texttt{kiyou.cls}      & 某紀要用
 %   \end{tabular}
 % \end{quote}
+%
+% \iffalse
 %
 % \LaTeXe あるいは\pLaTeXe 標準のドキュメントクラスとの違いを説明してお
 % きます。
@@ -1974,7 +1972,7 @@
 %    \end{macrocode}
 %
 % \paragraph{グローバルオプションの整理 \ZRX}
-%
+% \mbox{}
 % \begin{ZRnote}
 %
 % グローバルオプションのトークン列に |{ }| が含まれていると、
@@ -3509,7 +3507,9 @@
 % \Note diffが崩壊するのを避けるためオリジナルのコードを無効化した状態で
 % 挿入しておく。
 % \end{ZRnote}
+%    \begin{macrocode}
 %<*jsclasses>
+%    \end{macrocode}
 %
 % \paragraph{縦方向のスペース}
 %
@@ -3882,7 +3882,9 @@
 %    \end{macrocode}
 % \end{macro}
 %
+%    \begin{macrocode}
 %</jsclasses>
+%    \end{macrocode}
 %
 % \paragraph{脚注}
 %
@@ -9402,6 +9404,7 @@
 %
 % インストールされている |otf| パッケージが |scale| オプションに
 % 対応している場合は |scale=(\jsScaleの値)| を事前に |otf| に渡す。
+% \Note |scale| 対応は1.7b6版 [2013/11/17] から。
 % \Note otf.sty の中に「|\RequirePackage{keyval}|」の行が存在する
 % かにより判定している。
 % （もっといい方法はないのか……。）

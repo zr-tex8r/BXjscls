@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{v1.7c}
-\newcommand{\PkgDate}{2018/02/04}
+\newcommand{\PkgVersion}{v1.8}
+\newcommand{\PkgDate}{2018/03/03}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -396,17 +396,17 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   「何も指定しない状態」（JSクラスと同様）である。
   すなわち実際に使われる物理フォントの選択はDVIウェアの設定に
   委ねられている。
-\item JSクラスは |\ifdraft| という公開名のスイッチ
-  \footnote{スイッチなので{\LaTeX}レベルの命令ではない。
-    標準クラスではこれに相当するものは |\if@draft| という非公開の
-    制御綴で定義されている。}%
-  を用いているが、これは\Pkg{ifdraft}パッケージと衝突する。
-    そこでBXJSクラスでは代わりに |\ifjsDraft| の名前を
-    用い、本文開始時に |\ifdraft| が未定義の場合に限り、
-    |\ifjsDraft| を |\ifdraft| にコピーする処理にしている。
-  \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
-  従って、BXJSクラスにおいて |\ifdraft| スイッチの使用を
-  非推奨とし、将来的に廃止を予定する。
+%\item JSクラスは |\ifdraft| という公開名のスイッチ
+%  \footnote{スイッチなので{\LaTeX}レベルの命令ではない。
+%    標準クラスではこれに相当するものは |\if@draft| という非公開の
+%    制御綴で定義されている。}%
+%  を用いているが、これは\Pkg{ifdraft}パッケージと衝突する。
+%    そこでBXJSクラスでは代わりに |\ifjsDraft| の名前を
+%    用い、本文開始時に |\ifdraft| が未定義の場合に限り、
+%    |\ifjsDraft| を |\ifdraft| にコピーする処理にしている。
+%  \Note JSクラスの |\ifdraft| は2016/07/13版で廃止された。
+%  従って、BXJSクラスにおいて |\ifdraft| スイッチの使用を
+%  非推奨とし、将来的に廃止を予定する。
 \item 1.2版より、|\bf| や |\it| 等の
   {\pLaTeX}\,2.09方式のフォント選択命令の使用が
   非推奨となり、これらの命令を使うと警告が出るようになった。
@@ -445,6 +445,8 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
 
 以下でPandocでBXJSクラスを用いる例を示す。
 
+\Note なお、以下の記述はPandoc 2.x版に従う。
+
 \begin{itemize}
 \item \Pkg{bxjsarticle}クラスを使用する一例。
   \begin{itemize}
@@ -453,9 +455,8 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   \item 和文フォント設定は |ipaex|
   \end{itemize}
 
-  コマンド行は次のようになる
-  \footnote{もちろん、実際には改行を含めず1行で書く。
-  なお、以下の記述はPandoc 2.x版に従う。}
+  コマンド行は次のようになる。
+  \footnote{もちろん、実際には改行を含めず1行で書く。}
   \begin{quote}
   |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
@@ -585,10 +586,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
     例えば、DVI出力のエンジンで |dvi=dvipdfmx| が指定された場合は、
     |dvipdfmx| がグローバルオプションに追加される。}%
   |autodetect-engine| と一緒に使うことが想定されている。
-\item |dvipdfmx-if-dvi|\Means
-  |dvi=dvipdfmx| と同値。
-  \Note |dvi| オプションは1.2版で新設されたもので、以前は
-  このオプションのみが存在した。
 \item |pandoc|\Means
   「Pandocモード」（\ref{sec:Pandoc-mode}節）を指定する。
   以下の設定が行われる：
@@ -609,20 +606,29 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   （詳細は\ref{sec:Ja-Driver}節を参照。）
   標準で提供されている和文ドライバには |minimal|、
   |standard|、|pandoc| がある。
-  既定値は、エンジンが |platex| か |uplatex| の時は |standard|、
-  それ以外は |minimal|。
-\item |jadriver=|\Meta{名前}\Means
-  「|ja=|\Meta{名前}」の（0.9版以前で使われていた）別名。
+  エンジンが |platex| か |uplatex| の時は |ja| の
+  既定値は |standard| である。
+  それ以外の場合は、一応 |minimal| とするが、
+  明示的な指定が推奨される。
 \item |jafont=|\Meta{名前}\Means
   “和文フォントプリセット指定”の名雨を設定する。
   \Note \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
   の値が利用される。
+  \par
+  プリセット指定の値が丸括弧を含む（例えば“|sourcehan(-otc)|”）場合、
+  以下のように解釈される。
+  \begin{itemize}
+  \item エンジンが{\XeLaTeX}／{\LuaLaTeX}の場合は、
+    丸括弧囲いの部分を削除した文字列（“sourcehan”）が使われる。
+  \item それ以外の場合は、
+    丸括弧だけ削除した文字列（“sourcehan-otc”）が使われる。
+  \end{itemize}
 \item |japaram={|\Meta{キー}|=|\Meta{値}|,...}|\Means
   “和文ドライバパラメタ”の値を設定する。
   詳しくは\ref{sec:Ja-Driver-Param}節を参照。
   \Note |jafont| と |japaram| の値がどのように解釈されるかは
   和文ドライバの仕様次第である。
-  minimal和文ドライバではこの2つの値は全く参照されない。
+% minimal和文ドライバではこの2つの値は全く参照されない。
 \item |base=|\Meta{長さ}\Means
   基底フォントサイズ（|\normalsize| のフォントのサイズ）を指定する。
   JSクラスの |10pt|、|11pt| 等と同じ役割で、任意の値を指定できる。
@@ -668,9 +674,19 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |disablejfam|\Means
   |enablejfam=false| と同値。
   \Note JSクラスとの互換のため存在する。
+\item |textwidth=|\Meta{長さ}\Means
+  行長（本文領域の横幅；|\textwidth|）を指定する。
+  \begin{itemize}
+  \item \Pkg{bxjsbook}以外では、\Pkg{geometry}で |textwidth| を
+    指定したのと同値。
+  \item \Pkg{bxjsbook}では、後述の |textwidth-limit| と同様に扱われる。
+  \end{itemize}
+\item |number-of-lines=|\Meta{整数}\Means
+  1ページあたりの行数を指定する。
+  \Pkg{geometry}で |lines| を指定したのと同値。
 \end{itemize}
 
-以下に挙げるのは上級者向けのオプションである。
+\paragraph{上級者向けのオプション}\mbox{}
 
 \begin{itemize}
 \item |zw|（既定）\Means
@@ -836,6 +852,35 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \end{itemize}
 \end{itemize}
 
+\paragraph{jlreq文書クラスとの互換用のオプション}\mbox{}
+
+\begin{itemize}
+\item |paper={|\Meta{横幅}|,|\Meta{縦幅}|}|\Means
+  |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}| と同値（用紙サイズ設定）。
+\item |fontsize=|\Meta{長さ}\Means
+  |base=|\Meta{長さ} と同値（基底フォントサイズ）。
+\item |jafontsize=|\Meta{長さ}\Means
+  |jbase=|\Meta{長さ} と同値（和文基底フォントサイズ）。
+\item |line_length=|\Meta{長さ}\Means
+  |textwidth=|\Meta{長さ} と同値（行長指定）。
+\item |number_of_lines=|\Meta{整数}\Means
+  |number-of-lines=|\Meta{整数} と同値（行数指定）。
+\end{itemize}
+
+\paragraph{旧版との互換用のオプション}\mbox{}
+
+\begin{itemize}
+\item |dvipdfmx-if-dvi|\Means
+  |dvi=dvipdfmx| と同値。
+  \Note 1.2版より前で使われた。
+\item |magstyle=mag|/|real|/|xreal|\Means
+  それぞれ |magstyle=usemag|/|nomag|/|nomag*| と同値。
+  \Note 1.1f版より前で使われた。
+\item |jadriver=|\Meta{名前}\Means
+  |ja=|\Meta{名前} と同値（和文ドライバ指定）。
+  \Note 1.0版より前で使われた。
+\end{itemize}
+
 %-------------------
 \subsection{JSクラスのオプションで使用可能なもの}
 \label{ssec:JS-inherited-option}
@@ -934,7 +979,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \Note これは{\pLaTeX}のカーネル命令を利用しているので
   とりあえず除外。 
 \item 和文フォントメトリック指定\Means
-  |jis|、|winjis|、|mingoth|。
+  |jis|、|mingoth|。
   \Note 異なるエンジンで汎用的に扱うのが難しい。
 \end{itemize}
 
@@ -1088,6 +1133,9 @@ minimalに配置している。}%
 |minimal| を用いる意義がほとんどないため、
 |standard| が既定値になっている。
 
+\Note 1.8版より、(u){\pLaTeX}以外のエンジンについては、
+和文ドライバを明示指定することを推奨する。
+
 
 %===========================================================
 \section{和文ドライバパラメタ}
@@ -1207,6 +1255,9 @@ vscale=0.944, vmarginratio=1:1
   具体的には、\ref{itm:pl-parama}と\Meta{設定}の
   内容を用いて\Pkg{geometry}が再設定を行った後、
   再び\ref{itm:pl-post}の後処理が行われる。
+\item |\setpagelayout+{|\Meta{設定}|}|\Means
+  |\setpagelayout*| の変種で、「本文領域のサイズと位置」の設定のみを
+  リセットして改めてページレイアウトの設定を行う。
 \end{itemize}
 
 なお、|\geometry| 命令を直接呼び出すことも可能である。
@@ -1245,6 +1296,34 @@ vscale=0.944, vmarginratio=1:1
   のテキストを表すマクロ。
 \end{itemize}
 
+|label-section=modern| の場合に限り、以下の命令が利用できる。
+
+\begin{itemize}
+\item |\labelsection|\Means
+  節見出し（|\section|）における節番号の表示形式を表すマクロ。
+  通常、|\thesection|（|section| カウンタの出力形式）に
+  必要な装飾（“節”や“§”など）を加えたテキストを指定する。
+  \par
+  既定値は以下に示すものと同等になっている。
+  \begin{itemize}
+  \item 文書開始時は“|\presectionname\thesection\postsectionname|”。
+  \item 付録開始時（|\appendix| 実行時）に
+    “|\appendixname\thesection|”に切り替わる。
+    \footnote{|\labelsection| を実際に再定義するわけではないので、
+    ユーザが独自の |\labelsection| を設定している場合は
+    切替は発生しなくなる。}
+  \end{itemize}
+  \Note |label-section=compat| の場合は（JSクラスと同様に）
+    付録開始時に
+    「|\presectionname| を |\appendixname| で上書きする」
+    という動作が発生するが、|label-section=compat| では
+    これは起こらない。
+\item |\labelsubsection|／|\labelsubsubsection|\Means
+  これらのマクロが定義されている場合は、各々の内容のテキストが
+  小節見出しおよび小々節見出しの表示形式として利用される。
+  未定義の場合は |\thesub(sub)section| で代用される。
+\end{itemize}
+
 %-------------------
 \subsection{和文用設定関連}
 \label{ssec:ja-settings}
@@ -1273,6 +1352,11 @@ vscale=0.944, vmarginratio=1:1
   この命令は単純に |\hspace|\wbr|{\jsZw}| と等価である。
 \item |\jaenspace|\Means
   半角（0.5|\jsZw|）幅の水平空き。
+\item |\allowoldfontcommands|\Means
+  これ以降に実行される二文字フォント命令を警告の対象にしない。
+\item |\disallowoldfontcommands|\Means
+  これ以降に実行される二文字フォント命令を警告の対象にする。
+\Note 詳細については\ref{sec:Old-font-commands}節を参照されたい。
 \end{itemize}
 
 \subsubsection{standard和文ドライバの場合}
@@ -1298,7 +1382,9 @@ standard和文ドライバ（およびそれを継承するドライバ）では
   |\trueQ| を和文スケール値で割った長さ。
   \footnote{命令名は“anti-scaled Q”の略。}%
   例えば、|\fontsize{10\ascQ}{16\trueH}|
-  で和文のサイズが10\,Qになる。
+  で和文のサイズが10\,Qになる。%
+  \footnote{1.5c版で導入された |\jafontsize| 命令を用いて %
+    |\jafontsize{10trueQ}{16trueH}| としてもよい。}
 \item |\ascpt|\Means
   1\,true\,ptを和文スケール値で割った長さ。
   例えば、|\fontsize{9\ascpt}{13truept}|
@@ -1467,17 +1553,18 @@ BXJSクラスもその例に含まれる。
 %-------------------
 \subsection{警告の内容}
 
-現状では警告はとても控えめに出される。
-すなわち、文書中で |\bf| などの二文字フォント命令が呼び出された場合、
+文書中で |\bf| などの二文字フォント命令が呼び出された場合、
 コンパイルの最後に（一度だけ）以下の警告メッセージが表示される。
 
 \begin{quote}\small\begin{verbatim}
-Class bxjsarticle Warning: Some old font commands were used in text
-(bxjsarticle)              (see the log output for detail).
+Class bxjsarticle Warning: Some old font commands were used in text:
+(bxjsarticle)                \bf \it
+(bxjsarticle)              You should note, that since 1994 LaTeX2e provides a
+(bxjsarticle)              new font selection scheme called NFSS2 with several
+(bxjsarticle)              new, combinable font commands. The class provides
+(bxjsarticle)              the old font commands only for compatibility.
 \end{verbatim}
 \end{quote}
-
-少し詳細な注意メッセージが、ログファイルのみに書き出される。
 
 なお、この警告は、パッケージの機能の実装として用いられたものも含めて
 全ての二文字フォント命令の呼出が対象になる。
@@ -1515,8 +1602,8 @@ Class bxjsarticle Warning: Some old font commands were used in text
 %-------------------
 \subsection{将来的な二文字フォント命令の扱い}
 
-\Note 以下の記述は現在存在する和文ドライバを使用する場合に
-ついてのものである。
+\jemph{現在の版で存在する}和文ドライバを使用する場合には、
+将来的に以下の方針が維持される。
 
 \begin{itemize}
 \item 二文字フォント命令に対する警告の様式は、
