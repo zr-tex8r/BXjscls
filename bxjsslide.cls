@@ -1829,18 +1829,13 @@
   \bxjs@oldfontcmd@list
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
-     {Some old font commands were used in text\MessageBreak
-      (see the log file for detail)}%
-    \ClassInfo\bxjs@clsname
      {Some old font commands were used in text:\MessageBreak
       \space\@tempa\MessageBreak
       You should note, that since 1994 LaTeX2e provides a\MessageBreak
       new font selection scheme called NFSS2 with several\MessageBreak
       new, combinable font commands. The
       class provides\MessageBreak
-      the old font commands
-      only for compatibility%
-      \@gobble}%
+      the old font commands only for compatibility}
   \fi}
 \def\bxjs@warnoldfontcmd@kick@final{%
   \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
