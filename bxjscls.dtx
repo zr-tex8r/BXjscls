@@ -468,6 +468,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@gset@tempcnta}
+% |calc| の整数式を用いて |\@tempcnta| の値を設定する。
+%    \begin{macrocode}
+\let\c@bxjs@tempcnta\@tempcnta
+\def\bxjs@gset@tempcnta{\setcounter{bxjs@tempcnta}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsSetQHLength}
 % |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
 % |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
@@ -1560,6 +1568,7 @@
 \define@key{bxjs}{base}{%
   \edef\bxjs@base@opt{#1}%
   \bxjs@setbasefontsize{#1}}
+\define@key{bxjs}{fontsize}{\setkeys{bxjs}{base=#1}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@jbase@opt}
@@ -1572,6 +1581,7 @@
 % |jbase| オプションの処理。
 %     \begin{macrocode}
 \define@key{bxjs}{jbase}{\edef\bxjs@jbase@opt{#1}}
+\define@key{bxjs}{jafontsize}{\setkeys{bxjs}{jbase=#1}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@scale@opt}
@@ -1586,6 +1596,7 @@
 \define@key{bxjs}{scale}{%
   \edef\bxjs@scale@opt{#1}%
   \let\jsScale\bxjs@scale@opt}
+\define@key{bxjs}{jsfontscale}{\setkeys{bxjs}{scale=#1}}
 %    \end{macrocode}
 %
 % |noscale| オプションの処理。
@@ -1803,6 +1814,24 @@
 %\let\bxjs@textwidth@limit\@undefined
 \define@key{bxjs}{textwidth-limit}{%
   \edef\bxjs@textwidth@limit{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@textwidth@opt}
+% |textwidth| の指定値。
+%    \begin{macrocode}
+%\let\bxjs@textwidth@opt\@undefined
+\define@key{bxjs}{textwidth}{\edef\bxjs@textwidth@opt{#1}}
+\define@key{bxjs}{line_length}{\setkeys{bxjs}{textwidth=#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@number@of@lines@opt}
+% |number-of-lines| の指定値。
+%    \begin{macrocode}
+%\let\bxjs@number@of@lines@opt\@undefined
+\define@key{bxjs}{number-of-lines}{\edef\bxjs@number@of@lines@opt{#1}}
+\define@key{bxjs}{number_of_lines}{\setkeys{bxjs}{number-of-lines=#1}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2358,8 +2387,7 @@
   \edef\bxjs@param@mag{\the\@tempcnta}
 \else
 % mag値が直接指定された場合
-  \let\c@bxjs@cnta\@tempcnta
-  \setcounter{bxjs@cnta}{\bxjs@param@mag}
+  \bxjs@gset@tempcnta{\bxjs@param@mag}
   \ifnum\@tempcnta<\z@ \@tempcnta=\z@ \fi
 % 有効なmag値の範囲は1--32768
   \edef\bxjs@param@mag{\the\@tempcnta}
@@ -3137,9 +3165,11 @@
 \def\bxjs@read@b{%
   \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@read@c
   \else \expandafter\bxjs@read@d \fi}
-\def\bxjs@read@c#1#2#3\@nil{\def\bxjs@param@paper{papersize={#1,#2}}}
-\def\bxjs@read@d#1\@nil{}
-\expandafter\bxjs@read@a\bxjs@param@paper\@nil
+\def\bxjs@read@c#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
+\def\bxjs@read@d#1\@nil{\bxjs@read@e#1,,\@nil}
+\def\bxjs@read@e#1,#2,#3\@nil{%
+  \ifx\@nil#3\@nil\else \edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+\expandafter\bxjs@read@a\bxjs@param@paper\@empty\@empty\@nil
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@layout@paper}
@@ -3191,6 +3221,20 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% |textwidth| オプションの設定を反映する。
+%    \begin{macrocode}
+%<*!book>
+\ifx\bxjs@textwidth@opt\@undefined\else
+  \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+  \edef\bxjs@layout{\bxjs@layout width=\the\@tempdima,}
+\fi
+%</!book>
+\ifx\bxjs@number@of@lines@opt\@undefined\else
+  \bxjs@gset@tempcnta{\bxjs@number@of@lines@opt}
+  \edef\bxjs@layout{\bxjs@layout lines=\the\@tempcnta,}
+\fi
+%    \end{macrocode}
+%
 % \begin{macro}{\fullwidth}
 % 〔寸法レジスタ〕
 % ヘッダ・フッタ領域の横幅。
@@ -3206,8 +3250,7 @@
 %<*book>
 \newcommand\jsTextWidthLimit{40}
 \ifx\bxjs@textwidth@limit\@undefined\else
-  \let\c@bxjs@cnta\@tempcnta
-  \setcounter{bxjs@cnta}{\bxjs@textwidth@limit}
+  \bxjs@gset@tempcnta{\bxjs@textwidth@limit}
   \long\edef\jsTextWidthLimit{\the\@tempcnta}
 \fi
 %</book>
@@ -3233,8 +3276,12 @@
   \fi
   \fullwidth=\textwidth
 %<*book>
-  \ifdim\textwidth>\jsTextWidthLimit\Cwd
-    \textwidth=\jsTextWidthLimit\Cwd
+  \@tempdima=\jsTextWidthLimit\Cwd
+  \ifx\bxjs@textwidth@opt\@undefined\else
+    \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+  \fi
+  \ifdim\textwidth>\@tempdima
+    \textwidth=\@tempdima
     \addtolength\evensidemargin{\fullwidth-\textwidth}
   \fi
 %</book>

@@ -94,6 +94,8 @@
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
+\let\c@bxjs@tempcnta\@tempcnta
+\def\bxjs@gset@tempcnta{\setcounter{bxjs@tempcnta}}
 \def\jsSetQHLength#1#2{%
   \begingroup
     \bxjs@parse@qh{#2}%
@@ -470,10 +472,13 @@
 \define@key{bxjs}{base}{%
   \edef\bxjs@base@opt{#1}%
   \bxjs@setbasefontsize{#1}}
+\define@key{bxjs}{fontsize}{\setkeys{bxjs}{base=#1}}
 \define@key{bxjs}{jbase}{\edef\bxjs@jbase@opt{#1}}
+\define@key{bxjs}{jafontsize}{\setkeys{bxjs}{jbase=#1}}
 \define@key{bxjs}{scale}{%
   \edef\bxjs@scale@opt{#1}%
   \let\jsScale\bxjs@scale@opt}
+\define@key{bxjs}{jsfontscale}{\setkeys{bxjs}{scale=#1}}
 \DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
@@ -553,6 +558,10 @@
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
   \edef\bxjs@textwidth@limit{#1}}
+\define@key{bxjs}{textwidth}{\edef\bxjs@textwidth@opt{#1}}
+\define@key{bxjs}{line_length}{\setkeys{bxjs}{textwidth=#1}}
+\define@key{bxjs}{number-of-lines}{\edef\bxjs@number@of@lines@opt{#1}}
+\define@key{bxjs}{number_of_lines}{\setkeys{bxjs}{number-of-lines=#1}}
 \define@key{bxjs}{paragraph-mark}{%
   \edef\bxjs@paragraph@mark{#1}}
 \newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
@@ -794,8 +803,7 @@
   \divide\@tempdima16384\relax \@tempcnta\@tempdima\relax
   \edef\bxjs@param@mag{\the\@tempcnta}
 \else
-  \let\c@bxjs@cnta\@tempcnta
-  \setcounter{bxjs@cnta}{\bxjs@param@mag}
+  \bxjs@gset@tempcnta{\bxjs@param@mag}
   \ifnum\@tempcnta<\z@ \@tempcnta=\z@ \fi
   \edef\bxjs@param@mag{\the\@tempcnta}
   \advance\@tempcnta100000
@@ -1023,9 +1031,11 @@
 \def\bxjs@read@b{%
   \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@read@c
   \else \expandafter\bxjs@read@d \fi}
-\def\bxjs@read@c#1#2#3\@nil{\def\bxjs@param@paper{papersize={#1,#2}}}
-\def\bxjs@read@d#1\@nil{}
-\expandafter\bxjs@read@a\bxjs@param@paper\@nil
+\def\bxjs@read@c#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
+\def\bxjs@read@d#1\@nil{\bxjs@read@e#1,,\@nil}
+\def\bxjs@read@e#1,#2,#3\@nil{%
+  \ifx\@nil#3\@nil\else \edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+\expandafter\bxjs@read@a\bxjs@param@paper\@empty\@empty\@nil
 \edef\bxjs@layout@paper{%
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
@@ -1036,6 +1046,14 @@
   hscale=0.76,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
+\ifx\bxjs@textwidth@opt\@undefined\else
+  \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+  \edef\bxjs@layout{\bxjs@layout width=\the\@tempdima,}
+\fi
+\ifx\bxjs@number@of@lines@opt\@undefined\else
+  \bxjs@gset@tempcnta{\bxjs@number@of@lines@opt}
+  \edef\bxjs@layout{\bxjs@layout lines=\the\@tempcnta,}
+\fi
 \newdimen\fullwidth
 \def\bxjs@postproc@layout{%
   \ifx\bxjs@geometry@driver\relax\else
