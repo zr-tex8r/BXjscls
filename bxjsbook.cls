@@ -94,6 +94,42 @@
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
+\def\jsSetQHLength#1#2{%
+  \begingroup
+    \bxjs@parse@qh{#2}%
+    \ifx\bxjs@tmpb\relax
+      \setlength\@tempdima{#2}%
+      \xdef\bxjs@g@tmpa{\the\@tempdima}%
+    \else \global\let\bxjs@g@tmpa\bxjs@tmpb
+    \fi
+  \endgroup
+  #1=\bxjs@g@tmpa\relax}
+\if j\jsEngine \def\bxjs@parse@qh@all{zw,zh}
+\else \def\bxjs@parse@qh@all{trueQ,trueH,Q,H,zw,zh}
+\fi
+\def\bxjs@parse@qh#1{%
+  \let\bxjs@tmpb\relax
+  \@for\bxjs@tmpa:=\bxjs@parse@qh@all\do{%
+    \ifx\bxjs@tmpb\relax
+      \edef\bxjs@next{{\bxjs@tmpa}{#1}}%
+      \expandafter\bxjs@parse@qh@a\csname bxjs@unit@\bxjs@tmpa\expandafter
+          \endcsname\bxjs@next
+    \fi}}
+\def\bxjs@parse@qh@a#1#2#3{%
+  \def\bxjs@next##1#2\@nil##2\@nnil{\bxjs@parse@qh@b{##1}{##2}#1}%
+  \bxjs@next#3\@nil#2\@nil\@nnil}
+\def\bxjs@parse@qh@b#1#2#3{%
+  \ifx\@nnil#2\@nnil\else
+    \ifx#3\relax
+      \ClassError\bxjs@clsname
+       {You cannot use '\bxjs@tmpa' here}{\@ehc}%
+      \def\bxjs@tmpb{0pt}%
+    \else
+      \@tempdimb#3\relax \@tempdimb#1\@tempdimb
+      \edef\bxjs@tmpb{\the\@tempdimb}%
+    \fi
+  \fi}
+  \def\bxjs@unit@Q{0.25mm}\let\bxjs@unit@H\bxjs@unit@Q
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 \@onlypreamble\bxjs@restore@jltrcc
@@ -153,30 +189,12 @@
 \def\bxjs@param@basefontsize{10pt}
 \def\jsUnusualPtSize{-20}
 \def\bxjs@setbasefontsize#1{%
-  \bxjs@setbasefontlength\@tempdima{#1}%
+  \jsSetQHLength\@tempdima{#1}%
   \edef\bxjs@param@basefontsize{\the\@tempdima}%
   \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
   \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
   \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
   \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
-\def\bxjs@setbasefontlength#1#2{%
-  \bxjs@setbasefontlength@a#2true\@nnil
-  \ifx j\jsEngine \setlength#1{#2}%
-  \else
-    \bxjs@setbasefontlength@b#2\@nil Q\@nil\@nnil
-    \ifx\bxjs@tmpa\relax \setlength#1{#2}%
-    \else \@tempdimc0.25mm #1=\bxjs@tmpa\@tempdimc
-    \fi
-  \fi}
-\def\bxjs@setbasefontlength@b#1Q\@nil#2\@nnil{%
-  \ifx\@nnil#2\@nnil \let\bxjs@tmpa\relax
-  \else \def\bxjs@tmpa{#1}%
-  \fi}
-\def\bxjs@setbasefontlength@a#1true#2\@nnil{%
-  \ifx\@nnil#2\@nnil\else
-    \ClassWarningNoLine\bxjs@clsname
-    {You should not use 'true' lengths here}%
-  \fi}
 \newif\ifjsc@mag
 \newif\ifjsc@mag@xreal
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}
@@ -456,7 +474,7 @@
 \define@key{bxjs}{jbase}{\bxjs@setjbasefontsize{#1}}
 \def\bxjs@setjbasefontsize#1{%
   \def\bxjs@do@opt@jbase{%
-    \bxjs@setbasefontlength\@tempdima{#1}%
+    \jsSetQHLength\@tempdima{#1}%
     \bxjs@invscale\@tempdima\jsScale
     \bxjs@setbasefontsize{\@tempdima}}}
 \define@key{bxjs}{scale}{%
@@ -992,6 +1010,8 @@
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
+\def\bxjs@unit@trueQ{0.25truemm}\let\bxjs@unit@trueH\bxjs@unit@trueQ
+\def\bxjs@unit@zw{\jsZw}\let\bxjs@unit@zh\bxjs@unit@zw
 \def\bxjs@read@a{\futurelet\bxjs@tmpa\bxjs@read@b}
 \def\bxjs@read@b{%
   \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@read@c

@@ -195,6 +195,9 @@
 \bxjs@if@sf@default{%
   \renewcommand\kanjifamilydefault{\gtdefault}}
 \selectfont
+\def\bxjs@parse@qh#1{\let\bxjs@tmpb\relax}
+\let\bxjs@parse@qh@a\@undefined
+\let\bxjs@parse@qh@b\@undefined
 \prebreakpenalty\jis"2147=10000
 \postbreakpenalty\jis"2148=10000
 \prebreakpenalty\jis"2149=10000

@@ -54,13 +54,20 @@
       \PackageWarningNoLine\bxjs@clsname
        {Cannot support pTeX units (zw etc.), since\MessageBreak
         the package 'bxcalc' is too old}%
+      \bxjs@jp@unitsfalse
     \else \usepTeXunits
     \fi
   }{%else
     \PackageWarningNoLine\bxjs@clsname
      {Cannot support pTeX units (zw etc.), since\MessageBreak
       the package 'bxcalc' is unavailable}%
+    \bxjs@jp@unitsfalse
   }
+\fi
+\ifbxjs@jp@units
+\def\bxjs@parse@qh#1{\let\bxjs@tmpb\relax}
+\let\bxjs@parse@qh@a\@undefined
+\let\bxjs@parse@qh@b\@undefined
 \fi
 \ifbxjs@jp@units
   \def\bxjs@let@lenexpr#1#2{%
@@ -90,36 +97,6 @@
   \@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
   \protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
 \fi
-\def\jsSetQHLength#1#2{%
-  \begingroup
-    \bxjs@parse@qh{#2}%
-    \ifx\bxjs@tmpb\relax \setlength\@tempdima{#2}%
-    \else \@tempdima\bxjs@tmpb\relax
-    \fi
-    \xdef\bxjs@g@tmpa{\the\@tempdima}%
-  \endgroup
-  #1=\bxjs@g@tmpa\relax}
-\if j\jsEngine
-\def\bxjs@parse@qh#1{%
-  \let\bxjs@tmpb\relax}
-\else\ifbxjs@jp@units
-\def\bxjs@parse@qh#1{%
-  \let\bxjs@tmpb\relax}
-\else
-\def\bxjs@parse@qh#1{%
-  \def\bxjs@tmpa{#1}\let\bxjs@tmpb\relax
-  \bxjs@parse@qh@a{trueQ}\trueQ
-  \bxjs@parse@qh@a{trueH}\trueH
-  \bxjs@parse@qh@a{Q}\jQ
-  \bxjs@parse@qh@a{H}\jH}
-\def\bxjs@parse@qh@a#1#2{%
-  \ifx\bxjs@tmpb\relax
-    \def\bxjs@next##1#1\@nil##2\@nnil{\bxjs@parse@qh@b{##1}{##2}}%
-    \expandafter\bxjs@next\bxjs@tmpa\@nil#1\@nil\@nnil{#2}%
-  \fi}
-\def\bxjs@parse@qh@b#1#2#3{%
-  \ifx\@nnil#2\@nnil\else \def\bxjs@tmpb{#1#3}\fi}
-\fi\fi
 \def\jafontsize#1#2{%
   \begingroup
     \bxjs@jafontsize@a{#1}%

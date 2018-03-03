@@ -468,6 +468,66 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\jsSetQHLength}
+% |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
+% |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
+% 「|Q|/|H|/|trueQ|/|trueH|/|zw|/|zh| の単位付きの実数」
+% が記述できる（この場合は式は使えない）。
+%    \begin{macrocode}
+\def\jsSetQHLength#1#2{%
+  \begingroup
+    \bxjs@parse@qh{#2}%
+    \ifx\bxjs@tmpb\relax
+      \setlength\@tempdima{#2}%
+      \xdef\bxjs@g@tmpa{\the\@tempdima}%
+    \else \global\let\bxjs@g@tmpa\bxjs@tmpb
+    \fi
+  \endgroup
+  #1=\bxjs@g@tmpa\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@parse@qh}
+% |#1| が |Q|/|H|/|trueQ|/|trueH|/|zw|/|zh| で終わる場合、
+% 単位用の寸法値マクロ |\bxjs@unit@XXX| が定義済なら、
+% |\bxjs@tmpb| に |#1| に等しい寸法の表現を返し、
+% そうでないならエラーを出す。
+% それ以外では、|\bxjs@tmpb| は |\relax| になる。
+% \Note {(u)\pLaTeX}の場合はこれらの和文単位はエンジンでサポートされる。
+% しかし和文フォントの設定が完了するまでは |zw|/|zh| の値は正しくない。
+%    \begin{macrocode}
+\if j\jsEngine \def\bxjs@parse@qh@all{zw,zh}
+\else \def\bxjs@parse@qh@all{trueQ,trueH,Q,H,zw,zh}
+\fi
+\def\bxjs@parse@qh#1{%
+  \let\bxjs@tmpb\relax
+  \@for\bxjs@tmpa:=\bxjs@parse@qh@all\do{%
+    \ifx\bxjs@tmpb\relax
+      \edef\bxjs@next{{\bxjs@tmpa}{#1}}%
+      \expandafter\bxjs@parse@qh@a\csname bxjs@unit@\bxjs@tmpa\expandafter
+          \endcsname\bxjs@next
+    \fi}}
+\def\bxjs@parse@qh@a#1#2#3{%
+  \def\bxjs@next##1#2\@nil##2\@nnil{\bxjs@parse@qh@b{##1}{##2}#1}%
+  \bxjs@next#3\@nil#2\@nil\@nnil}
+\def\bxjs@parse@qh@b#1#2#3{%
+  \ifx\@nnil#2\@nnil\else
+    \ifx#3\relax
+      \ClassError\bxjs@clsname
+       {You cannot use '\bxjs@tmpa' here}{\@ehc}%
+      \def\bxjs@tmpb{0pt}%
+    \else
+      \@tempdimb#3\relax \@tempdimb#1\@tempdimb
+      \edef\bxjs@tmpb{\the\@tempdimb}%
+    \fi
+  \fi}
+%    \end{macrocode}
+% 今の段階では |Q|/|H| だけが使用可能。
+%    \begin{macrocode}
+  \def\bxjs@unit@Q{0.25mm}\let\bxjs@unit@H\bxjs@unit@Q
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsAtEndOfClass}
 % このクラスの読込終了時に対するフック。
 % （補助パッケージ中で用いられる。）
@@ -709,50 +769,19 @@
 % 基底フォントサイズを実際に変更する。
 %    \begin{macrocode}
 \def\bxjs@setbasefontsize#1{%
-  \bxjs@setbasefontlength\@tempdima{#1}%
+%    \end{macrocode}
+% Q単位の長さ指定をサポートするため |\jsSetQHLength| を使う。
+% \Note クラスオプションのトークン列の中に展開可能なトークンが
+% ある場合、{\LaTeX}はクラスファイルの読込の前にそれを展開しようとする。
+% このため、この位置で |\jQ| をサポートすることは
+% 原理的に不可能である。
+%    \begin{macrocode}
+  \jsSetQHLength\@tempdima{#1}%
   \edef\bxjs@param@basefontsize{\the\@tempdima}%
   \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
   \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
   \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
   \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
-%    \end{macrocode}
-% \end{macro}
-% \begin{macro}{\bxjs@setbasefontlength}
-% |base|、|jbase| で指定される長さ（式）のための
-% 特別な |\setlength|。
-% 与えられた式が“\Meta{実数}|Q|”の形の場合、Q単位の長さを
-% 代入する（この場合“式”は使えない）。
-% \Note クラスオプションのトークン列の中に展開可能なトークンが
-% ある場合、{\LaTeX}はファイルの読込の前にそれを展開しようとする。
-% このため、この位置で |\jQ| をサポートすることは
-% 原理的に不可能である。
-%    \begin{macrocode}
-\def\bxjs@setbasefontlength#1#2{%
-%    \end{macrocode}
-% ここで |true| の長さが使われるのは不合理なので、
-% 式が“|true|”を含む場合には警告を出す。
-%    \begin{macrocode}
-  \bxjs@setbasefontlength@a#2true\@nnil
-%    \end{macrocode}
-% 式の末尾が“|Q|”である時は特別に扱い、
-% それ以外は |\setlength| に移譲する。
-%    \begin{macrocode}
-  \ifx j\jsEngine \setlength#1{#2}%
-  \else
-    \bxjs@setbasefontlength@b#2\@nil Q\@nil\@nnil
-    \ifx\bxjs@tmpa\relax \setlength#1{#2}%
-    \else \@tempdimc0.25mm #1=\bxjs@tmpa\@tempdimc
-    \fi
-  \fi}
-\def\bxjs@setbasefontlength@b#1Q\@nil#2\@nnil{%
-  \ifx\@nnil#2\@nnil \let\bxjs@tmpa\relax
-  \else \def\bxjs@tmpa{#1}%
-  \fi}
-\def\bxjs@setbasefontlength@a#1true#2\@nnil{%
-  \ifx\@nnil#2\@nnil\else
-    \ClassWarningNoLine\bxjs@clsname
-    {You should not use 'true' lengths here}%
-  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1541,7 +1570,7 @@
 \define@key{bxjs}{jbase}{\bxjs@setjbasefontsize{#1}}
 \def\bxjs@setjbasefontsize#1{%
   \def\bxjs@do@opt@jbase{%
-    \bxjs@setbasefontlength\@tempdima{#1}%
+    \jsSetQHLength\@tempdima{#1}%
     \bxjs@invscale\@tempdima\jsScale
     \bxjs@setbasefontsize{\@tempdima}}}
 %    \end{macrocode}
@@ -3062,6 +3091,12 @@
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
+%    \end{macrocode}
+%
+% |\jsSetQHLength| のための和文単位の定義。
+%    \begin{macrocode}
+\def\bxjs@unit@trueQ{0.25truemm}\let\bxjs@unit@trueH\bxjs@unit@trueQ
+\def\bxjs@unit@zw{\jsZw}\let\bxjs@unit@zh\bxjs@unit@zw
 %    \end{macrocode}
 %
 % |\bxjs@param@paper| が長さ指定（|{W}{H}|）の場合、
@@ -8222,6 +8257,13 @@
 \selectfont
 %    \end{macrocode}
 %
+% |\bxjs@parse@qh| の処理は不要になるので無効化する。
+%    \begin{macrocode}
+\def\bxjs@parse@qh#1{\let\bxjs@tmpb\relax}
+\let\bxjs@parse@qh@a\@undefined
+\let\bxjs@parse@qh@b\@undefined
+%    \end{macrocode}
+%
 % \paragraph{パラメタの設定}
 %
 %    \begin{macrocode}
@@ -8703,8 +8745,8 @@
 \fi
 %    \end{macrocode}
 %
-% |units| パラメタが有効の場合は、|bxcalc| パッケージを読みこんで、
-% |\usepTeXunits| 命令を実行する。
+% |units| パラメタが有効の場合は、|bxcalc| パッケージの |\usepTeXunits| 命令
+% を実行して和文用単位を有効化する。
 %    \begin{macrocode}
 \ifbxjs@jp@units
   \IfFileExists{bxcalc.sty}{%
@@ -8713,13 +8755,25 @@
       \PackageWarningNoLine\bxjs@clsname
        {Cannot support pTeX units (zw etc.), since\MessageBreak
         the package 'bxcalc' is too old}%
+      \bxjs@jp@unitsfalse
     \else \usepTeXunits
     \fi
   }{%else
     \PackageWarningNoLine\bxjs@clsname
      {Cannot support pTeX units (zw etc.), since\MessageBreak
       the package 'bxcalc' is unavailable}%
+    \bxjs@jp@unitsfalse
   }
+\fi
+%    \end{macrocode}
+%
+% |bxcalc| で和文用単位をサポートした場合は、|\bxjs@parse@qh| の処理は不要に
+% なるので無効化する。
+%    \begin{macrocode}
+\ifbxjs@jp@units
+\def\bxjs@parse@qh#1{\let\bxjs@tmpb\relax}
+\let\bxjs@parse@qh@a\@undefined
+\let\bxjs@parse@qh@b\@undefined
 \fi
 %    \end{macrocode}
 %
@@ -8793,57 +8847,6 @@
 \fi
 %    \end{macrocode}
 % \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\jsSetQHLength}
-% |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
-% |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
-% \Meta{実数}|Q|・\Meta{実数}|H|・\Meta{実数}|trueQ|・\Meta{実数}|trueH|
-% が記述できる。
-%    \begin{macrocode}
-\def\jsSetQHLength#1#2{%
-  \begingroup
-    \bxjs@parse@qh{#2}%
-    \ifx\bxjs@tmpb\relax \setlength\@tempdima{#2}%
-    \else \@tempdima\bxjs@tmpb\relax
-    \fi
-    \xdef\bxjs@g@tmpa{\the\@tempdima}%
-  \endgroup
-  #1=\bxjs@g@tmpa\relax}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@parse@qh}
-% |jsSetQHLength| の下請け。
-% |#1| が |Q|/|H|/|trueQ|/|trueH| で終わる場合、
-% |\bxjs@tmpb| にそれに等しい寸法の表現を返す。
-% それ以外では、|\bxjs@tmpb| は |\relax| になる。
-%    \begin{macrocode}
-\if j\jsEngine
-%    \end{macrocode}
-% {(u)\pLaTeX}ではこの処理は不要なので無効化する。
-%    \begin{macrocode}
-\def\bxjs@parse@qh#1{%
-  \let\bxjs@tmpb\relax}
-\else\ifbxjs@jp@units
-\def\bxjs@parse@qh#1{%
-  \let\bxjs@tmpb\relax}
-\else
-\def\bxjs@parse@qh#1{%
-  \def\bxjs@tmpa{#1}\let\bxjs@tmpb\relax
-  \bxjs@parse@qh@a{trueQ}\trueQ
-  \bxjs@parse@qh@a{trueH}\trueH
-  \bxjs@parse@qh@a{Q}\jQ
-  \bxjs@parse@qh@a{H}\jH}
-\def\bxjs@parse@qh@a#1#2{%
-  \ifx\bxjs@tmpb\relax
-    \def\bxjs@next##1#1\@nil##2\@nnil{\bxjs@parse@qh@b{##1}{##2}}%
-    \expandafter\bxjs@next\bxjs@tmpa\@nil#1\@nil\@nnil{#2}%
-  \fi}
-\def\bxjs@parse@qh@b#1#2#3{%
-  \ifx\@nnil#2\@nnil\else \def\bxjs@tmpb{#1#3}\fi}
-\fi\fi
-%    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\jafontsize}
