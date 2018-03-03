@@ -460,23 +460,15 @@
 \def\bxjs@error@keyval#1#2{%
   \ClassError\bxjs@clsname
    {Invalid value '#2' for option #1}\@ehc}
-\newif\ifbxjs@scaleset
 \def\jsScale{0.924715}
-\define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
-\@onlypreamble\bxjs@do@opt@jbase
-\let\bxjs@do@opt@jbase\relax
-\define@key{bxjs}{jbase}{\bxjs@setjbasefontsize{#1}}
-\def\bxjs@setjbasefontsize#1{%
-  \def\bxjs@do@opt@jbase{%
-    \jsSetQHLength\@tempdima{#1}%
-    \bxjs@invscale\@tempdima\jsScale
-    \bxjs@setbasefontsize{\@tempdima}}}
+\define@key{bxjs}{base}{%
+  \edef\bxjs@base@opt{#1}%
+  \bxjs@setbasefontsize{#1}}
+\define@key{bxjs}{jbase}{\edef\bxjs@jbase@opt{#1}}
 \define@key{bxjs}{scale}{%
-  \bxjs@scalesettrue
-  \edef\jsScale{#1}}
-\DeclareOption{noscale}{%
-  \bxjs@scalesettrue
-  \def\jsScale{1}}
+  \edef\bxjs@scale@opt{#1}%
+  \let\jsScale\bxjs@scale@opt}
+\DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
@@ -741,7 +733,23 @@
       The default value 'nomag*' is used instead.\MessageBreak \@ehc}
   \fi
 \fi
-\bxjs@do@opt@jbase
+\ifx\bxjs@jbase@opt\@undefined\else
+  \ifx\bxjs@base@opt\@undefined
+    \jsSetQHLength\@tempdima{\bxjs@jbase@opt}%
+    \bxjs@invscale\@tempdima\jsScale
+    \bxjs@setbasefontsize{\@tempdima}%
+  \else
+    \ifx\bxjs@scale@opt\@undefined\else
+      \ClassWarningNoLine\bxjs@clsname
+       {Redundant 'scale' option is ignored}%
+    \fi
+    \jsSetQHLength\@tempdima{\bxjs@jbase@opt}%
+    \@tempdimb=\bxjs@param@basefontsize\relax
+    \edef\jsScale{\strip@pt\@tempdimb}%
+    \bxjs@invscale\@tempdima\jsScale
+    \edef\jsScale{\strip@pt\@tempdima}%
+  \fi
+\fi
 \let\Cjascale\jsScale
 \if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
   \@tempcnta="80 \loop \ifnum\@tempcnta<"100

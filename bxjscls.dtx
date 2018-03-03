@@ -1540,13 +1540,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\ifbxjs@scaleset}
-% 和文スケール値が指定されたか。
-%    \begin{macrocode}
-\newif\ifbxjs@scaleset
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\jsScale}
 % 〔実数値マクロ〕
 % 和文スケール値。
@@ -1555,38 +1548,49 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@base@opt}
+% |base| オプションの値（そのもの）。
+%    \begin{macrocode}
+%\let\bxjs@base@opt\@undefined
+%    \end{macrocode}
+% \end{macro}
+%
 % |base| オプションの処理。
 %    \begin{macrocode}
-\define@key{bxjs}{base}{\bxjs@setbasefontsize{#1}}
+\define@key{bxjs}{base}{%
+  \edef\bxjs@base@opt{#1}%
+  \bxjs@setbasefontsize{#1}}
 %    \end{macrocode}
 %
-% |jbase| オプションの処理。
-% ここでは |\jsScale| の値を使用する。
-% |scale| の処理との順序依存を消すため、
-% |jbase| の処理の実行を遅延させている。
-%     \begin{macrocode}
-\@onlypreamble\bxjs@do@opt@jbase
-\let\bxjs@do@opt@jbase\relax
-\define@key{bxjs}{jbase}{\bxjs@setjbasefontsize{#1}}
-\def\bxjs@setjbasefontsize#1{%
-  \def\bxjs@do@opt@jbase{%
-    \jsSetQHLength\@tempdima{#1}%
-    \bxjs@invscale\@tempdima\jsScale
-    \bxjs@setbasefontsize{\@tempdima}}}
+% \begin{macro}{\bxjs@jbase@opt}
+% |jbase| オプションの値。
+%    \begin{macrocode}
+%\let\bxjs@jbase@opt\@undefined
 %    \end{macrocode}
+% \end{macro}
+%
+% |jbase| オプションの処理。
+%     \begin{macrocode}
+\define@key{bxjs}{jbase}{\edef\bxjs@jbase@opt{#1}}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@scale@opt}
+% |scale| オプションの値。
+%    \begin{macrocode}
+%\let\bxjs@jbase@opt\@undefined
+%    \end{macrocode}
+% \end{macro}
 %
 % |scale| オプションの処理。
 %    \begin{macrocode}
 \define@key{bxjs}{scale}{%
-  \bxjs@scalesettrue
-  \edef\jsScale{#1}}
+  \edef\bxjs@scale@opt{#1}%
+  \let\jsScale\bxjs@scale@opt}
 %    \end{macrocode}
 %
 % |noscale| オプションの処理。
 %    \begin{macrocode}
-\DeclareOption{noscale}{%
-  \bxjs@scalesettrue
-  \def\jsScale{1}}
+\DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@param@mag}
@@ -2181,9 +2185,36 @@
 \fi
 %    \end{macrocode}
 %
-% オプション処理時に遅延させていた |jbase| の処理をここで実行する。
+% |base|、|jbase|、|scale| の値を用いて和文スケール値を解決する。
+% \Note |\bxjs@param@basefontsize| と |\jsScale| へのオプション値の反映は
+% 既に実施されていることに注意。
+% |jbase| 非指定の場合はこのままでよい。
 %    \begin{macrocode}
-\bxjs@do@opt@jbase
+\ifx\bxjs@jbase@opt\@undefined\else
+  \ifx\bxjs@base@opt\@undefined
+%    \end{macrocode}
+% |jbase| 指定済で |base| 未指定の場合は、|\jsScale| の値を採用して
+% 和文基底サイズを決定する。
+%    \begin{macrocode}
+    \jsSetQHLength\@tempdima{\bxjs@jbase@opt}%
+    \bxjs@invscale\@tempdima\jsScale
+    \bxjs@setbasefontsize{\@tempdima}%
+  \else
+%    \end{macrocode}
+% |jbase| と |base| がともに指定済の場合は、それらの値から
+% 和文スケール値を決定する。
+%    \begin{macrocode}
+    \ifx\bxjs@scale@opt\@undefined\else
+      \ClassWarningNoLine\bxjs@clsname
+       {Redundant 'scale' option is ignored}%
+    \fi
+    \jsSetQHLength\@tempdima{\bxjs@jbase@opt}%
+    \@tempdimb=\bxjs@param@basefontsize\relax
+    \edef\jsScale{\strip@pt\@tempdimb}%
+    \bxjs@invscale\@tempdima\jsScale
+    \edef\jsScale{\strip@pt\@tempdima}%
+  \fi
+\fi
 %    \end{macrocode}
 %
 % \begin{macro}{\Cjascale}
