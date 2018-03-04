@@ -94,6 +94,7 @@
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
+\def\bxjs@ifplus#1{\@ifnextchar+{\@firstoftwo{#1}}}
 \let\c@bxjs@tempcnta\@tempcnta
 \def\bxjs@gset@tempcnta{\setcounter{bxjs@tempcnta}}
 \def\jsSetQHLength#1#2{%
@@ -1040,9 +1041,11 @@
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
   \bxjs@param@paper}
-\def\bxjs@layout{%
+\def\bxjs@layout@base{%
   headheight=\topskip,footskip=0.03367\paperheight,%
   headsep=\footskip-\topskip,includeheadfoot,%
+}
+\edef\bxjs@layout{\bxjs@layout@base
   hscale=0.76,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
@@ -1062,6 +1065,7 @@
   \ifbxjs@whole@zw@lines
     \@tempdimb=\textwidth
     \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
+    \advance\textwidth.005pt\relax
     \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
     \advance\@tempdimb-\textwidth
     \advance\oddsidemargin 0.5\@tempdimb
@@ -1070,6 +1074,7 @@
   \fullwidth=\textwidth
   \@tempdimb=\textheight
   \advance\textheight-\topskip
+  \advance\textheight.005pt\relax
   \divide\textheight\baselineskip \multiply\textheight\baselineskip
   \advance\textheight\topskip
   \advance\@tempdimb-\textheight
@@ -1091,11 +1096,10 @@
 \edef\jsGeometryOptions{%
   \bxjs@layout@paper,\bxjs@layout}
 \ifx\bxjs@geometry\bxjs@geometry@class
-\@onlypreamble\bxjs@revert
-\let\bxjs@revert\@empty
-\edef\bxjs@tmpa{\the\ht\strutbox}
-\ht\strutbox=10\p@?
-\g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
+\def\bxjs@geometry@guard@on{%
+  \edef\bxjs@gg@tmp{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
+\def\bxjs@geometry@guard@off{%
+  \ht\strutbox=\bxjs@gg@tmp\relax}
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \PassOptionsToPackage{dvipdfm}{geometry}
@@ -1106,11 +1110,13 @@
 \else
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
-\edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
 \AtBeginDocument{\bxjs@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
-\bxjs@nxt \bxjs@revert
+\bxjs@geometry@guard@on
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
+}\bxjs@next
+\bxjs@geometry@guard@off
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
@@ -1133,14 +1139,23 @@
       \fi
     \fi
   }{}}
-\def\setpagelayout{\@ifstar
-  {\bxjs@reset@layout}{\bxjs@modify@layout}}
-\def\bxjs@modify@layout#1{%
-  \edef\bxjs@nxt{\noexpand\geometry{#1,truedimen}}%
-  \bxjs@nxt\bxjs@postproc@layout}
-\def\bxjs@reset@layout#1{%
-  \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
-  \bxjs@nxt\bxjs@postproc@layout}
+\def\setpagelayout{%
+  \bxjs@ifplus{\bxjs@setpagelayout@a\tw@}{%else
+    \@ifstar{\bxjs@setpagelayout@a\@ne}{\bxjs@setpagelayout@a\z@}}}
+\def\bxjs@setpagelayout@a#1#2{%
+  \ifcase#1% modify
+    \def\bxjs@next{\ifjsc@mag truedimen,\fi #2}%
+  \or% reset(*)
+    \def\bxjs@next{reset,\bxjs@layout@paper,#2}%
+  \or% semireset(+)
+    \def\bxjs@next{reset,\bxjs@layout@paper,\bxjs@layout@base,#2}%
+  \fi
+  \bxjs@geometry@guard@on
+  \edef\bxjs@next{%
+    \noexpand\geometry{\bxjs@next}%
+  }\bxjs@next
+  \bxjs@geometry@guard@off
+  \bxjs@postproc@layout}
 \else\ifx\bxjs@geometry\bxjs@geometry@user
 \AtBeginDocument{\bxjs@check@page@layout}
 \@onlypreamble\bxjs@check@page@layout
@@ -1154,8 +1169,9 @@
   \setlength{\textwidth}{6.5in}%
   \setlength{\textheight}{8in}}
 \let\bxjs@geometry@driver\relax
-\def\setpagelayout{\@ifstar
-  {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
+\def\setpagelayout{%
+  \bxjs@ifplus{\bxjs@pagelayout@a}{%else
+    \@ifstar{\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}}
 \def\bxjs@pagelayout@a#1{%
   \ClassError\bxjs@clsname
    {Command '\string\setpagelayout' is not supported,\MessageBreak

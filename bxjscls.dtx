@@ -468,6 +468,13 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@ifplus}
+% |\@ifstar| の |+| 版。
+%    \begin{macrocode}
+\def\bxjs@ifplus#1{\@ifnextchar+{\@firstoftwo{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@gset@tempcnta}
 % |calc| の整数式を用いて |\@tempcnta| の値を設定する。
 %    \begin{macrocode}
@@ -3187,33 +3194,38 @@
 % 文書クラス毎に異なる。
 %    \begin{macrocode}
 %<*article|report>
-\def\bxjs@layout{%
+\def\bxjs@layout@base{%
   headheight=\topskip,footskip=0.03367\paperheight,%
   headsep=\footskip-\topskip,includeheadfoot,%
+}
+\edef\bxjs@layout{\bxjs@layout@base
   hscale=0.76,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
 %</article|report>
 %<*book>
+\def\bxjs@layout@base{%
+  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+}
 \ifbxjs@layout@buggyhmargin     %---
 % アレ
-\def\bxjs@layout{%
-  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+\edef\bxjs@layout{\bxjs@layout@base
   hmargin=36\jsc@mmm,hmarginratio=1:1,%
   vscale=0.83,vmarginratio=1:1,%
 }
 \else                           %---
 % 非アレ
-\def\bxjs@layout{%
-  headheight=\topskip,headsep=6\jsc@mmm,nofoot,includeheadfoot,%
+\edef\bxjs@layout{\bxjs@layout@base
   hmargin=18\jsc@mmm,%
   vscale=0.83,vmarginratio=1:1,%
 }
 \fi                             %---
 %</book>
 %<*slide>
-\def\bxjs@layout{%
+\def\bxjs@layout@base{%
   noheadfoot,%
+}
+\edef\bxjs@layout{\bxjs@layout@base
   hscale=0.9,hmarginratio=1:1,%
   vscale=0.944,vmarginratio=1:1,%
 }
@@ -3269,6 +3281,7 @@
   \ifbxjs@whole@zw@lines
     \@tempdimb=\textwidth
     \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
+    \advance\textwidth.005pt\relax
     \divide\textwidth\@tempdima \multiply\textwidth\@tempdima
     \advance\@tempdimb-\textwidth
     \advance\oddsidemargin 0.5\@tempdimb
@@ -3288,6 +3301,7 @@
 % textheight 調整
   \@tempdimb=\textheight
   \advance\textheight-\topskip
+  \advance\textheight.005pt\relax
   \divide\textheight\baselineskip \multiply\textheight\baselineskip
   \advance\textheight\topskip
   \advance\@tempdimb-\textheight
@@ -3336,11 +3350,10 @@
 % ようにする自動調整を行うが、これをどうするかは未検討。
 % 今のところ、単純に回避（無効化）している。
 %    \begin{macrocode}
-\@onlypreamble\bxjs@revert
-\let\bxjs@revert\@empty
-\edef\bxjs@tmpa{\the\ht\strutbox}
-\ht\strutbox=10\p@?
-\g@addto@macro\bxjs@revert{\ht\strutbox=\bxjs@tmpa\relax}
+\def\bxjs@geometry@guard@on{%
+  \edef\bxjs@gg@tmp{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
+\def\bxjs@geometry@guard@off{%
+  \ht\strutbox=\bxjs@gg@tmp\relax}
 %    \end{macrocode}
 %
 % |geometry| のドライバオプション指定。
@@ -3366,11 +3379,13 @@
 % \Note |geometry| のbegin-documentフックにおいて、Lua{\TeX}の
 % 旧版互換を有効にする。
 %    \begin{macrocode}
-\edef\bxjs@nxt{%
-  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}}
 \AtBeginDocument{\bxjs@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
-\bxjs@nxt \bxjs@revert
+\bxjs@geometry@guard@on
+\edef\bxjs@next{%
+  \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
+}\bxjs@next
+\bxjs@geometry@guard@off
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 %    \end{macrocode}
 %
@@ -3420,14 +3435,23 @@
 % \end{itemize}
 % どちらも設定の後で後処理 |\bxjs@postproc@layout| を実行する。
 %    \begin{macrocode}
-\def\setpagelayout{\@ifstar
-  {\bxjs@reset@layout}{\bxjs@modify@layout}}
-\def\bxjs@modify@layout#1{%
-  \edef\bxjs@nxt{\noexpand\geometry{#1,truedimen}}%
-  \bxjs@nxt\bxjs@postproc@layout}
-\def\bxjs@reset@layout#1{%
-  \edef\bxjs@nxt{\noexpand\geometry{reset,\bxjs@layout@paper,#1,truedimen}}%
-  \bxjs@nxt\bxjs@postproc@layout}
+\def\setpagelayout{%
+  \bxjs@ifplus{\bxjs@setpagelayout@a\tw@}{%else
+    \@ifstar{\bxjs@setpagelayout@a\@ne}{\bxjs@setpagelayout@a\z@}}}
+\def\bxjs@setpagelayout@a#1#2{%
+  \ifcase#1% modify
+    \def\bxjs@next{\ifjsc@mag truedimen,\fi #2}%
+  \or% reset(*)
+    \def\bxjs@next{reset,\bxjs@layout@paper,#2}%
+  \or% semireset(+)
+    \def\bxjs@next{reset,\bxjs@layout@paper,\bxjs@layout@base,#2}%
+  \fi
+  \bxjs@geometry@guard@on
+  \edef\bxjs@next{%
+    \noexpand\geometry{\bxjs@next}%
+  }\bxjs@next
+  \bxjs@geometry@guard@off
+  \bxjs@postproc@layout}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3460,8 +3484,9 @@
 % |\setpagelayout| はとりあえず無効にしておく。
 %    \begin{macrocode}
 \let\bxjs@geometry@driver\relax
-\def\setpagelayout{\@ifstar
-  {\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}
+\def\setpagelayout{%
+  \bxjs@ifplus{\bxjs@pagelayout@a}{%else
+    \@ifstar{\bxjs@pagelayout@a}{\bxjs@pagelayout@a}}}
 \def\bxjs@pagelayout@a#1{%
   \ClassError\bxjs@clsname
    {Command '\string\setpagelayout' is not supported,\MessageBreak
