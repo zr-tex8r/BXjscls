@@ -20,6 +20,7 @@
 \newcommand{\Means}{：\ }
 \newcommand{\jemph}{\textsf}
 \newcommand{\wbr}{\linebreak[0]}
+\newcommand{\xast}{\mbox{}\mbox{$^*$}}
 \providecommand{\pTeX}{p\TeX}
 \providecommand{\pLaTeX}{p\LaTeX}
 \providecommand{\upTeX}{u\pTeX}
@@ -530,6 +531,20 @@ dvipdfmx mydoc
 \section{クラスオプション}
 \label{sec:Class-Option}
 
+一般的な値の書式についての注意\Means
+\begin{itemize}
+\item 真偽値は、 |true|（真）または |false|（偽）で指定する。
+\item 長さ値および整数値は\Pkg{calc}パッケージの式で指定できる。
+\item \Meta{長さ\xast}のように“\xast”のついたパラメタについては、
+  \Pkg{calc}の長さ式の代わりに、和文用単位（|Q|、|H|、|zw|、|zh|）
+  付きの実数値で指定することもできる
+  \footnote{この機能は |units| 和文パラメタとは無関係である。
+    和文用単位を含む長さ式は（(u){\pLaTeX}以外では）使えない。
+    なお、ここで使われる |zw| は常に（(u){\pLaTeX}でも）
+    “規約上の全角幅”（|\jsZw|）を指す
+    （和文フォント設定が未完了のため）。}。
+\end{itemize}
+
 %-------------------
 \subsection{BXJSクラスに特有のオプション}
 \label{ssec:BXJS-specific-option}
@@ -628,8 +643,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   詳しくは\ref{sec:Ja-Driver-Param}節を参照。
   \Note |jafont| と |japaram| の値がどのように解釈されるかは
   和文ドライバの仕様次第である。
-% minimal和文ドライバではこの2つの値は全く参照されない。
-\item |base=|\Meta{長さ}\Means
+\item |base=|\Meta{長さ\xast}\Means
   基底フォントサイズ（|\normalsize| のフォントのサイズ）を指定する。
   JSクラスの |10pt|、|11pt| 等と同じ役割で、任意の値を指定できる。
   基底フォントサイズの既定値は10\,ptである。
@@ -638,26 +652,20 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |14pt| は 14.4\,pt が実際の設定値である。
   \footnote{これは昔の{\LaTeX}の“magstep”の習慣に由来する。}%
   これに対して |base=14pt| は文字通り14\,ptを設定する。
-  \Note \Meta{長さ}には\Pkg{calc}パッケージの式が使用できる。
-  この他に、特別に、(u){\pLaTeX}以外のエンジンでも |11Q| の
-  ようにQ単位で指定することができる
-  （この場合は“\Meta{実数}|Q|”の形に限られ式は使えない）。
-  \footnote{なお、(u){\pLaTeX}ではエンジンが単位 |Q| をサポート
-  するので、|11Q| も |10Q+1Q| も\Pkg{calc}の式として受け付けられる。}
-\item |jbase=|\Meta{長さ}\Means
+\item |jbase=|\Meta{長さ\xast}\Means
   和文を基準にして基底フォントサイズを指定する。
   すなわち和文フォントの |\normalsize| のサイズを指定の長さとする。
   \footnote{この場合に決定されるmag値は和文スケール値にも依存する
     ことに注意。}%
-  \Note \Meta{長さ}の書式は |base| オプションと同様。
+  \Note 1.8版から、|base| と |jbase| の両方の指定が可能になった。
+  この場合、和文スケール値がそれらに基づいて決定される
+  （|scale| 指定は無効になる）。
 \item |scale=|\Meta{実数}\Means
   和文スケール値を設定する。
   既定値は 0.924715（= 13\,Q/10\,pt）である。
   \footnote{これはJSクラスの設計に基づく値である。
     ただし実装の都合で、JSクラスの実際のスケール値はこれから
     僅かだけずれている。}%
-\item |noscale|\Means
-  |scale=1| と同値。
 \item |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}|\Means
   用紙サイズ設定。
   |a4paper| 等と同じ役割で、任意の値を指定できる。
@@ -671,9 +679,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   既定値が有効・無効の何れになるかは異なり、また、
   そもそも有効・無効の一方しか選択できない場合もある。
   詳細については\ref{sec:Ja-math-fonts}節を参照されたい。
-\item |disablejfam|\Means
-  |enablejfam=false| と同値。
-  \Note JSクラスとの互換のため存在する。
 \item |textwidth=|\Meta{長さ}\Means
   行長（本文領域の横幅；|\textwidth|）を指定する。
   \begin{itemize}
@@ -770,8 +775,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |nooldfontcommands|（既定）\Means
   “二文字フォント命令”の使用に対して警告を出す。
   詳細については\ref{sec:Old-font-commands}節を参照されたい。
-\item |fancyhdr=|\Meta{真偽値}%
-\footnote{真偽値は |true|（真）または |false|（偽）で指定する。}\Means
+\item |fancyhdr=|\Meta{真偽値}\Means
   \Pkg{fancyhdr}パッケージの機能に対する補正を行うか。
   真の場合、以下の補正が行われる。既定値は真。
   \begin{itemize}
@@ -879,6 +883,9 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |jadriver=|\Meta{名前}\Means
   |ja=|\Meta{名前} と同値（和文ドライバ指定）。
   \Note 1.0版より前で使われた。
+\item |noscale|\Means
+  |scale=1| と同値。
+  \Note 0.9版より前で使われた。
 \end{itemize}
 
 %-------------------
@@ -1203,10 +1210,12 @@ BXJSクラスではページレイアウトの設定に\Pkg{geometry}パッケ�
   \label{itm:pl-param}
   \begin{enumerate}
   \item
-    クラスオプションで指定された用紙サイズ、および|truedimen|。
+    クラスオプションで指定された用紙サイズ、
+    および|truedimen| とドライバ指定。
     \label{itm:pl-parama}
   \item
     \Pkg{bxjsarticle}／\Pkg{bxjsreport}の場合は次のパラメタ値。 
+    \label{itm:pl-paramb}
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, footskip=0.03367\paperheight,
 headsep=\footskip-\topskip, includeheadfoot,
@@ -1214,6 +1223,7 @@ hscale=0.76, hmarginratio=1:1, vscale=0.83, vmarginratio=1:1
 \end{verbatim}\end{quote}
   \item
     \Pkg{bxjsbook}の場合は次のパラメタ値。%
+    \label{itm:pl-paramc}
 \begin{quote}\small\begin{verbatim}
 headheight=10pt, headsep=6mm, nofoot, includeheadfoot,
 hmargin=18mm, vscale=0.83, vmarginratio=1:1
@@ -1227,6 +1237,7 @@ hmargin=18mm, vscale=0.83, vmarginratio=1:1
     クラスオプションに |layout=v1| を指定してほしい。
   \item
     \Pkg{bxjsslide}の場合は次のパラメタ値。
+    \label{itm:pl-paramd}
 \begin{quote}\small\begin{verbatim}
 noheadfoot, hscale=0.9, hmarginratio=1:1,
 vscale=0.944, vmarginratio=1:1
@@ -1252,12 +1263,16 @@ vscale=0.944, vmarginratio=1:1
   再び\ref{itm:pl-post}の後処理が行われる。
 \item |\setpagelayout*{|\Meta{設定}|}|\Means
   用紙以外の設定をリセットして改めてページレイアウトの設定を行う。
-  具体的には、\ref{itm:pl-parama}と\Meta{設定}の
-  内容を用いて\Pkg{geometry}が再設定を行った後、
+  具体的には、まず\Pkg{geometry}の |reset| オプションで初期化し、
+  その後\ref{itm:pl-parama}と\Meta{設定}の
+  内容を用いて再設定を行った後、
   再び\ref{itm:pl-post}の後処理が行われる。
 \item |\setpagelayout+{|\Meta{設定}|}|\Means
   |\setpagelayout*| の変種で、「本文領域のサイズと位置」の設定のみを
   リセットして改めてページレイアウトの設定を行う。
+  すなわち、前項の“再設定”の際に、
+  \ref{itm:pl-paramb}～\ref{itm:pl-paramd}の内容のうち
+  「本文領域」以外のものが追加される。
 \end{itemize}
 
 なお、|\geometry| 命令を直接呼び出すことも可能である。
@@ -1426,14 +1441,12 @@ standard和文ドライバ（およびそれを継承するドライバ）では
   \footnote{ただし、standard和文ドライバで自動的に読み込まれる
     \Pkg{zxjatype}や\Pkg{bxcjkjatype}のパッケージは、
     それ自体が同様の機能の |\>| を提供することにも注意を要する。}
-\item |\jachar{|\Meta{文字1つ}|]|\Means
+\item |\jachar{|\Meta{文字1つ}|}|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
-\item |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
+\item |\jafontsize{|\Meta{フォントサイズ\xast}|}{|\Meta{行送り\xast}|}|\Means
   “和文規準”でフォントサイズを指定する。
   すなわち、和文の1\,zwが\Meta{フォントサイズ}と等しくなるように
   フォントサイズを設定する。
-  \Note 命令の引数の長さ指定ではエンジンの種類に関わらず |Q|／|H|
-  の単位が使用できる。
 \item 和文数式フォント命令\Means
   JSクラスと同様に、
   |\mathmc| で「明朝」、|\mathgt| で「ゴシック」の
