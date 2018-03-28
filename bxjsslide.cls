@@ -473,7 +473,7 @@
 \define@key{bxjs}{scale}{%
   \edef\bxjs@scale@opt{#1}%
   \let\jsScale\bxjs@scale@opt}
-\define@key{bxjs}{jsfontscale}{\setkeys{bxjs}{scale=#1}}
+\define@key{bxjs}{jafontscale}{\setkeys{bxjs}{scale=#1}}
 \DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
