@@ -30,7 +30,7 @@ packages that provide capability of Japanese typesetting.
       - On LuaLaTeX:
         LuaTeX-ja
   * Other packages required on occasion:
-      - type1cm: when `magstyle` is `real`/`xreal`
+      - type1cm: when `magstyle` is `nomag`/`nomag*`
       - pxchfon (v0.5+): when `jafont` is used on pLaTeX
       - zxjafont (v0.2a+):  when `jafont` is used on XeLaTeX
   * When you use ja-drivers other than standard, you generally need
@@ -88,6 +88,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.8a 〈2018/03/29〉
+      - Sync with jsclasses 2018/03/11.
   * Version 1.8  〈2018/03/03〉
   * Version 1.7c 〈2018/02/04〉
   * Version 1.7b 〈2018/01/28〉

@@ -98,6 +98,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.8a 〈2018/03/29〉
+      - jsclasses の 2018/03/11 と同期。（仕様変更は無し。）
+      - バグ修正。
   * Version 1.8  〈2018/03/03〉
       - `textwidth`、`number-of-lines` オプションを新設。
       - `\setpagelayout+` 命令をを新設。
