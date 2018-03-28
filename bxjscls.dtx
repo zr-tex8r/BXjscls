@@ -3288,11 +3288,15 @@
 % |geometry| の後処理。
 %    \begin{macrocode}
 \def\bxjs@postproc@layout{%
-% ドライバ再設定
+%    \end{macrocode}
+% |geometry| のドライバを再設定する。
+%    \begin{macrocode}
   \ifx\bxjs@geometry@driver\relax\else
     \let\Gm@driver\bxjs@geometry@driver
   \fi
-% textwidth 調整
+%    \end{macrocode}
+% |\textwidth| の値を補正する。
+%    \begin{macrocode}
   \ifbxjs@whole@zw@lines
     \@tempdimb=\textwidth
     \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
@@ -3303,17 +3307,27 @@
     \advance\evensidemargin 0.5\@tempdimb
   \fi
   \fullwidth=\textwidth
+%    \end{macrocode}
+% |bxjsbook| の場合は、|geometry| が設定した |\textwidth| は |\fullwidth| と
+% して扱い、その値から実際の |\textwidth| を導出する。
+%    \begin{macrocode}
 %<*book>
   \@tempdima=\jsTextWidthLimit\Cwd
   \ifx\bxjs@textwidth@opt\@undefined\else
     \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+    \ifbxjs@whole@zw@lines
+      \advance\@tempdima.005pt\relax
+      \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
+    \fi
   \fi
   \ifdim\textwidth>\@tempdima
     \textwidth=\@tempdima
     \addtolength\evensidemargin{\fullwidth-\textwidth}
   \fi
 %</book>
-% textheight 調整
+%    \end{macrocode}
+% |\textheight| 関連の調整。
+%    \begin{macrocode}
   \@tempdimb=\textheight
   \advance\textheight-\topskip
   \advance\textheight.005pt\relax
@@ -3321,11 +3335,15 @@
   \advance\textheight\topskip
   \advance\@tempdimb-\textheight
   \advance\topmargin0.5\@tempdimb
-% headheight 調整
+%    \end{macrocode}
+% |\headheight| 関連の調整。
+%    \begin{macrocode}
   \@tempdima=\topskip
   \advance\headheight\@tempdima
   \advance\topmargin-\@tempdima
-% marginpar 設定
+%    \end{macrocode}
+% marginpar関連の調整。
+%    \begin{macrocode}
   \setlength\marginparsep{\columnsep}
   \setlength\marginparpush{\baselineskip}
   \setlength\marginparwidth{\paperwidth-\oddsidemargin-1truein%
@@ -3333,7 +3351,9 @@
   \ifbxjs@whole@zw@lines
     \divide\marginparwidth\Cwd \multiply\marginparwidth\Cwd
   \fi
-% 連動する変数
+%    \end{macrocode}
+% 連動する変数。
+%    \begin{macrocode}
   \maxdepth=.5\topskip
   \stockwidth=\paperwidth
   \stockheight=\paperheight

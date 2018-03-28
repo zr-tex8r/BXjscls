@@ -1083,6 +1083,10 @@
   \@tempdima=\jsTextWidthLimit\Cwd
   \ifx\bxjs@textwidth@opt\@undefined\else
     \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+    \ifbxjs@whole@zw@lines
+      \advance\@tempdima.005pt\relax
+      \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
+    \fi
   \fi
   \ifdim\textwidth>\@tempdima
     \textwidth=\@tempdima
