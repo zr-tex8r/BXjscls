@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2018/03/03 v1.8  BXJS document classes]
+  [2018/03/29 v1.8a-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsbook}
 \newif\ifjsc@needsp@tch
@@ -1008,13 +1008,13 @@
 \everydisplay=\expandafter{\the\everydisplay \narrowbaselines}
 \newcommand{\headfont}{\sffamily}
 \setlength\columnsep{2\Cwd}
-\setlength\columnseprule{0\jsc@mpt}
+\setlength\columnseprule{\z@}
 \setlength\lineskip{1\jsc@mpt}
 \setlength\normallineskip{1\jsc@mpt}
 \setlength\lineskiplimit{1\jsc@mpt}
 \setlength\normallineskiplimit{1\jsc@mpt}
 \renewcommand{\baselinestretch}{}
-\setlength\parskip{0\jsc@mpt}
+\setlength\parskip{\z@}
 \if@slide
   \setlength\parindent{0\p@}
 \else
@@ -1830,7 +1830,7 @@
   \begin{list}{}{%
     \listparindent=1\jsZw
     \itemindent=\listparindent
-    \rightmargin=\z@
+    \rightmargin=0pt
     \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
 \ifbxjs@force@chapterabstract
   \let\abstract\chapterabstract
@@ -2183,12 +2183,12 @@
     \color@begingroup
       \@makefntext{%
         \rule\z@\footnotesep\ignorespaces}%
-      \futurelet\next\fo@t}
-\def\fo@t{\ifcat\bgroup\noexpand\next \let\next\f@@t
-                                \else \let\next\f@t\fi \next}
-\def\f@@t{\bgroup\aftergroup\@foot\let\next}
-\def\f@t#1{#1\@foot}
-\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
+      \futurelet\jsc@next\jsc@fo@t}
+\def\jsc@fo@t{\ifcat\bgroup\noexpand\jsc@next \let\jsc@next\jsc@f@@t
+                                \else \let\jsc@next\jsc@f@t\fi \jsc@next}
+\def\jsc@f@@t{\bgroup\aftergroup\jsc@@foot\let\jsc@next}
+\def\jsc@f@t#1{#1\jsc@@foot}
+\def\jsc@@foot{\@finalstrut\strutbox\color@endgroup\egroup
   \ifx\pltx@foot@penalty\@undefined\else
     \ifhmode\null\fi
     \ifnum\pltx@foot@penalty=\z@\else

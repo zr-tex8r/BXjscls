@@ -31,7 +31,7 @@
 %
 %  Copyright 1995-1999 ASCII Corporation.
 %  Copyright 1999-2016 Haruhiko Okumura
-%  Copyright 2016-2017 Japanese TeX Development Community
+%  Copyright 2016-2018 Japanese TeX Development Community
 %
 %  Copyright 2013-2018 Takayuki YATO (aka. "ZR")
 %
@@ -56,7 +56,9 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2018/03/03 v1.8  BXJS document classes]
+  [2018/03/29 v1.8a-pre BXJS document classes]
+% based on jsclasses [2018/03/11]
+% [2018/03/03 v1.8  BXJS document classes]
 % [2018/02/04 v1.7c BXJS document classes]
 % [2018/01/28 v1.7b BXJS document classes]
 % [2017/12/09 v1.7a BXJS document classes]
@@ -684,7 +686,7 @@
 % \pLaTeXe の \texttt{b5paper}
 % は $257\,\mathrm{mm} \times 182\,\mathrm{mm}$ になっています。
 % ここでは\pLaTeXe にならってJISに従いました。
-% 
+%
 % デフォルトは \texttt{a4paper} です。
 %
 % \texttt{b5var}（B5変形，182mm×230mm），
@@ -1088,10 +1090,18 @@
 %
 % \paragraph{和文フォントメトリックの選択}
 %
-% ここでは新しい \texttt{jis} フォントメトリックを標準で使いますが，
-% 古い \texttt{min10}，\texttt{goth10} などを使いたいときは \texttt{mingoth}
-% というオプションを指定します。
-% また，\texttt{winjis} オプションで \texttt{winjis} メトリックが使えます。
+% このクラスファイルでは，和文TFMとして東京書籍印刷の小林肇さんの
+% 作られたJISフォントメトリック（\texttt{jis}，\texttt{jisg}）
+% を標準で使うことにしますが，
+% 従来の \texttt{min10}，\texttt{goth10} などを使いたいときは
+% \texttt{mingoth} というオプションを指定します。
+% また，\texttt{winjis} オプションで \texttt{winjis} メトリック
+% （OTFパッケージと同じpsitauさん作；ソースに書かれたWindowsの
+% 機種依存文字がdvips, dvipdfmxなどで出力出来るようになる）が使えます。
+%
+% [2018-02-04] \texttt{winjis} オプションはコッソリ削除しました。
+% 代替として，同等なものをパッケージ化(winjis.sty)して，
+% GitHubにはコッソリ置いておきます。
 %
 % \begin{ZRnote}
 % BXJSクラスではここは和文ドライバの管轄。
@@ -1139,7 +1149,7 @@
 % BXJSでは当初から |bxjsreport| クラスが用意されている。
 % \end{ZRnote}
 %
-% \paragraph{jslogoパッケージの読み込み}
+% \paragraph{\texttt{jslogo}パッケージの読み込み}
 %
 % \LaTeX 関連のロゴを再定義する\texttt{jslogo}パッケージを
 % 読み込まないオプション\texttt{nojslogo}を新設しました。
@@ -1945,8 +1955,7 @@
 %
 % \end{ZRnote}
 %
-% デフォルトのオプションを実行し，|dvi| ファイルの先頭にdvipsのpapersize
-% specialを書き込みます。このspecialはdvipsや最近のdvioutが対応しています。
+% デフォルトのオプションを実行します。
 % |multicols| や |url| を |\RequirePackage| するのはやめました。
 %
 %    \begin{macrocode}
@@ -2024,8 +2033,9 @@
 % up\LaTeX の場合は，グローバルオプションに |uplatex| を追加することで，
 % 自動判定に応じて |otf| パッケージにも |uplatex| オプションが渡るようにします。
 %
-%    \begin{macrocode}
-%    \end{macrocode}
+% \begin{ZRnote}
+% ここのコードを削除。
+% \end{ZRnote}
 %
 % [2016-11-11] p\LaTeX の場合は，オプション |uplatex| が指定されていれば必ずエラーを出します。
 % |autodetect-engine| が有効になっていてもエラーを出しますが，これは |otf| パッケージに
@@ -2303,8 +2313,13 @@
 %
 % \paragraph{papersizeスペシャルの出力}
 %
-% dvipsのpapersizeスペシャルを出力します。
-% これでdvipsや新しいdvioutで出力領域が自動設定できます。
+% |dvi| ファイルの先頭にdvipsのpapersize specialを書き込むことで，
+% 出力用紙サイズを設定します。これはdvipdfmxや最近のdvioutにも有効です。
+% どうやらpapersize specialにはtrue付の単位は許されず，かつ単位は
+% 常にtrueなものと扱われるようです。
+% そこで，後で出てくる（☆）の部分，「|\mag|にあわせてスケール」よりも
+% 手前で実行しておくことになります。
+%
 % トンボの付いたときの用紙サイズは無意味ですが，
 % いわゆる「ノビ」サイズという縦横1インチずつ長い用紙に出力することを考えて，
 % 1インチずつ加えました。
@@ -2541,6 +2556,8 @@
 % \end{macro}
 % \end{macro}
 % \end{macro}
+%
+% |\paperwidth|，|\paperheight|を|\mag|にあわせてスケールしておきます（☆）。
 %
 % [2016-07-11] 新しく追加した|\stockwidth|，|\stockheight|も|\mag|にあわせて
 % スケールします。
@@ -2896,10 +2913,10 @@
 %
 % |\small| も |\normalsize| と同様に設定します。
 % 行送りは，|\normalsize| が16ポイントなら，
-% 割合からすれば $16 \times 0.9 = 14.4$ ポイントになりますが，
+% 割合からすれば$16 \times 0.9 = 14.4$ポイントになりますが，
 % |\small| の使われ方を考えて，ここでは和文13ポイント，
 % 欧文11ポイントとします。
-% また，|\topsep| と |\parsep| は，元はそれぞれ $4 \pm 2$，$2 \pm 1$
+% また，|\topsep| と |\parsep| は，元はそれぞれ$4 \pm 2$，$2 \pm 1$
 % ポイントでしたが，ここではゼロ（|\z@|）にしました。
 %
 % \begin{ZRnote}
@@ -2929,7 +2946,7 @@
 % \begin{macro}{\footnotesize}
 %
 % |\footnotesize| も同様です。
-% |\topsep| と |\parsep| は，元はそれぞれ $3 \pm 1$，$2 \pm 1$
+% |\topsep| と |\parsep| は，元はそれぞれ$3 \pm 1$，$2 \pm 1$
 % ポイントでしたが，ここではゼロ（|\z@|）にしました。
 %
 %    \begin{macrocode}
@@ -3041,7 +3058,7 @@
 %    \begin{macrocode}
 %<!kiyou>\setlength\columnsep{2\Cwd}
 %<kiyou>\setlength\columnsep{28truebp}
-\setlength\columnseprule{0\jsc@mpt}
+\setlength\columnseprule{\z@}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -3093,7 +3110,7 @@
 % |\parindent| は段落の先頭の字下げ幅です。
 %
 %    \begin{macrocode}
-\setlength\parskip{0\jsc@mpt}
+\setlength\parskip{\z@}
 \if@slide
   \setlength\parindent{0\p@}
 \else
@@ -3132,7 +3149,7 @@
 % \begin{macro}{\brokenpenalty}
 %
 % ページの最後の行がハイフンで終わる際のペナルティです。
-% デフォルトは 100 です。
+% デフォルトは100です。
 %
 %    \begin{macrocode}
 % \brokenpenalty 100
@@ -4111,6 +4128,7 @@
 %   \item|\pltx@cleartoevenpage|：偶数ページになるまでページを繰る命令
 % \end{enumerate}
 % となっています。
+%
 %    \begin{macrocode}
 %\def\pltx@cleartorightpage{\clearpage\if@twoside
 %  \ifodd\c@page
@@ -4181,7 +4199,7 @@
 % ページスタイルとして，\LaTeXe （欧文版）の標準クラス
 % では |empty|，|plain|，|headings|，|myheadings| があります。
 % このうち |empty|，|plain| スタイルは\LaTeXe 本体
-% で定義されています。 
+% で定義されています。
 %
 % アスキーのクラスファイルでは |headnombre|，|footnombre|，
 % |bothstyle|，|jpl@in| が追加されていますが，
@@ -5879,7 +5897,7 @@
   \begin{list}{}{%
     \listparindent=1\jsZw
     \itemindent=\listparindent
-    \rightmargin=\z@
+    \rightmargin=0pt
     \leftmargin=5\jsZw}\item[]}{\end{list}\vspace{\baselineskip}}
 %</book|report>
 %    \end{macrocode}
@@ -6422,8 +6440,8 @@
 %    \begin{macrocode}
 %<*!jspf>
 % \long\def\@makecaption#1#2{{\small
-%   \advance\leftskip 10\jsc@mmm
-%   \advance\rightskip 10\jsc@mmm
+%   \advance\leftskip10\jsc@mmm
+%   \advance\rightskip10\jsc@mmm
 %   \vskip\abovecaptionskip
 %   \sbox\@tempboxa{#1\hskip1\jsZw\relax #2}%
 %   \ifdim \wd\@tempboxa >\hsize
@@ -7228,7 +7246,8 @@
 % \begin{macro}{\footnote}
 % \begin{macro}{\footnotemark}
 %
-% 和文の句読点・閉じかっこ類の直後で用いた際に余分なアキが入るのを防ぐため，
+% 和文の句読点・閉じかっこ類の直後で用いた際に
+% 余分なアキが入るのを防ぐため，
 % |\inhibitglue| を入れることにします。
 % p\LaTeX の日付が2016/09/03より新しい場合は，このパッチが不要なのであてません。
 %
@@ -7291,7 +7310,7 @@
 % 「注1」の形式にするには次のようにしてください。
 %
 %    \begin{macrocode}
-% \def\thefootnote{\ifnum\c@footnote>\z@注\kern0.1\jsZw\@arabic\c@footnote\fi}
+% \def\thefootnote{\ifnum\c@footnote>\z@ 注\kern0.1\jsZw\@arabic\c@footnote\fi}
 %    \end{macrocode}
 %
 % \end{macro}
@@ -7336,6 +7355,8 @@
 % ^^A   |\ifx\pltx@foot@penalty\@undefined\else ... \fi|
 % ^^A 条件の内側に置いておくのが安全。
 %
+% [2018-03-11] |\next|などいくつかの内部命令を |\jsc@...| 付きの
+% ユニークな名前にしました。
 %    \begin{macrocode}
 \long\def\@footnotetext{%
   \insert\footins\bgroup
@@ -7350,12 +7371,12 @@
     \color@begingroup
       \@makefntext{%
         \rule\z@\footnotesep\ignorespaces}%
-      \futurelet\next\fo@t}
-\def\fo@t{\ifcat\bgroup\noexpand\next \let\next\f@@t
-                                \else \let\next\f@t\fi \next}
-\def\f@@t{\bgroup\aftergroup\@foot\let\next}
-\def\f@t#1{#1\@foot}
-\def\@foot{\@finalstrut\strutbox\color@endgroup\egroup
+      \futurelet\jsc@next\jsc@fo@t}
+\def\jsc@fo@t{\ifcat\bgroup\noexpand\jsc@next \let\jsc@next\jsc@f@@t
+                                \else \let\jsc@next\jsc@f@t\fi \jsc@next}
+\def\jsc@f@@t{\bgroup\aftergroup\jsc@@foot\let\jsc@next}
+\def\jsc@f@t#1{#1\jsc@@foot}
+\def\jsc@@foot{\@finalstrut\strutbox\color@endgroup\egroup
   \ifx\pltx@foot@penalty\@undefined\else
     \ifhmode\null\fi
     \ifnum\pltx@foot@penalty=\z@\else
