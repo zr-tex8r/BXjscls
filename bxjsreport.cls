@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2018/03/29 v1.8a BXJS document classes]
+  [2018/03/29 v1.8b-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsreport}
 \newif\ifjsc@needsp@tch
@@ -68,6 +68,9 @@
    {It's a fatal error. I'll quit right now.}
   \expandafter\@firstofone
 \fi{\endinput\@@end}
+\ifx l\jsEngine
+  \directlua{ bxjs = {} }
+\fi
 \ifjsWitheTeX \let\bxjs@protected\protected
 \else \let\bxjs@protected\@empty
 \fi
@@ -2437,6 +2440,18 @@
   \def\bxjs@gengo{平成}\advance\bxjs@jayear-1988\relax
   \let\heisei\bxjs@jayear
 \else
+  \IfFileExists{bxwareki.sty}{\IfFileExists{bxwareki2019.def}{%
+    \RequirePackage{bxwareki}[]%
+    \let\bxjs@gengo\WarekiGengo
+  }{}}{}%
+  \if l\jsEngine \ifx\bxjs@gengo\@empty
+    \toks@{}
+    \directlua{pcall(function()
+      tex.toks[0] = bxjs.get_new_gengo()
+    end)}
+    \edef\bxjs@gengo{\the\toks@}
+  \fi\fi
+  \ifx\bxjs@gengo\@empty\else \advance\bxjs@jayear-2018\relax \fi
 \fi\fi\fi
 \edef\jayear{%
   \ifx\bxjs@gengo\@empty \the\bxjs@jayear\bxjs@iai
