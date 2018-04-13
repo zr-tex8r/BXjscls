@@ -1140,6 +1140,10 @@
 %
 % オプション \texttt{english} を新設しました。
 %
+% \begin{ZRnote}
+% \Note |\if@english| は非ユニークで衝突耐性がない。
+% \end{ZRnote}
+%
 %    \begin{macrocode}
 \newif\if@english
 \@englishfalse
@@ -1173,53 +1177,10 @@
 \DeclareOption{nojslogo}{\@jslogofalse}
 %    \end{macrocode}
 %
-% \paragraph{BXJS特有のオプションの一覧 \ZRX}
+% \paragraph{複合設定オプション \ZRX}
 % \mbox{}
-% \begin{ZRnote}
-% \begin{itemize}
-% \item エンジンオプション： |xelatex| 等。
-% \item ドライバオプション： |dvipdfmx| 等。
-% \item 複合設定オプション： |pandoc| 等。
-% \item |nopapersize| ： |papersize|（既定で有効）の否定。
-% \item |zw|／|nozw| ： |\jsZw| と等価な命令として |\zw| を
-%   定義する／しない。
-% \item |js|／|nojs| ： JSクラスを読込済として扱う／扱わない。
-% \item |precisetext|／|noprecisetext| ： {\XeTeX}の``generateactualtext''を
-%    有効／無効にする。
-% \item |simplejasetup|／|nosimplejasetup| ： {\XeTeX}の``linebreaklocale''を
-%    有効／無効にする。
-% \item |bigcode|／|nobigcode| ： {\upTeX}でCMapとして |UTF8-UCS2| の
-%    代わりに |UTF8-UTF16| を使う／使わない。
-% \item |oldfontcommands|／|nooldfontcommands| ： 古い“二文字フォント命令”
-%    に対する警告を抑止する／しない。
-% \item |base=|\meta{dimen} ： 基底フォントサイズを直接指定する。
-%   （|xxpt| オプションの代用なので、既定値は10\,ptである。）
-% \item |jbase=|\meta{dimen} ： 基底フォントサイズを“和文規準で”
-%   直接指定する。
-% \item |scale=|\meta{real} ： 和文フォントのスケールを表すマクロ |\jsScale|
-%   の値を設定する。
-%   もちろんこの値を何らかの方法で和文処理モジュールに渡さないと意味を成さない。
-%   既定値は 0.924715（= 13\,Q/10\,pt）。
-% \item |noscale| ： |scale=1| と等価。
-% \item |mag=|\meta{int} ： |\mag| 値の直接設定。既定は |base| から算出する。
-% \item |paper={|\meta{dimen:width}|}{|\meta{dimen:height}|}| ： 用紙サイズ設定。
-%   用紙サイズオプションの代用で、既定値は |a4paper| 相当。
-% \item |ja=|\meta{name} ： 使用する和文ドライバの指定。
-% \item |jafont=|\meta{name} ： 和文フォントプリセットの指定。
-% \item |japaram=|\meta{name} ： 和文フォントパラメタの指定。
-% \item |magstyle=|\meta{name} ： “版面拡大”の実現方法の選択。
-% \item |dvi=|\meta{name} ： DVIモードの時のみに参照されるドライバ指定。
-% \item |geometry=|\{|class|\OR|user|\} ： |geometry| パッケージの読込を自動的に
-%   行うかユーザに任せるか。
-% \item |fancyhdr=|\meta{bool} ： |fancyhdr| パッケージ用の調整を行うか。
-% \item |layout=|\meta{name} ： レイアウト変種の指定。
-% \item |textwidth-limit=|\meta{number} ： |bxjsbook| における、
-%   |\textwidth| の上限の全角単位での値。
-% \item |paragraph-mark=|\meta{char} ： パラグラフのマーク。
-% \item |whole-zw-lines=|\meta{bool} ： 行長を全角単位に丸めるか。
-% \item |hyperref-enc=|\meta{bool} ： |hyperref| の文字コード指定補正を行うか。
-% \end{itemize}
-%
+% \TODO |\bxjs@invscale| を書く場所を決める。
+% （JSクラスと同じにはできなそう。）
 % \begin{macro}{\bxjs@invscale}
 % |\bxjs@invscale| は{\TeX}における「長さのスケール」の逆関数を求めるもの。
 % 例えば |\bxjs@invscale\dimX{1.3}| は |\dimX=1.3\dimX| の
@@ -1257,10 +1218,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \end{ZRnote}
-%
-% \paragraph{複合設定オプション \ZRX}
-% \mbox{}
 % \begin{ZRnote}
 % 複合設定オプションとは、
 % 「エンジンやドライバや和文ドライバの設定を含む、
@@ -1580,7 +1537,7 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@base@opt}
-% |base| オプションの値（そのもの）。
+% 明示された |base| オプションの値。
 %    \begin{macrocode}
 %\let\bxjs@base@opt\@undefined
 %    \end{macrocode}
@@ -1595,7 +1552,7 @@
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@jbase@opt}
-% |jbase| オプションの値。
+% 明示された |jbase| オプションの値。
 %    \begin{macrocode}
 %\let\bxjs@jbase@opt\@undefined
 %    \end{macrocode}
@@ -1608,9 +1565,9 @@
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@scale@opt}
-% |scale| オプションの値。
+% 明示された |scale| オプションの値。
 %    \begin{macrocode}
-%\let\bxjs@jbase@opt\@undefined
+%\let\bxjs@scale@opt\@undefined
 %    \end{macrocode}
 % \end{macro}
 %
@@ -10677,11 +10634,20 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 %^^A----------------
 % \subsection{ギリシャ・キリル文字の扱い}
 %
-% \Note ここで「ギリシャ・キリル文字」はUnicodeとJIS X 0213に
-% 共通して含まれるもののみを指すことにする。
+% 「特定CJK曖昧文字」について、和文・欧文扱いを制御できるようにする。
+% ここで\textbf{「特定CJK曖昧文字」}とは以下に該当する文字の集合を指す：
+% \begin{itemize}
+% \item UnicodeとJIS X~0213に共通して含まれるギリシャ文字・キリル文字。
+% \item Latin-1の上位部分とJIS X~0208に共通して含まれる文字
+%  （Lua{\TeX}-jaの定める“範囲8”）。
+% \end{itemize}
 %
 % \begin{macro}{\bxjx@grkcyr@list}
-% 対象のギリシャ・キリル文字に関するデータ。
+% 「特定CJK曖昧文字」に関する情報をもつ\,|\do|-リスト。
+% 各項目の形式は以下の通り：\\
+% |\do{|\Meta{Unicode符号値}|}{|\Meta{対象fontenc}|}{|^^A
+% \Meta{テキストLICR}|}{|\Meta{数式LICR}|}|
+% \Note 数式で使わない文字は \Meta{数式LICR} を空にする。
 %    \begin{macrocode}
 \def\bxjx@grkcyr@list{%
 \do{0391}{LGR}{\textAlpha}{A}%            % GR. C. L. ALPHA
@@ -10810,33 +10776,49 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 }
 %    \end{macrocode}
 % \end{macro}
+% \begin{macro}{\mathdegree}
+% 面倒なので補っておく。
 %    \begin{macrocode}
 \providecommand*{\mathdegree}{{}^{\circ}}
 %    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\ifbxjx@gcc@cjk}
 % 〔スイッチ〕
-% ギリシャ・キリル文字を和文扱いにするか。
+% 「特定CJK曖昧文字」を和文扱いにするか。
 %    \begin{macrocode}
 \newif\ifbxjx@gcc@cjk
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\greekasCJK}
-% ギリシャ・キリル文字を和文扱いにする。
-% \begin{macro}{\nogreekasCJK}
-% ギリシャ・キリル文字を欧文扱いにする。
+% 〔公開命令〕
+% 「特定CJK曖昧文字」を和文扱いにする。
 %    \begin{macrocode}
 \newcommand*\greekasCJK{%
   \bxjx@gcc@cjktrue}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\nogreekasCJK}
+% 〔公開命令〕
+% 「特定CJK曖昧文字」を欧文扱いにする。
+%    \begin{macrocode}
 \newcommand*\nogreekasCJK{%
   \bxjx@gcc@cjkfalse}
 %    \end{macrocode}
 % \end{macro}
-% \end{macro}
 %
-% \begin{macro}{\bx@fake@grk}
-% |\bx@fake@grk{|\Meta{出力文字}|}{|\Meta{基準文字}|}|\Means
+% \begin{macro}{\bxjx@fake@grk}
+% |\bxjx@fake@grk{|\Meta{出力文字}|}{|\Meta{基準文字}|}|\Means
+% ラテン文字で代用される数式ギリシャ文字の出力を行う。
+% \Meta{基準文字}（mathchardefの制御綴）の数式クラスと数式ファミリを
+% 引き継いで、\Meta{出力文字}（ASCII文字トークン）の文字コードの
+% 数式文字を出力する。
+% 例えば、|\Pi| の意味が |\mathchar"7005| である場合、
+% |\bxjx@fake@grk{B}{\Pi}| は |\mathchar"7042| を実行する。
+% \Note フォントパッケージ使用時の再定義を考慮して、\Meta{基準文字}が
+% mathchardefであるかを検査し、そうでない場合はフォールバックとして
+% 単に\Meta{出力文字}を実行する。
 %    \begin{macrocode}
 \def\bxjx@do#1\relax{%
   \def\bxjx@fake@grk##1##2{%
@@ -10851,12 +10833,19 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 %    \end{macrocode}
 % \end{macro}
 %
-% \paragraph{pdfLaTeX・upLaTeXの場合}
+% \paragraph{pdf{\TeX}・{\upTeX}の場合}
 %    \begin{macrocode}
 \ifnum0\if p\bxjx@engine1\fi\if u\bxjx@engine1\fi>0
 %    \end{macrocode}
+% \begin{itemize}
+% \item |\|[|bxjx@KC/|\Meta{符号値}]\Means
+% その文字が「特定曖昧CJK文字」に該当する場合に定義済になる。
+% \end{itemize}
+%
 % まず |inputenc| を読み込んで入力エンコーディングを |utf8|
 % に変更する。
+% \Note 「既定UTF-8化」後の{\LaTeX}においても、必ず
+% 「|inputenc| が明示的に読み込まれた」状態になる。
 %    \begin{macrocode}
 \@ifpackageloaded{inputenc}{}{%else
   \RequirePackage[utf8]{inputenc}}
@@ -10868,8 +10857,8 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 \fi
 %    \end{macrocode}
 %
-% up{\LaTeX}の場合は当該の文字を含むブロックをの和文カテゴリコード
-% を変更する。
+% {\upTeX}の場合に、「特定曖昧CJK文字」を含む
+% ブロックの和文カテゴリコードを変更する。
 %    \begin{macrocode}
 \if u\bxjx@engine
 \kcatcode"0370=15
@@ -10885,27 +10874,66 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
   \expandafter\let\csname bxjx@KCR/\the\@tempcntb\endcsname=t%
   \expandafter\bxjx@do@a\csname bxjx@KC/\the\@tempcnta\endcsname{#1}}
 \def\bxjx@do@a#1#2#3#4#5{%
+%    \end{macrocode}
+% 引数\,=\,|\|[|bxjx@KC/|\Meta{符号値}]|{|\Meta{符号値}|}{|^^A
+% \Meta{fontenc}|}{|\Meta{LICR}|}{|\Meta{数式LICR}|}|
+% 
+% “数式中の動作”を決定する。
+% \Meta{数式LICR}が空（数式非対応）なら警告を出す。
+%    \begin{macrocode}
   \ifx\\#5\\%
     \def\bxjx@tmpa{\@inmathwarn#4}%
+%    \end{macrocode}
+% \Meta{数式LICR}が英字である場合は |\bxjx@fake@grk| で出力する。
+% 大文字なら |\Pi|、小文字なら |\pi| を基準文字にする。
+%    \begin{macrocode}
   \else\ifcat A\noexpand#5%
     \edef\bxjx@tmpa{\noexpand\bxjx@fake@grk{#5}%
       {\ifnum\uccode`#5=`#5\noexpand\Pi\else\noexpand\pi\fi}}%
+%    \end{macrocode}
+% それ以外は\Meta{数式LICR}をそのまま実行する。
+%    \begin{macrocode}
   \else \def\bxjx@tmpa{#5}%
   \fi\fi
   \def\bxjx@tmpb{\bxjx@do@b{#1}{#2}{#3}{#4}}%
   \expandafter\bxjx@tmpb\expandafter{\bxjx@tmpa}}
+%    \end{macrocode}
+% 以降はエンジン種別で分岐する。
+% {\upTeX}の場合。
+%    \begin{macrocode}
 \if u\bxjx@engine
-% {\bxjx@KC/NN}{XXXX}{ENC}{\textCS}{\mathCS}
 \def\bxjx@do@b#1#2#3#4#5{%
+%    \end{macrocode}
+% 引数\,=\,|\|[|bxjx@KC/|\Meta{符号値}]|{|\Meta{符号値}|}{|^^A
+% \Meta{fontenc}|}{|\Meta{LICR}|}{|\Meta{数式中の動作}|}|
+%
+% 当該のUnicode文字の動作は「テキストでは\Meta{LICR}、数式では
+% \Meta{数式中の動作}」となる。
+% LICRは現在エンコーディングで有効な定義がある場合はそれが実行
+% されるはずである。
+% （つまり、現在がLGRである場合はギリシャ文字は常に欧文扱いになる。）
+% それ以外の場合はLICRを |\bxjx@ja@or@not| に帰着させる。
+% この際に、和文用の定義として当該のkchardefを使用し、その制御綴と
+% して |\|[|bxjx@KC/...|] を流用している。
+%    \begin{macrocode}
   \kchardef#1=\@tempcnta
   \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{#1}{#3}{#4}}%
   \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
+%    \end{macrocode}
+% {pdf\TeX}の場合も処理はほとんど同じ。
+% ただし、和文用の定義として |\UTF{|\Meta{符号値}|}| を使う
+% （|\UTF| は |bxcjkjatype| の命令）。
+% |\|[|bxjx@KC/...|] は使わないが定義済にする必要がある。
+%    \begin{macrocode}
 \else\if p\bxjx@engine
 \def\bxjx@do@b#1#2#3#4#5{%
   \mathchardef#1=\@tempcnta
   \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{\UTF{#2}}{#3}{#4}}%
   \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
 \fi\fi
+%    \end{macrocode}
+% 以上の処理を「特定CJK曖昧文字」の各々に適用する。
+%    \begin{macrocode}
 \bxjx@grkcyr@list
 \let\bxjx@do@a\undefined
 \let\bxjx@do@b\undefined
@@ -10913,7 +10941,7 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 %
 % \begin{macro}{\bxjx@DeclareUnicodeCharacter}
 % |\bxjx@DeclareUnicodeCharacter| を改変して、
-% ギリシャ・キリル文字の場合に再定義を抑止したもの。
+% 「特定CJK曖昧文字」の場合に再定義を抑止したもの。
 %    \begin{macrocode}
 \@onlypreamble\bxjx@org@DeclareUnicodeCharacter
 \let\bxjx@org@DeclareUnicodeCharacter\DeclareUnicodeCharacter
@@ -10931,17 +10959,19 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 % \end{macro}
 %
 % \begin{macro}{\bxjx@ja@or@not}
-% |\bxjx@ja@or@not|
+% |\bxjx@ja@or@not{|\Meta{和文用定義}|}{|\Meta{対象fontenc}|}{|^^A
+% \Meta{LICR}|}|\Means
+% |\|[|no|]|greekasCJK| の状態に応じて和文または欧文で文字を出力する。
 %    \begin{macrocode}
 \def\bxjx@ja@or@not#1#2#3{%
 %    \end{macrocode}
-% |\greekasCJK| の場合は、無条件に和文用コードを実行する。
+% |\greekasCJK| の場合は、無条件に\Meta{和文用定義}を実行する。
 %    \begin{macrocode}
   \ifbxjx@gcc@cjk #1%
 %    \end{macrocode}
-% |\nogreekasCJK| の場合は、エンコーディングを固定して欧文用の
-% コードを実行するが、そのエンコーディングが未定義の場合は
-% （フォールバックとして）和文用コードを使う。
+% |\nogreekasCJK| の場合は、対象のエンコーディングに変更してLICRを
+% 実行するが、そのエンコーディングが未定義の場合は
+% （フォールバックとして）和文用定義を使う。
 %    \begin{macrocode}
   \else\expandafter\ifx\csname T@#2\endcsname\relax #1%
   \else \UseTextSymbol{#2}{#3}%
@@ -10970,12 +11000,12 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 %
 % 以上。
 %
-% \paragraph{{\XeLaTeX}・Lua{\LaTeX}の場合}
+% \paragraph{{\XeTeX}・Lua{\TeX}の場合}
 %    \begin{macrocode}
 \else\ifnum0\if x\bxjx@engine1\fi\if l\bxjx@engine1\fi>0
 %    \end{macrocode}
 %
-% 各文字について、math activeを設定する。
+% 各文字について、数式中の動作を定義する。
 %    \begin{macrocode}
 \def\do#1{%
   \bxjx@cnta="#1\relax
@@ -10984,6 +11014,11 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
   \lowercase{\endgroup
     \bxjx@do@a{~}}{#1}}
 \def\bxjx@do@a#1#2#3#4#5{%
+%    \end{macrocode}
+% \Meta{数式LICR}が空なら何もしない。
+% 空でない場合、{up\LaTeX}の場合と同じ方法で“数式中の動作”を決定し、
+% 当該の文字をmath activeにしてその動作を設定する。
+%    \begin{macrocode}
   \ifx\\#5\\\let\bxjx@tmpa\relax
   \else\ifcat A\noexpand#5%
     \edef\bxjx@tmpa{\noexpand\bxjx@fake@grk{#5}%
@@ -10995,15 +11030,18 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
   \fi}
 %    \end{macrocode}
 % 「Unicodeな数式」の設定が行われているかを（簡易的に）検査して、
-% そうでない場合にのみ、こちらの設定を有効にする。
+% そうでない場合にのみ、以上の処理を「特定CJK曖昧文字」の各々に適用する。
 %    \begin{macrocode}
 \mathchardef\bxjx@tmpa="119
 \ifx\bxjx@tmpa\pi \bxjx@grkcyr@list \fi
 \let\bxjx@do@a\undefined
 %    \end{macrocode}
 %
-% Lua{\TeX}における |\(no)greekasCJK| の定義。
-% |jacharrange| の設定を変更する。
+% 次に、テキストにおいて「特定CJK曖昧文字」の扱いが |\|[|no|]|greekasCJK|
+% で切り替わるようにする。
+% 
+% Lua{\TeX}の場合は、Lua{\TeX}-jaの |jacharrange| の設定を変更する。
+% \Note “範囲2”がギリシャ・キリル文字、“範囲8”がLatin-1の記号。
 %    \begin{macrocode}
 \if l\bxjx@engine
   \protected\def\greekasCJK{%
@@ -11015,7 +11053,8 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 \fi
 %    \end{macrocode}
 %
-% {\XeTeX}における |\(no)greekasCJK| の定義。
+% {\XeTeX}の場合、|xeCJK| は{\XeTeX}の文字クラス定義を参照して
+% いるので、対象文字の文字クラスを変更する。
 %    \begin{macrocode}
 \if x\bxjx@engine
   \protected\def\greekasCJK{%
