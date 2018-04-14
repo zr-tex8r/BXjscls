@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2018/04/14 v1.8b BXJS document classes]
+  [2018/04/14 v1.9-pre BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -110,12 +110,12 @@
     \fi
   \endgroup
   #1=\bxjs@g@tmpa\relax}
-\if j\jsEngine \def\bxjs@parse@qh@all{zw,zh}
-\else \def\bxjs@parse@qh@all{trueQ,trueH,Q,H,zw,zh}
+\if j\jsEngine \def\bxjs@parse@qh@units{zw,zh}
+\else \def\bxjs@parse@qh@units{trueQ,trueH,Q,H,zw,zh}
 \fi
 \def\bxjs@parse@qh#1{%
   \let\bxjs@tmpb\relax
-  \@for\bxjs@tmpa:=\bxjs@parse@qh@all\do{%
+  \@for\bxjs@tmpa:=\bxjs@parse@qh@units\do{%
     \ifx\bxjs@tmpb\relax
       \edef\bxjs@next{{\bxjs@tmpa}{#1}}%
       \expandafter\bxjs@parse@qh@a\csname bxjs@unit@\bxjs@tmpa\expandafter
@@ -136,18 +136,28 @@
     \fi
   \fi}
   \def\bxjs@unit@Q{0.25mm}\let\bxjs@unit@H\bxjs@unit@Q
+\@onlypreamble\bxjs@begin@document@hook
+\let\bxjs@begin@document@hook\@empty
+\AtBeginDocument{\bxjs@begin@document@hook}
+\@onlypreamble\bxjs@post@option@hook
+\let\bxjs@post@option@hook\@empty
+\@onlypreamble\bxjs@pre@jadriver@hook
+\let\bxjs@pre@jadriver@hook\@empty
 \def\jsAtEndOfClass{%
   \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
-\@onlypreamble\bxjs@restore@jltrcc
-\let\bxjs@restore@jltrcc\@empty
+\@onlypreamble\bxjs@tmpdo
+\@onlypreamble\bxjs@tmpdo@a
+\@onlypreamble\bxjs@tmpdo@b
+\@onlypreamble\bxjs@tmpdo@c
+\@onlypreamble\bxjs@tmpdo@d
 \if l\jsEngine
-\def\bxjs@change@jltrcc#1{%
-  \xdef\bxjs@restore@jltrcc{%
-    \bxjs@restore@jltrcc
+\def\bxjs@tmpdo#1{%
+  \xdef\bxjs@pre@jadriver@hook{%
+    \bxjs@pre@jadriver@hook
     \catcode`#1=\the\catcode`#1\relax}%
   \catcode`#1=11\relax}
-\@tfor\bxjs@x:=西暦\do
-  {\expandafter\bxjs@change@jltrcc\bxjs@x}
+\@tfor\bxjs@tmpa:=和西暦\do
+  {\expandafter\bxjs@tmpdo\bxjs@tmpa}
 \fi
 \bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
@@ -344,9 +354,8 @@
       \else \@tempdimb=\@tempcntb\@ne \fi}%
     \xdef\bxjs@gtmpa{\the\@tempdimb}%
   \endgroup #1=\bxjs@gtmpa\relax}
-\let\bxjs@composite@proc\relax
 \DeclareOption{pandoc}{%
-  \def\bxjs@composite@proc{%
+  \g@addto@macro\bxjs@post@option@hook{%
     \bxjs@oldfontcommandstrue
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
@@ -445,16 +454,13 @@
   \bxjs@oldfontcommandsfalse}
 \DeclareOption{oldfontcommands}{%
   \bxjs@oldfontcommandstrue}
-\def\bxjs@setkey{%
-  \expandafter\bxjs@setkey@a\expandafter{\CurrentOption}}
-\def\bxjs@setkey@a{\bxjs@safe@setkeys{bxjs}}
-\DeclareOption*{\bxjs@setkey}
+\DeclareOption*{%
+  \def\bxjs@next{\bxjs@safe@setkeys{bxjs}}%
+  \expandafter\bxjs@next\expandafter{\CurrentOption}}
 \def\bxjs@safe@setkeys#1#2{%
-  \let\bxjs@KV@errx\KV@errx
-  \let\KV@errx\bxjs@safe@setkeys@a
+  \let\bxjs@save@KV@errx\KV@errx \let\KV@errx\@gobble
   \setkeys{#1}{#2}%
-  \let\KV@errx\bxjs@KV@errx}
-\def\bxjs@safe@setkeys@a#1{}
+  \let\KV@errx\bxjs@save@KV@errx}
 \def\bxjs@set@keyval#1#2#3{%
   \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
   \ifx\bxjs@next\relax
@@ -597,15 +603,15 @@
 \def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
 \def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
 \define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
-\let\bxjs@ltx@removeelement\@removeelement
+\let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
   \ifx\reserved@a\@empty \let#3\@empty
-  \else \bxjs@ltx@removeelement{#1}{#2}{#3}%
+  \else \bxjs@org@removeelement{#1}{#2}{#3}%
   \fi}
 \ExecuteOptions{36pt,a4paper,landscape,oneside,onecolumn,titlepage,final}
 \ProcessOptions\relax
-\bxjs@composite@proc
+\bxjs@post@option@hook
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
 \fi
@@ -614,24 +620,20 @@
   \setlength\paperheight{\paperwidth}
   \setlength\paperwidth {\@tempdima}
 \fi
-\@onlypreamble\bxjs@purge@brace@elts
-\def\bxjs@purge@brace@elts{%
+\def\bxjs@tmpdo{%
   \def\bxjs@tmpa{\@gobble}%
-  \expandafter\bxjs@purge@be@a\@classoptionslist,\@nil,%
+  \expandafter\bxjs@tmpdo@a\@classoptionslist,\@nil,%
   \let\@classoptionslist\bxjs@tmpa}
-\@onlypreamble\bxjs@purge@be@a
-\def\bxjs@purge@be@a#1,{%
+\def\bxjs@tmpdo@a#1,{%
   \ifx\@nil#1\relax\else
-    \bxjs@purge@be@b#1{}\@nil
+    \bxjs@tmpdo@b#1{}\@nil
     \if@tempswa \edef\bxjs@tmpa{\bxjs@tmpa,#1}\fi
-    \expandafter\bxjs@purge@be@a
+    \expandafter\bxjs@tmpdo@a
   \fi}
-\@onlypreamble\bxjs@purge@be@b
-\def\bxjs@purge@be@b#1#{\bxjs@purge@be@c}
-\@onlypreamble\bxjs@purge@be@c
-\def\bxjs@purge@be@c#1\@nil{%
+\def\bxjs@tmpdo@b#1#{\bxjs@tmpdo@c}
+\def\bxjs@tmpdo@c#1\@nil{%
   \ifx\@nil#1\@nil \@tempswatrue \else \@tempswafalse \fi}
-\bxjs@purge@brace@elts
+\bxjs@tmpdo
 \@expandtwoargs\@removeelement
   {papersize}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
@@ -704,12 +706,12 @@
     {No driver option is given}
   \fi\fi
   \ifbxjs@dvi@opt
-    \edef\bxjs@nxt{%
+    \edef\bxjs@next{%
       \let\noexpand\bxjs@driver@given
        \csname bxjs@dvidriver@@\bxjs@driver@opt\endcsname
       \noexpand\g@addto@macro\noexpand\@classoptionslist
        {,\bxjs@driver@opt}%
-    }\bxjs@nxt
+    }\bxjs@next
   \fi
 \fi
 \ifjsWithpTeXng
@@ -823,6 +825,7 @@
   \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
 \chardef\bxjs@qmcc=\catcode`\?\relax
+\g@addto@macro\bxjs@pre@jadriver@hook{\catcode`\?=12\relax}
 \newdimen\jsZw
 \jsZw=10\jsc@mpt \jsZw=\jsScale\jsZw
 \ifbxjs@usezw
@@ -922,10 +925,10 @@
   \skip2=\abovedisplayshortskip
   \skip4=\belowdisplayskip
   \skip6=\belowdisplayshortskip
-  \let\bxjs@ltx@nomath\@nomath
+  \let\bxjs@save@nomath\@nomath
   \let\@nomath\@gobble
   \@currsize\selectfont
-  \let\@nomath\bxjs@ltx@nomath
+  \let\@nomath\bxjs@save@nomath
   \abovedisplayskip=\skip0
   \abovedisplayshortskip=\skip2
   \belowdisplayskip=\skip4
@@ -1016,21 +1019,23 @@
 \@lowpenalty   51
 \@medpenalty  151
 \@highpenalty 301
+\@onlypreamble\bxjs@bd@pre@geometry@hook
+\let\bxjs@bd@pre@geometry@hook\@empty
 \ifjsc@mag
 \mag=\bxjs@param@mag
 \fi
 \setlength{\topskip}{10\p@?}
 \def\bxjs@unit@trueQ{0.25truemm}\let\bxjs@unit@trueH\bxjs@unit@trueQ
 \def\bxjs@unit@zw{\jsZw}\let\bxjs@unit@zh\bxjs@unit@zw
-\def\bxjs@read@a{\futurelet\bxjs@tmpa\bxjs@read@b}
-\def\bxjs@read@b{%
-  \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@read@c
-  \else \expandafter\bxjs@read@d \fi}
-\def\bxjs@read@c#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
-\def\bxjs@read@d#1\@nil{\bxjs@read@e#1,,\@nil}
-\def\bxjs@read@e#1,#2,#3\@nil{%
+\def\bxjs@tmpdo{\futurelet\bxjs@tmpa\bxjs@tmpdo@a}
+\def\bxjs@tmpdo@a{%
+  \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@tmpdo@b
+  \else \expandafter\bxjs@tmpdo@c \fi}
+\def\bxjs@tmpdo@b#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
+\def\bxjs@tmpdo@c#1\@nil{\bxjs@tmpdo@d#1,,\@nil}
+\def\bxjs@tmpdo@d#1,#2,#3\@nil{%
   \ifx\@nil#3\@nil\else \edef\bxjs@param@paper{papersize={#1,#2}}\fi}
-\expandafter\bxjs@read@a\bxjs@param@paper\@empty\@empty\@nil
+\expandafter\bxjs@tmpdo\bxjs@param@paper\@empty\@empty\@nil
 \edef\bxjs@layout@paper{%
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
@@ -1103,7 +1108,7 @@
 \else
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
-\AtBeginDocument{\bxjs@pre@geometry@hook}
+\AtBeginDocument{\bxjs@bd@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
 \bxjs@geometry@guard@on
 \edef\bxjs@next{%
@@ -1113,9 +1118,7 @@
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
-\@onlypreamble\bxjs@pre@geometry@hook
-\def\bxjs@pre@geometry@hook{%
-  \@ifpackageloaded{geometry}{%
+\g@addto@macro\bxjs@bd@pre@geometry@hook{%
     \@ifpackagelater{geometry}{2010/02/12}{}{%else
       \PackageWarningNoLine\bxjs@clsname
        {The 'geometry' package installed\MessageBreak
@@ -1124,14 +1127,12 @@
         \def\bxjs@Gm@driver{pdftex}
         \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
         \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
-      \fi\fi
-    }%
+      \fi\fi}%
     \ifjsWithpTeXng
       \ifx\Gm@driver\@empty
         \def\Gm@driver{pdftex}%
       \fi
-    \fi
-  }{}}
+    \fi}
 \def\setpagelayout{%
   \bxjs@ifplus{\bxjs@setpagelayout@a\tw@}{%else
     \@ifstar{\bxjs@setpagelayout@a\@ne}{\bxjs@setpagelayout@a\z@}}}
@@ -2366,11 +2367,10 @@
 \fi
   \renewcommand\familydefault{\sfdefault}
   \raggedright
-\catcode`\?=12
+\bxjs@pre@jadriver@hook
 \ifx\bxjs@jadriver\relax\else
 \input{bxjsja-\bxjs@jadriver.def}
 \fi
-\bxjs@restore@jltrcc
 \endinput
 %%
 %% End of file `bxjsslide.cls'.

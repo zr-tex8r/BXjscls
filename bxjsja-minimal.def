@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2018/04/14 v1.8b BXJS document classes]
+  [2018/04/14 v1.9-pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -141,17 +141,17 @@
 }
 \def\bxjs@sizereference{jis}
 \fi
-\def\bxjs@tmpa#1/#2/#3/#4/#5\relax{%
-  \def\bxjs@y{#5}}
-\ifjsWithpTeXng \def\bxjs@y{10}%
+\def\bxjs@next#1/#2/#3/#4/#5\relax{%
+  \def\bxjs@tmpb{#5}}
+\ifjsWithpTeXng \def\bxjs@tmpb{10}%
 \else
-\expandafter\expandafter\expandafter\bxjs@tmpa
+\expandafter\expandafter\expandafter\bxjs@next
  \expandafter\string\the\jfont\relax
 \fi
-\@for\bxjs@x:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
+\@for\bxjs@tmpa:={\jsc@JYn/mc/m/n,\jsc@JYn/gt/m/n,%
                \jsc@JTn/mc/m/n,\jsc@JTn/gt/m/n}\do
-  {\expandafter\let\csname\bxjs@x/10\endcsname=\@undefined
-   \expandafter\let\csname\bxjs@x/\bxjs@y\endcsname=\@undefined}
+  {\expandafter\let\csname\bxjs@tmpa/10\endcsname=\@undefined
+   \expandafter\let\csname\bxjs@tmpa/\bxjs@tmpb\endcsname=\@undefined}
 \begingroup
   \font\bxjs@tmpa=\bxjs@sizereference\space at 10pt
   \setbox\z@\hbox{\bxjs@tmpa\char\jis"2121\relax}

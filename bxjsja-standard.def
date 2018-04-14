@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2018/04/14 v1.8b BXJS document classes]
+  [2018/04/14 v1.9-pre BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -342,16 +342,16 @@
   }\bxjs@next
 \fi
 \begingroup
-  \global\let\@gtempa\relax
+  \global\let\bxjs@g@tmpa\relax
   \catcode`\|=0 \catcode`\\=12
-  |def|bxjs@check#1|@nil{%
-    |bxjs@check@a#1|@nil\RequirePackage|@nnil}%
-  |def|bxjs@check@a#1\RequirePackage#2|@nnil{%
-    |ifx$#1$|bxjs@check@b#2|@nil keyval|@nnil |fi}%
+  |def|bxjs@tmpdo#1|@nil{%
+    |bxjs@tmpdo@a#1|@nil\RequirePackage|@nnil}%
+  |def|bxjs@tmpdo@a#1\RequirePackage#2|@nnil{%
+    |ifx$#1$|bxjs@tmpdo@b#2|@nil keyval|@nnil |fi}%
   |catcode`|\=0 \catcode`\|=12
-  \def\bxjs@check@b#1keyval#2\@nnil{%
+  \def\bxjs@tmpdo@b#1keyval#2\@nnil{%
     \ifx$#2$\else
-      \xdef\@gtempa{%
+      \xdef\bxjs@g@tmpa{%
         \noexpand\PassOptionsToPackage{scale=\jsScale}{otf}}%
     \fi}
 \@firstofone{%
@@ -362,13 +362,13 @@
   \loop\if@tempswa
     \ifeof\@inputcheck \@tempswafalse \fi
     \if@tempswa
-      \read\@inputcheck to\bxjs@line
-      \expandafter\bxjs@check\bxjs@line\@nil
+      \read\@inputcheck to\bxjs@next
+      \expandafter\bxjs@tmpdo\bxjs@next\@nil
     \fi
   \repeat
   \closein\@inputcheck
 \endgroup}
-\@gtempa
+\bxjs@g@tmpa
 \ifbxjs@hyperref@enc
   \bxjs@check@hyperref@unicode{false}
 \fi
