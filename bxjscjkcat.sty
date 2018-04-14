@@ -24,17 +24,20 @@
   [2018/03/29 v1.8b-pre BXJS document classes]
 \def\bxjx@pkgname{bxjscjkcat}
 \newcount\bxjx@cnta
+\@onlypreamble\bxjx@tmpdo
+\@onlypreamble\bxjx@tmpdo@a
+\@onlypreamble\bxjx@tmpdo@b
 \let\bxjx@engine=n
-\def\bxjx@do#1#2{%
+\def\bxjx@tmpdo#1#2{%
   \edef\bxjx@tmpa{\string#1}%
   \edef\bxjx@tmpb{\meaning#1}%
   \ifx\bxjx@tmpa\bxjx@tmpb #2\fi}
-\bxjx@do\kanjiskip{\let\bxjx@engine=j}
-\bxjx@do\enablecjktoken{\let\bxjx@engine=u}
-\bxjx@do\XeTeXversion{\let\bxjx@engine=x}
-\bxjx@do\pdftexversion{\let\bxjx@engine=p}
-\bxjx@do\luatexversion{\let\bxjx@engine=l}
-\def\bxjx@do#1#2{%
+\bxjx@tmpdo\kanjiskip{\let\bxjx@engine=j}
+\bxjx@tmpdo\enablecjktoken{\let\bxjx@engine=u}
+\bxjx@tmpdo\XeTeXversion{\let\bxjx@engine=x}
+\bxjx@tmpdo\pdftexversion{\let\bxjx@engine=p}
+\bxjx@tmpdo\luatexversion{\let\bxjx@engine=l}
+\def\bxjx@tmpdo#1#2{%
   \if#1\bxjx@engine
     \@ifpackageloaded{#2}{}{%else
       \PackageError\bxjx@pkgname
@@ -42,39 +45,47 @@
        {Package loading is aborted.\MessageBreak\@ehc}%
       \endinput}
   \fi}
-\bxjx@do{p}{bxcjkjatype}
-\bxjx@do{x}{xeCJK}
-\bxjx@do{l}{luatexja}
+\bxjx@tmpdo{p}{bxcjkjatype}
+\bxjx@tmpdo{x}{xeCJK}
+\bxjx@tmpdo{l}{luatexja}
 \ifx\TextOrMath\@undefined
   \RequirePackage{fixltx2e}
 \fi
 \if u\bxjx@engine
-\@for\bxjx@x:={%
+\@for\bxjx@tmpa:={%
 0080,0100,0180,0250,02B0,0300,0500,0530,0590,0600,%
-0700,0750,0780,07C0,0800,0840,08A0,0900,0980,0A00,%
-0A80,0B00,0B80,0C00,0C80,0D00,0D80,0E00,0E80,0F00,%
-1000,10A0,1200,1380,13A0,1400,1680,16A0,1700,1720,%
-1740,1760,1780,1800,18B0,1900,1950,1980,19E0,1A00,%
-1A20,1AB0,1B00,1B80,1BC0,1C00,1C50,1CC0,1CD0,1D00,%
-1D80,1DC0,1E00,2440,27C0,27F0,2800,2A00,2C00,2C60,%
-2C80,2D00,2D30,2D80,2DE0,2E00,4DC0,A4D0,A500,A640,%
-A6A0,A700,A720,A800,A830,A840,A880,A8E0,A900,A930,%
-A980,A9E0,AA00,AA60,AA80,AAE0,AB00,AB30,AB70,ABC0,%
-D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
+0700,0750,0780,07C0,0800,0840,0860,08A0,0900,0980,%
+0A00,0A80,0B00,0B80,0C00,0C80,0D00,0D80,0E00,0E80,%
+0F00,1000,10A0,1200,1380,13A0,1400,1680,16A0,1700,%
+1720,1740,1760,1780,1800,18B0,1900,1950,1980,19E0,%
+1A00,1A20,1AB0,1B00,1B80,1BC0,1C00,1C50,1C80,1CC0,%
+1CD0,1D00,1D80,1DC0,1E00,1F00,2440,27C0,27F0,2800,%
+2A00,2C00,2C60,2C80,2D00,2D30,2D80,2DE0,2E00,4DC0,%
+A4D0,A500,A640,A6A0,A700,A720,A800,A830,A840,A880,%
+A8E0,A900,A930,A980,A9E0,AA00,AA60,AA80,AAE0,AB00,%
+AB30,AB70,ABC0,D800,DB80,DC00,E000,FB00,FB50,FE00,%
+FE70,FFF0,%
 10000,10080,10100,10140,10190,101D0,10280,102A0,%
 102E0,10300,10330,10350,10380,103A0,10400,10450,%
-10480,10500,10530,10600,10800,10840,10860,10880,%
-108E0,10900,10920,10980,109A0,10A00,10A60,10A80,%
-10AC0,10B00,10B40,10B60,10B80,10C00,10C80,10E60,%
-11000,11080,110D0,11100,11150,11180,111E0,11200,%
-11280,112B0,11300,11480,11580,11600,11680,11700,%
-118A0,11AC0,12000,12400,12480,13000,14400,16800,%
+10480,104B0,10500,10530,10600,10800,10840,10860,%
+10880,108E0,10900,10920,10980,109A0,10A00,10A60,%
+10A80,10AC0,10B00,10B40,10B60,10B80,10C00,10C80,%
+10E60,11000,11080,110D0,11100,11150,11180,111E0,%
+11200,11280,112B0,11300,11400,11480,11580,11600,%
+11660,11680,11700,118A0,11A00,11A50,11AC0,11C00,%
+11C70,11D00,12000,12400,12480,13000,14400,16800,%
 16A40,16AD0,16B00,16F00,1BC00,1BCA0,1D000,1D100,%
-1D200,1D300,1D360,1D400,1D800,1E800,1EE00,1F000,%
-1F030,1F0A0,1F100,1F200,1F300,1F600,1F650,1F680,%
-1F700,1F780,1F800,1F900,E0000,F0000,100000%
-}\do{\kcatcode"\bxjx@x=15 }
+1D200,1D300,1D360,1D400,1D800,1E000,1E800,1E900,%
+1EE00,1F000,1F030,1F0A0,1F300,1F600,1F650,1F680,%
+1F700,1F780,1F800,1F900,E0000,E0100,F0000,100000,%
+00C0%
+}\do{%
+\@tempcnta="\bxjx@tmpa\relax
+\@tempcntb\@tempcnta \advance\@tempcntb\m@ne
+\chardef\bxjx@tmpb\kcatcode\@tempcntb
+\kcatcode\@tempcnta=15 \kcatcode\@tempcntb\bxjx@tmpb}
 \fi
+\@onlypreamble\bxjx@grkcyr@list
 \def\bxjx@grkcyr@list{%
 \do{0391}{LGR}{\textAlpha}{A}%            % GR. C. L. ALPHA
 \do{0392}{LGR}{\textBeta}{B}%             % GR. C. L. BETA
@@ -206,7 +217,7 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
   \bxjx@gcc@cjktrue}
 \newcommand*\nogreekasCJK{%
   \bxjx@gcc@cjkfalse}
-\def\bxjx@do#1\relax{%
+\def\bxjx@tmpdo#1\relax{%
   \def\bxjx@fake@grk##1##2{%
     \expandafter\bxjx@fake@grk@a\meaning##2#1\@nil{##1}{##2}}%
   \def\bxjx@fake@grk@a##1#1##2\@nil##3##4{%
@@ -215,7 +226,7 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
       \multiply\bxjx@cnta\@cclvi \advance\bxjx@cnta`##3\relax
       \mathchar\bxjx@cnta
     \else ##3\fi}
-}\expandafter\bxjx@do\string\mathchar\relax
+}\expandafter\bxjx@tmpdo\string\mathchar\relax
 \ifnum0\if p\bxjx@engine1\fi\if u\bxjx@engine1\fi>0
 \@ifpackageloaded{inputenc}{}{%else
   \RequirePackage[utf8]{inputenc}}
@@ -230,12 +241,10 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 \kcatcode"0400=15
 \kcatcode"0500=15
 \fi
-\def\do#1{%
+\def\bxjx@tmpdo#1{%
   \@tempcnta="#1\relax
-  \@tempcntb=\@tempcnta \divide\@tempcntb256
-  \expandafter\let\csname bxjx@KCR/\the\@tempcntb\endcsname=t%
-  \expandafter\bxjx@do@a\csname bxjx@KC/\the\@tempcnta\endcsname{#1}}
-\def\bxjx@do@a#1#2#3#4#5{%
+  \expandafter\bxjx@tmpdo@a\csname bxjx@KC/\the\@tempcnta\endcsname{#1}}
+\def\bxjx@tmpdo@a#1#2#3#4#5{%
   \ifx\\#5\\%
     \def\bxjx@tmpa{\@inmathwarn#4}%
   \else\ifcat A\noexpand#5%
@@ -243,34 +252,30 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
       {\ifnum\uccode`#5=`#5\noexpand\Pi\else\noexpand\pi\fi}}%
   \else \def\bxjx@tmpa{#5}%
   \fi\fi
-  \def\bxjx@tmpb{\bxjx@do@b{#1}{#2}{#3}{#4}}%
+  \def\bxjx@tmpb{\bxjx@tmpdo@b{#1}{#2}{#3}{#4}}%
   \expandafter\bxjx@tmpb\expandafter{\bxjx@tmpa}}
 \if u\bxjx@engine
-\def\bxjx@do@b#1#2#3#4#5{%
+\def\bxjx@tmpdo@b#1#2#3#4#5{%
   \kchardef#1=\@tempcnta
   \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{#1}{#3}{#4}}%
   \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
 \else\if p\bxjx@engine
-\def\bxjx@do@b#1#2#3#4#5{%
+\def\bxjx@tmpdo@b#1#2#3#4#5{%
   \mathchardef#1=\@tempcnta
   \DeclareTextCommandDefault{#4}{\bxjx@ja@or@not{\UTF{#2}}{#3}{#4}}%
   \DeclareUnicodeCharacter{#2}{\TextOrMath{#4}{#5}}}
 \fi\fi
-\bxjx@grkcyr@list
-\let\bxjx@do@a\undefined
-\let\bxjx@do@b\undefined
+\let\do\bxjx@tmpdo \bxjx@grkcyr@list
 \@onlypreamble\bxjx@org@DeclareUnicodeCharacter
 \let\bxjx@org@DeclareUnicodeCharacter\DeclareUnicodeCharacter
 \@onlypreamble\bxjx@DeclareUnicodeCharacter
 \def\bxjx@DeclareUnicodeCharacter#1#2{%
-  \count@="#1\relax \bxjx@cnta\count@ \divide\bxjx@cnta256
-  \expandafter\ifx\csname bxjx@KCR/\the\bxjx@cnta\endcsname\relax
-    \bxjx@org@DeclareUnicodeCharacter{#1}{#2}%
-  \else\expandafter\ifx\csname bxjx@KC/\the\count@\endcsname\relax
+  \count@="#1\relax
+  \expandafter\ifx\csname bxjx@KC/\the\count@\endcsname\relax
     \bxjx@org@DeclareUnicodeCharacter{#1}{#2}%
   \else
     \wlog{ \space\space skipped defining Unicode char U+#1}%
-  \fi\fi}
+  \fi}
 \def\bxjx@ja@or@not#1#2#3{%
   \ifbxjx@gcc@cjk #1%
   \else\expandafter\ifx\csname T@#2\endcsname\relax #1%
@@ -286,15 +291,16 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
 \def\bxjx@swap@DUC@cmd{%
   \let\bxjx@tmpa\DeclareUnicodeCharacter
   \let\DeclareUnicodeCharacter\bxjx@DeclareUnicodeCharacter
-  \let\bxjx@DeclareUnicodeCharacter\bxjx@tmpa}
+  \let\bxjx@DeclareUnicodeCharacter\bxjx@tmpa
+  \let\bxjx@tmpa\relax}
 \else\ifnum0\if x\bxjx@engine1\fi\if l\bxjx@engine1\fi>0
-\def\do#1{%
+\def\bxjx@tmpdo#1{%
   \bxjx@cnta="#1\relax
   \begingroup
     \lccode`~=\bxjx@cnta
   \lowercase{\endgroup
-    \bxjx@do@a{~}}{#1}}
-\def\bxjx@do@a#1#2#3#4#5{%
+    \bxjx@tmpdo@a{~}}{#1}}
+\def\bxjx@tmpdo@a#1#2#3#4#5{%
   \ifx\\#5\\\let\bxjx@tmpa\relax
   \else\ifcat A\noexpand#5%
     \edef\bxjx@tmpa{\noexpand\bxjx@fake@grk{#5}%
@@ -305,8 +311,7 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
     \mathcode\bxjx@cnta"8000 \let#1\bxjx@tmpa
   \fi}
 \mathchardef\bxjx@tmpa="119
-\ifx\bxjx@tmpa\pi \bxjx@grkcyr@list \fi
-\let\bxjx@do@a\undefined
+\ifx\bxjx@tmpa\pi \let\do\bxjx@tmpdo \bxjx@grkcyr@list \fi
 \if l\bxjx@engine
   \protected\def\greekasCJK{%
     \bxjx@gcc@cjktrue
@@ -316,14 +321,17 @@ D800,DB80,DC00,E000,FB00,FB50,FE00,FE70,%
     \ltjsetparameter{jacharrange={-2, -8}}}
 \fi
 \if x\bxjx@engine
+  \let\bxjx@gcc@cjk@list\@empty
+  \def\do#1#2#3#4{%
+    \edef\bxjx@gcc@cjk@list{\bxjx@gcc@cjk@list
+      \noexpand\XeTeXcharclass"#1\bxjx@cnta}}
+  \bxjx@grkcyr@list
   \protected\def\greekasCJK{%
     \bxjx@gcc@cjktrue
-    \def\do##1##2##3##4{\XeTeXcharclass"##1\@ne}%
-    \bxjx@grkcyr@list}
+    \bxjx@cnta=\@ne \bxjx@gcc@cjk@list}
   \protected\def\nogreekasCJK{%
     \bxjx@gcc@cjkfalse
-    \def\do##1##2##3##4{\XeTeXcharclass"##1\z@}%
-    \bxjx@grkcyr@list}
+    \bxjx@cnta=\z@ \bxjx@gcc@cjk@list}
 \fi
 \fi\fi
 \nogreekasCJK
