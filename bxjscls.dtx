@@ -1631,7 +1631,7 @@
 % 和文ドライバの名前。
 %    \begin{macrocode}
 \let\bxjs@jadriver\relax
-%\let\bxjs@jadriver@given\@undefined
+%\let\bxjs@jadriver@opt\@undefined
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1639,9 +1639,9 @@
 % \Note |jadriver| は0.9版で用いられた旧称。
 % \Note 単なる |ja| という指定は無視される（Pandoc 対策）。
 %    \begin{macrocode}
-\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver@opt{#1}}
 \define@key{bxjs}{ja}[\relax]{%
-  \ifx\relax#1\else\edef\bxjs@jadriver{#1}\fi}
+  \ifx\relax#1\else\edef\bxjs@jadriver@opt{#1}\fi}
 %    \end{macrocode}
 %
 % \begin{macro}{\jsJaFont}
@@ -2030,11 +2030,10 @@
 %
 % \begin{ZRnote}
 %
-% 現在の（正規化前の）和文ドライバの値を\
-% |\bxjs@jadriver@given| に保存する。
+% 正規化前の和文ドライバの値を |\bxjs@jadriver| に設定する。
 %    \begin{macrocode}
-\ifx\bxjs@jadriver\relax\else
-  \let\bxjs@jadriver@given\bxjs@jadriver
+\ifx\bxjs@jadriver@opt\@undefined\else
+  \let\bxjs@jadriver\bxjs@jadriver@opt
 \fi
 %    \end{macrocode}
 %
@@ -2129,7 +2128,7 @@
 % \Note ただし |ja| 非指定の場合はスキップする
 % （0.3 版との互換性のため）。
 %    \begin{macrocode}
-  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@given\@undefined\else
+  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@opt\@undefined\else
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
   \fi\fi
@@ -2191,7 +2190,7 @@
 % エンジンオプションがない場合はエラーを出す。
 % \Note ただし |ja| 非指定の場合はスキップする。
 %    \begin{macrocode}
-\ifx\bxjs@jadriver@given\@undefined\else
+\ifx\bxjs@jadriver@opt\@undefined\else
   \ifx\bxjs@engine@given\@undefined
     \ClassError\bxjs@clsname
      {An engine option must be explicitly given}%
@@ -7979,9 +7978,7 @@
 %    \end{macrocode}
 % 和文ドライバのファイルを読み込む。
 %    \begin{macrocode}
-\ifx\bxjs@jadriver\relax\else
 \input{bxjsja-\bxjs@jadriver.def}
-\fi
 %    \end{macrocode}
 %
 % おしまい。

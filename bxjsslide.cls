@@ -489,9 +489,9 @@
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
 \let\bxjs@jadriver\relax
-\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver{#1}}
+\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver@opt{#1}}
 \define@key{bxjs}{ja}[\relax]{%
-  \ifx\relax#1\else\edef\bxjs@jadriver{#1}\fi}
+  \ifx\relax#1\else\edef\bxjs@jadriver@opt{#1}\fi}
 \let\jsJaFont\@empty
 \define@key{bxjs}{jafont}{\edef\jsJaFont{#1}}
 \let\jsJaParam\@empty
@@ -641,8 +641,8 @@
   {10pt}\@classoptionslist\@classoptionslist
 \@expandtwoargs\@removeelement
   {noscale}\@classoptionslist\@classoptionslist
-\ifx\bxjs@jadriver\relax\else
-  \let\bxjs@jadriver@given\bxjs@jadriver
+\ifx\bxjs@jadriver@opt\@undefined\else
+  \let\bxjs@jadriver\bxjs@jadriver@opt
 \fi
 \let\bxjs@tmpb\jsEngine
 \ifx j\bxjs@tmpb\ifjsWithpTeXng
@@ -702,7 +702,7 @@
 \else \@tempswatrue
 \fi\fi\fi
 \if@tempswa
-  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@given\@undefined\else
+  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@opt\@undefined\else
     \ClassWarningNoLine\bxjs@clsname
     {No driver option is given}
   \fi\fi
@@ -733,7 +733,7 @@
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
-\ifx\bxjs@jadriver@given\@undefined\else
+\ifx\bxjs@jadriver@opt\@undefined\else
   \ifx\bxjs@engine@given\@undefined
     \ClassError\bxjs@clsname
      {An engine option must be explicitly given}%
@@ -2365,9 +2365,7 @@
   \renewcommand\familydefault{\sfdefault}
   \raggedright
 \bxjs@pre@jadriver@hook
-\ifx\bxjs@jadriver\relax\else
 \input{bxjsja-\bxjs@jadriver.def}
-\fi
 \endinput
 %%
 %% End of file `bxjsslide.cls'.
