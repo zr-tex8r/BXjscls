@@ -247,7 +247,7 @@
 }
 \@onlypreamble\jsCheckHyperrefUnicode
 \let\jsCheckHyperrefUnicode\@empty
-\AtBeginDocument{\jsCheckHyperrefUnicode}
+\g@addto@macro\bxjs@begin@document@hook{\jsCheckHyperrefUnicode}
 \@onlypreamble\bxjs@check@hyperref@unicode
 \def\bxjs@check@hyperref@unicode#1{%
   \g@addto@macro\jsCheckHyperrefUnicode{%
@@ -268,7 +268,7 @@
 \@onlypreamble\bxjs@urgent@special
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \@ifpackageloaded{atbegshi}{%
       \begingroup
         \toks\z@{\special{#1}}%
@@ -399,7 +399,7 @@
   \SetSymbolFont{mincho}{bold}{\jsc@JYn}{gt}{m}{n}
   \jfam\symmincho
   \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\reDeclareMathAlphabet\@undefined\else
       \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
       \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
@@ -571,7 +571,7 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
   \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%

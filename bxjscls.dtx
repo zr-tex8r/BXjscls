@@ -1122,7 +1122,7 @@
   \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
 \DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
 \DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \expandafter\ifx\csname ifdraft\endcsname\relax
     \expandafter\let\csname ifdraft\expandafter\endcsname
      \csname ifjsDraft\endcsname
@@ -3275,6 +3275,18 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@preproc@layout}
+% |geometry| の前処理。
+%
+% |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
+% ようにする自動調整を行うが、これをどうするかは未検討。
+% 今のところ、単純に回避（無効化）している。
+%    \begin{macrocode}
+\def\bxjs@preproc@layout{%
+  \edef\bxjs@save@ht@strutbox{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@postproc@layout}
 % |geometry| の後処理。
 %    \begin{macrocode}
@@ -3285,6 +3297,10 @@
   \ifx\bxjs@geometry@driver\relax\else
     \let\Gm@driver\bxjs@geometry@driver
   \fi
+%    \end{macrocode}
+% |\ht\strutbox| の値を元に戻す。
+%    \begin{macrocode}
+  \ht\strutbox=\bxjs@save@ht@strutbox\relax
 %    \end{macrocode}
 % |\textwidth| の値を補正する。
 %    \begin{macrocode}
@@ -3370,16 +3386,6 @@
 \ifx\bxjs@geometry\bxjs@geometry@class
 %    \end{macrocode}
 %
-% |geometry| は |\topskip| が標準の行高（|\ht\strutbox|）より小さくならない
-% ようにする自動調整を行うが、これをどうするかは未検討。
-% 今のところ、単純に回避（無効化）している。
-%    \begin{macrocode}
-\def\bxjs@geometry@guard@on{%
-  \edef\bxjs@gg@tmp{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
-\def\bxjs@geometry@guard@off{%
-  \ht\strutbox=\bxjs@gg@tmp\relax}
-%    \end{macrocode}
-%
 % |geometry| のドライバオプション指定。
 % |nopapersize| 指定時は、special命令出力を抑止するために
 % ドライバを |none| にする。
@@ -3405,11 +3411,10 @@
 %    \begin{macrocode}
 \AtBeginDocument{\bxjs@bd@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
-\bxjs@geometry@guard@on
+\bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\bxjs@geometry@guard@off
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 %    \end{macrocode}
 %
@@ -3464,11 +3469,10 @@
   \or% semireset(+)
     \def\bxjs@next{reset,\bxjs@layout@paper,\bxjs@layout@base,#2}%
   \fi
-  \bxjs@geometry@guard@on
+  \bxjs@preproc@layout
   \edef\bxjs@next{%
     \noexpand\geometry{\bxjs@next}%
   }\bxjs@next
-  \bxjs@geometry@guard@off
   \bxjs@postproc@layout}
 %    \end{macrocode}
 % \end{macro}
@@ -3489,13 +3493,11 @@
 % のままになっている場合はエラーを出す。
 % \Note |\jsUseMinimalPageLayout| は動作テスト用。
 %    \begin{macrocode}
-\AtBeginDocument{\bxjs@check@page@layout}
-\@onlypreamble\bxjs@check@page@layout
-\def\bxjs@check@page@layout{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifdim\textwidth=.5\maxdimen
     \ClassError\bxjs@clsname
      {Page layout is not properly set}%
-     {\@ehd}
+     {\@ehd}%
   \fi}
 \def\jsUseMinimalPageLayout{%
   \setlength{\textwidth}{6.5in}%
@@ -7455,7 +7457,7 @@
 %    \begin{macrocode}
 \def\everyparhook{\jsInhibitGlueAtParTop}
 \ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
-\AtBeginDocument{\everypar{\everyparhook}}
+\g@addto@macro\bxjs@begin@document@hook{\everypar{\everyparhook}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -7927,7 +7929,7 @@
 % texjporg版の日本語用Babel定義ファイル（|japanese.ldf|）が読み込まれた
 % 場合に影響を受けないようにする。
 %    \begin{macrocode}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifx\bbl@jpn@Seirekitrue\@undefined\else
     \bxjs@decl@Seireki@cmds
     \g@addto@macro\datejapanese{%
@@ -8140,7 +8142,7 @@
 \@onlypreamble\bxjs@if@sf@default
 \def\bxjs@if@sf@default#1{%
   \ifx\familydefault\bxjs@@CSsfdefault#1\fi
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
 }
 %    \end{macrocode}
@@ -8511,7 +8513,7 @@
     \relax}%
   \let\bxjs@cjk@loaded\relax
 }
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \@ifpackageloaded{CJK}{%
     \bxjs@cjk@loaded
   }{}%
@@ -8582,7 +8584,7 @@
 % |simplejasetup| オプションの処理。
 %    \begin{macrocode}
 \ifx\bxjs@do@simplejasetup\@undefined\else
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifbxjs@simplejasetup
       \bxjs@do@simplejasetup
     \fi}
@@ -8604,22 +8606,18 @@
 %
 % \paragraph{段落頭でのグルー挿入禁止}
 %
-% \begin{macro}{\bxjs@check@everyparhook}
 % 本体開始時において |\everyparhook| を検査して、
 % “結局何もしない”ことになっている場合は、
 % 副作用を完全に無くすために |\everyparhook| を空にする。
 %    \begin{macrocode}
-\@onlypreamble\bxjs@check@everyparhook
-\def\bxjs@check@everyparhook{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifx\jsInhibitGlueAtParTop\@empty
     \def\bxjs@tmpa{\jsInhibitGlueAtParTop}%
     \ifx\everyparhook\bxjs@tmpa
       \let\everyparhook\@empty
     \fi
   \fi}
-\AtBeginDocument{\bxjs@check@everyparhook}
 %    \end{macrocode}
-% \end{macro}
 %
 % |everyparhook=modern| の場合の、|\everyparhook| の有効化の実装。
 % \Note 本体開始時ではなく最初から有効化していることに注意。
@@ -8713,7 +8711,7 @@
 % begin-document フック。
 % \Note これ以降に |fancyhdr| が読み込まれることはあり得ない。
 %    \begin{macrocode}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \bxjs@pagestyle@hook
   \global\let\bxjs@pagestyle@hook\relax}
 %    \end{macrocode}
@@ -9284,7 +9282,7 @@
 %    \begin{macrocode}
 \@onlypreamble\jsCheckHyperrefUnicode
 \let\jsCheckHyperrefUnicode\@empty
-\AtBeginDocument{\jsCheckHyperrefUnicode}
+\g@addto@macro\bxjs@begin@document@hook{\jsCheckHyperrefUnicode}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -9317,7 +9315,7 @@
 \@onlypreamble\bxjs@urgent@special
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \@ifpackageloaded{atbegshi}{%
       \begingroup
         \toks\z@{\special{#1}}%
@@ -9538,7 +9536,7 @@
   \SetSymbolFont{mincho}{bold}{\jsc@JYn}{gt}{m}{n}
   \jfam\symmincho
   \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\reDeclareMathAlphabet\@undefined\else
       \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
       \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
@@ -9890,7 +9888,7 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
   \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%
@@ -10199,7 +10197,7 @@
   \ifbxjs@dlp \expandafter\bxjs@do@dupload@proc
   \else \expandafter\bxjs@org@if@ptions
   \fi {#1}{#2}{#3}}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \let\@if@ptions\bxjs@org@if@ptions}
 \@onlypreamble\bxjs@do@dupload@proc
 \def\bxjs@do@dupload@proc#1#2#3{%
@@ -10286,7 +10284,7 @@
 % Pandocがプレアンブルで行う再定義の結果を調べるため、
 % begin-documentフックを利用する。
 %    \begin{macrocode}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \@tempswafalse
 %    \end{macrocode}
 % まず、マーク変更が必要かを調べる。
@@ -11290,7 +11288,7 @@ FE70,FFF0,%
 %
 % |\ldots| の実装を置き換える。
 %    \begin{macrocode}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \let\bxjsp@org@ldots\ldots
   \let\ldots\pandocLdots}
 %    \end{macrocode}

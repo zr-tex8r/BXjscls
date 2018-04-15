@@ -42,7 +42,7 @@
 \@onlypreamble\bxjs@if@sf@default
 \def\bxjs@if@sf@default#1{%
   \ifx\familydefault\bxjs@@CSsfdefault#1\fi
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\familydefault\bxjs@@CSsfdefault#1\fi}%
 }
 \@tempdima\p@ \bxjs@invscale\@tempdima\jsScale
@@ -243,7 +243,7 @@
     \relax}%
   \let\bxjs@cjk@loaded\relax
 }
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \@ifpackageloaded{CJK}{%
     \bxjs@cjk@loaded
   }{}%
@@ -276,7 +276,7 @@
   \XeTeXlinebreakpenalty=0\relax}
 \fi\fi\fi
 \ifx\bxjs@do@simplejasetup\@undefined\else
-  \AtBeginDocument{%
+  \g@addto@macro\bxjs@begin@document@hook{%
     \ifbxjs@simplejasetup
       \bxjs@do@simplejasetup
     \fi}
@@ -290,15 +290,13 @@
     \bxjs@do@precisetext
   \fi
 \fi
-\@onlypreamble\bxjs@check@everyparhook
-\def\bxjs@check@everyparhook{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifx\jsInhibitGlueAtParTop\@empty
     \def\bxjs@tmpa{\jsInhibitGlueAtParTop}%
     \ifx\everyparhook\bxjs@tmpa
       \let\everyparhook\@empty
     \fi
   \fi}
-\AtBeginDocument{\bxjs@check@everyparhook}
 \ifnum\bxjs@everyparhook=\bxjs@everyparhook@modern
   \let\bxjs@everypar\everypar
   \newtoks\everypar
@@ -339,7 +337,7 @@
 \let\bxjs@org@pagestyle\pagestyle
 \def\pagestyle{%
   \bxjs@pagestyle@hook \bxjs@org@pagestyle}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \bxjs@pagestyle@hook
   \global\let\bxjs@pagestyle@hook\relax}
 \ifbxjs@jaspace@cmd

@@ -321,7 +321,7 @@
   \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
 \DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
 \DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \expandafter\ifx\csname ifdraft\endcsname\relax
     \expandafter\let\csname ifdraft\expandafter\endcsname
      \csname ifjsDraft\endcsname
@@ -1067,10 +1067,13 @@
   \edef\bxjs@layout{\bxjs@layout lines=\the\@tempcnta,}
 \fi
 \newdimen\fullwidth
+\def\bxjs@preproc@layout{%
+  \edef\bxjs@save@ht@strutbox{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
 \def\bxjs@postproc@layout{%
   \ifx\bxjs@geometry@driver\relax\else
     \let\Gm@driver\bxjs@geometry@driver
   \fi
+  \ht\strutbox=\bxjs@save@ht@strutbox\relax
   \ifbxjs@whole@zw@lines
     \@tempdimb=\textwidth
     \if@twocolumn \@tempdima=2\Cwd \else \@tempdima=1\Cwd \fi
@@ -1105,10 +1108,6 @@
 \edef\jsGeometryOptions{%
   \bxjs@layout@paper,\bxjs@layout}
 \ifx\bxjs@geometry\bxjs@geometry@class
-\def\bxjs@geometry@guard@on{%
-  \edef\bxjs@gg@tmp{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
-\def\bxjs@geometry@guard@off{%
-  \ht\strutbox=\bxjs@gg@tmp\relax}
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \PassOptionsToPackage{dvipdfm}{geometry}
@@ -1121,11 +1120,10 @@
 \fi
 \AtBeginDocument{\bxjs@bd@pre@geometry@hook}
 \AtBeginDocument{\ImposeOldLuaTeXBehavior}
-\bxjs@geometry@guard@on
+\bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\bxjs@geometry@guard@off
 \AtBeginDocument{\RevokeOldLuaTeXBehavior}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
@@ -1155,20 +1153,17 @@
   \or% semireset(+)
     \def\bxjs@next{reset,\bxjs@layout@paper,\bxjs@layout@base,#2}%
   \fi
-  \bxjs@geometry@guard@on
+  \bxjs@preproc@layout
   \edef\bxjs@next{%
     \noexpand\geometry{\bxjs@next}%
   }\bxjs@next
-  \bxjs@geometry@guard@off
   \bxjs@postproc@layout}
 \else\ifx\bxjs@geometry\bxjs@geometry@user
-\AtBeginDocument{\bxjs@check@page@layout}
-\@onlypreamble\bxjs@check@page@layout
-\def\bxjs@check@page@layout{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifdim\textwidth=.5\maxdimen
     \ClassError\bxjs@clsname
      {Page layout is not properly set}%
-     {\@ehd}
+     {\@ehd}%
   \fi}
 \def\jsUseMinimalPageLayout{%
   \setlength{\textwidth}{6.5in}%
@@ -2241,7 +2236,7 @@
 \let\jsInhibitGlueAtParTop\@empty
 \def\everyparhook{\jsInhibitGlueAtParTop}
 \ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
-\AtBeginDocument{\everypar{\everyparhook}}
+\g@addto@macro\bxjs@begin@document@hook{\everypar{\everyparhook}}
 \fi
 \ifx j\jsEngine
 \def\@inhibitglue{%
@@ -2481,7 +2476,7 @@
     }%
   \fi}
 \let\today\bxjs@today
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \ifx\bbl@jpn@Seirekitrue\@undefined\else
     \bxjs@decl@Seireki@cmds
     \g@addto@macro\datejapanese{%

@@ -43,7 +43,7 @@
   \ifbxjs@dlp \expandafter\bxjs@do@dupload@proc
   \else \expandafter\bxjs@org@if@ptions
   \fi {#1}{#2}{#3}}
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \let\@if@ptions\bxjs@org@if@ptions}
 \@onlypreamble\bxjs@do@dupload@proc
 \def\bxjs@do@dupload@proc#1#2#3{%
@@ -81,7 +81,7 @@
   \pandocSkipLoadPackage{xeCJK}
   \providecommand*{\setCJKmainfont}{\setmainjfont}
 \fi
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \@tempswafalse
   \ifx\oldparagraph\@undefined\else
     \@tempswatrue

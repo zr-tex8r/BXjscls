@@ -83,7 +83,7 @@
   \bxjsp@ja@ellipsis \let\bxjsp@tok=}
 \def\bxjsp@ldots@g{%
   \expandafter\bxjsp@org@ldots\expandafter{\romannumeral-`} }
-\AtBeginDocument{%
+\g@addto@macro\bxjs@begin@document@hook{%
   \let\bxjsp@org@ldots\ldots
   \let\ldots\pandocLdots}
 \IfFileExists{bxpandola.sty}{%
