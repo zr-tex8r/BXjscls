@@ -569,7 +569,7 @@
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
-  \edef\bxjs@textwidth@limit{#1}}
+  \edef\bxjs@textwidth@limit@opt{#1}}
 \define@key{bxjs}{textwidth}{\edef\bxjs@textwidth@opt{#1}}
 \define@key{bxjs}{line_length}{\setkeys{bxjs}{textwidth=#1}}
 \define@key{bxjs}{number-of-lines}{\edef\bxjs@number@of@lines@opt{#1}}
@@ -1071,9 +1071,18 @@
 \fi
 \newdimen\fullwidth
 \newcommand\jsTextWidthLimit{40}
-\ifx\bxjs@textwidth@limit\@undefined\else
-  \bxjs@gset@tempcnta{\bxjs@textwidth@limit}
-  \long\edef\jsTextWidthLimit{\the\@tempcnta}
+\@tempdima=\jsTextWidthLimit\Cwd
+\ifx\bxjs@textwidth@limit@opt\@undefined\else
+  \bxjs@gset@tempcnta{\bxjs@textwidth@limit@opt}
+  \@tempdima=\@tempcnta\Cwd
+\fi
+\ifx\bxjs@textwidth@opt\@undefined\else
+  \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+\fi
+\edef\bxjs@textwidth@limit{\the\@tempdima}
+\ifdim\@tempdima=\jsTextWidthLimit\Cwd\else
+  \bxjs@invscale\@tempdima{\strip@pt\Cwd}
+  \long\edef\jsTextWidthLimit{\strip@pt\@tempdima}
 \fi
 \def\bxjs@preproc@layout{%
   \edef\bxjs@save@ht@strutbox{\the\ht\strutbox}\ht\strutbox=10\jsc@mpt}
@@ -1092,13 +1101,10 @@
     \advance\evensidemargin 0.5\@tempdimb
   \fi
   \fullwidth=\textwidth
-  \@tempdima=\jsTextWidthLimit\Cwd
-  \ifx\bxjs@textwidth@opt\@undefined\else
-    \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
-    \ifbxjs@whole@zw@lines
-      \advance\@tempdima.005pt\relax
-      \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
-    \fi
+  \@tempdima=\bxjs@textwidth@limit\relax
+  \ifbxjs@whole@zw@lines
+    \advance\@tempdima.005pt\relax
+    \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
   \fi
   \ifdim\textwidth>\@tempdima
     \textwidth=\@tempdima

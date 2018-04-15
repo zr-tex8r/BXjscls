@@ -1815,11 +1815,10 @@
 %
 % \begin{macro}{\bxjs@textwidth@limit}
 % |textwidth-limit| の指定値。
-% |\textwidth| の上限。
 %    \begin{macrocode}
-%\let\bxjs@textwidth@limit\@undefined
+%\let\bxjs@textwidth@limit@opt\@undefined
 \define@key{bxjs}{textwidth-limit}{%
-  \edef\bxjs@textwidth@limit{#1}}
+  \edef\bxjs@textwidth@limit@opt{#1}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3259,19 +3258,33 @@
 \newdimen\fullwidth
 %    \end{macrocode}
 % \end{macro}
-% 
+%
+% \begin{macro}{\bxjs@textwidth@limit}
+% 〔寸法値マクロ〕
+% |bxjsbook| における、|\textwidth| 上限の値。
+%
 % \begin{macro}{\jsTextWidthLimit}
 % 〔実数値マクロ〕
-% |bxjsbook| における、|\textwidth| の上限の全角単位での値。
+% |\bxjs@textwidth@limit| の全角（|\Cwd|）単位での値。
 %    \begin{macrocode}
 %<*book>
 \newcommand\jsTextWidthLimit{40}
-\ifx\bxjs@textwidth@limit\@undefined\else
-  \bxjs@gset@tempcnta{\bxjs@textwidth@limit}
-  \long\edef\jsTextWidthLimit{\the\@tempcnta}
+\@tempdima=\jsTextWidthLimit\Cwd
+\ifx\bxjs@textwidth@limit@opt\@undefined\else
+  \bxjs@gset@tempcnta{\bxjs@textwidth@limit@opt}
+  \@tempdima=\@tempcnta\Cwd
+\fi
+\ifx\bxjs@textwidth@opt\@undefined\else
+  \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
+\fi
+\edef\bxjs@textwidth@limit{\the\@tempdima}
+\ifdim\@tempdima=\jsTextWidthLimit\Cwd\else
+  \bxjs@invscale\@tempdima{\strip@pt\Cwd}
+  \long\edef\jsTextWidthLimit{\strip@pt\@tempdima}
 \fi
 %</book>
 %    \end{macrocode}
+% \end{macro}
 % \end{macro}
 %
 % \begin{macro}{\bxjs@preproc@layout}
@@ -3318,13 +3331,10 @@
 % して扱い、その値から実際の |\textwidth| を導出する。
 %    \begin{macrocode}
 %<*book>
-  \@tempdima=\jsTextWidthLimit\Cwd
-  \ifx\bxjs@textwidth@opt\@undefined\else
-    \jsSetQHLength\@tempdima{\bxjs@textwidth@opt}
-    \ifbxjs@whole@zw@lines
-      \advance\@tempdima.005pt\relax
-      \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
-    \fi
+  \@tempdima=\bxjs@textwidth@limit\relax
+  \ifbxjs@whole@zw@lines
+    \advance\@tempdima.005pt\relax
+    \divide\@tempdima\Cwd \multiply\@tempdima\Cwd
   \fi
   \ifdim\textwidth>\@tempdima
     \textwidth=\@tempdima

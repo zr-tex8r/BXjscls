@@ -568,7 +568,7 @@
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
-  \edef\bxjs@textwidth@limit{#1}}
+  \edef\bxjs@textwidth@limit@opt{#1}}
 \define@key{bxjs}{textwidth}{\edef\bxjs@textwidth@opt{#1}}
 \define@key{bxjs}{line_length}{\setkeys{bxjs}{textwidth=#1}}
 \define@key{bxjs}{number-of-lines}{\edef\bxjs@number@of@lines@opt{#1}}
