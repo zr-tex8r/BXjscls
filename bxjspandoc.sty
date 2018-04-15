@@ -34,6 +34,7 @@
 \bxjsp@do\XeTeXversion{\let\bxjsp@engine=x}
 \bxjsp@do\pdftexversion{\let\bxjsp@engine=p}
 \bxjsp@do\luatexversion{\let\bxjsp@engine=l}
+\@onlypreamble\pandocSkipLoadFile
 \newcommand*\pandocSkipLoadFile[1]{%
   \expandafter\bxjsp@skip@load@file@a\csname ver@#1\endcsname{#1}}
 \def\bxjsp@skip@load@file@a#1#2{%
@@ -42,6 +43,7 @@
     \PackageInfo\bxjsp@pkgname
      {File '#2' marked as loaded\@gobble}%
   \fi}
+\@onlypreamble\pandocSkipLoadPackage
 \newcommand*\pandocSkipLoadPackage[1]{%
   \pandocSkipLoadFile{#1.sty}}
 \ifx\@IncludeInRelease\@undefined\else

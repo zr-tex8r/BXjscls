@@ -278,9 +278,11 @@
     }{}%
   }%
 }
+\@onlypreamble\bxjs@resolve@jafont@paren
 \def\bxjs@resolve@jafont@paren#1{%
   \def\bxjs@tmpb{\let#1}%
   \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\@onlypreamble\bxjs@resolve@jafont@paren@a
 \def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
   \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
   \else

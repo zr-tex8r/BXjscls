@@ -738,6 +738,7 @@
 % BXJSクラスではページレイアウト設定に |geometry| パッケージを用いる。
 % 用紙サイズ設定は |geometry| に渡すオプションの指定と扱われる。
 %    \begin{macrocode}
+\@onlypreamble\bxjs@setpaper
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
 \DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
 \DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
@@ -7809,6 +7810,7 @@
 % \end{ZRnote}
 %
 %    \begin{macrocode}
+\@onlypreamble\bxjs@decl@Seireki@cmds
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi
@@ -8540,6 +8542,7 @@
 % \begin{macro}{\bxjs@do@precisetext}
 % |precisetext| オプションの処理。
 %    \begin{macrocode}
+\@onlypreamble\bxjs@do@precisetext
 \ifx\XeTeXgenerateactualtext\@undefined\else
   \def\bxjs@do@precisetext{%
     \XeTeXgenerateactualtext=\@ne}
@@ -9332,9 +9335,11 @@
 % |\bxjs@resolve@jafont@paren\CS| で、|\CS| の内容中の |(...)|
 % を |\bxjs@jafont@paren{...}| に置き換える。
 %    \begin{macrocode}
+\@onlypreamble\bxjs@resolve@jafont@paren
 \def\bxjs@resolve@jafont@paren#1{%
   \def\bxjs@tmpb{\let#1}%
   \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\@onlypreamble\bxjs@resolve@jafont@paren@a
 \def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
   \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
   \else
@@ -11161,6 +11166,7 @@ FE70,FFF0,%
 % 特定のファイルを（|\@filewithoptions| の処理に関して）
 % 読込済であるとマークする。
 %    \begin{macrocode}
+\@onlypreamble\pandocSkipLoadFile
 \newcommand*\pandocSkipLoadFile[1]{%
   \expandafter\bxjsp@skip@load@file@a\csname ver@#1\endcsname{#1}}
 \def\bxjsp@skip@load@file@a#1#2{%
@@ -11176,6 +11182,7 @@ FE70,FFF0,%
 % |\pandocSkipLoadPackage{|\Meta{パッケージ名}|}|\Means
 % |\pandocSkipLoadFile| の機能を用いてパッケージの読込を阻止する。
 %    \begin{macrocode}
+\@onlypreamble\pandocSkipLoadPackage
 \newcommand*\pandocSkipLoadPackage[1]{%
   \pandocSkipLoadFile{#1.sty}}
 %    \end{macrocode}

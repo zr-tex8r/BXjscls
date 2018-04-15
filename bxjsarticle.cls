@@ -174,6 +174,7 @@
 \newif\if@restonecol
 \newif\if@titlepage
 \newif\if@enablejfam \@enablejfamfalse
+\@onlypreamble\bxjs@setpaper
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
 \DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
 \DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
@@ -2266,6 +2267,7 @@
 \newcommand{\tablename}{\if@english Table~\else 表\fi}
 \newcommand{\appendixname}{\if@english \else 付録\fi}
 \newcommand{\abstractname}{\if@english Abstract\else 概要\fi}
+\@onlypreamble\bxjs@decl@Seireki@cmds
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi

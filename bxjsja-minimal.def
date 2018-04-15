@@ -257,6 +257,7 @@
 \def\bxjs@let@hchar@chr@xe#1{%
   \lccode`0=`#1\relax
   \lowercase{\bxjs@let@hchar@out\def{{0}}}}
+\@onlypreamble\bxjs@do@precisetext
 \ifx\XeTeXgenerateactualtext\@undefined\else
   \def\bxjs@do@precisetext{%
     \XeTeXgenerateactualtext=\@ne}
