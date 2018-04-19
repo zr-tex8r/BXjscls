@@ -1402,70 +1402,6 @@
 % \mbox{}
 % \begin{ZRnote}
 % \TODO 互換用オプションを分離する（2.0版で？）。
-% \begin{macro}{\ifbxjs@usezw}
-% |\jsZw| の同義語として |\zw| を使えるようにするか。
-% 既定は真。
-%    \begin{macrocode}
-\newif\ifbxjs@usezw \bxjs@usezwtrue
-%    \end{macrocode}
-% \end{macro}
-%
-% |zw|、|nozw| オプションの定義。
-%    \begin{macrocode}
-\DeclareOption{nozw}{%
-  \bxjs@usezwfalse}
-\DeclareOption{zw}{%
-  \bxjs@usezwtrue}
-%    \end{macrocode}
-%
-% \begin{macro}{\ifbxjs@disguise@js}
-% JSクラスの派生クラスのふりをするか。
-% 既定は真。
-%    \begin{macrocode}
-\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
-%    \end{macrocode}
-% \end{macro}
-%
-% |nojs|、|js| オプションの定義。
-%    \begin{macrocode}
-\DeclareOption{nojs}{%
-  \bxjs@disguise@jsfalse}
-\DeclareOption{js}{%
-  \bxjs@disguise@jstrue}
-%    \end{macrocode}
-%
-% \begin{macro}{\ifbxjs@precisetext}
-% {\XeTeX}の``generateactualtext''を有効にするか。
-% 既定は偽。
-%    \begin{macrocode}
-\newif\ifbxjs@precisetext
-%    \end{macrocode}
-% \end{macro}
-%
-% |noprecisetext|／|precisetext| オプションの定義。
-%    \begin{macrocode}
-\DeclareOption{noprecisetext}{%
-  \bxjs@precisetextfalse}
-\DeclareOption{precisetext}{%
-  \bxjs@precisetexttrue}
-%    \end{macrocode}
-%
-% \begin{macro}{\ifbxjs@simplejasetup}
-% {\XeTeX}の``linebreaklocale''を有効にするか。
-% 既定は真（であるが多くの場合は後に無効化される）。
-%    \begin{macrocode}
-\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
-%    \end{macrocode}
-% \end{macro}
-%
-% |nosimplejasetup|／|simplejasetup| オプションの定義。
-%    \begin{macrocode}
-\DeclareOption{nosimplejasetup}{%
-  \bxjs@simplejasetupfalse}
-\DeclareOption{simplejasetup}{%
-  \bxjs@simplejasetuptrue}
-%    \end{macrocode}
-%
 % \begin{macro}{\ifbxjs@bigcode}
 % {\upTeX}で有効化するToUnicode CMapとして
 % 「|UTF8-UCS2|」の代わりに「|UTF8-UTF16|」を使うか。
@@ -1519,6 +1455,7 @@
 % \paragraph{keyval型のオプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
+% その他のオプションは |keyval| の機構を用いて処理する。
 %    \begin{macrocode}
 \DeclareOption*{%
   \def\bxjs@next{\bxjs@safe@setkeys{bxjs}}%
@@ -1527,11 +1464,43 @@
 %
 % \begin{macro}{\bxjs@safe@setkeys}
 % 未知のキーに対してエラー無しで無視する |\setkeys|。
+% \Note ネスト不可。
 %    \begin{macrocode}
 \def\bxjs@safe@setkeys#1#2{%
   \let\bxjs@save@KV@errx\KV@errx \let\KV@errx\@gobble
   \setkeys{#1}{#2}%
   \let\KV@errx\bxjs@save@KV@errx}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@declare@enum@option}
+% |\bxjs@declare@enum@option{|\Meta{オプション名}|}{|\Meta{enum名}|}|\par
+% “\Meta{オプション名}|=|\Meta{値}”のオプション指定に対して、
+% |\|[|bxjs@|\Meta{enum名}] を |\|[|bxjs@|\Meta{enum名}|@@|\Meta{値}] に
+% 等値する（後者の制御綴が未定義の場合はエラー）、という動作を規定する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@declare@enum@option
+\def\bxjs@declare@enum@option#1#2{%
+  \define@key{bxjs}{#1}{%
+    \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
+      \bxjs@error@keyval{#1}{##1}%
+    \else \bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}%
+    \fi}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@declare@bool@option}
+% |\bxjs@declare@bool@option{|\Meta{オプション名}|}{|\Meta{スイッチ名}|}|\par
+% “\Meta{オプション名}|=|\Meta{真偽値}”のオプション指定に対して、
+% |\if|[|bxjs@|\Meta{スイッチ名}] を設定する、という動作を規定する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@declare@bool@option
+\def\bxjs@declare@bool@option#1#2{%
+  \define@key{bxjs}{#1}[true]{%
+    \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
+      \bxjs@error@keyval{#1}{##1}%
+    \else \@nameuse{bxjs@#2##1}%
+    \fi}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1920,6 +1889,46 @@
 \def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
 \def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
 \define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@usezw}
+% 〔スイッチ〕 |use-zw| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@usezw \bxjs@usezwtrue
+\bxjs@declare@bool@option{use-zw}{usezw}
+\DeclareOption{nozw}{\setkeys{bxjs}{use-zw=false}}
+\DeclareOption{zw}{\setkeys{bxjs}{use-zw=true}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@disguise@js}
+% 〔スイッチ〕 |disguise-js| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
+\bxjs@declare@bool@option{disguise-js}{disguise@js}
+\DeclareOption{nojs}{\setkeys{bxjs}{disguise-js=false}}
+\DeclareOption{js}{\setkeys{bxjs}{disguise-js=true}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@precisetext}
+% 〔スイッチ〕 |precise-text| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@precisetext
+\bxjs@declare@bool@option{precise-text}{precisetext}
+\DeclareOption{noprecisetext}{\setkeys{bxjs}{precise-text=false}}
+\DeclareOption{precisetext}{\setkeys{bxjs}{precise-text=true}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@simplejasetup}
+% 〔スイッチ〕 |simple-ja-setup| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
+\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
+\DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
+\DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -8603,8 +8612,8 @@
 \ifbxjs@precisetext
   \ifx\bxjs@do@precisetext\@undefined
     \ClassWarning\bxjs@clsname
-     {The current engine does not supprt the\MessageBreak
-      'precisetext' option\@gobble}
+     {The current engine does not support the\MessageBreak
+      'precise-text' option\@gobble}
   \else
     \bxjs@do@precisetext
   \fi

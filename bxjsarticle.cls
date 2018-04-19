@@ -421,26 +421,6 @@
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 \DeclareOption{dvipdfmx-if-dvi}{%
   \setkeys{bxjs}{dvi=dvipdfmx}}
-\newif\ifbxjs@usezw \bxjs@usezwtrue
-\DeclareOption{nozw}{%
-  \bxjs@usezwfalse}
-\DeclareOption{zw}{%
-  \bxjs@usezwtrue}
-\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
-\DeclareOption{nojs}{%
-  \bxjs@disguise@jsfalse}
-\DeclareOption{js}{%
-  \bxjs@disguise@jstrue}
-\newif\ifbxjs@precisetext
-\DeclareOption{noprecisetext}{%
-  \bxjs@precisetextfalse}
-\DeclareOption{precisetext}{%
-  \bxjs@precisetexttrue}
-\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
-\DeclareOption{nosimplejasetup}{%
-  \bxjs@simplejasetupfalse}
-\DeclareOption{simplejasetup}{%
-  \bxjs@simplejasetuptrue}
 \newif\ifbxjs@bigcode \bxjs@bigcodefalse
 \edef\bxjs@tmpa{\expandafter\noexpand\csname\endcsname}
 \def\bxjs@tmpb#1 #2#3\@nil{%
@@ -462,6 +442,20 @@
   \let\bxjs@save@KV@errx\KV@errx \let\KV@errx\@gobble
   \setkeys{#1}{#2}%
   \let\KV@errx\bxjs@save@KV@errx}
+\@onlypreamble\bxjs@declare@enum@option
+\def\bxjs@declare@enum@option#1#2{%
+  \define@key{bxjs}{#1}{%
+    \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
+      \bxjs@error@keyval{#1}{##1}%
+    \else \bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}%
+    \fi}}
+\@onlypreamble\bxjs@declare@bool@option
+\def\bxjs@declare@bool@option#1#2{%
+  \define@key{bxjs}{#1}[true]{%
+    \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
+      \bxjs@error@keyval{#1}{##1}%
+    \else \@nameuse{bxjs@#2##1}%
+    \fi}}
 \def\bxjs@set@keyval#1#2#3{%
   \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
   \ifx\bxjs@next\relax
@@ -604,6 +598,22 @@
 \def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
 \def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
 \define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
+\newif\ifbxjs@usezw \bxjs@usezwtrue
+\bxjs@declare@bool@option{use-zw}{usezw}
+\DeclareOption{nozw}{\setkeys{bxjs}{use-zw=false}}
+\DeclareOption{zw}{\setkeys{bxjs}{use-zw=true}}
+\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
+\bxjs@declare@bool@option{disguise-js}{disguise@js}
+\DeclareOption{nojs}{\setkeys{bxjs}{disguise-js=false}}
+\DeclareOption{js}{\setkeys{bxjs}{disguise-js=true}}
+\newif\ifbxjs@precisetext
+\bxjs@declare@bool@option{precise-text}{precisetext}
+\DeclareOption{noprecisetext}{\setkeys{bxjs}{precise-text=false}}
+\DeclareOption{precisetext}{\setkeys{bxjs}{precise-text=true}}
+\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
+\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
+\DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
+\DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%

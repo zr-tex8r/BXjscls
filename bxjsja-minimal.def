@@ -284,8 +284,8 @@
 \ifbxjs@precisetext
   \ifx\bxjs@do@precisetext\@undefined
     \ClassWarning\bxjs@clsname
-     {The current engine does not supprt the\MessageBreak
-      'precisetext' option\@gobble}
+     {The current engine does not support the\MessageBreak
+      'precise-text' option\@gobble}
   \else
     \bxjs@do@precisetext
   \fi
