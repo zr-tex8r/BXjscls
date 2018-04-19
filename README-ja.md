@@ -98,6 +98,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.9  〈2018/04/19〉
+      - 一部のオプションの名前を変更：  
+        `use-zw`、`disguise-js`、`precise-text`、`simple-ja-setup`
   * Version 1.8b 〈2018/04/14〉
       - bxjscjkcat を新しい upTeX に追随させる。
       - 新元号に関する何か。

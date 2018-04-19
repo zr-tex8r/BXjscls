@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2018/04/14 v1.9-pre BXJS document classes]
+  [2018/04/19 v1.9  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \@onlypreamble\bxjs@set@dupload@proc
