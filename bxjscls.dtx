@@ -10193,6 +10193,16 @@
 \RequirePackage{bxjspandoc}
 %    \end{macrocode}
 %
+% |etoolbox| の |\AtEndPreamble| のフックを用意する。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@endpreamble@hook
+\let\bxjs@endpreamble@hook\@empty
+\ifjsWitheTeX
+  \RequirePackage{etoolbox}[2010/08/21]% v2.0
+  \AtEndPreamble{\bxjs@endpreamble@hook}
+\fi
+%    \end{macrocode}
+%
 %^^A----------------
 %\subsection{duploadシステム}
 %
@@ -10249,6 +10259,7 @@
 % これを防ぐため、とりあえず両パッケージを無効化しておく。
 %
 %    \begin{macrocode}
+\newif\ifbxjs@lang@exists
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
 %    \end{macrocode}
 % Polyglossiaについて。
@@ -10256,7 +10267,8 @@
 \pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \ClassWarning\bxjs@clsname
-   {Loading of polyglossia is blocked}}
+   {Loading of polyglossia is blocked}%
+  \bxjs@lang@existstrue}
 \ifx\setmainlanguage\@undefined
 \newcommand*\setmainlanguage[2][]{}
 \newcommand*\setotherlanguage[2][]{%
@@ -10269,6 +10281,10 @@
   \@for\bxjs@tmpa:={#2}\do{%
     \setotherlangauge{\bxjs@tmpa}}}
 \fi
+\g@addto@macro\bxjs@endpreamble@hook{%
+  \ifbxjs@lang@exists\else
+    \csundef{ver@polyglossia.sty}%
+  \fi}
 \else
 %    \end{macrocode}
 % Babelについて。
@@ -10276,10 +10292,15 @@
 \pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \ClassWarning\bxjs@clsname
-   {Loading of babel is blocked}}
+   {Loading of babel is blocked}%
+  \bxjs@lang@existstrue}
 \let\foreignlanguage\@secondoftwo
 \let\otherlanguage\@gobble
 \let\endotherlanguage\@empty
+\g@addto@macro\bxjs@endpreamble@hook{%
+  \ifbxjs@lang@exists\else
+    \csundef{ver@babel.sty}%
+  \fi}
 \fi
 %    \end{macrocode}
 %

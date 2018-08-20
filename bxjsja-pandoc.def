@@ -24,6 +24,12 @@
   [2018/07/20 v1.9a BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
+\@onlypreamble\bxjs@endpreamble@hook
+\let\bxjs@endpreamble@hook\@empty
+\ifjsWitheTeX
+  \RequirePackage{etoolbox}[2010/08/21]% v2.0
+  \AtEndPreamble{\bxjs@endpreamble@hook}
+\fi
 \@onlypreamble\bxjs@set@dupload@proc
 \def\bxjs@set@dupload@proc#1{%
   \expandafter\bxjs@set@dupload@proc@a\csname bxjs@dlp/#1\endcsname}
@@ -49,11 +55,13 @@
 \def\bxjs@do@dupload@proc#1#2#3{%
   \csname bxjs@dlp/#2.#1\endcsname{#3}%
   \@firstoftwo}
+\newif\ifbxjs@lang@exists
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
 \pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \ClassWarning\bxjs@clsname
-   {Loading of polyglossia is blocked}}
+   {Loading of polyglossia is blocked}%
+  \bxjs@lang@existstrue}
 \ifx\setmainlanguage\@undefined
 \newcommand*\setmainlanguage[2][]{}
 \newcommand*\setotherlanguage[2][]{%
@@ -66,14 +74,23 @@
   \@for\bxjs@tmpa:={#2}\do{%
     \setotherlangauge{\bxjs@tmpa}}}
 \fi
+\g@addto@macro\bxjs@endpreamble@hook{%
+  \ifbxjs@lang@exists\else
+    \csundef{ver@polyglossia.sty}%
+  \fi}
 \else
 \pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \ClassWarning\bxjs@clsname
-   {Loading of babel is blocked}}
+   {Loading of babel is blocked}%
+  \bxjs@lang@existstrue}
 \let\foreignlanguage\@secondoftwo
 \let\otherlanguage\@gobble
 \let\endotherlanguage\@empty
+\g@addto@macro\bxjs@endpreamble@hook{%
+  \ifbxjs@lang@exists\else
+    \csundef{ver@babel.sty}%
+  \fi}
 \fi
 \bxjs@set@dupload@proc{geometry.sty}{%
   \setpagelayout*{#1}}
