@@ -98,6 +98,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.9b 〈2018/08/20〉
+      - バグ修正。
   * Version 1.9a 〈2018/07/20〉
       - jsclasses の 2018/06/23 と同期。
           + `\jsTocLine` を新設。
