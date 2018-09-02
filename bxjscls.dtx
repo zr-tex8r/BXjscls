@@ -444,6 +444,24 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@TUenc}
+% 〔スイッチ〕
+% {\LaTeX}の既定のフォントエンコーディングがTUであるか。
+% \Note 2017年1月以降の{\LaTeX}カーネルにおいて
+% 「Unicodeを表す{\LaTeX}公式のフォントエンコーディング」
+% である“TU”が導入され、
+% これ以降の{\LaTeX}を{\XeTeX}またはLua{\TeX}で動かしている場合は、
+% 既定のエンコーディングがTUになる。
+% それ以外の場合は、既定のエンコーディングはOT1である。
+%    \begin{macrocode}
+\newif\ifbxjs@TUenc
+\def\bxjs@tmpa{TU}\edef\bxjs@tmpb{\f@encoding}
+\ifx\bxjs@tmpa\bxjs@tmpb
+  \bxjs@TUenctrue
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@cond}
 % |\bxjs@cond\ifXXX|……|\fi{|\Meta{真}|}{|\Meta{偽}|}|\par
 % {\TeX}のif-文（|\ifXXX|……\Meta{真}|\else|\Meta{偽}|\fi|）を
@@ -2478,7 +2496,11 @@
 % ムニャムニャムニャ……。
 % \end{ZRnote}
 %    \begin{macrocode}
-  \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \ifbxjs@TUenc
+    \expandafter\let\csname TU/lmr/m/n/10\endcsname\relax
+  \else
+    \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \fi
   \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
   \let\jsc@get@external@font\get@external@font
   \def\get@external@font{%
@@ -2514,7 +2536,9 @@
     \edef\mandatory@arg{%
       \mandatory@arg\expandafter\genb@x\jsc@cref@size..\@@}%
     \empty@sfcnt}
-  \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+  \ifbxjs@TUenc\else
+    \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+  \fi
 \fi
 %    \end{macrocode}
 %

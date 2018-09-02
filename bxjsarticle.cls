@@ -87,6 +87,11 @@
 \let\PackageWarningNoLine\bxjs@tmpa
 \@nameuse{RevokeOldLuaTeXBehavior}
 \let\ifjsInPdfMode\ifpdf
+\newif\ifbxjs@TUenc
+\def\bxjs@tmpa{TU}\edef\bxjs@tmpb{\f@encoding}
+\ifx\bxjs@tmpa\bxjs@tmpb
+  \bxjs@TUenctrue
+\fi
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
@@ -847,7 +852,11 @@
 \ifjsc@mag@xreal
   \RequirePackage{type1cm}
   \let\jsc@invscale\bxjs@invscale
-  \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \ifbxjs@TUenc
+    \expandafter\let\csname TU/lmr/m/n/10\endcsname\relax
+  \else
+    \expandafter\let\csname OT1/cmr/m/n/10\endcsname\relax
+  \fi
   \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
   \let\jsc@get@external@font\get@external@font
   \def\get@external@font{%
@@ -883,7 +892,9 @@
     \edef\mandatory@arg{%
       \mandatory@arg\expandafter\genb@x\jsc@cref@size..\@@}%
     \empty@sfcnt}
-  \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+  \ifbxjs@TUenc\else
+    \DeclareErrorFont{OT1}{cmr}{m}{n}{10}
+  \fi
 \fi
 \def\jsc@smallskip{\vspace\jsc@smallskipamount}
 \newskip\jsc@smallskipamount
