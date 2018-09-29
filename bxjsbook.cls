@@ -2426,37 +2426,36 @@
   \def\bxjs@iai{\noexpand~}
 \else \def\bxjs@iai{}
 \fi
-\newcount\bxjs@jayear
-\let\bxjs@gengo\@empty \bxjs@jayear\year
-\@tempcnta=\the\year\two@digits\month\two@digits\day\relax
-\ifnum\@tempcnta<19700101
-\else\ifnum\@tempcnta<19890108
-  \def\bxjs@gengo{昭和}\advance\bxjs@jayear-1925\relax
-  \let\heisei\bxjs@jayear
-\else\ifnum\@tempcnta<20190501
-  \def\bxjs@gengo{平成}\advance\bxjs@jayear-1988\relax
-  \let\heisei\bxjs@jayear
+\newif\ifbxjs@bxwareki@avail
+\IfFileExists{bxwareki.sty}{%
+  \RequirePackage{bxwareki}[]%
+  \bxjs@bxwareki@availtrue}{}
+\ifbxjs@bxwareki@avail
+  \let\jayear\warekiyear
+  \def\bxjs@tmpa{H}\ifx\bxjs@tmpa\warekigengoinitial
+    \newcount\heisei \heisei=\value{warekiyear}
+  \fi
 \else
-  \IfFileExists{bxwareki.sty}{\IfFileExists{bxwareki2019.def}{%
-    \RequirePackage{bxwareki}[]%
-    \let\bxjs@gengo\WarekiGengo
-  }{}}{}%
-  \if l\jsEngine \ifx\bxjs@gengo\@empty
-    \toks@{}
-    \directlua{pcall(function()
-      tex.toks[0] = bxjs.get_new_gengo()
-    end)}
-    \edef\bxjs@gengo{\the\toks@}
+  \@tempcnta=\the\year\two@digits\month\two@digits\day\relax
+  \ifnum\@tempcnta<19890108 \else \ifnum\@tempcnta<20190501
+    \newcount\heisei \heisei\year \advance\heisei-1988\relax
   \fi\fi
-  \ifx\bxjs@gengo\@empty\else \advance\bxjs@jayear-2018\relax \fi
-\fi\fi\fi
-\edef\jayear{%
-  \ifx\bxjs@gengo\@empty \the\bxjs@jayear\bxjs@iai
-  \else \bxjs@onxp{\bxjs@gengo}%
-    \ifnum\bxjs@jayear=\@ne \bxjs@unxp{元}%
-    \else \bxjs@iai\the\bxjs@jayear\bxjs@iai
-    \fi
-  \fi}
+  \ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
+    \edef\jayear{\bxjs@unxp{平成}\bxjs@iai \the\heisei \bxjs@iai}
+  \else \edef\jayear{\the\year \bxjs@iai}
+  \fi
+\fi
+\let\bxjs@next\relax
+\ifbxjs@bxwareki@avail
+  \ifx\warekigengo\@empty\else
+    \def\bxjs@next{\bxjs@onxp{\warekitoday}}
+  \fi
+\else\ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
+  \def\bxjs@next{%
+    \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
+    \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
+    \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}}
+\fi\fi
 \edef\bxjs@today{%
   \if@english
     \ifcase\month\or
@@ -2464,15 +2463,13 @@
       July\or August\or September\or October\or November\or December\fi
       \space\number\day, \number\year
   \else
-    \noexpand\bxjs@if@use@seireki{%
+    \ifx\bxjs@next\relax \expandafter\@firstoftwo
+    \else \noexpand\bxjs@if@use@seireki
+    \fi {%
       \number\year\bxjs@iai\bxjs@unxp{年}%
       \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
       \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
-    }{%
-      \bxjs@onxp{\jayear}\bxjs@unxp{年}%
-      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
-      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
-    }%
+    }{\bxjs@next}%
   \fi}
 \let\today\bxjs@today
 \g@addto@macro\bxjs@begin@document@hook{%
