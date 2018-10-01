@@ -10496,9 +10496,13 @@
 \def\bxjs@pandoc@lang@ja{%
   \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \edef\bxjs@next{%
-    \noexpand\RequirePackage[\bxjs@lang@pkg@options]{babel}[]%
+    \noexpand\RequirePackage[\bxjs@lang@pkg@options,english]{babel}[]%
   }\bxjs@next
-  \RequirePackage[main=japanese]{pxbabel}[]}
+  \if j\jsEngine
+    \RequirePackage[main=japanese]{pxbabel}[]%
+  \else
+    \RequirePackage{bxorigcapt}[]%
+  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -11390,6 +11394,25 @@ FE70,FFF0,%
 % \end{macro}
 %
 %^^A----------------
+%\subsection{パッケージオプション}
+%
+% |english| オプションが指定されている場合、|\ldots| の調整を抑止する。
+% \Note つまり、「グローバルの |english| オプション」が指定されている
+% 場合も抑止の対象になる。
+% BXJSクラスの英語モードを想定しているが、それ以外の場合でも、
+% 一般的な{\LaTeX}の習慣として、グローバルの |english| は
+% 「その文書の基底言語が英語である」ことを示す。
+%    \begin{macrocode}
+\newif\ifbxjsp@english
+\DeclareOption{english}{\bxjsp@englishtrue}
+%    \end{macrocode}
+%
+% オプション定義はおしまい。
+%    \begin{macrocode}
+\ProcessOptions*
+%    \end{macrocode}
+%
+%^^A----------------
 %\subsection{パッケージ読込の阻止}
 %
 % \begin{macro}{\pandocSkipLoadFile}
@@ -11520,10 +11543,11 @@ FE70,FFF0,%
 % \end{macro}
 %
 % |\ldots| の実装を置き換える。
+% \Note B|english| オプション指定時は置き換えない。
 %    \begin{macrocode}
-\g@addto@macro\bxjs@begin@document@hook{%
+\AtBeginDocument{%
   \let\bxjsp@org@ldots\ldots
-  \let\ldots\pandocLdots}
+  \ifbxjsp@english\else \let\ldots\pandocLdots \fi}
 %    \end{macrocode}
 %
 %^^A----------------

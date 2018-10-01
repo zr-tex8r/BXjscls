@@ -134,9 +134,13 @@
 \def\bxjs@pandoc@lang@ja{%
   \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \edef\bxjs@next{%
-    \noexpand\RequirePackage[\bxjs@lang@pkg@options]{babel}[]%
+    \noexpand\RequirePackage[\bxjs@lang@pkg@options,english]{babel}[]%
   }\bxjs@next
-  \RequirePackage[main=japanese]{pxbabel}[]}
+  \if j\jsEngine
+    \RequirePackage[main=japanese]{pxbabel}[]%
+  \else
+    \RequirePackage{bxorigcapt}[]%
+  \fi}
 \fi
 \bxjs@set@dupload@proc{geometry.sty}{%
   \setpagelayout*{#1}}

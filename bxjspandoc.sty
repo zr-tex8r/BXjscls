@@ -34,6 +34,9 @@
 \bxjsp@do\XeTeXversion{\let\bxjsp@engine=x}
 \bxjsp@do\pdftexversion{\let\bxjsp@engine=p}
 \bxjsp@do\luatexversion{\let\bxjsp@engine=l}
+\newif\ifbxjsp@english
+\DeclareOption{english}{\bxjsp@englishtrue}
+\ProcessOptions*
 \@onlypreamble\pandocSkipLoadFile
 \newcommand*\pandocSkipLoadFile[1]{%
   \expandafter\bxjsp@skip@load@file@a\csname ver@#1\endcsname{#1}}
@@ -83,9 +86,9 @@
   \bxjsp@ja@ellipsis \let\bxjsp@tok=}
 \def\bxjsp@ldots@g{%
   \expandafter\bxjsp@org@ldots\expandafter{\romannumeral-`} }
-\g@addto@macro\bxjs@begin@document@hook{%
+\AtBeginDocument{%
   \let\bxjsp@org@ldots\ldots
-  \let\ldots\pandocLdots}
+  \ifbxjsp@english\else \let\ldots\pandocLdots \fi}
 \IfFileExists{bxpandola.sty}{%
   \RequirePackage{bxpandola}\relax
   \PackageInfo\bxjsp@pkgname
