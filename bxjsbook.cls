@@ -1174,14 +1174,10 @@
 \bxjs@postproc@layout
 \g@addto@macro\bxjs@bd@pre@geometry@hook{%
     \@ifpackagelater{geometry}{2010/02/12}{}{%else
-      \PackageWarningNoLine\bxjs@clsname
-       {The 'geometry' package installed\MessageBreak
-        is too old (< v5.0)}%
-      \if x\jsEngine \ifnum\mag=\@m\else
-        \def\bxjs@Gm@driver{pdftex}
-        \ifx\pdfhorigin\@undefined \newdimen\pdfhorigin \fi
-        \ifx\pdfvorigin\@undefined \newdimen\pdfvorigin \fi
-      \fi\fi}%
+      \PackageError\bxjs@clsname
+       {Your 'geometry' package is too old (< v5.0)}%
+       {\@ehc}%
+      \let\Gm@driver\relax}%
     \ifjsWithpTeXng
       \ifx\Gm@driver\@empty
         \def\Gm@driver{pdftex}%
