@@ -2419,67 +2419,54 @@
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi
-\if@tempswa \expandafter\@firstoftwo
-\else       \expandafter\@secondoftwo
-\fi
-{%
+\bxjs@cond\if@tempswa\fi{%
 \newif\ifjsSeireki \jsSeirekitrue
 \def\bxjs@decl@Seireki@cmds{%
   \def\西暦{\jsSeirekitrue}%
-  \def\和暦{\jsSeirekifalse}}
+  \def\和暦{\jsSeirekifalse\bxjs@wareki@used}}
 \def\Seireki{\jsSeirekitrue}
-\def\Wareki{\jsSeirekifalse}
-\def\bxjs@if@use@seireki{%
-  \ifjsSeireki \expandafter\@firstoftwo
-  \else \expandafter\@secondoftwo \fi}
+\def\Wareki{\jsSeirekifalse\bxjs@wareki@used}
+\def\bxjs@if@use@seireki{\bxjs@cond\ifjsSeireki\fi}
+\def\bxjs@iai{\noexpand~}
 }{%
 \newif\if西暦 \西暦true
 \def\bxjs@decl@Seireki@cmds{%
   \def\西暦{\西暦true}%
-  \def\和暦{\西暦false}}
+  \def\和暦{\西暦false\bxjs@wareki@used}}
 \def\Seireki{\西暦true}
-\def\Wareki{\西暦false}
-\def\bxjs@if@use@seireki{%
-  \if西暦 \expandafter\@firstoftwo
-  \else \expandafter\@secondoftwo \fi}
+\def\Wareki{\西暦false\bxjs@wareki@used}
+\def\bxjs@if@use@seireki{\bxjs@cond\if西暦\fi}
+\let\bxjs@iai\@empty
 }
 \bxjs@decl@Seireki@cmds
 \let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
-\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded
-  \def\bxjs@onxp{\unexpanded\expandafter}}
-\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
-  \def\bxjs@iai{\noexpand~}
-\else \def\bxjs@iai{}
-\fi
+\bxjs@test@engine\unexpanded{%
+  \let\bxjs@unxp\unexpanded \def\bxjs@onxp{\unexpanded\expandafter}}
 \newif\ifbxjs@bxwareki@avail
 \IfFileExists{bxwareki.sty}{%
   \RequirePackage{bxwareki}[]%
   \bxjs@bxwareki@availtrue}{}
+\ifbxjs@bxwareki@avail \let\bxjs@wareki@used\@empty
+\else
+  \bxjs@robust@def\bxjs@wareki@used{%
+    \global\let\bxjs@wareki@used\@empty
+    \ClassWarning\bxjs@clsname
+     {Wareki mode is not supported, since\MessageBreak
+      'bxwareki' is unavailable, found}}
+  \g@addto@macro\bxjs@begin@document@hook{%
+    \let\bxjs@wareki@used\@empty}
+\fi
 \ifbxjs@bxwareki@avail
   \let\jayear\warekiyear
   \def\bxjs@tmpa{H}\ifx\bxjs@tmpa\warekigengoinitial
     \newcount\heisei \heisei=\value{warekiyear}
   \fi
 \else
-  \@tempcnta=\the\year\two@digits\month\two@digits\day\relax
-  \ifnum\@tempcnta<19890108 \else \ifnum\@tempcnta<20190501
-    \newcount\heisei \heisei\year \advance\heisei-1988\relax
-  \fi\fi
-  \ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
-    \edef\jayear{\bxjs@unxp{平成}\bxjs@iai \the\heisei \bxjs@iai}
-  \else \edef\jayear{\the\year \bxjs@iai}
-  \fi
+  \edef\jayear{\the\year \bxjs@iai}
 \fi
 \let\bxjs@next\relax
-\ifbxjs@bxwareki@avail
-  \ifx\warekigengo\@empty\else
-    \def\bxjs@next{\bxjs@onxp{\warekitoday}}
-  \fi
-\else\ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
-  \def\bxjs@next{%
-    \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
-    \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
-    \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}}
+\ifbxjs@bxwareki@avail \ifx\warekigengo\@empty\else
+  \def\bxjs@next{\bxjs@onxp{\warekitoday}}
 \fi\fi
 \edef\bxjs@today{%
   \if@english
@@ -2498,7 +2485,7 @@
   \fi}
 \let\today\bxjs@today
 \g@addto@macro\bxjs@begin@document@hook{%
-  \ifx\bbl@jpn@Seirekitrue\@undefined\else
+  \ifx\bbl@jpn@maybekansuji\@undefined\else
     \bxjs@decl@Seireki@cmds
     \g@addto@macro\datejapanese{%
       \let\today\bxjs@today}%

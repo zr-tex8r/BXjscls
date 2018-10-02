@@ -7888,9 +7888,8 @@
 % \begin{ZRnote}
 % 環境変数 |SOURCE_DATE_EPOCH|／|FORCE_SOURCE_DATE| が
 % 設定されている場合は“今日”が過去・未来の日付になる可能性がある。
-% BXJSクラスでは、和暦の扱いは |bxwareki| パッケージに任せることを
-% 原則とする。
-% ただし、|bxwareki| が使えない場合は自前で処理する。
+% BXJSクラスでは、和暦の扱いは |bxwareki| パッケージに任せる。
+% \Note 2.0版より、\textbf{完全に} |bxwareki| に任せる。
 % \end{ZRnote}
 %
 %    \begin{macrocode}
@@ -7898,39 +7897,30 @@
 \@tempswafalse
 \if p\jsEngine \@tempswatrue \fi
 \if n\jsEngine \@tempswatrue \fi
-\if@tempswa \expandafter\@firstoftwo
-\else       \expandafter\@secondoftwo
-\fi
-{%
+\bxjs@cond\if@tempswa\fi{%
 % 欧文8bitTeXの場合
 \newif\ifjsSeireki \jsSeirekitrue
 \def\bxjs@decl@Seireki@cmds{%
   \def\西暦{\jsSeirekitrue}%
-  \def\和暦{\jsSeirekifalse}}
+  \def\和暦{\jsSeirekifalse\bxjs@wareki@used}}
 \def\Seireki{\jsSeirekitrue}
-\def\Wareki{\jsSeirekifalse}
-\def\bxjs@if@use@seireki{%
-  \ifjsSeireki \expandafter\@firstoftwo
-  \else \expandafter\@secondoftwo \fi}
+\def\Wareki{\jsSeirekifalse\bxjs@wareki@used}
+\def\bxjs@if@use@seireki{\bxjs@cond\ifjsSeireki\fi}
+\def\bxjs@iai{\noexpand~}
 }{%
 \newif\if西暦 \西暦true
 \def\bxjs@decl@Seireki@cmds{%
   \def\西暦{\西暦true}%
-  \def\和暦{\西暦false}}
+  \def\和暦{\西暦false\bxjs@wareki@used}}
 \def\Seireki{\西暦true}
-\def\Wareki{\西暦false}
-\def\bxjs@if@use@seireki{%
-  \if西暦 \expandafter\@firstoftwo
-  \else \expandafter\@secondoftwo \fi}
+\def\Wareki{\西暦false\bxjs@wareki@used}
+\def\bxjs@if@use@seireki{\bxjs@cond\if西暦\fi}
+\let\bxjs@iai\@empty
 }
 \bxjs@decl@Seireki@cmds
 \let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
-\bxjs@test@engine\unexpanded{\let\bxjs@unxp\unexpanded
-  \def\bxjs@onxp{\unexpanded\expandafter}}
-\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
-  \def\bxjs@iai{\noexpand~}
-\else \def\bxjs@iai{}
-\fi
+\bxjs@test@engine\unexpanded{%
+  \let\bxjs@unxp\unexpanded \def\bxjs@onxp{\unexpanded\expandafter}}
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@bxwareki@avail}
@@ -7943,11 +7933,26 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@wareki@used}
+% 和暦が非対応の場合に警告を出す。
+%    \begin{macrocode}
+\ifbxjs@bxwareki@avail \let\bxjs@wareki@used\@empty
+\else
+  \bxjs@robust@def\bxjs@wareki@used{%
+    \global\let\bxjs@wareki@used\@empty
+    \ClassWarning\bxjs@clsname
+     {Wareki mode is not supported, since\MessageBreak
+      'bxwareki' is unavailable, found}}
+  \g@addto@macro\bxjs@begin@document@hook{%
+    \let\bxjs@wareki@used\@empty}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jayear}
 % 和暦における年の表記（元号+年数）。
 % \begin{macro}{\heisei}
-% 年数を表す整数レジスタで、
-% 元号が「平成」である場合にのみ定義される。
+% 年数を表す整数レジスタで、元号が「平成」である場合にのみ定義される。
 %    \begin{macrocode}
 \ifbxjs@bxwareki@avail
   \let\jayear\warekiyear
@@ -7955,18 +7960,10 @@
     \newcount\heisei \heisei=\value{warekiyear}
   \fi
 %    \end{macrocode}
-% |bxwareki| が使えない場合のフォールバック処理。
-% 平成のみに対応する。
+% |bxwareki| が使えない場合は西暦表示にする。
 %    \begin{macrocode}
 \else
-  \@tempcnta=\the\year\two@digits\month\two@digits\day\relax
-  \ifnum\@tempcnta<19890108 \else \ifnum\@tempcnta<20190501
-    \newcount\heisei \heisei\year \advance\heisei-1988\relax
-  \fi\fi
-  \ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
-    \edef\jayear{\bxjs@unxp{平成}\bxjs@iai \the\heisei \bxjs@iai}
-  \else \edef\jayear{\the\year \bxjs@iai}
-  \fi
+  \edef\jayear{\the\year \bxjs@iai}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -7976,15 +7973,8 @@
 % 英語、西暦、和暦で場合分けをする。
 %    \begin{macrocode}
 \let\bxjs@next\relax
-\ifbxjs@bxwareki@avail
-  \ifx\warekigengo\@empty\else
-    \def\bxjs@next{\bxjs@onxp{\warekitoday}}
-  \fi
-\else\ifnum \ifx\heisei\@undefined\z@\else\heisei\fi >\@ne
-  \def\bxjs@next{%
-    \bxjs@unxp{平成}\bxjs@iai\number\heisei\bxjs@iai\bxjs@unxp{年}%
-    \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
-    \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}}
+\ifbxjs@bxwareki@avail \ifx\warekigengo\@empty\else
+  \def\bxjs@next{\bxjs@onxp{\warekitoday}}
 \fi\fi
 \edef\bxjs@today{%
   \if@english
@@ -8010,7 +8000,7 @@
 % 場合に影響を受けないようにする。
 %    \begin{macrocode}
 \g@addto@macro\bxjs@begin@document@hook{%
-  \ifx\bbl@jpn@Seirekitrue\@undefined\else
+  \ifx\bbl@jpn@maybekansuji\@undefined\else
     \bxjs@decl@Seireki@cmds
     \g@addto@macro\datejapanese{%
       \let\today\bxjs@today}%
