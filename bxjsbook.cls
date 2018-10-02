@@ -322,17 +322,9 @@
 \define@key{bxjs}{enablejfam}[true]{%
   \bxjs@set@keyval{enablejfam}{#1}{}}
 \DeclareOption{disablejfam}{\let\bxjs@enablejfam=f}
-\let\ifjsDraft\iffalse
-\@onlypreamble\bxjs@draft
-\def\bxjs@draft#1{%
-  \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
-\DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
-\DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
-\g@addto@macro\bxjs@begin@document@hook{%
-  \expandafter\ifx\csname ifdraft\endcsname\relax
-    \expandafter\let\csname ifdraft\expandafter\endcsname
-     \csname ifjsDraft\endcsname
-  \fi}
+\newif\ifjsDraft
+\DeclareOption{draft}{\jsDrafttrue \overfullrule=5pt }
+\DeclareOption{final}{\jsDraftfalse \overfullrule=0pt }
 \newif\ifbxjs@papersize
 \bxjs@papersizetrue
 \DeclareOption{nopapersize}{\bxjs@papersizefalse}

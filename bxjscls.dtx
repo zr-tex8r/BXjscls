@@ -1151,24 +1151,13 @@
 %
 % \begin{ZRnote}
 % \begin{macro}{\ifjsDraft}
-% JSクラスは |\ifdraft| という公開名のスイッチを用いているが、
-% これは |ifdraft| パッケージと衝突するので、代わりに |\ifjsDraft|
-% の名前を用い、本文開始時に |\ifdraft| が未定義の場合に限り、
-% |\ifjsDraft| を |\ifdraft| にコピーする処理にする。
+% |draft| オプションが指定されているか。
 % \Note JSクラスの |\ifdraft| が廃止されたので、
-% |\ifdraft| は2.0版で廃止を予定する。
+% BXJSクラスでも |\ifdraft| を2.0版で廃止した。
 %    \begin{macrocode}
-\let\ifjsDraft\iffalse
-\@onlypreamble\bxjs@draft
-\def\bxjs@draft#1{%
-  \expandafter\let\expandafter\ifjsDraft\csname if#1\endcsname}
-\DeclareOption{draft}{\bxjs@draft{true}\setlength\overfullrule{5pt}}
-\DeclareOption{final}{\bxjs@draft{false}\setlength\overfullrule{0pt}}
-\g@addto@macro\bxjs@begin@document@hook{%
-  \expandafter\ifx\csname ifdraft\endcsname\relax
-    \expandafter\let\csname ifdraft\expandafter\endcsname
-     \csname ifjsDraft\endcsname
-  \fi}
+\newif\ifjsDraft
+\DeclareOption{draft}{\jsDrafttrue \overfullrule=5pt }
+\DeclareOption{final}{\jsDraftfalse \overfullrule=0pt }
 %    \end{macrocode}
 % \end{macro}
 % \end{ZRnote}
