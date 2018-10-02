@@ -434,11 +434,7 @@
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 \DeclareOption{dvipdfmx-if-dvi}{%
   \setkeys{bxjs}{dvi=dvipdfmx}}
-\newif\ifbxjs@bigcode \bxjs@bigcodefalse
-\edef\bxjs@tmpa{\expandafter\noexpand\csname\endcsname}
-\def\bxjs@tmpb#1 #2#3\@nil{%
-  \ifx1#2\bxjs@bigcodetrue \fi}
-\expandafter\bxjs@tmpb\meaning\bxjs@tmpa1 0\@nil
+\newif\ifbxjs@bigcode \bxjs@bigcodetrue
 \DeclareOption{nobigcode}{%
   \bxjs@bigcodefalse}
 \DeclareOption{bigcode}{%
