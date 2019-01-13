@@ -486,8 +486,8 @@
 \bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
-  \setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}
-  \setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}
+  \setCJKmainfont[BoldFont=ipaexg.ttf]{ipaexm.ttf}
+  \setCJKsansfont[BoldFont=ipaexg.ttf]{ipaexg.ttf}
 \else
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]% v0.2a
