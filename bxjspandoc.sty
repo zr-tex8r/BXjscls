@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesPackage{bxjspandoc}
-  [2019/01/13 v1.9e BXJS document classes]
+  [2019/03/10 v1.9f BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjsp@pkgname{bxjscjkcat}
 \let\bxjsp@engine=n
@@ -64,31 +64,27 @@
 \fi
 \DeclareRobustCommand{\pandocLdots}{%
   \relax\ifmmode \expandafter\bxjsp@org@ldots
-  \else \expandafter\bxjsp@ldots@a
+  \else \expandafter\bxjsp@ja@ellipsis
   \fi}
 \def\bxjsp@ja@ellipsis{…}
 \let\bxjsp@org@ldots\ldots
-\def\bxjsp@ldots@a{%
-  \futurelet\bxjsp@tok\bxjsp@ldots@b}
-\def\bxjsp@ldots@b{%
-  \ifx\bxjsp@tok\bgroup \expandafter\bxjsp@ldots@c
-  \else \expandafter\bxjsp@org@ldots
-  \fi}
-\def\bxjsp@ldots@c{%
-  \afterassignment\bxjsp@ldots@d \let\bxjsp@tok=}
-\def\bxjsp@ldots@d{%
-  \futurelet\bxjsp@tok\bxjsp@ldots@e}
-\def\bxjsp@ldots@e{%
-  \ifx\bxjsp@tok\egroup \expandafter\bxjsp@ldots@f
-  \else \expandafter\bxjsp@ldots@g
-  \fi}
-\def\bxjsp@ldots@f{%
-  \bxjsp@ja@ellipsis \let\bxjsp@tok=}
-\def\bxjsp@ldots@g{%
-  \expandafter\bxjsp@org@ldots\expandafter{\romannumeral-`} }
 \AtBeginDocument{%
   \let\bxjsp@org@ldots\ldots
   \ifbxjsp@english\else \let\ldots\pandocLdots \fi}
+\chardef\bxjsp@cc@other=12
+\@onlypreamble\bxjsp@makeother@range
+\def\bxjsp@makeother@range#1#2{%
+  \@tempcnta"#1\relax \@tempcntb"#2\relax
+  \loop\ifnum\@tempcnta<\@tempcntb
+    \catcode\@tempcnta\bxjsp@cc@other
+    \advance\@tempcnta\@ne
+  \repeat}
+\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
+  \catcode"1F23B=\bxjsp@cc@other
+  \bxjsp@makeother@range{9FCD}{A000}
+  \bxjsp@makeother@range{1B002}{1B170}
+  \bxjsp@makeother@range{2B820}{2EBF0}
+\fi
 \IfFileExists{bxpandola.sty}{%
   \RequirePackage{bxpandola}\relax
   \PackageInfo\bxjsp@pkgname

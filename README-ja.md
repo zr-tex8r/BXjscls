@@ -98,6 +98,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.9f 〈2019/03/10〉
+      - Pandoc モードを最新の Pandoc に対応させる。
   * Version 1.9e 〈2019/01/13〉
       - XeTeX の場合の既定の IPAex フォントをファイル名指定にする。
   * Version 1.9d 〈2018/10/03〉

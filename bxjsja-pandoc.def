@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2019/01/13 v1.9e BXJS document classes]
+  [2019/03/10 v1.9f BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \@onlypreamble\bxjs@endpreamble@hook
@@ -63,14 +63,15 @@
     \@reset@ptions
     \bxjs@next{#3}}%
   \@firstoftwo}
-\let\bxjs@lang@pkg@options\relax
+\let\bxjs@polyglossia@options\relax
+\let\bxjs@babel@options\relax
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
 \pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \bxjs@unset@dupload@proc{polyglossia.sty}%
   \ClassWarning\bxjs@clsname
    {Package polyglossia is required}%
-  \def\bxjs@lang@pkg@options{#1}%
+  \def\bxjs@polyglossia@options{#1}%
   \newcommand*\setmainlanguage[2][]{%
     \ifblank{##2}{%
       \ClassWarning\bxjs@clsname
@@ -83,12 +84,12 @@
         thus polyglossia will be loaded}%
       \csundef{ver@polyglossia.sty}%
       \edef\bxjs@next{%
-        \noexpand\RequirePackage[\bxjs@lang@pkg@options]{polyglossia}[]%
+        \noexpand\RequirePackage[\bxjs@polyglossia@options]{polyglossia}[]%
       }\bxjs@next
       \setmainlanguage[##1]{##2}%
     }}}
 \g@addto@macro\bxjs@endpreamble@hook{%
-  \ifx\bxjs@lang@pkg@options\relax
+  \ifx\bxjs@polyglossia@options\relax
     \csundef{ver@polyglossia.sty}%
   \fi}
 \@onlypreamble\bxjs@pandoc@lang@ja
@@ -101,18 +102,19 @@
   \newcommand*\setotherlanguages[2][]{%
     \@for\bxjs@tmpa:={##2}\do{%
       \setotherlangauge{\bxjs@tmpa}}}%
-  \let\bxjs@lang@pkg@options\relax}%
-\else
+  \let\bxjs@polyglossia@options\relax}%
+\fi
+\if x\jsEngine\else
 \pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \bxjs@unset@dupload@proc{babel.sty}%
   \ClassWarning\bxjs@clsname
    {Package babel is required}%
-  \@tempswafalse \let\bxjs@lang@pkg@options\@empty
+  \@tempswafalse \let\bxjs@babel@options\@empty
   \def\bxjs@tmpb{main=}%
   \@for\bxjs@tmpa:=#1\do{%
     \ifx\bxjs@tmpa\bxjs@tmpb \@tempswatrue
-    \else \edef\bxjs@lang@pkg@options{\bxjs@lang@pkg@options,\bxjs@tmpa}%
+    \else \edef\bxjs@babel@options{\bxjs@babel@options,\bxjs@tmpa}%
     \fi}%
   \if@tempswa
     \ClassWarning\bxjs@clsname
@@ -127,14 +129,14 @@
     \RequirePackage[#1]{babel}[]%
   \fi}
 \g@addto@macro\bxjs@endpreamble@hook{%
-  \ifx\bxjs@lang@pkg@options\relax
+  \ifx\bxjs@babel@options\relax
     \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \fi}
 \@onlypreamble\bxjs@pandoc@lang@ja
 \def\bxjs@pandoc@lang@ja{%
   \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \edef\bxjs@next{%
-    \noexpand\RequirePackage[\bxjs@lang@pkg@options,english]{babel}[]%
+    \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
   }\bxjs@next
   \if j\jsEngine
     \RequirePackage[main=japanese]{pxbabel}[]%
