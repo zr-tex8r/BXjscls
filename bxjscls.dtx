@@ -56,7 +56,8 @@
 %<*driver>
 \ProvidesFile{bxjscls.dtx}
 %</driver>
-  [2019/03/10 v1.9f BXJS document classes]
+  [2019/06/23 v1.9g BXJS document classes]
+% [2019/03/10 v1.9f BXJS document classes]
 % [2019/01/13 v1.9e BXJS document classes]
 % [2018/10/03 v1.9d BXJS document classes]
 % [2018/09/04 v1.9c BXJS document classes]
@@ -111,6 +112,7 @@
 \usepackage[ipaex]{luatexja-preset}
 \usepackage{metalogo}
 \usepackage{doc}
+\usepackage{color}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -11568,7 +11570,7 @@ FE70,FFF0,%
     \catcode\@tempcnta\bxjsp@cc@other
     \advance\@tempcnta\@ne
   \repeat}
-\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
+\ifnum0\if x\bxjsp@engine1\fi\if l\bxjsp@engine1\fi>0
   \catcode"1F23B=\bxjsp@cc@other
   \bxjsp@makeother@range{9FCD}{A000}
   \bxjsp@makeother@range{1B002}{1B170}

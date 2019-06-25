@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesPackage{bxjspandoc}
-  [2019/03/10 v1.9f BXJS document classes]
+  [2019/06/23 v1.9g BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjsp@pkgname{bxjscjkcat}
 \let\bxjsp@engine=n
@@ -79,7 +79,7 @@
     \catcode\@tempcnta\bxjsp@cc@other
     \advance\@tempcnta\@ne
   \repeat}
-\ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
+\ifnum0\if x\bxjsp@engine1\fi\if l\bxjsp@engine1\fi>0
   \catcode"1F23B=\bxjsp@cc@other
   \bxjsp@makeother@range{9FCD}{A000}
   \bxjsp@makeother@range{1B002}{1B170}
