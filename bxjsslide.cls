@@ -1711,13 +1711,13 @@
 \renewcommand{\theenumiv}{\@Alph\c@enumiv}
 \def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
 \newcommand*{\jsInJaParen}[1]{%
-  \bxjs@dust\jsInhibitGlue（\theenumii）\jsInhibitGlue\bxjs@dust}
+  \bxjs@dust\jsInhibitGlue （#1）\jsInhibitGlue\bxjs@dust}
 \newcommand{\labelenumi}{\theenumi.}
-\newcommand{\labelenumii}{\jsInJaParen{（\theenumii）}}
+\newcommand{\labelenumii}{\jsInJaParen{\theenumii}}
 \newcommand{\labelenumiii}{\theenumiii.}
 \newcommand{\labelenumiv}{\theenumiv.}
 \renewcommand{\p@enumii}{\theenumi}
-\renewcommand{\p@enumiii}{\theenumi\jsInhibitGlue（\theenumii）}
+\renewcommand{\p@enumiii}{\theenumi\jsInhibitGlue （\theenumii ）}
 \renewcommand{\p@enumiv}{\p@enumiii\theenumiii}
 \newcommand\labelitemi{\textbullet}
 \newcommand\labelitemii{\normalfont\bfseries \textendash}

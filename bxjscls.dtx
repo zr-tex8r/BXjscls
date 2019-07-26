@@ -5850,9 +5850,9 @@
 %    \begin{macrocode}
 \def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
 \newcommand*{\jsInJaParen}[1]{%
-  \bxjs@dust\jsInhibitGlue（\theenumii）\jsInhibitGlue\bxjs@dust}
+  \bxjs@dust\jsInhibitGlue （#1）\jsInhibitGlue\bxjs@dust}
 \newcommand{\labelenumi}{\theenumi.}
-\newcommand{\labelenumii}{\jsInJaParen{（\theenumii）}}
+\newcommand{\labelenumii}{\jsInJaParen{\theenumii}}
 \newcommand{\labelenumiii}{\theenumiii.}
 \newcommand{\labelenumiv}{\theenumiv.}
 %    \end{macrocode}
@@ -5871,7 +5871,7 @@
 %
 %    \begin{macrocode}
 \renewcommand{\p@enumii}{\theenumi}
-\renewcommand{\p@enumiii}{\theenumi\jsInhibitGlue（\theenumii）}
+\renewcommand{\p@enumiii}{\theenumi\jsInhibitGlue （\theenumii ）}
 \renewcommand{\p@enumiv}{\p@enumiii\theenumiii}
 %    \end{macrocode}
 % \end{macro}
@@ -6313,7 +6313,7 @@
 %    数式番号の形式です。
 %    デフォルトの値をコメントアウトして示しておきます。
 %
-%    |\jsInhibitGlue（\theequation）\jsInhibitGlue| のように和文かっこ
+%    |\jsInhibitGlue （\theequation ）\jsInhibitGlue| のように和文かっこ
 %    を使うことも可能です。
 %
 %    \begin{macrocode}
@@ -6324,7 +6324,7 @@
 %    |amsmath| パッケージを使う場合は |\tagform@| を次のように修正します。
 %
 %    \begin{macrocode}
-% \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip\@@italiccorr）}}
+% \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip\@@italiccorr ）}}
 %    \end{macrocode}
 %
 % \subsection{フロート}
@@ -7177,7 +7177,7 @@
 % とりあえずコメントアウトしておきますので，必要に応じて生かしてください。
 %
 %    \begin{macrocode}
-% \def\@biblabel#1{\jsInhibitGlue［#1］\jsInhibitGlue}
+% \def\@biblabel#1{\jsInhibitGlue ［#1］\jsInhibitGlue}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7204,7 +7204,7 @@
 %        \@latex@warning
 %          {Citation `\@citeb' on page \thepage \space undefined}}%
 %        {\@cite@ofmt{\csname b@\@citeb\endcsname}}}}{#1}}
-% \def\@cite#1#2{\jsInhibitGlue［{#1\if@tempswa ，#2\fi}］\jsInhibitGlue}
+% \def\@cite#1#2{\jsInhibitGlue ［{#1\if@tempswa ，#2\fi}］\jsInhibitGlue}
 %    \end{macrocode}
 %
 % 引用番号を上ツキの 1）のようなスタイルにするには次のようにします。
