@@ -10404,7 +10404,7 @@
       \ClassWarning\bxjs@clsname
        {Main language is invalid, thus the fallback\MessageBreak
         definitions will be employed}%
-      \bxjs@pandoc@lang@ja
+      \bxjs@pandoc@polyglossia@ja
 %    \end{macrocode}
 % 言語名が非空ならば、本来の |polyglossia| の処理を実行する。
 %    \begin{macrocode}
@@ -10430,13 +10430,13 @@
   \fi}
 %    \end{macrocode}
 %
-% \begin{macro}{\bxjs@pandoc@lang@ja}
+% \begin{macro}{\bxjs@pandoc@polyglossia@ja}
 % Pandoc側で |lang=ja| が指定されていた場合の処理。
 % この場合はPolyglossiaの処理を無効化するためにダミーの定義を行う。
 % その時点でダミーの |\setotherlanguage(s)| を定義する。
 %    \begin{macrocode}
-\@onlypreamble\bxjs@pandoc@lang@ja
-\def\bxjs@pandoc@lang@ja{%
+\@onlypreamble\bxjs@pandoc@polyglossia@ja
+\def\bxjs@pandoc@polyglossia@ja{%
   \renewcommand*\setmainlanguage[2][]{}%
   \newcommand*\setotherlanguage[2][]{%
     \ifblank{##2}{}{%else
@@ -10488,7 +10488,7 @@
     \ClassWarning\bxjs@clsname
      {Main language is invalid, so fallback\MessageBreak
       definitions will be employed}%
-    \bxjs@pandoc@lang@ja
+    \bxjs@pandoc@polyglossia@ja
 %    \end{macrocode}
 % ない場合は、本来の |babel| の処理を実行する。
 %    \begin{macrocode}
@@ -10510,11 +10510,11 @@
   \fi}
 %    \end{macrocode}
 % 
-% \begin{macro}{\bxjs@pandoc@lang@ja}
+% \begin{macro}{\bxjs@pandoc@babel@ja}
 % Pandoc側で |lang=ja| が指定されていた場合の処理。
 %    \begin{macrocode}
-\@onlypreamble\bxjs@pandoc@lang@ja
-\def\bxjs@pandoc@lang@ja{%
+\@onlypreamble\bxjs@pandoc@babel@ja
+\def\bxjs@pandoc@babel@ja{%
   \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
@@ -10550,6 +10550,13 @@
 \if l\jsEngine
   \pandocSkipLoadPackage{xeCJK}
   \providecommand*{\setCJKmainfont}{\setmainjfont}
+\fi
+%    \end{macrocode}
+% ムニャムニャムニャ。
+%    \begin{macrocode}
+\if x\jsEngine
+  \expandafter\g@addto@macro\csname opt@xeCJK.sty\endcsname{%
+    ,space}
 \fi
 %    \end{macrocode}
 %

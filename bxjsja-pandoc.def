@@ -77,7 +77,7 @@
       \ClassWarning\bxjs@clsname
        {Main language is invalid, thus the fallback\MessageBreak
         definitions will be employed}%
-      \bxjs@pandoc@lang@ja
+      \bxjs@pandoc@polyglossia@ja
     }{%else
       \ClassWarning\bxjs@clsname
        {Main language is valid (##2),\MessageBreak
@@ -92,8 +92,8 @@
   \ifx\bxjs@polyglossia@options\relax
     \csundef{ver@polyglossia.sty}%
   \fi}
-\@onlypreamble\bxjs@pandoc@lang@ja
-\def\bxjs@pandoc@lang@ja{%
+\@onlypreamble\bxjs@pandoc@polyglossia@ja
+\def\bxjs@pandoc@polyglossia@ja{%
   \renewcommand*\setmainlanguage[2][]{}%
   \newcommand*\setotherlanguage[2][]{%
     \ifblank{##2}{}{%else
@@ -120,7 +120,7 @@
     \ClassWarning\bxjs@clsname
      {Main language is invalid, so fallback\MessageBreak
       definitions will be employed}%
-    \bxjs@pandoc@lang@ja
+    \bxjs@pandoc@polyglossia@ja
   \else
     \ClassWarning\bxjs@clsname
      {Main language is valid,\MessageBreak
@@ -132,8 +132,8 @@
   \ifx\bxjs@babel@options\relax
     \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \fi}
-\@onlypreamble\bxjs@pandoc@lang@ja
-\def\bxjs@pandoc@lang@ja{%
+\@onlypreamble\bxjs@pandoc@babel@ja
+\def\bxjs@pandoc@babel@ja{%
   \expandafter\let\csname ver@babel.sty\endcsname\@undefined
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
@@ -149,6 +149,10 @@
 \if l\jsEngine
   \pandocSkipLoadPackage{xeCJK}
   \providecommand*{\setCJKmainfont}{\setmainjfont}
+\fi
+\if x\jsEngine
+  \expandafter\g@addto@macro\csname opt@xeCJK.sty\endcsname{%
+    ,space}
 \fi
 \g@addto@macro\bxjs@begin@document@hook{%
   \@tempswafalse
