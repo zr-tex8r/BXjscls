@@ -8470,7 +8470,11 @@
 %
 % 欧文総称フォント命令で和文フォントが連動するように修正する。
 % その他の和文フォント関係の定義を行う。
+%
+% \Note 2020-02-02のNFSSの改修に対する |jsclasses| の対策くぉ
+% 取り入れた。
 %    \begin{macrocode}
+\ifx\@rmfamilyhook\@undefined  % old
 \DeclareRobustCommand\rmfamily
   {\not@math@alphabet\rmfamily\mathrm
    \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}
@@ -8480,6 +8484,25 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+\g@addto@macro\bxjs@begin@document@hook{%
+  \ifx\mweights@init\@undefined\else  % mweights.sty is loaded
+    % my definitions above should have been overwritten, recover it!
+    % \selectfont is executed twice but I don't care about speed...
+    \expandafter\g@addto@macro\csname rmfamily \endcsname
+      {\kanjifamily\mcdefault\selectfont}%
+    \expandafter\g@addto@macro\csname sffamily \endcsname
+      {\kanjifamily\gtdefault\selectfont}%
+    \expandafter\g@addto@macro\csname ttfamily \endcsname
+      {\kanjifamily\gtdefault\selectfont}%
+  \fi}
+\else                          % 2020-02-02
+\g@addto@macro\@rmfamilyhook
+  {\prepare@family@series@update@kanji{mc}\mcdefault}
+\g@addto@macro\@sffamilyhook
+  {\prepare@family@series@update@kanji{gt}\gtdefault}
+\g@addto@macro\@ttfamilyhook
+  {\prepare@family@series@update@kanji{gt}\gtdefault}
+\fi
 \ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
