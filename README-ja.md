@@ -98,6 +98,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 1.9j 〈2020/02/05〉
+      - jsclasses の 2020/02/02 と同期。
+          + NFSS の改修に対応した。
   * Version 1.9i 〈2019/11/24〉
       - Pandoc モードを最新の Pandoc に対応させる。
   * Version 1.9h 〈2019/07/27〉

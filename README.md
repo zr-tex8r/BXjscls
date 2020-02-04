@@ -88,6 +88,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 1.9j 〈2020/02/05〉
+      - Sync with jsclasses 2020/02/02.
   * Version 1.9i 〈2019/11/24〉
   * Version 1.9h 〈2019/07/27〉
   * Version 1.9g 〈2019/06/23〉
