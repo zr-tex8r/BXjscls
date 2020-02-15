@@ -214,6 +214,8 @@
   \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
   \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
   \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
+\def\bxjs@setjbasefontsize#1{%
+  \setkeys{bxjs}{jbase=#1}}
 \newif\ifjsc@mag
 \newif\ifjsc@mag@xreal
 \DeclareOption{8pt}{\bxjs@setbasefontsize{8pt}}

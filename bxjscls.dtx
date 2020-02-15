@@ -875,6 +875,12 @@
   \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
   \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
 %    \end{macrocode}
+%
+% \TODO 恐らく |14pt| と |base=14.4pt| 等の関係も全く等価であるべき。
+%    \begin{macrocode}
+\def\bxjs@setjbasefontsize#1{%
+  \setkeys{bxjs}{jbase=#1}}
+%    \end{macrocode}
 % \end{macro}
 %
 % |\ifjsc@mag| は「|\mag| を使うか」を表すスイッチ。
