@@ -486,8 +486,8 @@
 \bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
-  \setCJKmainfont[BoldFont=ipaexg.ttf]{ipaexm.ttf}
-  \setCJKsansfont[BoldFont=ipaexg.ttf]{ipaexg.ttf}
+  \setCJKmainfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiMincho-Regular.otf}
+  \setCJKsansfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiGothic-Medium.otf}
 \else
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]% v0.2a
@@ -585,8 +585,8 @@
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }
-  \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
-  \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+  \setmainjfont[BoldFont=HaranoAjiGothic-Medium.otf,JFM=ujis]{HaranoAjiMincho-Regular.otf}
+  \setsansjfont[BoldFont=HaranoAjiGothic-Medium.otf,JFM=ujis]{HaranoAjiGothic-Medium.otf}
 \else
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@tmpa]{luatexja-preset}%

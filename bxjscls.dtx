@@ -9773,15 +9773,16 @@
 %
 % |\jsJaFont| が指定された場合は、その値をオプションと
 % して |zxjafont| を読み込む。
-% 非指定の場合はIPAexフォントを使用する。
+% 非指定の場合は原ノ味フォントを使用する。
+% \Note 2.0版より既定をIPAexから原ノ味に変更。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{f}
 \let\bxjs@jafont@paren\@gobble
 \bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
-  \setCJKmainfont[BoldFont=ipaexg.ttf]{ipaexm.ttf}
-  \setCJKsansfont[BoldFont=ipaexg.ttf]{ipaexg.ttf}
+  \setCJKmainfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiMincho-Regular.otf}
+  \setCJKsansfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiGothic-Medium.otf}
 \else
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]% v0.2a
@@ -9968,9 +9969,9 @@
 %
 % |\jsJaFont| が指定された場合は、その値をオプションと
 % して |luatexja-preset| を読み込む。
-% 非指定の場合は、|luatexja-preset| パッケージの |ipaex|
-% オプション（IPAexフォント使用）と等価な設定を用いる
+% 非指定の場合は原ノ味フォントを指定する
 % （|luatexja-preset| は読み込まない）。
+% \Note 2.0版より既定をIPAexから原ノ味に変更。
 %    \begin{macrocode}
 \bxjs@adjust@jafont{t}
 \ifx\bxjs@tmpa\bxjs@@noEmbed
@@ -9981,8 +9982,8 @@
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \ifx\bxjs@tmpa\@empty
   \defaultjfontfeatures{ Kerning=Off }
-  \setmainjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexMincho}
-  \setsansjfont[BoldFont=IPAexGothic,JFM=ujis]{IPAexGothic}
+  \setmainjfont[BoldFont=HaranoAjiGothic-Medium.otf,JFM=ujis]{HaranoAjiMincho-Regular.otf}
+  \setsansjfont[BoldFont=HaranoAjiGothic-Medium.otf,JFM=ujis]{HaranoAjiGothic-Medium.otf}
 \else
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@tmpa]{luatexja-preset}%
