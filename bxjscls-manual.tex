@@ -12,8 +12,8 @@
   \renewcommand*{\XeLaTeX}{XeLaTeX}}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{1.9k}
-\newcommand{\PkgDate}{2020/02/15}
+\newcommand{\PkgVersion}{2.0}
+\newcommand{\PkgDate}{2020/03/25}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -262,8 +262,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \begin{quote}\small\begin{verbatim}
 \documentclass[a4paper,twocolumn]{article}
 \usepackage{zxjatype}
-\setCJKmainfont[BoldFont=IPAexGothic]{IPAexMincho}% 明朝→IPAex明朝
-\setCJKsansfont[BoldFont=IPAexGothic]{IPAexGothic}% ゴシック→IPAexゴシック
+\setCJKmainfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiMincho-Regular.otf}
+\setCJKsansfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiGothic-Medium.otf}
 \end{verbatim}\end{quote}
 
 |jafont| を指定した場合は：
@@ -291,7 +291,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \begin{quote}\small\begin{verbatim}
 \documentclass[b5paper,9pt]{ltjsarticle}
 \usepackage{luatexja-fontspec}
-\usepackage[ipaex]{luatexja-preset}
+\usepackage[haranoaji]{luatexja-preset}
 \end{verbatim}\end{quote}
 
 |jafont| を指定した場合は：
@@ -364,8 +364,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   \Note \Pkg{hyperref}のパッケージオプションで和文文字を含む文書情報を
   指定することはできない。
   （\Pkg{hyperref}の制限仕様。）
-\item |jafont| が無い場合の既定のフォント設定は多くのエンジンに
-  おいて「IPAexフォント使用」であるが、(u){\pLaTeX}だけは異なっていて
+\item (u){\pLaTeX}において、
+  |jafont| が無い場合の既定のフォント設定は
   「何も指定しない状態」（JSクラスと同様）である。
   すなわち実際に使われる物理フォントの選択はDVIウェアの設定に
   委ねられている。
@@ -590,7 +590,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   エンジンが |platex| か |uplatex| の時は |ja| の
   既定値は |standard| である。
   それ以外の場合は、一応 |minimal| とするが、
-  明示的な指定が推奨される。
+  明示的な指定が推奨される
+  （2.0版で正式に非推奨の扱いとなった）。
 \item |jafont=|\Meta{名前}\Means
   「和文フォントプリセット指定」の名前を設定する。
   \Note \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
@@ -838,6 +839,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \end{itemize}
 
 \paragraph{旧版との互換用のオプション}\mbox{}
+
+2.0版以降では、これらのオプションの使用は\jemph{非推奨}である。
 
 \begin{itemize}
 \item |zw|\Means

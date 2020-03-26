@@ -21,7 +21,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * 必須パッケージ：
       - keyval
       - calc
-      - geometry
+      - geometry（v5.0以降）
   * standard 和文ドライバで連携するパッケージ：
       - (pdf)LaTeX の場合： 
         CJK / bxcjkjatype（v0.2c以降）
@@ -33,6 +33,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
       - type1cm ： `magstyle` が `real`/`xreal` である場合
       - pxchfon（v0.5以降）： pLaTeX で `jafont` を指定した場合
       - zxjafont（v0.2a以降）： XeLaTeX で `jafont` を指定した場合
+      - bxwareki ： 日付の和暦表示機能を使う場合
   * エンジンが (u)pTeX 以外で、かつ和文ドライバが standard 以外の場合、
     そのエンジンに対応する日本語処理パッケージが必要となる。
 
@@ -98,6 +99,12 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.0  〈2020/03/25〉
+      - geometry 4.x 版のサポートを廃止した。
+      - 開発者命令 `\ifdraft` を廃止した。
+      - 和暦の処理に関して bxwareki パッケージを必須とする。
+      - 旧版との互換性のためのオプション（`dvipdfmx-if-dvi` など）を
+        非推奨の扱いとする。
   * Version 1.9k 〈2020/02/15〉
       - バグ修正。（`12Q` 等を使えるようにする。）
   * Version 1.9j 〈2020/02/05〉

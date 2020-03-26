@@ -21,7 +21,7 @@ packages that provide capability of Japanese typesetting.
   * Prerequisite packages:
       - keyval
       - calc
-      - geometry
+      - geometry (v5.0+)
   * Packages that the standard ja-driver cooperates with:
       - On (pdf)LaTeX:
         CJK + bxcjkjatype (v0.2c+)
@@ -33,6 +33,7 @@ packages that provide capability of Japanese typesetting.
       - type1cm: when `magstyle` is `nomag`/`nomag*`
       - pxchfon (v0.5+): when `jafont` is used on pLaTeX
       - zxjafont (v0.2a+):  when `jafont` is used on XeLaTeX
+      - bxwareki: when the wareki feature is used
   * When you use ja-drivers other than standard, you generally need
     packages for processing Japanese documents that the employed
     combination of the ja-driver and the engine supports.
@@ -88,6 +89,13 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.0  〈2020/03/25〉
+      - Drop the support for geometry v4.x.
+      - Abolish a developer-level command `\ifdraft`.
+      - Now bxwareki package is required for using features on wareki
+        (Japanese calendar) provided by the classes.
+      - Some options provided for compatibility (`dvipdfmx-if-dvi` etc)
+        are now marked as deprecated.
   * Version 1.9k 〈2020/02/15〉
   * Version 1.9j 〈2020/02/05〉
       - Sync with jsclasses 2020/02/02.
