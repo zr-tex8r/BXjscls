@@ -1418,13 +1418,17 @@
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 %    \end{macrocode}
 %
-% 「もしDVIモードであればドライバを |dvipdfmx| にする」
-% というオプション。
-% \Note 1.2版で |dvi| オプションが新設されたが、互換性のため
-% このオプションも残す。
+% |dvipdfmx-if-dvi| は互換性のためのオプションで、|dvi=dvipdfmx| と
+% 同値である。
+% \Note 2.0版より |dvipdfmx-if-dvi| は非推奨となった。
 %    \begin{macrocode}
 \DeclareOption{dvipdfmx-if-dvi}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {The old option 'dvipdfmx-if-dvi' is DEPRECATED\MessageBreak
+    and may be abolished in future!\MessageBreak
+    You should write 'dvi=dvipdfmx' instead}%
   \setkeys{bxjs}{dvi=dvipdfmx}}
+
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -2205,12 +2209,19 @@
 % 値が未指定の場合は |minimal| に変える。
 % ただしエンジンが{(u)\pTeX}である場合は |standard|
 % に変える。
+% \Note {(u)\pTeX}以外で |ja| を省略するのは2.0版より非推奨となった。
 %    \begin{macrocode}
 \def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
   \ifx j\jsEngine
     \def\bxjs@jadriver{standard}
   \else
+    \ClassWarningNoLine\bxjs@clsname
+     {The option 'ja' is MISSING!!\MessageBreak
+      So 'ja=minimal' is assumed as fallback, but\MessageBreak
+      such implicit setting is now DEPRECATED!\MessageBreak
+      You should write 'ja=minimal' explicitly,\MessageBreak
+      if it is intended}
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi

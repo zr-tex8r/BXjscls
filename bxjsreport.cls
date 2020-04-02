@@ -425,7 +425,12 @@
   \def\bxjs@driver@opt{xetex}%
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 \DeclareOption{dvipdfmx-if-dvi}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {The old option 'dvipdfmx-if-dvi' is DEPRECATED\MessageBreak
+    and may be abolished in future!\MessageBreak
+    You should write 'dvi=dvipdfmx' instead}%
   \setkeys{bxjs}{dvi=dvipdfmx}}
+
 \newif\ifbxjs@bigcode \bxjs@bigcodetrue
 \DeclareOption{nobigcode}{%
   \bxjs@bigcodefalse}
@@ -743,6 +748,12 @@
   \ifx j\jsEngine
     \def\bxjs@jadriver{standard}
   \else
+    \ClassWarningNoLine\bxjs@clsname
+     {The option 'ja' is MISSING!!\MessageBreak
+      So 'ja=minimal' is assumed as fallback, but\MessageBreak
+      such implicit setting is now DEPRECATED!\MessageBreak
+      You should write 'ja=minimal' explicitly,\MessageBreak
+      if it is intended}
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
