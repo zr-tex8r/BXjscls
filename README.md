@@ -89,7 +89,10 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.0a 〈2020/04/04〉
   * Version 2.0  〈2020/03/25〉
+      - Now the default Japanese fonts on XeLaTeX/LuaLaTeX are "Harano
+        Aji Fonts". (Formerly "IPAex Fonts" were used.)
       - Drop the support for geometry v4.x.
       - Abolish a developer-level command `\ifdraft`.
       - Now bxwareki package is required for using features on wareki

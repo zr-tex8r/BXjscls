@@ -7,13 +7,12 @@
 %\usepackage{url}
 \usepackage[unicode,colorlinks,hyperfootnotes=false]{hyperref}
 \hypersetup{linkcolor=myblue,urlcolor=mygreen}
-\usepackage{metalogo}
-\pdfstringdefDisableCommands{%
-  \renewcommand*{\XeLaTeX}{XeLaTeX}}
+\usepackage{bxtexlogo}
+\bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.0}
-\newcommand{\PkgDate}{2020/03/25}
+\newcommand{\PkgVersion}{2.0a}
+\newcommand{\PkgDate}{2020/04/04}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -22,12 +21,6 @@
 \newcommand{\wbr}{\linebreak[0]}
 \newcommand{\nobr}{\nolinebreak[4]}
 \newcommand{\xast}{\mbox{}\mbox{$^*$}}
-\providecommand{\pTeX}{p\TeX}
-\providecommand{\pLaTeX}{p\LaTeX}
-\providecommand{\upTeX}{u\pTeX}
-\providecommand{\upLaTeX}{u\pLaTeX}
-\providecommand{\pdfLaTeX}{pdf\LaTeX}
-\providecommand{\BibTeX}{Bib\TeX}
 %-----------------------------------------------------------
 \begin{document}
 \title{\Pkg{BXjscls} パッケージ\\
@@ -266,6 +259,9 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \setCJKsansfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiGothic-Medium.otf}
 \end{verbatim}\end{quote}
 
+\Note 2.0版より、既定の和文フォントが「IPAexフォント」から
+「原ノ味フォント」に変更された。
+
 |jafont| を指定した場合は：
 \begin{quote}\small\begin{verbatim}
 \documentclass[a4paper,xelatex,ja=standard,jafont=ms]{bxjsarticle}
@@ -293,6 +289,9 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \usepackage{luatexja-fontspec}
 \usepackage[haranoaji]{luatexja-preset}
 \end{verbatim}\end{quote}
+
+\Note 2.0版より、既定の和文フォントが「IPAexフォント」から
+「原ノ味フォント」に変更された。
 
 |jafont| を指定した場合は：
 \begin{quote}\small\begin{verbatim}
@@ -589,13 +588,12 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |standard|、|pandoc| がある。
   エンジンが |platex| か |uplatex| の時は |ja| の
   既定値は |standard| である。
-  それ以外の場合は、一応 |minimal| とするが、
-  明示的な指定が推奨される
-  （2.0版で正式に非推奨の扱いとなった）。
+  それ以外の場合は、一応 |minimal| となるが、
+  2.0版以降では |ja| の省略は\jemph{非推奨}である。
 \item |jafont=|\Meta{名前}\Means
   「和文フォントプリセット指定」の名前を設定する。
-  \Note \ref{sec:Basic}節で解説した通り、standard和文ドライバでは |jafont|
-  の値が利用される。
+  \Note standard和文ドライバでは |jafont| の値が利用される。
+  詳細は\ref{ssec:ja-font-settings}節を参照。
   \par
   プリセット指定の値が丸括弧を含む（例えば“|sourcehan(-otc)|”）場合、
   以下のように解釈される。
@@ -680,7 +678,9 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   既定値は真。
   \Note つまり「JSクラスの一種である」と判定されると不都合な場合に、
   |disguise-js=false| を指定する。
-\item |bigcode|\Means
+\item |bigcode|（既定
+    \footnote{2.0版より常に |bigcode| が既定になる。
+      昔の版では{\TeX}エンジンの版に応じて既定値を変えていた。}）\Means
   {\upTeX}エンジンとdvipdfmxの組合せで\Pkg{hyperref}パッケージを
   利用する時に適用されるToUnicode CMapとして |UTF8-UTF16| を指定する。
   PDFの文書情報の文字列にBMP外の文字が含まれる場合には
@@ -690,14 +690,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |nobigcode|\Means
   |bigcode| の否定。ToUnicode CMapとして |UTF8-UCS2| を指定する。
   この場合は文書情報の文字列にBMP外の文字を使用できない。
-  \Note |UTF8-UTF16| のファイルが利用できるかを確実に判定するのは
-  困難なため、|bigcode| の既定値は次のようなアドホックな方法で
-  決めている：
-  {\TeX}エンジンのバージョンが3.14159265以上
-  \footnote{{\TeX}のバージョン3.14159265は2014年1月にリリースされた。}
-  である場合は、
-  （{\TeX}環境がある程度新しく、|UTF8-UTF16| が利用可能と思われるので）
-  |bigcode| を既定とし、それ以外は |nobigcode| を既定とする。
 \item |precise-text=|\Meta{真偽値}\Means
   {\XeTeX}エンジンにおいて、「ActualText生成機能」を有効化する
   \footnote{つまり、|\XeTeXgenerateactualtext=1| を行う。
@@ -1129,9 +1121,84 @@ minimalに配置している。}%
 |minimal| を用いる意義がほとんどないため、
 |standard| が既定値になっている。
 
-\Note 1.8版より、(u){\pLaTeX}以外のエンジンについては、
-和文ドライバを明示指定することを推奨する。
+\Note 2.0版より、(u){\pLaTeX}以外のエンジンについては、
+和文ドライバ指定を省略することは非推奨の扱いとなった。
+（既に1.8版で明示指定が推奨されていた。）
 
+%-------------------
+\subsection{standardドライバで用いられる日本語処理機構}
+\label{ssec:ja-package}
+
+\begin{itemize}
+\item \pLaTeX、\upLaTeX（および{\pLaTeX-ng}）の場合\Means
+  エンジン自体が日本語処理の能力を持っているので
+  それが常に用いられる。
+\item \pdfLaTeX{}の場合\Means
+  \Pkg{bxcjkjatype}パッケージが |whole| と |autotilde| の
+  オプション付で読み込まれる。
+\item \XeLaTeX{}の場合\Means
+  \Pkg{zxjatype}パッケージが読み込まれる。
+\item \LuaLaTeX{}の場合\Means
+  \Pkg{luatexja}パッケージが読み込まれる。
+\end{itemize}
+
+%-------------------
+\subsection{和文フォント設定}
+\label{ssec:ja-font-settings}
+
+|jafont| が指定されない場合は、JSクラスと同様の
+「明朝・ゴシックで各1ウェイトのみを用いて、
+明朝の太字がゴシックになる」
+という設定が適用される。
+
+明朝・ゴシックのファミリとして用いられる物理フォントの
+割当（マッピング）は以下のようになる：
+\begin{itemize}
+\item \pLaTeX、\upLaTeX{}の場合\Means
+  クラスでは何もマッピングを設定しない。
+  従って、DVIウェアでの設定が適用される。
+\item \pdfLaTeX{}の場合\Means
+  \Pkg{bxcjkjatype}パッケージの既定設定となり、
+  従って、Type1形式のIPAexフォント（\Pkg{ipaex-type1}で提供される）
+  が使用される。
+\item \XeLaTeX{}の場合\Means
+  「原ノ味フォント」が使用される。
+  \Pkg{zxjafont}パッケージの |haranoaji| プリセットの
+  単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
+\item \LuaLaTeX{}の場合\Means
+  「原ノ味フォント」が使用される。
+  \Pkg{luatexja-preset}パッケージの |haranoaji| プリセットの
+  単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
+\end{itemize}
+
+\Note {\TeX} Live 2019（およびその前の数年間）では、DVIウェアでの
+和文フォントマッピングの既定設定は「IPAexフォント」であった。
+（つまり、(u){\pLaTeX}では既定で「IPAexフォント」が使われる。）
+これに合わせる形で、{\XeLaTeX}・{\LuaLaTeX}での既定設定も、
+以前は「IPAexフォント」としていた。
+ところが、{\TeX} Live 2020において、DVIウェアの既定のマッピングを
+「原ノ味フォント」に変更することが予定されている。
+従って、{\XeLaTeX}・{\LuaLaTeX}での既定設定についても、
+2.0版より「原ノ味フォント」に変更された。
+Type1形式の原ノ味フォントは存在しないため、
+{\pdfLaTeX}では\Pkg{ipaex-type1}のフォントが引き続き使用される。
+\par\medskip
+
+|jafont| で和文物理フォントの割当を指定した場合、
+具体的には以下のように処理される：
+\begin{itemize}
+\item \pLaTeX、\upLaTeX{}の場合\Means
+  \Pkg{pxchfon}パッケージが「|jafont| の値」をオプション
+  に指定した形で読み込まれる。
+\item \pdfLaTeX{}の場合\Means
+  \Pkg{bxcjkjatype}のオプションに「|jafont| の値」が指定される。
+\item \XeLaTeX{}の場合\Means
+  \Pkg{zxjafont}パッケージが「|jafont| の値」をオプション
+  に指定した形で読み込まれる。
+\item \LuaLaTeX{}の場合\Means
+  \Pkg{luatexja-preset}パッケージが「|jafont| の値」をオプション
+  に指定した形で読み込まれる。
+\end{itemize}
 
 %===========================================================
 \section{和文ドライバパラメタ}
