@@ -10006,6 +10006,7 @@
 % 欧文総称フォント命令で和文フォントが連動するように修正する。
 % その他の和文フォント関係の定義を行う。
 %    \begin{macrocode}
+\@ifpackagelater{luatexja}{2016/03/31}{}{%else
 \DeclareRobustCommand\rmfamily
   {\not@math@alphabet\rmfamily\mathrm
    \romanfamily\rmdefault\kanjifamily\mcdefault\selectfont}
@@ -10015,8 +10016,13 @@
 \DeclareRobustCommand\ttfamily
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
+}
+\long\def\jttdefault{\gtdefault}
+\unless\ifx\@ltj@match@familytrue\@undefined
+  \@ltj@match@familytrue
+\fi
 \g@addto@macro\bxjs@begin@document@hook{%
-  \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}
+  \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}%
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
   \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%
 \bxjs@if@sf@default{%
