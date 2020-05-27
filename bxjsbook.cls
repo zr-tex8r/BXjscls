@@ -441,6 +441,18 @@
   \bxjs@oldfontcommandsfalse}
 \DeclareOption{oldfontcommands}{%
   \bxjs@oldfontcommandstrue}
+\DeclareOption{winjis}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `winjis' option}%
+}
+\DeclareOption{mingoth}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `mingoth' option}%
+}
+\DeclareOption{jis}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `jis' option}%
+}
 \DeclareOption*{%
   \def\bxjs@next{\bxjs@safe@setkeys{bxjs}}%
   \expandafter\bxjs@next\expandafter{\CurrentOption}}

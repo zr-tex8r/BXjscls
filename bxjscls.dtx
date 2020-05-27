@@ -1478,6 +1478,24 @@
 %
 % \end{ZRnote}
 %
+% \paragraph{JSクラスのオプションで無効なもの \ZRX}
+% |ltjsclasses| に倣って警告を出す。
+%
+%    \begin{macrocode}
+\DeclareOption{winjis}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `winjis' option}%
+}
+\DeclareOption{mingoth}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `mingoth' option}%
+}
+\DeclareOption{jis}{%
+  \ClassWarningNoLine\bxjs@clsname
+   {This class does not support `jis' option}%
+}
+%    \end{macrocode}
+%
 % \paragraph{keyval型のオプション \ZRX}
 % \mbox{}
 % \begin{ZRnote}
