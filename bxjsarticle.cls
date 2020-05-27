@@ -626,6 +626,10 @@
 \bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
 \DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
 \DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
+\newif\ifbxjs@strong@cmd \bxjs@strong@cmdtrue
+\let\bxjs@kv@strongcmd@true\bxjs@strong@cmdtrue
+\let\bxjs@kv@strongcmd@false\bxjs@strong@cmdfalse
+\define@key{bxjs}{strong-cmd}[true]{\bxjs@set@keyval{strongcmd}{#1}{}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -920,6 +924,16 @@
 \ifbxjs@fix@at@cmd
   \def\@{\bxjs@SE{}}
 \fi
+\ifbxjs@strong@cmd\jsAtEndOfClass{%
+  \ifx\strong\@undefined\ifx\strongenv\@undefined
+    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
+    \DeclareTextFontCommand{\strong}{\strongenv}%
+    \@ifdefinable{\strongfontdeclare}{\bxjs@protected\def\strongfontdeclare#1{%
+      \bxjs@strong@font@declare@a#1,\@nil}}%
+    \def\bxjs@strong@font@declare@a#1,#2\@nil{\def\bxjs@strong@font{#1}}%
+    \def\bxjs@strong@font{\bfseries}%
+  \fi\fi
+}\fi
 \def\bxjs@tmpa{\def\set@fontsize##1##2##3}
 \expandafter\bxjs@tmpa\expandafter{%
   \set@fontsize{#1}{#2}{#3}%

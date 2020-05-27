@@ -1976,6 +1976,16 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@strong@cmd}
+% 〔スイッチ〕 |strong-cmd| の指定値。
+%    \begin{macrocode}
+\newif\ifbxjs@strong@cmd \bxjs@strong@cmdtrue
+\let\bxjs@kv@strongcmd@true\bxjs@strong@cmdtrue
+\let\bxjs@kv@strongcmd@false\bxjs@strong@cmdfalse
+\define@key{bxjs}{strong-cmd}[true]{\bxjs@set@keyval{strongcmd}{#1}{}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
@@ -2667,6 +2677,35 @@
 \fi
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{ZRnote}
+% \begin{macro}{\strong}
+% \begin{environment}{strongenv}
+% |fontspec| で提供される |\strong| 命令と |strongenv| 環境を
+% 全てのエンジンで使えるようにする。
+% \Note 
+%    \begin{macrocode}
+\ifbxjs@strong@cmd\jsAtEndOfClass{%
+  \ifx\strong\@undefined\ifx\strongenv\@undefined
+    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
+    \DeclareTextFontCommand{\strong}{\strongenv}%
+%    \end{macrocode}
+% |fontspec| と互換の |\strongfontdeclare| 命令も提供する。
+% ただし、BXJSでの |\strong| は多段階には対応しないので、
+% 引数のコンマ区切りリストのうちの先頭の項目だけが意味をもつ。
+% 既定の設定は |\bfseries|（太字）である。
+% \Note |\strongfontdeclare| は試験的機能とする。
+%    \begin{macrocode}
+    \@ifdefinable{\strongfontdeclare}{\bxjs@protected\def\strongfontdeclare#1{%
+      \bxjs@strong@font@declare@a#1,\@nil}}%
+    \def\bxjs@strong@font@declare@a#1,#2\@nil{\def\bxjs@strong@font{#1}}%
+    \def\bxjs@strong@font{\bfseries}%
+  \fi\fi
+}\fi
+%    \end{macrocode}
+% \end{environment}
+% \end{macro}
+% \end{ZRnote}
 %
 % \section{フォントサイズ}
 %
