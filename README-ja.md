@@ -99,6 +99,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.1  〈2020/05/28〉
+      - fontspec と互換の `\strong` 命令・`strongenv` 環境を追加。
+      - 和文等幅フォントの挙動が ltjsclasses と異なるのを修正。
   * Version 2.0a 〈2020/04/04〉
       - 非推奨のオプションの一部について、警告を出す。
   * Version 2.0  〈2020/03/25〉
