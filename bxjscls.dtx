@@ -10401,6 +10401,21 @@
 %
 % keyvalのファミリは |bxjsPan| とする。
 %
+% \begin{macro}{\ifbxjs@jp@fix@strong}
+% 強調要素を補正するか。
+%    \begin{macrocode}
+\newif\ifbxjs@jp@fix@strong \bxjs@jp@fix@strongtrue
+%    \end{macrocode}
+% \end{macro}
+%
+% |fix-strong| オプションの処理。
+%    \begin{macrocode}
+\let\bxjs@kv@fixstrong@true\bxjs@jp@fix@strongtrue
+\let\bxjs@kv@fixstrong@false\bxjs@jp@fix@strongfalse
+\define@key{bxjsPan}{fix-strong}[true]{%
+  \bxjs@set@keyval{fixstrong}{#1}{}}
+%    \end{macrocode}
+%
 % 実際の |japaram| の値を適用する。
 %    \begin{macrocode}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
@@ -10739,6 +10754,23 @@
 \else
   \bxjs@fix@hyperref@unicode{true}
 \fi
+%    \end{macrocode}
+%
+%^^A----------------
+%\subsection{強調要素の補正}
+% |\textbf| をムニャムニャ。
+%    \begin{macrocode}
+\ifbxjs@jp@fix@strong\ifbxjs@strong@cmd
+  \let\orgtextbf\textbf
+  \DeclareRobustCommand\bxjstextbf[1]{%
+    \begingroup
+      \let\textbf\orgtextbf
+      \strong{#1}%
+    \endgroup}%
+  \g@addto@macro\bxjs@begin@document@hook{%
+    \let\textbf\bxjstextbf
+    \strongfontdeclare{\sffamily\bfseries}}
+\fi\fi
 %    \end{macrocode}
 %
 %^^A----------------
