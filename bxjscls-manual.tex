@@ -11,8 +11,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.1}
-\newcommand{\PkgDate}{2020/05/28}
+\newcommand{\PkgVersion}{2.2}
+\newcommand{\PkgDate}{2020/09/04}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -510,6 +510,10 @@ dvipdfmx mydoc
     なお、ここで使われる |zw| は常に（(u){\pLaTeX}でも）
     “規約上の全角幅”（|\jsZw|）を指す
     （和文フォント設定が未完了のため）。}
+\item 真偽値を引数にもつオプションについて、
+  引数を省略してキー名のみを指定した場合は、
+  引数に |true| を与えたものと見なされる。
+  例えば、|use-zw| というオプション指定は |use-zw=true| と等価になる。
 \end{itemize}
 
 %-------------------
@@ -582,8 +586,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   出力用紙サイズ設定
   （DVI出力の場合は所謂“papersize special出力”）
   を抑止する。
-  \Note JSクラスとは異なり、出力用紙サイズ設定のオプション |papersize|
-  は既定で有効である。
+  \Note JSクラスの |papersize| オプションの否定に相当する。
+  JSクラスとは異なり、|papersize| は既定で有効である。
   \Note 出力用紙サイズ設定を行う他のパッケージとの干渉に
   対する対策。
 \item |ja=|\Meta{名前}\Means
@@ -684,7 +688,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \Note つまり |\zw| の命令名が衝突する場合に、
   |use-zw=false| を指定する。
 \item |disguise-js=|\Meta{真偽値}\Means
-  JSクラス（例えば\Pkg{bxjsreport}の場合は\Pkg{jsbook}）
+  継承元のJSクラス（例えば\Pkg{bxjsbook}の場合は\Pkg{jsbook}）
   が読込済であるように振舞うか否か。
   既定値は真。
   \Note つまり「JSクラスの一種である」と判定されると不都合な場合に、
@@ -720,6 +724,11 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |a4varpaper|、|b5varpaper|\Means
   用紙サイズ指定オプション |a4var|、|b5var| の別名。
   \Note Pandocで |-V papersize=a4var| の指定を可能にするため。
+\item |custompaper|\Means
+  実際には何もしない用紙サイズ指定オプション。
+  \Note Pandocを使う際に「用紙サイズは |classoption=paper=...|
+  で指定するから |papersize| は不要だが何か指定しないといけない」
+  という場合に |-V papersize=custom| を指定する。
 \item |mag=|\Meta{整数}\Means
   版面拡大率（mag値）の直接設定。
   既定は基底フォントサイズから算出する。
@@ -824,9 +833,6 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
     \end{itemize}
   \item それ以外のクラスでは、本オプションは無効である。
   \end{itemize}
-\item |strong-cmd=|\Meta{真偽値}\Means
-  \Pkg{fontspec}パッケージと互換の\,|\strong|命令と
-  |strongenv|環境を定義するか。
 \end{itemize}
 
 \paragraph{jlreq文書クラスとの互換用のオプション}\mbox{}
@@ -867,7 +873,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |simple-ja-setup=false| と同値。
   \Note 以上の8個は1.9版より前で使われた。
 \item |textwidth-limit=|\Meta{整数}\Means
-  |textwidth-limit=|\Meta{整数}|zw| と同値。
+  |textwidth=|\Meta{整数}|zw| と同値。
   \Note 1.8版より前で使われた。
 \item |dvipdfmx-if-dvi|\Means
   |dvi=dvipdfmx| と同値。
@@ -1173,18 +1179,18 @@ minimalに配置している。}%
 明朝・ゴシックのファミリとして用いられる物理フォントの
 割当（マッピング）は以下のようになる：
 \begin{itemize}
-\item \pLaTeX、\upLaTeX{}の場合\Means
+\item \pLaTeX、\upLaTeX{}\Means
   クラスでは何もマッピングを設定しない。
   従って、DVIウェアでの設定が適用される。
-\item \pdfLaTeX{}の場合\Means
+\item \pdfLaTeX\Means
   \Pkg{bxcjkjatype}パッケージの既定設定となり、
   従って、Type1形式のIPAexフォント（\Pkg{ipaex-type1}で提供される）
   が使用される。
-\item \XeLaTeX{}の場合\Means
+\item \XeLaTeX\Means
   「原ノ味フォント」が使用される。
   \Pkg{zxjafont}パッケージの |haranoaji| プリセットの
   単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
-\item \LuaLaTeX{}の場合\Means
+\item \LuaLaTeX\Means
   「原ノ味フォント」が使用される。
   \Pkg{luatexja-preset}パッケージの |haranoaji| プリセットの
   単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
@@ -1206,15 +1212,15 @@ minimalに配置している。}%
 和文フォントプリセット（|jafont|）を指定した場合、
 具体的には以下のように処理される：
 \begin{itemize}
-\item \pLaTeX、\upLaTeX{}の場合\Means
+\item \pLaTeX、\upLaTeX\Means
   \Pkg{pxchfon}パッケージが「|jafont| の値」をオプション
   に指定した形で読み込まれる。
-\item \pdfLaTeX{}の場合\Means
+\item \pdfLaTeX\Means
   \Pkg{bxcjkjatype}のオプションに「|jafont| の値」が指定される。
-\item \XeLaTeX{}の場合\Means
+\item \XeLaTeX\Means
   \Pkg{zxjafont}パッケージが「|jafont| の値」をオプション
   に指定した形で読み込まれる。
-\item \LuaLaTeX{}の場合\Means
+\item \LuaLaTeX\Means
   \Pkg{luatexja-preset}パッケージが「|jafont| の値」をオプション
   に指定した形で読み込まれる。
 \end{itemize}
@@ -1281,6 +1287,31 @@ minimal和文ドライバには有効な和文ドライバパラメタは存在�
 \item |font={|\Meta{文字列}|}|\Means
   standard和文ドライバが利用する和文フォントパッケージについて
   追加のオプションを指定する。
+\item |strong-cmd=|\Meta{真偽値}\Means
+  \Pkg{fontspec}パッケージと互換の\,|\strong|命令と
+  |strongenv|環境を定義するか。
+  既定値は真。
+\end{itemize}
+
+%-------------------
+\subsection{pandoc和文ドライバの場合}
+
+standard用のものに加えて、以下の和文ドライバパラメタが存在する。
+
+\begin{itemize}
+\item |strong=|\Meta{値}\Means
+  |\strong| 命令・|strongenv| 環境で実際に適用される書体
+  （フォント変更命令）を選択する。
+  \begin{itemize}
+  \item |bold|（既定）\Means
+    太字（|\bfseries|）。
+  \item |sans|\Means
+    サンセリフ（|\sffamily|）。
+  \item |boldsans|\Means
+    太字サンセリフ（|\sffamily\bfseries|）。
+  \end{itemize}
+  \Note PandocモードではPandocの重要（Strong）要素は |\strong| 命令
+  で実現されるので、このパラメタの設定に追随する。
 \end{itemize}
 
 %===========================================================
@@ -1405,17 +1436,6 @@ vscale=0.944, vmarginratio=1:1
   和暦表示（|\和暦|）が有効な時の |\today| のテキスト中の年号
   （「年」より前の部分、例えば「平成28」）
   の部分を表すマクロ。
-
-\item |\strong{|\Meta{テキスト}|}|\Means
-  引数のテキストに、重要性を表す装飾を施す。
-  具体的には\,|\bfseries|（太字）が適用される。
-\item |strongenv|環境\Means
-  |\strong|の環境版。
-  \Note 以上の2つの機能は\Pkg{fontspec}パッケージとの互換を
-  目的としたものである。
-  |strong-cmd=false| 指定時はこれらの機能は無効になる。
-  ただし、\Pkg{fontspec}が読み込まれている場合は、
-  常にそちらの定義が維持される。
 \end{itemize}
 
 |label-section=modern| の場合に限り、以下の命令が利用できる。
@@ -1444,6 +1464,21 @@ vscale=0.944, vmarginratio=1:1
   これらのマクロが定義されている場合は、各々の内容のテキストが
   小節見出しおよび小々節見出しの表示形式として利用される。
   未定義の場合は |\thesub(sub)section| で代用される。
+\end{itemize}
+
+\subsubsection{standard和文ドライバで追加される命令}
+
+\begin{itemize}
+\item |\strong{|\Meta{テキスト}|}|\Means
+  引数のテキストに、重要性を表す装飾を施す。
+  具体的には\,|\bfseries|（太字）が適用される。
+\item |strongenv|環境\Means
+  |\strong|の環境版。
+  \Note 以上の2つの機能は\Pkg{fontspec}パッケージとの互換を
+  目的としたものである。
+  |strong-cmd=false| 指定時はこれらの機能は無効になる。
+  ただし、\Pkg{fontspec}が読み込まれている場合は、
+  常にそちらの定義が維持される。
 \end{itemize}
 
 %-------------------
@@ -1720,7 +1755,7 @@ Class bxjsarticle Warning: Some old font commands were used in text:
 \end{itemize}
 
 また、以下の命令により、文書中で一時的に警告の設定を変えられる。
-\footnote{これらの命令の効果はグルーピングの影響を受ける。}
+%\footnote{これらの命令の効果はグルーピングの影響を受ける。}
 
 \begin{itemize}
 \item |\allowoldfontcommands|\Means

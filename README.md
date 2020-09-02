@@ -89,6 +89,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.2  〈2020/09/04〉
   * Version 2.1  〈2020/05/28〉
   * Version 2.0a 〈2020/04/04〉
   * Version 2.0  〈2020/03/25〉

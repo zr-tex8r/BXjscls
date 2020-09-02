@@ -99,6 +99,14 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.2  〈2020/09/04〉
+      - `\strong` 命令・`strongenv` 環境の補填は standard 和文ドライバ
+        の機能に移した。
+      - pandoc 和文ドライバパラメタ `strong` を追加。
+      - `custompaper` オプションを追加。
+      - (試験的) pandoc 和文ドライバパラメタ `fix-strong`・`fix-code`
+        を追加。
+      - (試験的) 多数の用紙サイズ名オプションを追加。
   * Version 2.1  〈2020/05/28〉
       - fontspec と互換の `\strong` 命令・`strongenv` 環境を追加。
       - 和文等幅フォントの挙動が ltjsclasses と異なるのを修正。

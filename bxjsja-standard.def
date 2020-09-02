@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2020/05/28 v2.1  BXJS document classes]
+  [2020/09/04 v2.2  BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -38,6 +38,10 @@
 \let\bxjs@jp@font\@empty
 \define@key{bxjsStd}{font}{%
   \edef\bxjs@jp@font{#1}}
+\newif\ifbxjs@jp@strong@cmd \bxjs@jp@strong@cmdtrue
+\let\bxjs@kv@strongcmd@true\bxjs@jp@strong@cmdtrue
+\let\bxjs@kv@strongcmd@false\bxjs@jp@strong@cmdfalse
+\define@key{bxjs}{strong-cmd}[true]{\bxjs@set@keyval{strongcmd}{#1}{}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
 \ifbxjs@jp@jismmiv
@@ -76,6 +80,16 @@
 \else
   \def\bxjs@let@lenexpr{\edef}
 \fi
+\ifbxjs@jp@strong@cmd\jsAtEndOfClass{%
+  \ifx\strong\@undefined\ifx\strongenv\@undefined
+    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
+    \DeclareTextFontCommand{\strong}{\strongenv}%
+    \@ifdefinable{\strongfontdeclare}{\bxjs@protected\def\strongfontdeclare#1{%
+      \bxjs@strong@font@declare@a#1,\@nil}}%
+    \def\bxjs@strong@font@declare@a#1,#2\@nil{\def\bxjs@strong@font{#1}}%
+    \def\bxjs@strong@font{\bfseries}%
+  \fi\fi
+}\fi
 \ifjsWitheTeX
   \@tempdima=0.25mm
   \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
@@ -218,6 +232,17 @@
   \ifx$#1$\def\bxjs@tmpb{#2}%
   \else \let\bxjs@tmpb\relax
   \fi}
+\@onlypreamble\bxjs@resolve@jafont@paren
+\def\bxjs@resolve@jafont@paren#1{%
+  \def\bxjs@tmpb{\let#1}%
+  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\@onlypreamble\bxjs@resolve@jafont@paren@a
+\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
+  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
+  \else
+    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
+    \bxjs@tmpb\bxjs@tmpa
+  \fi}
 \newcommand*\jachar[1]{%
   \begingroup
     \jsLetHeadChar\bxjs@tmpa{#1}%
@@ -278,17 +303,6 @@
     }{}%
   }%
 }
-\@onlypreamble\bxjs@resolve@jafont@paren
-\def\bxjs@resolve@jafont@paren#1{%
-  \def\bxjs@tmpb{\let#1}%
-  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
-\@onlypreamble\bxjs@resolve@jafont@paren@a
-\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
-  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
-  \else
-    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
-    \bxjs@tmpb\bxjs@tmpa
-  \fi}
 \if j\jsEngine
 \def\bxjs@apply@kanjiskip{%
   \kanjiskip\@tempskipa}

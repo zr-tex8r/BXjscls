@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2020/05/28 v2.1  BXJS document classes]
+  [2020/09/04 v2.2  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsbook}
 \newif\ifjsc@needsp@tch
@@ -188,20 +188,36 @@
 \DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
 \DeclareOption{a5paper}{\bxjs@setpaper{a5paper}}
 \DeclareOption{a6paper}{\bxjs@setpaper{a6paper}}
-\DeclareOption{b4paper}{\bxjs@setpaper{{257truemm}{364truemm}}}
-\DeclareOption{b5paper}{\bxjs@setpaper{{182truemm}{257truemm}}}
-\DeclareOption{b6paper}{\bxjs@setpaper{{128truemm}{182truemm}}}
+\DeclareOption{b4paper}{\bxjs@setpaper{b4j}}
+\DeclareOption{b5paper}{\bxjs@setpaper{b5j}}
+\DeclareOption{b6paper}{\bxjs@setpaper{b6j}}
 \DeclareOption{a4j}{\bxjs@setpaper{a4paper}}
 \DeclareOption{a5j}{\bxjs@setpaper{a5paper}}
-\DeclareOption{b4j}{\bxjs@setpaper{{257truemm}{364truemm}}}
-\DeclareOption{b5j}{\bxjs@setpaper{{182truemm}{257truemm}}}
+\DeclareOption{b4j}{\bxjs@setpaper{b4j}}
+\DeclareOption{b5j}{\bxjs@setpaper{b5j}}
 \DeclareOption{a4var}{\bxjs@setpaper{{210truemm}{283truemm}}}
 \DeclareOption{b5var}{\bxjs@setpaper{{182truemm}{230truemm}}}
-\DeclareOption{a4varpaper}{\bxjs@setpaper{{210truemm}{283truemm}}}
-\DeclareOption{b5varpaper}{\bxjs@setpaper{{182truemm}{230truemm}}}
 \DeclareOption{letterpaper}{\bxjs@setpaper{letterpaper}}
 \DeclareOption{legalpaper}{\bxjs@setpaper{legalpaper}}
 \DeclareOption{executivepaper}{\bxjs@setpaper{executivepaper}}
+\def\bxjs@tmpb#1#2{\DeclareOption{#1}{\bxjs@setpaper{#2}}}
+\@for\bxjs@tmpa:={%
+  a0,a1,a2,c0,c1,c2,c3,c4,c5,c6,ansia,ansib,ansic,ansid,ansie%
+}\do{\edef\bxjs@next{%
+  \noexpand\bxjs@tmpb{\bxjs@tmpa paper}{\bxjs@tmpa paper}%
+}\bxjs@next}
+\bxjs@tmpb{screen}{screen}
+\@for\bxjs@tmpa:={0,1,2,3}\do{\edef\bxjs@next{%
+  \noexpand\bxjs@tmpb{b\bxjs@tmpa paper}{b\bxjs@tmpa j}%
+}\bxjs@next}
+\@for\bxjs@tmpa:={0,1,2,3,4,5,6}\do{\edef\bxjs@next{%
+  \noexpand\bxjs@tmpb{A\bxjs@tmpa paper}{a\bxjs@tmpa paper}%
+  \noexpand\bxjs@tmpb{B\bxjs@tmpa paper}{b\bxjs@tmpa paper}%
+}\bxjs@next}
+\DeclareOption{a4varpaper}{\bxjs@setpaper{{210truemm}{283truemm}}}
+\DeclareOption{b5varpaper}{\bxjs@setpaper{{182truemm}{230truemm}}}
+\DeclareOption{screenpaper}{\bxjs@setpaper{screen}}
+\DeclareOption{custompaper}{}
 \newif\if@landscape
 \@landscapefalse
 \DeclareOption{landscape}{\@landscapetrue}
@@ -635,10 +651,6 @@
 \bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
 \DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
 \DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
-\newif\ifbxjs@strong@cmd \bxjs@strong@cmdtrue
-\let\bxjs@kv@strongcmd@true\bxjs@strong@cmdtrue
-\let\bxjs@kv@strongcmd@false\bxjs@strong@cmdfalse
-\define@key{bxjs}{strong-cmd}[true]{\bxjs@set@keyval{strongcmd}{#1}{}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -933,16 +945,6 @@
 \ifbxjs@fix@at@cmd
   \def\@{\bxjs@SE{}}
 \fi
-\ifbxjs@strong@cmd\jsAtEndOfClass{%
-  \ifx\strong\@undefined\ifx\strongenv\@undefined
-    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
-    \DeclareTextFontCommand{\strong}{\strongenv}%
-    \@ifdefinable{\strongfontdeclare}{\bxjs@protected\def\strongfontdeclare#1{%
-      \bxjs@strong@font@declare@a#1,\@nil}}%
-    \def\bxjs@strong@font@declare@a#1,#2\@nil{\def\bxjs@strong@font{#1}}%
-    \def\bxjs@strong@font{\bfseries}%
-  \fi\fi
-}\fi
 \def\bxjs@tmpa{\def\set@fontsize##1##2##3}
 \expandafter\bxjs@tmpa\expandafter{%
   \set@fontsize{#1}{#2}{#3}%

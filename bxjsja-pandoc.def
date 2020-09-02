@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2020/05/28 v2.1  BXJS document classes]
+  [2020/09/04 v2.2  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \@onlypreamble\bxjs@endpreamble@hook
@@ -30,6 +30,24 @@
   \RequirePackage{etoolbox}[2010/08/21]% v2.0
   \AtEndPreamble{\bxjs@endpreamble@hook}
 \fi
+\newif\ifbxjs@jp@fix@strong \bxjs@jp@fix@strongtrue
+\let\bxjs@kv@fixstrong@true\bxjs@jp@fix@strongtrue
+\let\bxjs@kv@fixstrong@false\bxjs@jp@fix@strongfalse
+\define@key{bxjsPan}{fix-strong}[true]{%
+  \bxjs@set@keyval{fixstrong}{#1}{}}
+\newif\ifbxjs@jp@fix@code \bxjs@jp@fix@codetrue
+\let\bxjs@kv@fixcode@true\bxjs@jp@fix@codetrue
+\let\bxjs@kv@fixcode@false\bxjs@jp@fix@codefalse
+\define@key{bxjsPan}{fix-code}[true]{%
+  \bxjs@set@keyval{fixcode}{#1}{}}
+\chardef\bxjs@jp@strong=0
+\def\bxjs@kv@strong@bold{\chardef\bxjs@jp@strong=0 }
+\def\bxjs@kv@strong@sans{\chardef\bxjs@jp@strong=1 }
+\def\bxjs@kv@strong@boldsans{\chardef\bxjs@jp@strong=2 }
+\define@key{bxjsPan}{strong}{%
+  \bxjs@set@keyval{strong}{#1}{}}
+\def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
+\expandafter\bxjs@next\expandafter{\jsJaParam}
 \@onlypreamble\bxjs@set@dupload@proc
 \def\bxjs@set@dupload@proc#1{%
   \expandafter\bxjs@set@dupload@proc@a\csname bxjs@dlp/#1\endcsname}
@@ -178,6 +196,49 @@
   \bxjs@fix@hyperref@unicode{false}
 \else
   \bxjs@fix@hyperref@unicode{true}
+\fi
+\ifbxjs@jp@fix@strong\ifbxjs@jp@strong@cmd
+  \let\orgtextbf\textbf
+  \DeclareRobustCommand\bxjstextbf[1]{%
+    \begingroup
+      \let\textbf\orgtextbf
+      \strong{#1}%
+    \endgroup}%
+  \g@addto@macro\bxjs@begin@document@hook{%
+    \let\textbf\bxjstextbf}
+\fi\fi
+\jsAtEndOfClass{%
+  \ifx\strongfontdeclare\@undefined\else
+    \ifcase\bxjs@jp@strong
+    \or \strongfontdeclare{\sffamily}%
+    \or \strongfontdeclare{\sffamily\bfseries}%
+    \fi
+  \fi}
+\ifbxjs@jp@fix@code
+  \chardef\bxjs@eghost@c=23
+  \ifx j\jsEngine \xspcode\bxjs@eghost@c=3
+  \else\ifx l\jsEngine \ltjsetparameter{alxspmode={\bxjs@eghost@c,3}}
+  \else\ifx x\jsEngine %no-op
+  \else \let\bxjs@eghost@c\@undefined
+  \fi\fi\fi
+  \ifx\bxjs@eghost@c\@undefined\else
+    \font\bxjs@eghost@f=ec-lmr10 at 1.23456pt
+    \def\bxjs@pan@eghost{\bxjs@eghost@f\bxjs@eghost@c}
+    \let\orgtexttt\texttt
+    \DeclareRobustCommand\bxjstexttt[1]{%
+      \ifmmode \nfss@text{\ttfamily #1}%
+      \else
+        \ifvmode \leavevmode \fi
+        \bxjs@pan@eghost\null
+        \begingroup \ttfamily #1\endgroup
+        \null\bxjs@pan@eghost
+      \fi}
+    \g@addto@macro\bxjs@begin@document@hook{%
+      \let\texttt\bxjstexttt}
+    \expandafter\def\expandafter\verb\expandafter{%
+      \expandafter\bxjs@pan@eghost\verb}
+    \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+  \fi
 \fi
 \endinput
 %%
