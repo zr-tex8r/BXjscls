@@ -10397,6 +10397,17 @@
 % \end{macro}
 %
 %^^A----------------
+%\subsection{和文ドライバパラメタ}
+%
+% keyvalのファミリは |bxjsPan| とする。
+%
+% 実際の |japaram| の値を適用する。
+%    \begin{macrocode}
+\def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
+\expandafter\bxjs@next\expandafter{\jsJaParam}
+%    \end{macrocode}
+%
+%^^A----------------
 %\subsection{duploadシステム}
 %
 % パッケージが重複して読み込まれたときに“option clash”の
