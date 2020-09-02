@@ -10416,6 +10416,21 @@
   \bxjs@set@keyval{fixstrong}{#1}{}}
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@jp@fix@code}
+% インラインコード要素を補正するか。
+%    \begin{macrocode}
+\newif\ifbxjs@jp@fix@code \bxjs@jp@fix@codetrue
+%    \end{macrocode}
+% \end{macro}
+%
+% |fix-code| オプションの処理。
+%    \begin{macrocode}
+\let\bxjs@kv@fixcode@true\bxjs@jp@fix@codetrue
+\let\bxjs@kv@fixcode@false\bxjs@jp@fix@codefalse
+\define@key{bxjsPan}{fix-code}[true]{%
+  \bxjs@set@keyval{fixcode}{#1}{}}
+%    \end{macrocode}
+%
 % 実際の |japaram| の値を適用する。
 %    \begin{macrocode}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
@@ -10771,6 +10786,38 @@
     \let\textbf\bxjstextbf
     \strongfontdeclare{\sffamily\bfseries}}
 \fi\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{インラインコード要素の補正}
+% |\verb| をムニャムニャ。
+%    \begin{macrocode}
+\ifbxjs@jp@fix@code
+  \chardef\bxjs@eghost@c=23
+  \ifx j\jsEngine \xspcode\bxjs@eghost@c=3
+  \else\ifx l\jsEngine \ltjsetparameter{alxspmode={\bxjs@eghost@c,3}}
+  \else\ifx x\jsEngine %no-op
+  \else \let\bxjs@eghost@c\@undefined
+  \fi\fi\fi
+  \ifx\bxjs@eghost@c\@undefined\else
+    \font\bxjs@eghost@f=ec-lmr10 at 1.23456pt
+    \def\bxjs@pan@eghost{\bxjs@eghost@f\bxjs@eghost@c}
+    \let\orgtexttt\texttt
+    \DeclareRobustCommand\bxjstexttt[1]{%
+      \ifmmode \nfss@text{\ttfamily #1}%
+      \else
+        \ifvmode \leavevmode \fi
+        \bxjs@pan@eghost\null
+        \begingroup \ttfamily #1\endgroup
+        \null\bxjs@pan@eghost
+      \fi}
+    \g@addto@macro\bxjs@begin@document@hook{%
+      \let\texttt\bxjstexttt}
+      \expandafter\def\expandafter\verb\expandafter{%
+        \expandafter\bxjs@pan@eghost\verb}
+      \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+  \fi
+\fi
 %    \end{macrocode}
 %
 %^^A----------------
