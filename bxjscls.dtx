@@ -10420,7 +10420,7 @@
 % keyvalのファミリは |bxjsPan| とする。
 %
 % \begin{macro}{\ifbxjs@jp@fix@strong}
-% 強調要素を補正するか。
+% 重要要素を補正するか。
 %    \begin{macrocode}
 \newif\ifbxjs@jp@fix@strong \bxjs@jp@fix@strongtrue
 %    \end{macrocode}
@@ -10447,6 +10447,22 @@
 \let\bxjs@kv@fixcode@false\bxjs@jp@fix@codefalse
 \define@key{bxjsPan}{fix-code}[true]{%
   \bxjs@set@keyval{fixcode}{#1}{}}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@jp@strong}
+% 重要要素に適用される書体変更の種類。
+%    \begin{macrocode}
+\chardef\bxjs@jp@strong=0
+%    \end{macrocode}
+% \end{macro}
+%
+% |strong| オプションの処理。
+%    \begin{macrocode}
+\def\bxjs@kv@strong@bold{\chardef\bxjs@jp@strong=0 }
+\def\bxjs@kv@strong@sans{\chardef\bxjs@jp@strong=1 }
+\def\bxjs@kv@strong@boldsans{\chardef\bxjs@jp@strong=2 }
+\define@key{bxjsPan}{strong}{%
+  \bxjs@set@keyval{strong}{#1}{}}
 %    \end{macrocode}
 %
 % 実際の |japaram| の値を適用する。
@@ -10812,12 +10828,19 @@
       \strong{#1}%
     \endgroup}%
   \g@addto@macro\bxjs@begin@document@hook{%
-    \let\textbf\bxjstextbf
-%    \end{macrocode}
-% さらに |\strong| でサンセリフに切り替えるようにする。
-%    \begin{macrocode}
-    \strongfontdeclare{\sffamily\bfseries}}
+    \let\textbf\bxjstextbf}
 \fi\fi
+%    \end{macrocode}
+%
+% |\strong| の書体を設定する。
+%    \begin{macrocode}
+\jsAtEndOfClass{%
+  \ifx\strongfontdeclare\@undefined\else
+    \ifcase\bxjs@jp@strong
+    \or \strongfontdeclare{\sffamily}%
+    \or \strongfontdeclare{\sffamily\bfseries}%
+    \fi
+  \fi}
 %    \end{macrocode}
 %
 % \paragraph{インラインコード要素}
