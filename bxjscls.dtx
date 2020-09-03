@@ -8935,15 +8935,8 @@
 %
 % \paragraph{和文フォント指定の扱い}
 %
-% |standard| 和文ドライバでは |\jsJaFont| の値を和文フォントの
-% “プリセット”の指定として用いる。
-% プリセットの値は、{\TeX} Liveの |kanji-config-updmap| コマンドで
-% 使う“ファミリ”と同じにすることを想定する。
-% 特別な値として、|auto| は |kanji-config-updmap| で現在指定
-% されているファミリを表す。
-%
 %^^A----------------
-% \subsection{共通処理(1)}
+% \subsection{準備}
 %
 % まず minimal ドライバを読み込む。
 %    \begin{macrocode}
@@ -8957,7 +8950,8 @@
 \bxjs@simplejasetupfalse
 %    \end{macrocode}
 %
-% \paragraph{japaramオプションの処理}
+%^^A----------------
+% \subsection{和文ドライバパラメタ}
 %
 % |japaram| の値をkey-valueリストとして解釈する。
 % keyvalのファミリは |bxjsStd| とする。
@@ -9025,6 +9019,9 @@
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
 %    \end{macrocode}
+%
+%^^A----------------
+% \subsection{共通処理(1)}
 %
 % \paragraph{jis2004パラメタ}
 %
@@ -9095,7 +9092,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \paragraph{strong命令}
+% \paragraph{\textbackslash strong命令の補填}
 %
 % \begin{macro}{\strong}
 % \begin{environment}{strongenv}
@@ -9314,6 +9311,13 @@
 %
 % \paragraph{和文フォント指定の扱い}
 %
+% |standard| 和文ドライバでは |\jsJaFont| の値を和文フォントの
+% “プリセット”の指定として用いる。
+% プリセットの値は、{\TeX} Liveの |kanji-config-updmap| コマンドで
+% 使う“ファミリ”と同じにすることを想定する。
+% 特別な値として、|auto| は |kanji-config-updmap| で現在指定
+% されているファミリを表す。
+%
 % \begin{macro}{\bxjs@adjust@jafont}
 % |\jsJaFont| に入っている和文フォント設定の値を“調整”して、
 % その結果を |\bxjs@tmpa| に返す。
@@ -9401,6 +9405,29 @@
   \fi}
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\bxjs@resolve@jafont@paren}
+% |jafont|パラメタ値内の|()|を解決する。
+% |\bxjs@resolve@jafont@paren\CS| で、|\CS| の内容中の |(...)|
+% を |\bxjs@jafont@paren{...}| に置き換える。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@resolve@jafont@paren
+\def\bxjs@resolve@jafont@paren#1{%
+  \def\bxjs@tmpb{\let#1}%
+  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
+\@onlypreamble\bxjs@resolve@jafont@paren@a
+\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
+  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
+  \else
+    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
+    \bxjs@tmpb\bxjs@tmpa
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{和文として出力}
+%
+% 「欧文扱い」となっている文字を和文として出力するための機能。
 %
 % \begin{macro}{\jachar}
 % |\jachar{|\meta{文字}|}|\Means
@@ -9508,25 +9535,6 @@
     }{}%
   }%
 }
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@resolve@jafont@paren}
-% |jafont|パラメタ値内の|()|を解決する。
-% |\bxjs@resolve@jafont@paren\CS| で、|\CS| の内容中の |(...)|
-% を |\bxjs@jafont@paren{...}| に置き換える。
-%    \begin{macrocode}
-\@onlypreamble\bxjs@resolve@jafont@paren
-\def\bxjs@resolve@jafont@paren#1{%
-  \def\bxjs@tmpb{\let#1}%
-  \expandafter\bxjs@resolve@jafont@paren@a#1\@nil()\@nil\relax}
-\@onlypreamble\bxjs@resolve@jafont@paren@a
-\def\bxjs@resolve@jafont@paren@a#1(#2)#3\@nil#4\relax{%
-  \ifx\relax#4\relax \bxjs@tmpb\jsJaFont
-  \else
-    \edef\bxjs@tmpa{#1\bxjs@jafont@paren{#2}#3}%
-    \bxjs@tmpb\bxjs@tmpa
-  \fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -10308,7 +10316,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{フォント設定}
+% \subsection{フォント設定}
 % 
 % T1エンコーディングに変更する。
 % \Note 以下のコードは |\usepackage[T1]{fontenc}| と同等。
@@ -10373,7 +10381,13 @@
 %^^A========================================================
 % \section{和文ドライバ：pandoc \ZRX}
 %
-% Pandoc用の何か。
+% 「Pandocモード」で使用される和文ドライバ。
+% standardドライバの機能を継承するが、
+% 「Pandocの既定のlatexテンプレート」が使われることを前提として、
+% それとBXJSの設定を整合させるための措置を加えている。
+%
+%^^A----------------
+% \subsection{準備}
 %
 % standardドライバの設定を引き継ぐ。
 %    \begin{macrocode}
@@ -10401,7 +10415,7 @@
 % \end{macro}
 %
 %^^A----------------
-%\subsection{和文ドライバパラメタ}
+% \subsection{和文ドライバパラメタ}
 %
 % keyvalのファミリは |bxjsPan| とする。
 %
@@ -10442,7 +10456,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{duploadシステム}
+% \subsection{duploadシステム}
 %
 % パッケージが重複して読み込まれたときに“option clash”の
 % 検査をスキップする。
@@ -10498,7 +10512,7 @@
 % \end{macro}
 %
 %^^A----------------
-%\subsection{lang変数}
+% \subsection{lang変数}
 % |lang=ja| という言語指定が行われると、
 % Pandocはこれに対応していないため
 % 不完全なBabelやPolyglossiaの設定を出力してしまう。
@@ -10681,7 +10695,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{geometry変数}
+% \subsection{geometry変数}
 % |geometry| を“再度読み込んだ”場合に、
 % そのパラメタで |\setpagelayout*| が呼ばれるようにする。
 %
@@ -10691,7 +10705,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{CJKmainfont変数}
+% \subsection{CJKmainfont変数}
 % Lua{\TeX}（+ Lua{TeX}-ja）の場合に CJKmainfont 変数が
 % 指定された場合は |\setmainjfont| の指定にまわす。
 %    \begin{macrocode}
@@ -10700,7 +10714,14 @@
   \providecommand*{\setCJKmainfont}{\setmainjfont}
 \fi
 %    \end{macrocode}
-% ムニャムニャムニャ。
+%
+%^^A----------------
+% \subsection{Option clash対策}
+%
+% |xeCJK| パッケージについて。
+% \Note |xeCJK| はクラス内で既に読み込まれているので、
+% |space| は（意図通りに）無効になる。
+% \Note v2.8～v2.9.2の間。
 %    \begin{macrocode}
 \if x\jsEngine
   \expandafter\g@addto@macro\csname opt@xeCJK.sty\endcsname{%
@@ -10709,7 +10730,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{paragraphのマーク}
+% \subsection{paragraphのマーク}
 %
 % BXJSクラスでは |\paragraph| の見出しの前に |\jsParagraphMark|
 % で指定したマークが付加され、既定ではこれは“■”である。
@@ -10749,7 +10770,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{全角空白文字}
+% \subsection{全角空白文字}
 %
 %    \begin{macrocode}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
@@ -10764,7 +10785,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-% \paragraph{hyperref対策}
+% \subsection{hyperref対策}
 %
 % |hyperref| の |unicode| オプションの固定を行う。
 %    \begin{macrocode}
@@ -10776,8 +10797,12 @@
 %    \end{macrocode}
 %
 %^^A----------------
-%\subsection{強調要素の補正}
-% |\textbf| をムニャムニャ。
+% \subsection{Pandoc要素に対する和文用の補正}
+%
+% \paragraph{重要要素}
+% 重要(Strong)要素に対する{\LaTeX}出力は |\textbf| となるが、
+% 代わりに |\strong| を使いたいため、
+% |\textbf| を書き換えてしまう（うわぁ）。
 %    \begin{macrocode}
 \ifbxjs@jp@fix@strong\ifbxjs@jp@strong@cmd
   \let\orgtextbf\textbf
@@ -10788,13 +10813,17 @@
     \endgroup}%
   \g@addto@macro\bxjs@begin@document@hook{%
     \let\textbf\bxjstextbf
+%    \end{macrocode}
+% さらに |\strong| でサンセリフに切り替えるようにする。
+%    \begin{macrocode}
     \strongfontdeclare{\sffamily\bfseries}}
 \fi\fi
 %    \end{macrocode}
 %
-%^^A----------------
-% \subsection{インラインコード要素の補正}
-% |\verb| をムニャムニャ。
+% \paragraph{インラインコード要素}
+%
+% インラインコード(Code)要素に対する{\LaTeX}出力は |\texttt| となる。
+% |\texttt| の両端に欧文ゴーストが入るようにする。
 %    \begin{macrocode}
 \ifbxjs@jp@fix@code
   \chardef\bxjs@eghost@c=23
@@ -10817,9 +10846,13 @@
       \fi}
     \g@addto@macro\bxjs@begin@document@hook{%
       \let\texttt\bxjstexttt}
-      \expandafter\def\expandafter\verb\expandafter{%
-        \expandafter\bxjs@pan@eghost\verb}
-      \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+%    \end{macrocode}
+% さらに |\verb| の外側にも欧文ゴーストが入るようにする。
+% \Note |bxjaghost| の実装を参考にした。
+%    \begin{macrocode}
+    \expandafter\def\expandafter\verb\expandafter{%
+      \expandafter\bxjs@pan@eghost\verb}
+    \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
   \fi
 \fi
 %    \end{macrocode}
