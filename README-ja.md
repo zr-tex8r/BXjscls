@@ -99,6 +99,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.2a 〈2020/09/22〉
+      - バグ修正。
   * Version 2.2  〈2020/09/04〉
       - `\strong` 命令・`strongenv` 環境の補填は standard 和文ドライバ
         の機能に移した。
