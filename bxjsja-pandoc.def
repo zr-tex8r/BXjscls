@@ -223,7 +223,7 @@
   \fi\fi\fi
   \ifx\bxjs@eghost@c\@undefined\else
     \font\bxjs@eghost@f=ec-lmr10 at 1.23456pt
-    \def\bxjs@pan@eghost{\bxjs@eghost@f\bxjs@eghost@c}
+    \def\bxjs@pan@eghost{\bgroup\bxjs@eghost@f\bxjs@eghost@c\egroup}
     \let\orgtexttt\texttt
     \DeclareRobustCommand\bxjstexttt[1]{%
       \ifmmode \nfss@text{\ttfamily #1}%
