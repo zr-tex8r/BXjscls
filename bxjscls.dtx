@@ -9525,6 +9525,12 @@
 % DVIのなるべく早い位置にspecialを出力する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@urgent@special
+\@onlypreamble\bxjs@urgent@special@a
+%    \end{macrocode}
+% {\LaTeX}カーネルの新フック管理が導入済かを調べる。
+% 未導入の古い版である場合。
+%    \begin{macrocode}
+\ifx\AddToHook\@undefined
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
   \g@addto@macro\bxjs@begin@document@hook{%
@@ -9537,6 +9543,18 @@
     }{}%
   }%
 }
+%    \end{macrocode}
+% 導入済の場合。
+% \Note 自分が先行する必要がある対象のパッケージを適宜追加する。
+%    \begin{macrocode}
+\else
+  \def\bxjs@urgent@special#1{%
+    \bxjs@urgent@special@a
+    \AddToHook{shipout/firstpage}[./urgent]{\special{#1}}}
+  \def\bxjs@urgent@special@a{%
+    \DeclareHookRule{shipout/firstpage}{./urgent}{<}{hyperref}%
+    \global\let\bxjs@urgent@special@a\relax}
+\fi
 %    \end{macrocode}
 % \end{macro}
 %
