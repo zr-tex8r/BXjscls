@@ -3488,6 +3488,17 @@
 % \paragraph{geometry パッケージを読み込む \ZRX}
 % \mbox{}
 % \begin{ZRnote}
+% ムニャムニャ。
+%    \begin{macrocode}
+\def\bxjs@geometry@name{geometry}
+\ifx\AddToHook\@undefined
+  \let\bxjs@apply@bd@pre@geometry@hook\AtBeginDocument
+\else
+  \def\bxjs@apply@bd@pre@geometry@hook{%
+    \AddToHook{begindocument}[\bxjs@geometry@name]}
+\fi
+%    \end{macrocode}
+%
 % |geoemtry=class| の場合に、実際に |geometry| パッケージを読みこむ。
 %    \begin{macrocode}
 \ifx\bxjs@geometry\bxjs@geometry@class
@@ -3516,13 +3527,14 @@
 % \Note |geometry| のbegin-documentフックにおいて、Lua{\TeX}の
 % 旧版互換を有効にする。
 %    \begin{macrocode}
-\AtBeginDocument{\bxjs@bd@pre@geometry@hook}
-\AtBeginDocument{\ImposeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook
+\bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
+\bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
 \bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\AtBeginDocument{\RevokeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{\RevokeOldLuaTeXBehavior}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@geometry@driver}
