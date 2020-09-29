@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2020/09/22 v2.2a BXJS document classes]
+  [2020/09/29 v2.2b BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -291,6 +291,8 @@
        {\@ehc}%
     \fi}}
 \@onlypreamble\bxjs@urgent@special
+\@onlypreamble\bxjs@urgent@special@a
+\ifx\AddToHook\@undefined
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
   \g@addto@macro\bxjs@begin@document@hook{%
@@ -303,6 +305,14 @@
     }{}%
   }%
 }
+\else
+  \def\bxjs@urgent@special#1{%
+    \bxjs@urgent@special@a
+    \AddToHook{shipout/firstpage}[./urgent]{\special{#1}}}
+  \def\bxjs@urgent@special@a{%
+    \DeclareHookRule{shipout/firstpage}{./urgent}{<}{hyperref}%
+    \global\let\bxjs@urgent@special@a\relax}
+\fi
 \if j\jsEngine
 \def\bxjs@apply@kanjiskip{%
   \kanjiskip\@tempskipa}

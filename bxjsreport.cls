@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2020/09/22 v2.2a BXJS document classes]
+  [2020/09/29 v2.2b BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsreport}
 \newif\ifjsc@needsp@tch
@@ -1157,6 +1157,13 @@
 }
 \edef\jsGeometryOptions{%
   \bxjs@layout@paper,\bxjs@layout}
+\def\bxjs@geometry@name{geometry}
+\ifx\AddToHook\@undefined
+  \let\bxjs@apply@bd@pre@geometry@hook\AtBeginDocument
+\else
+  \def\bxjs@apply@bd@pre@geometry@hook{%
+    \AddToHook{begindocument}[\bxjs@geometry@name]}
+\fi
 \ifx\bxjs@geometry\bxjs@geometry@class
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
@@ -1168,13 +1175,14 @@
 \else
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
-\AtBeginDocument{\bxjs@bd@pre@geometry@hook}
-\AtBeginDocument{\ImposeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook
+\bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
+\bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
 \bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\AtBeginDocument{\RevokeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{\RevokeOldLuaTeXBehavior}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 \g@addto@macro\bxjs@bd@pre@geometry@hook{%
@@ -1320,7 +1328,7 @@
 }
 \newcommand*{\jsSubtitle}[1]{\gdef\bxjs@subtitle{#1}}
 \renewcommand*{\title}[1]{\bxjs@decl@subtitle\gdef\@title{#1}}
-\AtBeginDocument{\bxjs@decl@subtitle}
+\g@addto@macro\bxjs@begin@document@hook{\bxjs@decl@subtitle}
 \def\bxjs@decl@subtitle{%
   \global\let\bxjs@decl@subtitle\relax
   \ifx\subtitle\@undefined
