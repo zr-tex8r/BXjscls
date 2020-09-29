@@ -4562,7 +4562,7 @@
 % |\title| にフックを入れる。
 %    \begin{macrocode}
 \renewcommand*{\title}[1]{\bxjs@decl@subtitle\gdef\@title{#1}}
-\AtBeginDocument{\bxjs@decl@subtitle}
+\g@addto@macro\bxjs@begin@document@hook{\bxjs@decl@subtitle}
 \def\bxjs@decl@subtitle{%
   \global\let\bxjs@decl@subtitle\relax
   \ifx\subtitle\@undefined
