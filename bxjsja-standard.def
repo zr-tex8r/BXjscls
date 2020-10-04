@@ -292,7 +292,7 @@
     \fi}}
 \@onlypreamble\bxjs@urgent@special
 \@onlypreamble\bxjs@urgent@special@a
-\ifx\AddToHook\@undefined
+\ifbxjs@old@hook@system
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
   \g@addto@macro\bxjs@begin@document@hook{%
@@ -308,9 +308,9 @@
 \else
   \def\bxjs@urgent@special#1{%
     \bxjs@urgent@special@a
-    \AddToHook{shipout/firstpage}[./urgent]{\special{#1}}}
+    \AddToHook{shipout/firstpage}[pxjahyper/enc]{\special{#1}}}
   \def\bxjs@urgent@special@a{%
-    \DeclareHookRule{shipout/firstpage}{./urgent}{<}{hyperref}%
+    \DeclareHookRule{shipout/firstpage}{pxjahyper/enc}{<}{hyperref}%
     \global\let\bxjs@urgent@special@a\relax}
 \fi
 \if j\jsEngine

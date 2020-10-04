@@ -480,6 +480,16 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@old@hook@system}
+% 〔スイッチ〕
+% {\LaTeX}の新しいフック管理システムが未導入であるか。
+% \Note カーネルの2020/10/01版で導入された。
+%    \begin{macrocode}
+\newif\ifbxjs@old@hook@system
+\@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@cond}
 % |\bxjs@cond\ifXXX|……|\fi{|\Meta{真}|}{|\Meta{偽}|}|\par
 % {\TeX}のif-文（|\ifXXX|……\Meta{真}|\else|\Meta{偽}|\fi|）を
@@ -3492,7 +3502,7 @@
 % ムニャムニャ。
 %    \begin{macrocode}
 \def\bxjs@geometry@name{geometry}
-\ifx\AddToHook\@undefined
+\ifbxjs@old@hook@system
   \let\bxjs@apply@bd@pre@geometry@hook\AtBeginDocument
 \else
   \def\bxjs@apply@bd@pre@geometry@hook{%
@@ -9543,7 +9553,7 @@
 % {\LaTeX}カーネルの新フック管理が導入済かを調べる。
 % 未導入の古い版である場合。
 %    \begin{macrocode}
-\ifx\AddToHook\@undefined
+\ifbxjs@old@hook@system
 \def\bxjs@urgent@special#1{%
   \AtBeginDvi{\special{#1}}%
   \g@addto@macro\bxjs@begin@document@hook{%
@@ -9559,13 +9569,14 @@
 %    \end{macrocode}
 % 導入済の場合。
 % \Note 自分が先行する必要がある対象のパッケージを適宜追加する。
+% \Note |pxjahyper| パッケージの処理と合わせる。
 %    \begin{macrocode}
 \else
   \def\bxjs@urgent@special#1{%
     \bxjs@urgent@special@a
-    \AddToHook{shipout/firstpage}[./urgent]{\special{#1}}}
+    \AddToHook{shipout/firstpage}[pxjahyper/enc]{\special{#1}}}
   \def\bxjs@urgent@special@a{%
-    \DeclareHookRule{shipout/firstpage}{./urgent}{<}{hyperref}%
+    \DeclareHookRule{shipout/firstpage}{pxjahyper/enc}{<}{hyperref}%
     \global\let\bxjs@urgent@special@a\relax}
 \fi
 %    \end{macrocode}

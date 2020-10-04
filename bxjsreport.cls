@@ -92,6 +92,8 @@
 \ifx\bxjs@tmpa\bxjs@tmpb
   \bxjs@TUenctrue
 \fi
+\newif\ifbxjs@old@hook@system
+\@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
@@ -1158,7 +1160,7 @@
 \edef\jsGeometryOptions{%
   \bxjs@layout@paper,\bxjs@layout}
 \def\bxjs@geometry@name{geometry}
-\ifx\AddToHook\@undefined
+\ifbxjs@old@hook@system
   \let\bxjs@apply@bd@pre@geometry@hook\AtBeginDocument
 \else
   \def\bxjs@apply@bd@pre@geometry@hook{%
