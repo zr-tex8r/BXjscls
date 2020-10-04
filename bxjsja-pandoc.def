@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2020/09/29 v2.2b BXJS document classes]
+  [2020/10/04 v2.2c BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \@onlypreamble\bxjs@endpreamble@hook

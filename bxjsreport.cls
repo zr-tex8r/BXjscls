@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2020/09/29 v2.2b BXJS document classes]
+  [2020/10/04 v2.2c BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsreport}
 \newif\ifjsc@needsp@tch
