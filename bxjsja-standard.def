@@ -400,6 +400,11 @@
 \fi
 \if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
     \else\ifjsWithpTeXng T\else F\fi\fi T%
+  \IfFileExists{pxjahyper-enc.sty}{\@tempswatrue}{\@tempswafalse}
+  \if@tempswa
+    \RequirePackage{pxjahyper-enc}[2020/10/05]%v0.6
+    \ifbxjs@bigcode\else \suppressbigcode \fi
+  \else
   \ifnum\jis"2121="A1A1 %euc
     \bxjs@urgent@special{pdf:tounicode EUC-UCS2}
   \else\ifnum\jis"2121="8140 %sjis
@@ -410,9 +415,11 @@
       \PassOptionsToPackage{bigcode}{pxjahyper}
     \else
       \bxjs@urgent@special{pdf:tounicode UTF8-UCS2}
+      \PassOptionsToPackage{nobigcode}{pxjahyper}
     \fi
   \fi\fi\fi
   \let\bxToUnicodeSpecialDone=t
+  \fi
 \fi
 \ifx f\bxjs@enablejfam\else
   \@enablejfamtrue
