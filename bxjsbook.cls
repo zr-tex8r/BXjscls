@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% bxjscls.dtx  (with options: `cls,book')
+%% bxjscls.dtx  (with options: `class,book')
 %% 
 %% IMPORTANT NOTICE:
 %% 
@@ -1013,6 +1013,7 @@
   \belowdisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
   \belowdisplayshortskip \belowdisplayskip
   \let\@listi\@listI}
+%% initialize
 \normalsize
 \ifx\Cht\@undefined \newdimen\Cht \fi
 \ifx\Cdp\@undefined \newdimen\Cdp \fi

@@ -25,7 +25,7 @@
 %
 %---------------------------------------
 %
-%  Copyright 1993-2019
+%  Copyright 1993-2020
 %  The LaTeX3 Project and any individual authors listed elsewhere
 %  in this file.
 %
@@ -273,9 +273,19 @@
 % \StopEventually{}
 %
 % 以下では実際のコードに即して説明します。
+%
+% \texttt{minijs}は，\texttt{jsclasses}に似た設定を行うパッケージです。
+%
 %    \begin{macrocode}
-%<*cls>
-%% このファイルは日本語文字を含みます.
+%<*minijs>
+%% if jsclasses loaded, abort loading this package
+\ifx\@jsc@uplatextrue\@undefined\else
+  \PackageInfo{minijs}{jsclasses does not need minijs, exiting}
+  \expandafter\endinput
+\fi
+%% "fake" jsarticle
+\expandafter\def\csname ver@jsarticle.cls\endcsname{}
+%</minijs>
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@clsname}
@@ -283,6 +293,8 @@
 % 文書クラスの名前です。エラーメッセージ表示などで使われます。
 %
 %    \begin{macrocode}
+%<*class>
+%% このファイルは日本語文字を含みます.
 %<article>\def\bxjs@clsname{bxjsarticle}
 %<book>\def\bxjs@clsname{bxjsbook}
 %<report>\def\bxjs@clsname{bxjsreport}
@@ -2427,6 +2439,11 @@
 % [2017-01-11] トンボオプションが指定されているとき「だけ」|\stockwidth|，
 % |\stockheight|を定義するようにしました。
 %
+% [2020-10-04] \LaTeXe~2020-10-01でカーネルの |\shipout| コードが拡張され
+% |\AtBeginDvi| の実行タイミングが変化したので，この時点で
+% 発行する |\special| の中身を展開しておくようにしました。
+% こうしないと，用紙サイズ設定を間違ってしまいます(Issue \#72)。
+%
 % \begin{ZRnote}
 % BXJSでは出力用紙サイズ記録は |geometry| パッケージが行う。
 %
@@ -2953,7 +2970,12 @@
 % ここで実際に標準フォントサイズで初期化します。
 %
 %    \begin{macrocode}
+%</class>
+%<*class|minijs>
+%% initialize
 \normalsize
+%</class|minijs>
+%<*class>
 %    \end{macrocode}
 %
 % \end{macro}
@@ -8112,11 +8134,10 @@
 %    \end{macrocode}
 %
 % おしまい。
-%    \begin{macrocode}
-%</cls>
-%    \end{macrocode}
-%
 % \end{ZRnote}
+%    \begin{macrocode}
+%</class>
+%    \end{macrocode}
 %
 % 以上です。
 %
