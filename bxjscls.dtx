@@ -8554,6 +8554,9 @@
 % \Note 2020-02-02のNFSSの改修に対する |jsclasses| の対策を
 % 取り入れた。
 %    \begin{macrocode}
+\@ifl@t@r\fmtversion{2020/10/01}
+    {\jsc@needsp@tchfalse}{\jsc@needsp@tchtrue}
+\ifjsc@needsp@tch          % --- for 2020-02-02 or older BEGIN
 \ifx\@rmfamilyhook\@undefined  % old
 \DeclareRobustCommand\rmfamily
   {\not@math@alphabet\rmfamily\mathrm
@@ -8583,6 +8586,14 @@
 \g@addto@macro\@ttfamilyhook
   {\prepare@family@series@update@kanji{gt}\gtdefault}
 \fi
+\else % --- for 2020-02-02 or older END & for 2020-10-01 BEGIN
+\AddToHook{rmfamily}%
+  {\prepare@family@series@update@kanji{mc}\mcdefault}
+\AddToHook{sffamily}%
+  {\prepare@family@series@update@kanji{gt}\gtdefault}
+\AddToHook{ttfamily}%
+  {\prepare@family@series@update@kanji{gt}\gtdefault}
+\fi   % --- for 2020-10-01 END
 \ifx\DeclareFixJFMCJKTextFontCommand\@undefined
 \DeclareJaTextFontCommand{\textmc}{\mcfamily}
 \DeclareJaTextFontCommand{\textgt}{\gtfamily}
