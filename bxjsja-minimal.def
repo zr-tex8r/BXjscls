@@ -271,6 +271,7 @@
   !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}
 \fi
 \endgroup
+\@namedef{ver@minijs.sty}{}
 \else\ifx p\jsEngine
 \let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@ue
 \@onlypreamble\bxjs@cjk@loaded
