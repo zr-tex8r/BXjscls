@@ -89,6 +89,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.3  〈2020/10/10〉
+      - Sync with jsclasses 2020/10/05.
   * Version 2.2c 〈2020/10/04〉
   * Version 2.2b 〈2020/09/29〉
       - Support LaTeX kernel 2020/10/01.
