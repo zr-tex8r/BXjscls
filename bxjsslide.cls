@@ -373,12 +373,22 @@
     \xdef\bxjs@gtmpa{\the\@tempdimb}%
   \endgroup #1=\bxjs@gtmpa\relax}
 \DeclareOption{pandoc}{%
+  \bxjs@apply@pandoc@opt}
+\@onlypreamble\bxjs@apply@pandoc@opt
+\def\bxjs@apply@pandoc@opt{%
   \g@addto@macro\bxjs@post@option@hook{%
     \bxjs@oldfontcommandstrue
     \setkeys{bxjs}{ja=pandoc}%
     \let\bxjs@engine@given=*}%
-  \def\bxjs@driver@opt{dvipdfmx}%
-  \bxjs@dvi@opttrue}
+  \ifx\bxjs@driver@opt\@undefined
+    \def\bxjs@driver@opt{dvipdfmx}%
+    \bxjs@dvi@opttrue
+  \fi
+  \global\let\bxjs@apply@pandoc@opt\relax}
+\DeclareOption{pandoc+}{%
+  \g@addto@macro\bxjs@post@option@hook{%
+    \edef\jsJaParam{\bxjs@catopt{_plus}\jsJaParam}}%
+  \ExecuteOptions{pandoc}}
 \DeclareOption{autodetect-engine}{%
   \let\bxjs@engine@given=*}
 \DeclareOption{latex}{%
@@ -519,7 +529,14 @@
 \let\jsJaFont\@empty
 \define@key{bxjs}{jafont}{\edef\jsJaFont{#1}}
 \let\jsJaParam\@empty
-\define@key{bxjs}{japaram}{\edef\jsJaParam{#1}}
+\define@key{bxjs}{japaram}{%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
+\define@key{bxjs}{pandoc}[]{%
+  \ExecuteOptions{pandoc}%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
+\define@key{bxjs}{pandoc+}[]{%
+  \ExecuteOptions{pandoc+}%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
 \let\bxjs@magstyle@mag=m
 \let\bxjs@magstyle@real=r
 \let\bxjs@magstyle@xreal=x

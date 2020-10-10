@@ -1357,6 +1357,9 @@
 % 最適化した設定を与える。
 %    \begin{macrocode}
 \DeclareOption{pandoc}{%
+  \bxjs@apply@pandoc@opt}
+\@onlypreamble\bxjs@apply@pandoc@opt
+\def\bxjs@apply@pandoc@opt{%
 %    \end{macrocode}
 % 和文ドライバを |pandoc| に、エンジン指定を |autodetect-engine| に
 % 変更する。
@@ -1370,12 +1373,22 @@
 % ドライバオプションを |dvi=dvipdfmx| 相当に変更する。
 % \Note これは実際のドライバ設定で上書きできる
 % （オプション宣言順に注意）。
-% \TODO できない気がする…。
 %    \begin{macrocode}
-  \def\bxjs@driver@opt{dvipdfmx}%
-  \bxjs@dvi@opttrue}
+  \ifx\bxjs@driver@opt\@undefined
+    \def\bxjs@driver@opt{dvipdfmx}%
+    \bxjs@dvi@opttrue
+  \fi
+  \global\let\bxjs@apply@pandoc@opt\relax}
 %    \end{macrocode}
 %
+% |pandoc+| オプションは、|pandoc| と同じ設定をした上で、
+% さらに和文パラメタの先頭に |_plus| を追加する。
+%    \begin{macrocode}
+\DeclareOption{pandoc+}{%
+  \g@addto@macro\bxjs@post@option@hook{%
+    \edef\jsJaParam{\bxjs@catopt{_plus}\jsJaParam}}%
+  \ExecuteOptions{pandoc}}
+%    \end{macrocode}
 % \end{ZRnote}
 %
 % \paragraph{エンジン・ドライバオプション \ZRX}
@@ -1737,7 +1750,19 @@
 %
 % |japaram| オプションの処理。
 %    \begin{macrocode}
-\define@key{bxjs}{japaram}{\edef\jsJaParam{#1}}
+\define@key{bxjs}{japaram}{%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
+%    \end{macrocode}
+%
+% 引数をもつ |pandoc|・|pandoc+| オプションは、その引数を
+% 和文パラメタの指定と見なす。
+%    \begin{macrocode}
+\define@key{bxjs}{pandoc}[]{%
+  \ExecuteOptions{pandoc}%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
+\define@key{bxjs}{pandoc+}[]{%
+  \ExecuteOptions{pandoc+}%
+  \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@magstyle}
@@ -10563,6 +10588,49 @@
   \bxjs@set@keyval{strong}{#1}{}}
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@jp@or@indent}
+% \begin{macro}{\ifbxjs@jp@or@secnumdepth}
+% \begin{macro}{\ifbxjs@jp@or@block@heading}
+% プレアンブルでのレイアウト上書きを許可するか。
+% 既定値は真。
+%    \begin{macrocode}
+\newif\ifbxjs@jp@or@indent \bxjs@jp@or@indenttrue
+\newif\ifbxjs@jp@or@secnumdepth \bxjs@jp@or@secnumdepthtrue
+\newif\ifbxjs@jp@or@block@heading \bxjs@jp@or@block@headingtrue
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% クラスで |pandoc+| が指定された場合、内部和文パラメタ |_plus| が
+% 和文ドライバに渡される。
+% この場合、レイアウト上書きを禁止する。
+% \Note |_plus| は必ずパラメタ列の先頭にあるので、
+% 個別のパラメタ設定の方が常に優先される。
+%    \begin{macrocode}
+\define@key{bxjsPan}{_plus}[]{%
+  \bxjs@jp@or@indentfalse
+  \bxjs@jp@or@secnumdepthfalse
+  \bxjs@jp@or@block@headingfalse}
+%    \end{macrocode}
+%
+% レイアウト上書き許可オプション
+% （|or-indent|・|or-secnumdepth|・|or-block-heading|）の処理。
+%    \begin{macrocode}
+\let\bxjs@kv@orindent@true\bxjs@jp@or@indenttrue
+\let\bxjs@kv@orindent@false\bxjs@jp@or@indentfalse
+\define@key{bxjsPan}{or-indent}[true]{%
+  \bxjs@set@keyval{orindent}{#1}{}}
+\let\bxjs@kv@orsecnumdepth@true\bxjs@jp@or@secnumdepthtrue
+\let\bxjs@kv@orsecnumdepth@false\bxjs@jp@or@secnumdepthfalse
+\define@key{bxjsPan}{or-secnumdepth}[true]{%
+  \bxjs@set@keyval{orsecnumdepth}{#1}{}}
+\let\bxjs@kv@orblockheading@true\bxjs@jp@or@block@headingtrue
+\let\bxjs@kv@orblockheading@false\bxjs@jp@or@block@headingfalse
+\define@key{bxjsPan}{or-block-heading}[true]{%
+  \bxjs@set@keyval{blockheading}{#1}{}}
+%    \end{macrocode}
+%
 % 実際の |japaram| の値を適用する。
 %    \begin{macrocode}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
@@ -10840,6 +10908,66 @@
 \if x\jsEngine
   \expandafter\g@addto@macro\csname opt@xeCJK.sty\endcsname{%
     ,space}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{レイアウト上書き禁止}
+%
+% レイアウト上書き禁止の実装は |etoolbox| の機能を使う。
+%    \begin{macrocode}
+\ifjsWitheTeX
+\@onlypreamble\bxjs@info@or@ban
+\def\bxjs@info@or@ban#1{%
+  \PackageInfo\bxjs@clsname
+   {Freeze layout on '#1',\MessageBreak detected}}
+%    \end{macrocode}
+%
+% \paragraph{indentについて}
+% indent変数を指定しない場合に
+% 「段落表現形式をインデント方式に変更する」
+% 動作を抑止する。
+%    \begin{macrocode}
+\unless\ifbxjs@jp@or@indent
+  \bxjs@info@or@ban{indent}
+%    \end{macrocode}
+% |parskip| がある場合はそれを読み込もうとするため、
+% |parskip| の読込をブロックする。
+%    \begin{macrocode}
+  \IfFileExists{parskip.sty}{%
+    \pandocSkipLoadPackage{parskip}%
+%    \end{macrocode}
+% |parskip| がない場合はパラメタを変更しようとするため、
+% 該当のパラメタを復帰させる。
+%    \begin{macrocode}
+  }{%else
+    \eappto\bxjs@endpreamble@hook{%
+      \parindent=\the\parindent\relax
+      \parskip=\the\parskip\relax}}
+\fi
+%
+% \paragraph{secnumdepthについて}
+% |secnumdepth| の値を決めるのはnumbersections変数
+% （|-N|/|--number-sections| オプションに連動する）
+% やsecnumdepth変数であるが、何れにしても |secnumdepth|
+% の値は書き換えられる。
+% そのため、|secnumdepth| を復帰させる。
+\ifbxjs@jp@or@secnumdepth\else
+  \bxjs@info@or@ban{secnumdepth}
+  \eappto\bxjs@endpreamble@hook{%
+    \c@secnumdepth=\the\c@secnumdepth\relax}
+\fi
+%
+% \paragraph{block-headingについて}
+\ifbxjs@jp@or@block@heading\else
+  \let\bxjs@frozen@paragraph\paragraph
+  \let\bxjs@frozen@subparagraph\subparagraph
+  \bxjs@info@or@ban{block-heading}
+  \appto\bxjs@endpreamble@hook{%
+  \let\oldparagraph\@undefined
+  \let\paragraph\bxjs@frozen@paragraph
+  \let\subparagraph\bxjs@frozen@subparagraph}
+\fi
 \fi
 %    \end{macrocode}
 %

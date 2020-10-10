@@ -46,6 +46,25 @@
 \def\bxjs@kv@strong@boldsans{\chardef\bxjs@jp@strong=2 }
 \define@key{bxjsPan}{strong}{%
   \bxjs@set@keyval{strong}{#1}{}}
+\newif\ifbxjs@jp@or@indent \bxjs@jp@or@indenttrue
+\newif\ifbxjs@jp@or@secnumdepth \bxjs@jp@or@secnumdepthtrue
+\newif\ifbxjs@jp@or@block@heading \bxjs@jp@or@block@headingtrue
+\define@key{bxjsPan}{_plus}[]{%
+  \bxjs@jp@or@indentfalse
+  \bxjs@jp@or@secnumdepthfalse
+  \bxjs@jp@or@block@headingfalse}
+\let\bxjs@kv@orindent@true\bxjs@jp@or@indenttrue
+\let\bxjs@kv@orindent@false\bxjs@jp@or@indentfalse
+\define@key{bxjsPan}{or-indent}[true]{%
+  \bxjs@set@keyval{orindent}{#1}{}}
+\let\bxjs@kv@orsecnumdepth@true\bxjs@jp@or@secnumdepthtrue
+\let\bxjs@kv@orsecnumdepth@false\bxjs@jp@or@secnumdepthfalse
+\define@key{bxjsPan}{or-secnumdepth}[true]{%
+  \bxjs@set@keyval{orsecnumdepth}{#1}{}}
+\let\bxjs@kv@orblockheading@true\bxjs@jp@or@block@headingtrue
+\let\bxjs@kv@orblockheading@false\bxjs@jp@or@block@headingfalse
+\define@key{bxjsPan}{or-block-heading}[true]{%
+  \bxjs@set@keyval{blockheading}{#1}{}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
 \@onlypreamble\bxjs@set@dupload@proc
@@ -171,6 +190,35 @@
 \if x\jsEngine
   \expandafter\g@addto@macro\csname opt@xeCJK.sty\endcsname{%
     ,space}
+\fi
+\ifjsWitheTeX
+\@onlypreamble\bxjs@info@or@ban
+\def\bxjs@info@or@ban#1{%
+  \PackageInfo\bxjs@clsname
+   {Freeze layout on '#1',\MessageBreak detected}}
+\unless\ifbxjs@jp@or@indent
+  \bxjs@info@or@ban{indent}
+  \IfFileExists{parskip.sty}{%
+    \pandocSkipLoadPackage{parskip}%
+  }{%else
+    \eappto\bxjs@endpreamble@hook{%
+      \parindent=\the\parindent\relax
+      \parskip=\the\parskip\relax}}
+\fi
+\ifbxjs@jp@or@secnumdepth\else
+  \bxjs@info@or@ban{secnumdepth}
+  \eappto\bxjs@endpreamble@hook{%
+    \c@secnumdepth=\the\c@secnumdepth\relax}
+\fi
+\ifbxjs@jp@or@block@heading\else
+  \let\bxjs@frozen@paragraph\paragraph
+  \let\bxjs@frozen@subparagraph\subparagraph
+  \bxjs@info@or@ban{block-heading}
+  \appto\bxjs@endpreamble@hook{%
+  \let\oldparagraph\@undefined
+  \let\paragraph\bxjs@frozen@paragraph
+  \let\subparagraph\bxjs@frozen@subparagraph}
+\fi
 \fi
 \g@addto@macro\bxjs@begin@document@hook{%
   \@tempswafalse
