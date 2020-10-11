@@ -183,13 +183,18 @@
 \newif\if@enablejfam \@enablejfamfalse
 \@onlypreamble\bxjs@setpaper
 \def\bxjs@setpaper#1{\def\bxjs@param@paper{#1}}
+\newif\ifbxjs@iso@bsize
+\DeclareOption{iso-bsize}{\bxjs@iso@bsizetrue}
+\@onlypreamble\bxjs@setpaper@bsize
+\def\bxjs@setpaper@bsize#1{\edef\bxjs@param@paper{%
+  b#1\ifbxjs@iso@bsize paper\else j\fi}}
 \DeclareOption{a3paper}{\bxjs@setpaper{a3paper}}
 \DeclareOption{a4paper}{\bxjs@setpaper{a4paper}}
 \DeclareOption{a5paper}{\bxjs@setpaper{a5paper}}
 \DeclareOption{a6paper}{\bxjs@setpaper{a6paper}}
-\DeclareOption{b4paper}{\bxjs@setpaper{b4j}}
-\DeclareOption{b5paper}{\bxjs@setpaper{b5j}}
-\DeclareOption{b6paper}{\bxjs@setpaper{b6j}}
+\DeclareOption{b4paper}{\bxjs@setpaper@bsize{4}}
+\DeclareOption{b5paper}{\bxjs@setpaper@bsize{5}}
+\DeclareOption{b6paper}{\bxjs@setpaper@bsize{6}}
 \DeclareOption{a4j}{\bxjs@setpaper{a4paper}}
 \DeclareOption{a5j}{\bxjs@setpaper{a5paper}}
 \DeclareOption{b4j}{\bxjs@setpaper{b4j}}
@@ -199,19 +204,16 @@
 \DeclareOption{letterpaper}{\bxjs@setpaper{letterpaper}}
 \DeclareOption{legalpaper}{\bxjs@setpaper{legalpaper}}
 \DeclareOption{executivepaper}{\bxjs@setpaper{executivepaper}}
-\def\bxjs@tmpb#1#2{\DeclareOption{#1}{\bxjs@setpaper{#2}}}
 \@for\bxjs@tmpa:={%
   a0,a1,a2,c0,c1,c2,c3,c4,c5,c6,ansia,ansib,ansic,ansid,ansie%
 }\do{\edef\bxjs@next{%
-  \noexpand\bxjs@tmpb{\bxjs@tmpa paper}{\bxjs@tmpa paper}%
+  \noexpand\DeclareOption{\bxjs@tmpa paper}%
+    {\noexpand\bxjs@setpaper{\bxjs@tmpa paper}}%
 }\bxjs@next}
-\bxjs@tmpb{screen}{screen}
+\DeclareOption{screen}{\bxjs@setpaper{screen}}
 \@for\bxjs@tmpa:={0,1,2,3}\do{\edef\bxjs@next{%
-  \noexpand\bxjs@tmpb{b\bxjs@tmpa paper}{b\bxjs@tmpa j}%
-}\bxjs@next}
-\@for\bxjs@tmpa:={0,1,2,3,4,5,6}\do{\edef\bxjs@next{%
-  \noexpand\bxjs@tmpb{A\bxjs@tmpa paper}{a\bxjs@tmpa paper}%
-  \noexpand\bxjs@tmpb{B\bxjs@tmpa paper}{b\bxjs@tmpa paper}%
+  \noexpand\DeclareOption{b\bxjs@tmpa paper}%
+    {\noexpand\bxjs@setpaper@bsize{\bxjs@tmpa}}%
 }\bxjs@next}
 \DeclareOption{a4varpaper}{\bxjs@setpaper{{210truemm}{283truemm}}}
 \DeclareOption{b5varpaper}{\bxjs@setpaper{{182truemm}{230truemm}}}
