@@ -978,9 +978,9 @@
 %
 % JSクラス互換のmagstyle設定オプション。
 %    \begin{macrocode}
-\DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@usemag}
-\DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@nomag}
-\DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@xreal}
+\DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@@usemag}
+\DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@@nomag}
+\DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@@xreal}
 %    \end{macrocode}
 % 
 % \end{ZRnote}
@@ -1768,28 +1768,28 @@
 % \begin{macro}{\bxjs@magstyle}
 % magstyle設定値。（古いイマイチな名前。）
 %    \begin{macrocode}
-\let\bxjs@magstyle@mag=m
-\let\bxjs@magstyle@real=r
-\let\bxjs@magstyle@xreal=x
+\let\bxjs@magstyle@@mag=m
+\let\bxjs@magstyle@@real=r
+\let\bxjs@magstyle@@xreal=x
 %    \end{macrocode}
 % （新しい素敵な名前。）
-% \Note ただし制御綴としては、|*|付の名前は扱い難いので、|\bxjs@magstyle@xreal|
+% \Note ただし制御綴としては、|*|付の名前は扱い難いので、|\bxjs@magstyle@@xreal|
 % の方を優先させる。
 %    \begin{macrocode}
-\let\bxjs@magstyle@usemag\bxjs@magstyle@mag
-\let\bxjs@magstyle@nomag\bxjs@magstyle@real
-\expandafter\let\csname bxjs@magstyle@nomag*\endcsname\bxjs@magstyle@xreal
+\let\bxjs@magstyle@@usemag\bxjs@magstyle@@mag
+\let\bxjs@magstyle@@nomag\bxjs@magstyle@@real
+\expandafter\let\csname bxjs@magstyle@@nomag*\endcsname\bxjs@magstyle@@xreal
 %    \end{macrocode}
-% |\bxjs@magstyle@default| は既定の値を表す。
+% |\bxjs@magstyle@@default| は既定の値を表す。
 %    \begin{macrocode}
-\let\bxjs@magstyle@default\bxjs@magstyle@usemag
+\let\bxjs@magstyle@@default\bxjs@magstyle@@usemag
 \ifx l\jsEngine \ifnum\luatexversion>86
-  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+  \let\bxjs@magstyle@@default\bxjs@magstyle@@xreal
 \fi\fi
 \ifjsWithpTeXng
-  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+  \let\bxjs@magstyle@@default\bxjs@magstyle@@xreal
 \fi
-\let\bxjs@magstyle\bxjs@magstyle@default
+\let\bxjs@magstyle\bxjs@magstyle@@default
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1797,20 +1797,20 @@
 %    \begin{macrocode}
 \define@key{bxjs}{magstyle}{%
   \expandafter\let\expandafter\bxjs@magstyle\csname
-   bxjs@magstyle@#1\endcsname
+   bxjs@magstyle@@#1\endcsname
   \ifx\bxjs@magstyle\relax
     \ClassError\bxjs@clsname
      {Invalid value '#1' for option magstyle}\@ehc
-    \let\bxjs@magstyle\bxjs@magstyle@default
+    \let\bxjs@magstyle\bxjs@magstyle@@default
   \fi}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@geometry}
 % |geometry| オプションの値。
 %    \begin{macrocode}
-\let\bxjs@geometry@class=c
-\let\bxjs@geometry@user=u
-\let\bxjs@geometry\bxjs@geometry@class
+\let\bxjs@geometry@@class=c
+\let\bxjs@geometry@@user=u
+\let\bxjs@geometry\bxjs@geometry@@class
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1818,11 +1818,11 @@
 %    \begin{macrocode}
 \define@key{bxjs}{geometry}{%
   \expandafter\let\expandafter\bxjs@geometry\csname
-   bxjs@geometry@#1\endcsname
+   bxjs@geometry@@#1\endcsname
   \ifx\bxjs@geometry\relax
     \ClassError\bxjs@clsname
      {Invalid value '#1' for option geometry}\@ehc
-    \let\bxjs@geometry\bxjs@geometry@class
+    \let\bxjs@geometry\bxjs@geometry@@class
   \fi}
 %    \end{macrocode}
 %
@@ -1991,17 +1991,17 @@
 % \begin{macro}{\bxjs@everyparhook}
 % |everyparhook| の指定値。
 %    \begin{macrocode}
-\chardef\bxjs@everyparhook@none=0
-\chardef\bxjs@everyparhook@compat=1
-\chardef\bxjs@everyparhook@modern=2
+\chardef\bxjs@everyparhook@@none=0
+\chardef\bxjs@everyparhook@@compat=1
+\chardef\bxjs@everyparhook@@modern=2
 \if j\jsEngine
-  \let\bxjs@everyparhook\bxjs@everyparhook@compat
+  \let\bxjs@everyparhook\bxjs@everyparhook@@compat
 \else
-  \let\bxjs@everyparhook\bxjs@everyparhook@modern
+  \let\bxjs@everyparhook\bxjs@everyparhook@@modern
 \fi
-\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@none}
-\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@compat}
-\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@modern}
+\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@@none}
+\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@@compat}
+\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@@modern}
 \define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
@@ -2009,13 +2009,13 @@
 % \begin{macro}{\bxjs@label@section}
 % |label-section| の指定値。
 %    \begin{macrocode}
-\chardef\bxjs@label@section@none=0
-\chardef\bxjs@label@section@compat=1
-\chardef\bxjs@label@section@modern=2
-\let\bxjs@label@section\bxjs@label@section@compat
-\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@none}
-\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
-\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
+\chardef\bxjs@label@section@@none=0
+\chardef\bxjs@label@section@@compat=1
+\chardef\bxjs@label@section@@modern=2
+\let\bxjs@label@section\bxjs@label@section@@compat
+\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@@none}
+\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@@compat}
+\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@@modern}
 \define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
 %    \end{macrocode}
 % \end{macro}
@@ -2347,9 +2347,9 @@
 % （この場合の既定値は |nomag*| であり、
 % エラーの場合は既定値に置き換えられる。）
 %    \begin{macrocode}
-\ifx\bxjs@magstyle@default\bxjs@magstyle@mag\else
-  \ifx\bxjs@magstyle\bxjs@magstyle@mag
-    \let\bxjs@magstyle\bxjs@magstyle@default
+\ifx\bxjs@magstyle@@default\bxjs@magstyle@@mag\else
+  \ifx\bxjs@magstyle\bxjs@magstyle@@mag
+    \let\bxjs@magstyle\bxjs@magstyle@@default
     \ClassError\bxjs@clsname
      {The engine does not support 'magstyle=usemag'}%
      {LuaTeX v0.87 or later no longer supports the "mag" feature of TeX.\MessageBreak
@@ -2508,9 +2508,9 @@
 % |\bxjs@magstyle| の値に応じてスイッチ |jsc@mag| と |jsc@mag@xreal| を
 % 設定する。
 %    \begin{macrocode}
-\ifx\bxjs@magstyle\bxjs@magstyle@mag
+\ifx\bxjs@magstyle\bxjs@magstyle@@mag
   \jsc@magtrue
-\else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
+\else\ifx\bxjs@magstyle\bxjs@magstyle@@xreal
   \jsc@mag@xrealtrue
 \fi\fi
 %    \end{macrocode}
@@ -3563,7 +3563,7 @@
 %
 % |geoemtry=class| の場合に、実際に |geometry| パッケージを読みこむ。
 %    \begin{macrocode}
-\ifx\bxjs@geometry\bxjs@geometry@class
+\ifx\bxjs@geometry\bxjs@geometry@@class
 %    \end{macrocode}
 %
 % |geometry| のドライバオプション指定。
@@ -3659,7 +3659,7 @@
 % \begin{ZRnote}
 % |geometry=user|の場合の処理。
 %    \begin{macrocode}
-\else\ifx\bxjs@geometry\bxjs@geometry@user
+\else\ifx\bxjs@geometry\bxjs@geometry@@user
 %    \end{macrocode}
 %
 % この場合はユーザが何らかの方法（例えば |geometry| を読み込む）
@@ -4927,7 +4927,7 @@
 % \begin{macro}{\@secpos}
 % 節番号の接尾辞。
 %    \begin{macrocode}
-\ifnum\bxjs@label@section=\bxjs@label@section@compat\else
+\ifnum\bxjs@label@section=\bxjs@label@section@@compat\else
 \def\@secapp{\presectionname}
 \def\@secpos{\postsectionname}
 \fi
@@ -4937,7 +4937,7 @@
 % \begin{macro}{\labelsection}
 % 節番号の出力書式。
 %    \begin{macrocode}
-\ifnum\bxjs@label@section=\bxjs@label@section@modern
+\ifnum\bxjs@label@section=\bxjs@label@section@@modern
 \def\labelsection{\@secapp\thesection\@secpos}
 \fi
 %    \end{macrocode}
@@ -5027,7 +5027,7 @@
 % \begin{macro}{\bxjs@if@ceph}
 % |everyparhook=compat| である場合にのみ直後のトークンを実行する。
 %    \begin{macrocode}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
   \let\bxjs@if@ceph\@firstofone
 \else \let\bxjs@if@ceph\@gobble
 \fi
@@ -5222,7 +5222,7 @@
 %    \begin{macrocode}
 \renewcommand{\thepart}{\@Roman\c@part}
 %<*!book&!report>
-\ifnum\bxjs@label@section=\bxjs@label@section@compat
+\ifnum\bxjs@label@section=\bxjs@label@section@@compat
 \renewcommand{\thesection}{\presectionname\@arabic\c@section\postsectionname}
 \renewcommand{\thesubsection}{\@arabic\c@section.\@arabic\c@subsection}
 \else
@@ -6300,7 +6300,7 @@
 \newcommand{\appendix}{\par
   \setcounter{section}{0}%
   \setcounter{subsection}{0}%
-  \ifnum\bxjs@label@section=\bxjs@label@section@compat
+  \ifnum\bxjs@label@section=\bxjs@label@section@@compat
   \gdef\presectionname{\appendixname}%
   \gdef\postsectionname{}%
 % \gdef\thesection{\@Alph\c@section}% [2003-03-02]
@@ -7646,7 +7646,7 @@
 % これの初期値を先述の |\jsInhibitGlueAtParTop| とする。
 %    \begin{macrocode}
 \def\everyparhook{\jsInhibitGlueAtParTop}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
 \g@addto@macro\bxjs@begin@document@hook{\everypar{\everyparhook}}
 \fi
 %    \end{macrocode}
@@ -7707,7 +7707,7 @@
 % これは、|everyparhook=compat| の場合にのみ実行する。
 % \end{ZRnote}
 %    \begin{macrocode}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
 %    \end{macrocode}
 %
 % これだけではいけないようです。あちこちに |\everypar| を初期化するコマンドが
@@ -7843,7 +7843,7 @@
 % のを防ぐため遅延させる。
 % \end{ZRnote}
 %    \begin{macrocode}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none\else
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@none\else
 \AtEndOfPackage{%
 \def\@gnewline #1{%
   \ifvmode
@@ -8855,7 +8855,7 @@
 % |everyparhook=modern| の場合の、|\everyparhook| の有効化の実装。
 % \Note 本体開始時ではなく最初から有効化していることに注意。
 %    \begin{macrocode}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@modern
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@modern
 %    \end{macrocode}
 % まず |\everypar| を“乗っ取る”処理を行う。
 %    \begin{macrocode}
@@ -10286,11 +10286,11 @@
 %
 % |ltjs*| クラスの定義と同等になるようにパッチを当てる。
 %    \begin{macrocode}
-\unless\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none
+\unless\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@none
 \begingroup
   \let\%\@percentchar \def\@#1{[[\detokenize{#1}]]}
   \@gobble\if\def\bxjs@tmpa{\@{\everypar{}\fi}}
-  \ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+  \ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
     \@gobble\if\def\bxjs@tmpa{\@{\everypar{\everyparhook}\fi}}\fi
   \directlua{
     local function patchcmd(cs, code, from, to)
