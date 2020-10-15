@@ -1590,13 +1590,15 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@declare@enum@option}
-% |\bxjs@declare@enum@option{|\Meta{オプション名}|}{|\Meta{enum名}|}|\par
+% |\bxjs@declare@enum@option{|\Meta{オプション名}|}{|^^A
+%    \Meta{enum名}|}{|\Meta{初期値}|}|\par
 % “\Meta{オプション名}|=|\Meta{値}”のオプション指定に対して、
 % |\|[|bxjs@|\Meta{enum名}] を |\|[|bxjs@|\Meta{enum名}|@@|\Meta{値}] に
 % 等値する（後者の制御綴が未定義の場合はエラー）、という動作を規定する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@declare@enum@option
-\def\bxjs@declare@enum@option#1#2{%
+\def\bxjs@declare@enum@option#1#2#3{%
+  \bxjs@csletcs{bxjs@#2}{bxjs@#2@@#3}%
   \define@key{bxjs}{#1}{%
     \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
       \bxjs@error@keyval{#1}{##1}%
@@ -1606,12 +1608,15 @@
 % \end{macro}
 %
 % \begin{macro}{\bxjs@declare@bool@option}
-% |\bxjs@declare@bool@option{|\Meta{オプション名}|}{|\Meta{スイッチ名}|}|\par
+% |\bxjs@declare@bool@option{|\Meta{オプション名}|}{|^^A
+%     \Meta{スイッチ名}|}{|\Meta{初期値}|}|\par
 % “\Meta{オプション名}|=|\Meta{真偽値}”のオプション指定に対して、
 % |\if|[|bxjs@|\Meta{スイッチ名}] を設定する、という動作を規定する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@declare@bool@option
-\def\bxjs@declare@bool@option#1#2{%
+\def\bxjs@declare@bool@option#1#2#3{%
+  \csname newif\expandafter\endcsname\csname ifbxjs@#2\endcsname
+  \@nameuse{bxjs@#2#3}%
   \define@key{bxjs}{#1}[true]{%
     \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
       \bxjs@error@keyval{#1}{##1}%
@@ -1626,7 +1631,7 @@
 % 未定義ならエラーを出す。
 %    \begin{macrocode}
 \def\bxjs@set@keyval#1#2#3{%
-  \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
+  \bxjs@csletcs{bxjs@next}{bxjs@kv@#1@#2}%
   \ifx\bxjs@next\relax
     \bxjs@error@keyval{#1}{#2}%
     #3%
@@ -1778,7 +1783,7 @@
 %    \begin{macrocode}
 \let\bxjs@magstyle@@usemag\bxjs@magstyle@@mag
 \let\bxjs@magstyle@@nomag\bxjs@magstyle@@real
-\expandafter\let\csname bxjs@magstyle@@nomag*\endcsname\bxjs@magstyle@@xreal
+\bxjs@cslet{bxjs@magstyle@@nomag*}\bxjs@magstyle@@xreal
 %    \end{macrocode}
 % |\bxjs@magstyle@@default| は既定の値を表す。
 %    \begin{macrocode}
@@ -1796,51 +1801,29 @@
 % |magstyle| オプションの処理。
 %    \begin{macrocode}
 \define@key{bxjs}{magstyle}{%
-  \expandafter\let\expandafter\bxjs@magstyle\csname
-   bxjs@magstyle@@#1\endcsname
+  \bxjs@csletcs{bxjs@magstyle}{bxjs@magstyle@@#1}%
   \ifx\bxjs@magstyle\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option magstyle}\@ehc
+    \bxjs@error@keyval{magstyle}{#1}%
     \let\bxjs@magstyle\bxjs@magstyle@@default
   \fi}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@geometry}
-% |geometry| オプションの値。
+% |geometry| オプションの指定値。
 %    \begin{macrocode}
 \let\bxjs@geometry@@class=c
 \let\bxjs@geometry@@user=u
-\let\bxjs@geometry\bxjs@geometry@@class
+\bxjs@declare@enum@option{geometry}{geometry}{class}
 %    \end{macrocode}
 % \end{macro}
-%
-% |geometry| オプションの処理。
-%    \begin{macrocode}
-\define@key{bxjs}{geometry}{%
-  \expandafter\let\expandafter\bxjs@geometry\csname
-   bxjs@geometry@@#1\endcsname
-  \ifx\bxjs@geometry\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option geometry}\@ehc
-    \let\bxjs@geometry\bxjs@geometry@@class
-  \fi}
-%    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@fancyhdr}
-% 〔スイッチ〕
+% 〔スイッチ〕 |fancyhdr| の指定値。
 % |fancyhdr| パッケージに対する調整を行うか。
 %    \begin{macrocode}
-\newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
+\bxjs@declare@bool@option{fancyhdr}{fancyhdr}{true}
 %    \end{macrocode}
 % \end{macro}
-%
-% |fancyhdr| オプションの処理。
-%    \begin{macrocode}
-\let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
-\let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
-\define@key{bxjs}{fancyhdr}[true]{%
-  \bxjs@set@keyval{fancyhdr}{#1}{}}
-%    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@dvi@opt}
 % |dvi| オプションが指定されたか。
@@ -1861,11 +1844,9 @@
 % |dvi| オプションの処理。
 %    \begin{macrocode}
 \define@key{bxjs}{dvi}{%
-  \expandafter\let\expandafter\bxjs@tmpa\csname
-   bxjs@dvidriver@@#1\endcsname
+  \bxjs@csletcs{bxjs@tmpa}{bxjs@dvidriver@@#1}%
   \ifx\bxjs@tmpa\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option dvi}\@ehc
+    \bxjs@error@keyval{dvi}{#1}%
   \else
 %    \end{macrocode}
 % |\bxjs@driver@given| を未定義にしていることに注意。
@@ -1950,41 +1931,29 @@
 % \begin{macro}{\ifbxjs@whole@zw@lines}
 % 〔スイッチ〕 |whole-zw-lines| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
-\let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
-\let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
-\define@key{bxjs}{whole-zw-lines}[true]{\bxjs@set@keyval{wholezwlines}{#1}{}}
+\bxjs@declare@bool@option{whole-zw-lines}{whole@zw@lines}{true}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\ifbxjs@jaspace@cmd}
 % 〔スイッチ〕 |jaspace-cmd| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@jaspace@cmd \bxjs@jaspace@cmdtrue
-\let\bxjs@kv@jaspacecmd@true\bxjs@jaspace@cmdtrue
-\let\bxjs@kv@jaspacecmd@false\bxjs@jaspace@cmdfalse
-\define@key{bxjs}{jaspace-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
-\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
+\bxjs@declare@bool@option{jaspace-cmd}{jaspace@cmd}{true}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\setkeys{bxjs}{jaspace-cmd=#1}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\ifbxjs@fix@at@cmd}
 % 〔スイッチ〕 |fix-at-cmd| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@fix@at@cmd \bxjs@fix@at@cmdtrue
-\let\bxjs@kv@fixatcmd@true\bxjs@fix@at@cmdtrue
-\let\bxjs@kv@fixatcmd@false\bxjs@fix@at@cmdfalse
-\define@key{bxjs}{fix-at-cmd}[true]{\bxjs@set@keyval{fixatcmd}{#1}{}}
+\bxjs@declare@bool@option{fix-at-cmd}{fix@at@cmd}{true}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\ifbxjs@hyperref@enc}
 % 〔スイッチ〕 |hyperref-enc| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
-\let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
-\let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
-\define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
+\bxjs@declare@bool@option{hyperref-enc}{hyperref@enc}{true}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1994,15 +1963,8 @@
 \chardef\bxjs@everyparhook@@none=0
 \chardef\bxjs@everyparhook@@compat=1
 \chardef\bxjs@everyparhook@@modern=2
-\if j\jsEngine
-  \let\bxjs@everyparhook\bxjs@everyparhook@@compat
-\else
-  \let\bxjs@everyparhook\bxjs@everyparhook@@modern
-\fi
-\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@@none}
-\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@@compat}
-\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@@modern}
-\define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
+\bxjs@declare@enum@option{everyparhook}{everyparhook}{%
+  \if j\jsEngine compat\else modern\fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2012,19 +1974,14 @@
 \chardef\bxjs@label@section@@none=0
 \chardef\bxjs@label@section@@compat=1
 \chardef\bxjs@label@section@@modern=2
-\let\bxjs@label@section\bxjs@label@section@@compat
-\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@@none}
-\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@@compat}
-\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@@modern}
-\define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
+\bxjs@declare@enum@option{label-section}{label@section}{compat}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\ifbxjs@usezw}
 % 〔スイッチ〕 |use-zw| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@usezw \bxjs@usezwtrue
-\bxjs@declare@bool@option{use-zw}{usezw}
+\bxjs@declare@bool@option{use-zw}{usezw}{true}
 \DeclareOption{nozw}{\setkeys{bxjs}{use-zw=false}}
 \DeclareOption{zw}{\setkeys{bxjs}{use-zw=true}}
 %    \end{macrocode}
@@ -2033,8 +1990,7 @@
 % \begin{macro}{\ifbxjs@disguise@js}
 % 〔スイッチ〕 |disguise-js| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
-\bxjs@declare@bool@option{disguise-js}{disguise@js}
+\bxjs@declare@bool@option{disguise-js}{disguise@js}{true}
 \DeclareOption{nojs}{\setkeys{bxjs}{disguise-js=false}}
 \DeclareOption{js}{\setkeys{bxjs}{disguise-js=true}}
 %    \end{macrocode}
@@ -2043,8 +1999,7 @@
 % \begin{macro}{\ifbxjs@precisetext}
 % 〔スイッチ〕 |precise-text| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@precisetext
-\bxjs@declare@bool@option{precise-text}{precisetext}
+\bxjs@declare@bool@option{precise-text}{precisetext}{false}
 \DeclareOption{noprecisetext}{\setkeys{bxjs}{precise-text=false}}
 \DeclareOption{precisetext}{\setkeys{bxjs}{precise-text=true}}
 %    \end{macrocode}
@@ -2053,8 +2008,7 @@
 % \begin{macro}{\ifbxjs@simplejasetup}
 % 〔スイッチ〕 |simple-ja-setup| の指定値。
 %    \begin{macrocode}
-\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
-\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
+\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}{true}
 \DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
 \DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
 %    \end{macrocode}
