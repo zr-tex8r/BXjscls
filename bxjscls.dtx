@@ -3297,18 +3297,39 @@
 \def\bxjs@unit@zw{\jsZw}\let\bxjs@unit@zh\bxjs@unit@zw
 %    \end{macrocode}
 %
-% |\bxjs@param@paper| が長さ指定（|{W}{H}|）の場合、
+% |\bxjs@param@paper| が長さ指定の場合、
 % |geometry| の形式（|papersize={W,H}|）に変換する。
+% |{W}{H}| の形式について。
 %    \begin{macrocode}
-\def\bxjs@tmpdo{\futurelet\bxjs@tmpa\bxjs@tmpdo@a}
-\def\bxjs@tmpdo@a{%
-  \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@tmpdo@b
-  \else \expandafter\bxjs@tmpdo@c \fi}
-\def\bxjs@tmpdo@b#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
-\def\bxjs@tmpdo@c#1\@nil{\bxjs@tmpdo@d#1,,\@nil}
-\def\bxjs@tmpdo@d#1,#2,#3\@nil{%
-  \ifx\@nil#3\@nil\else \edef\bxjs@param@paper{papersize={#1,#2}}\fi}
-\expandafter\bxjs@tmpdo\bxjs@param@paper\@empty\@empty\@nil
+\@tempswafalse
+\def\bxjs@tmpdo{\@ifnextchar\bgroup\bxjs@tmpdo@a\remove@to@nnil}
+\def\bxjs@tmpdo@a#1{\edef\bxjs@tmpa{#1}%
+  \@ifnextchar\bgroup\bxjs@tmpdo@b\remove@to@nnil}
+\def\bxjs@tmpdo@b#1{\edef\bxjs@tmpa{\bxjs@tmpa,#1}%
+  \@ifnextchar\@nnil\bxjs@tmpdo@c\remove@to@nnil}
+\def\bxjs@tmpdo@c\@nnil{\@tempswatrue
+  \edef\bxjs@param@paper{papersize={\bxjs@tmpa}}}
+\expandafter\bxjs@tmpdo\bxjs@param@paper\@nnil
+%    \end{macrocode}
+% |W,H| の形式について。
+%    \begin{macrocode}
+\if@tempswa\else
+  \def\bxjs@tmpa{\@nil,\@nil}
+  \def\bxjs@tmpdo#1,#2,#3\@nnil{%
+    \def\bxjs@tmpb{#3}\ifx\bxjs@tmpa\bxjs@tmpb
+      \@tempswatrue\edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+  \expandafter\bxjs@tmpdo\bxjs@param@paper,\@nil,\@nil\@nnil
+\fi
+%    \end{macrocode}
+% |W*H| の形式について。
+%    \begin{macrocode}
+\if@tempswa\else
+  \def\bxjs@tmpa{\@nil*\@nil}
+  \def\bxjs@tmpdo#1*#2*#3\@nnil{%
+    \def\bxjs@tmpb{#3}\ifx\bxjs@tmpa\bxjs@tmpb
+      \@tempswatrue\edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+  \expandafter\bxjs@tmpdo\bxjs@param@paper*\@nil*\@nil\@nnil
+\fi
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@layout@paper}
