@@ -9433,16 +9433,16 @@
 \@onlypreamble\bxjs@get@kanjiEmbed
 \def\bxjs@get@kanjiEmbed{%
   \begingroup\setbox\z@=\hbox{%
-    \global\let\bxjs@do\@empty
+    \global\let\bxjs@tmpdo\@empty
     \def\bxjs@next##1##2##3{%
       \def##1####1##3 ####2\@nil####3\@nnil{%
         \ifx$####1$\gdef##2{####2}\fi}%
-      \g@addto@macro\bxjs@do{%
+      \g@addto@macro\bxjs@tmpdo{%
         \expandafter##1\bxjs@tmpa\@nil##3 \@nil\@nnil}}%
-    \bxjs@next\bxjs@do@a\bxjs@g@tmpa{kanjiEmbed}%
-    \bxjs@next\bxjs@do@b\bxjs@g@tmpa{jaEmbed}%
-    \bxjs@next\bxjs@do@c\bxjs@g@tmpb{kanjiVariant}%
-    \bxjs@next\bxjs@do@d\bxjs@g@tmpb{jaVariant}%
+    \bxjs@next\bxjs@tmpdo@a\bxjs@g@tmpa{kanjiEmbed}%
+    \bxjs@next\bxjs@tmpdo@b\bxjs@g@tmpa{jaEmbed}%
+    \bxjs@next\bxjs@tmpdo@c\bxjs@g@tmpb{kanjiVariant}%
+    \bxjs@next\bxjs@tmpdo@d\bxjs@g@tmpb{jaVariant}%
 %
     \global\let\bxjs@g@tmpa\relax
     \global\let\bxjs@g@tmpb\relax
@@ -9460,7 +9460,7 @@
       \@tempswatrue
       \loop\if@tempswa
         \read\@inputcheck to\bxjs@tmpa
-        \bxjs@do
+        \bxjs@tmpdo
         \ifeof\@inputcheck \@tempswafalse \fi
       \repeat
     \fi
