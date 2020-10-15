@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2020/10/10 v2.4-pre BXJS document classes]
+  [2020/10/16 v2.4  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsbook}
 \newif\ifjsc@needsp@tch
@@ -260,9 +260,9 @@
 \DeclareOption{10.5ptj}{\bxjs@setjbasefontsize{10.5pt}}
 \DeclareOption{11ptj}{\bxjs@setjbasefontsize{11pt}}
 \DeclareOption{12ptj}{\bxjs@setjbasefontsize{12pt}}
-\DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@usemag}
-\DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@nomag}
-\DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@xreal}
+\DeclareOption{usemag}{\let\bxjs@magstyle\bxjs@magstyle@@usemag}
+\DeclareOption{nomag}{\let\bxjs@magstyle\bxjs@magstyle@@nomag}
+\DeclareOption{nomag*}{\let\bxjs@magstyle\bxjs@magstyle@@xreal}
 \if j\jsEngine
 \hour\time \divide\hour by 60\relax
 \@tempcnta\hour \multiply\@tempcnta 60\relax
@@ -454,13 +454,18 @@
 \DeclareOption{xetex}{%
   \def\bxjs@driver@opt{xetex}%
   \let\bxjs@driver@given\bxjs@driver@@xetex}
-\DeclareOption{dvipdfmx-if-dvi}{%
+\DeclareOption{dvipdfmx-if-dvi}{\bxjs@depre@opt@do{dvipdfmx-if-dvi}{dvi=dvipdfmx}}
+\@onlypreamble\bxjs@depre@opt
+\def\bxjs@depre@opt#1#2{%
   \ClassWarningNoLine\bxjs@clsname
-   {The old option 'dvipdfmx-if-dvi' is DEPRECATED\MessageBreak
+   {The old option '#1' is DEPRECATED\MessageBreak
     and may be abolished in future!\MessageBreak
-    You should write 'dvi=dvipdfmx' instead}%
-  \setkeys{bxjs}{dvi=dvipdfmx}}
-
+    You should instead write:\MessageBreak
+    \space\space #2}}
+\@onlypreamble\bxjs@depre@opt@do
+\def\bxjs@depre@opt@do#1#2{%
+  \bxjs@depre@opt{#1}{#2}%
+  \setkeys{bxjs}{#2}}
 \newif\ifbxjs@bigcode \bxjs@bigcodetrue
 \DeclareOption{nobigcode}{%
   \bxjs@bigcodefalse}
@@ -491,21 +496,24 @@
   \setkeys{#1}{#2}%
   \let\KV@errx\bxjs@save@KV@errx}
 \@onlypreamble\bxjs@declare@enum@option
-\def\bxjs@declare@enum@option#1#2{%
+\def\bxjs@declare@enum@option#1#2#3{%
+  \bxjs@csletcs{bxjs@#2}{bxjs@#2@@#3}%
   \define@key{bxjs}{#1}{%
     \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
       \bxjs@error@keyval{#1}{##1}%
     \else \bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}%
     \fi}}
 \@onlypreamble\bxjs@declare@bool@option
-\def\bxjs@declare@bool@option#1#2{%
+\def\bxjs@declare@bool@option#1#2#3{%
+  \csname newif\expandafter\endcsname\csname ifbxjs@#2\endcsname
+  \@nameuse{bxjs@#2#3}%
   \define@key{bxjs}{#1}[true]{%
     \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
       \bxjs@error@keyval{#1}{##1}%
     \else \@nameuse{bxjs@#2##1}%
     \fi}}
 \def\bxjs@set@keyval#1#2#3{%
-  \expandafter\let\expandafter\bxjs@next\csname bxjs@kv@#1@#2\endcsname
+  \bxjs@csletcs{bxjs@next}{bxjs@kv@#1@#2}%
   \ifx\bxjs@next\relax
     \bxjs@error@keyval{#1}{#2}%
     #3%
@@ -526,12 +534,13 @@
   \edef\bxjs@scale@opt{#1}%
   \let\jsScale\bxjs@scale@opt}
 \define@key{bxjs}{jafontscale}{\setkeys{bxjs}{scale=#1}}
-\DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
+\DeclareOption{noscale}{\bxjs@depre@opt@do{noscale}{scale=1}}
 \let\bxjs@param@mag\relax
 \define@key{bxjs}{mag}{\edef\bxjs@param@mag{#1}}
 \define@key{bxjs}{paper}{\edef\bxjs@param@paper{#1}}
 \let\bxjs@jadriver\relax
-\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver@opt{#1}}
+\define@key{bxjs}{jadriver}{%
+  \bxjs@depre@opt{jadriver}{ja=#1}\edef\bxjs@jadriver@opt{#1}}
 \define@key{bxjs}{ja}[\relax]{%
   \ifx\relax#1\else\edef\bxjs@jadriver@opt{#1}\fi}
 \let\jsJaFont\@empty
@@ -545,44 +554,30 @@
 \define@key{bxjs}{pandoc+}[]{%
   \ExecuteOptions{pandoc+}%
   \edef\jsJaParam{\bxjs@catopt\jsJaParam{#1}}}
-\let\bxjs@magstyle@mag=m
-\let\bxjs@magstyle@real=r
-\let\bxjs@magstyle@xreal=x
-\let\bxjs@magstyle@usemag\bxjs@magstyle@mag
-\let\bxjs@magstyle@nomag\bxjs@magstyle@real
-\expandafter\let\csname bxjs@magstyle@nomag*\endcsname\bxjs@magstyle@xreal
-\let\bxjs@magstyle@default\bxjs@magstyle@usemag
+\let\bxjs@magstyle@@mag=m
+\let\bxjs@magstyle@@real=r
+\let\bxjs@magstyle@@xreal=x
+\let\bxjs@magstyle@@usemag\bxjs@magstyle@@mag
+\let\bxjs@magstyle@@nomag\bxjs@magstyle@@real
+\bxjs@cslet{bxjs@magstyle@@nomag*}\bxjs@magstyle@@xreal
+\let\bxjs@magstyle@@default\bxjs@magstyle@@usemag
 \ifx l\jsEngine \ifnum\luatexversion>86
-  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+  \let\bxjs@magstyle@@default\bxjs@magstyle@@xreal
 \fi\fi
 \ifjsWithpTeXng
-  \let\bxjs@magstyle@default\bxjs@magstyle@xreal
+  \let\bxjs@magstyle@@default\bxjs@magstyle@@xreal
 \fi
-\let\bxjs@magstyle\bxjs@magstyle@default
+\let\bxjs@magstyle\bxjs@magstyle@@default
 \define@key{bxjs}{magstyle}{%
-  \expandafter\let\expandafter\bxjs@magstyle\csname
-   bxjs@magstyle@#1\endcsname
+  \bxjs@csletcs{bxjs@magstyle}{bxjs@magstyle@@#1}%
   \ifx\bxjs@magstyle\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option magstyle}\@ehc
-    \let\bxjs@magstyle\bxjs@magstyle@default
+    \bxjs@error@keyval{magstyle}{#1}%
+    \let\bxjs@magstyle\bxjs@magstyle@@default
   \fi}
-\let\bxjs@geometry@class=c
-\let\bxjs@geometry@user=u
-\let\bxjs@geometry\bxjs@geometry@class
-\define@key{bxjs}{geometry}{%
-  \expandafter\let\expandafter\bxjs@geometry\csname
-   bxjs@geometry@#1\endcsname
-  \ifx\bxjs@geometry\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option geometry}\@ehc
-    \let\bxjs@geometry\bxjs@geometry@class
-  \fi}
-\newif\ifbxjs@fancyhdr \bxjs@fancyhdrtrue
-\let\bxjs@kv@fancyhdr@true\bxjs@fancyhdrtrue
-\let\bxjs@kv@fancyhdr@false\bxjs@fancyhdrfalse
-\define@key{bxjs}{fancyhdr}[true]{%
-  \bxjs@set@keyval{fancyhdr}{#1}{}}
+\let\bxjs@geometry@@class=c
+\let\bxjs@geometry@@user=u
+\bxjs@declare@enum@option{geometry}{geometry}{class}
+\bxjs@declare@bool@option{fancyhdr}{fancyhdr}{true}
 \newif\ifbxjs@dvi@opt
 \let\bxjs@dvidriver@@dvipdfmx=\bxjs@driver@@dvipdfmx
 \let\bxjs@dvidriver@@dvips=\bxjs@driver@@dvips
@@ -590,11 +585,9 @@
 \let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@nodvidriver=\bxjs@driver@@none
 \define@key{bxjs}{dvi}{%
-  \expandafter\let\expandafter\bxjs@tmpa\csname
-   bxjs@dvidriver@@#1\endcsname
+  \bxjs@csletcs{bxjs@tmpa}{bxjs@dvidriver@@#1}%
   \ifx\bxjs@tmpa\relax
-    \ClassError\bxjs@clsname
-     {Invalid value '#1' for option dvi}\@ehc
+    \bxjs@error@keyval{dvi}{#1}%
   \else
     \def\bxjs@driver@opt{#1}%
     \let\bxjs@driver@given\@undefined
@@ -612,6 +605,7 @@
 \define@key{bxjs}{layout}{%
   \bxjs@set@keyval{layout}{#1}{}}
 \define@key{bxjs}{textwidth-limit}{%
+  \bxjs@depre@opt{textwidth-limit}{textwidth=#1zw}%
   \edef\bxjs@textwidth@limit@opt{#1}}
 \define@key{bxjs}{textwidth}{\edef\bxjs@textwidth@opt{#1}}
 \define@key{bxjs}{line_length}{\setkeys{bxjs}{textwidth=#1}}
@@ -619,59 +613,32 @@
 \define@key{bxjs}{number_of_lines}{\setkeys{bxjs}{number-of-lines=#1}}
 \define@key{bxjs}{paragraph-mark}{%
   \edef\bxjs@paragraph@mark{#1}}
-\newif\ifbxjs@whole@zw@lines \bxjs@whole@zw@linestrue
-\let\bxjs@kv@wholezwlines@true\bxjs@whole@zw@linestrue
-\let\bxjs@kv@wholezwlines@false\bxjs@whole@zw@linesfalse
-\define@key{bxjs}{whole-zw-lines}[true]{\bxjs@set@keyval{wholezwlines}{#1}{}}
-\newif\ifbxjs@jaspace@cmd \bxjs@jaspace@cmdtrue
-\let\bxjs@kv@jaspacecmd@true\bxjs@jaspace@cmdtrue
-\let\bxjs@kv@jaspacecmd@false\bxjs@jaspace@cmdfalse
-\define@key{bxjs}{jaspace-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
-\define@key{bxjs}{xkanjiskip-cmd}[true]{\bxjs@set@keyval{jaspacecmd}{#1}{}}
-\newif\ifbxjs@fix@at@cmd \bxjs@fix@at@cmdtrue
-\let\bxjs@kv@fixatcmd@true\bxjs@fix@at@cmdtrue
-\let\bxjs@kv@fixatcmd@false\bxjs@fix@at@cmdfalse
-\define@key{bxjs}{fix-at-cmd}[true]{\bxjs@set@keyval{fixatcmd}{#1}{}}
-\newif\ifbxjs@hyperref@enc \bxjs@hyperref@enctrue
-\let\bxjs@kv@hyperrefenc@true\bxjs@hyperref@enctrue
-\let\bxjs@kv@hyperrefenc@false\bxjs@hyperref@encfalse
-\define@key{bxjs}{hyperref-enc}[true]{\bxjs@set@keyval{hyperrefenc}{#1}{}}
-\chardef\bxjs@everyparhook@none=0
-\chardef\bxjs@everyparhook@compat=1
-\chardef\bxjs@everyparhook@modern=2
-\if j\jsEngine
-  \let\bxjs@everyparhook\bxjs@everyparhook@compat
-\else
-  \let\bxjs@everyparhook\bxjs@everyparhook@modern
-\fi
-\def\bxjs@kv@everyparhook@none{\let\bxjs@everyparhook\bxjs@everyparhook@none}
-\def\bxjs@kv@everyparhook@compat{\let\bxjs@everyparhook\bxjs@everyparhook@compat}
-\def\bxjs@kv@everyparhook@modern{\let\bxjs@everyparhook\bxjs@everyparhook@modern}
-\define@key{bxjs}{everyparhook}{\bxjs@set@keyval{everyparhook}{#1}{}}
-\chardef\bxjs@label@section@none=0
-\chardef\bxjs@label@section@compat=1
-\chardef\bxjs@label@section@modern=2
-\let\bxjs@label@section\bxjs@label@section@compat
-\def\bxjs@kv@labelsection@none{\let\bxjs@label@section\bxjs@label@section@none}
-\def\bxjs@kv@labelsection@compat{\let\bxjs@label@section\bxjs@label@section@compat}
-\def\bxjs@kv@labelsection@modern{\let\bxjs@label@section\bxjs@label@section@modern}
-\define@key{bxjs}{label-section}{\bxjs@set@keyval{labelsection}{#1}{}}
-\newif\ifbxjs@usezw \bxjs@usezwtrue
-\bxjs@declare@bool@option{use-zw}{usezw}
-\DeclareOption{nozw}{\setkeys{bxjs}{use-zw=false}}
-\DeclareOption{zw}{\setkeys{bxjs}{use-zw=true}}
-\newif\ifbxjs@disguise@js \bxjs@disguise@jstrue
-\bxjs@declare@bool@option{disguise-js}{disguise@js}
-\DeclareOption{nojs}{\setkeys{bxjs}{disguise-js=false}}
-\DeclareOption{js}{\setkeys{bxjs}{disguise-js=true}}
-\newif\ifbxjs@precisetext
-\bxjs@declare@bool@option{precise-text}{precisetext}
-\DeclareOption{noprecisetext}{\setkeys{bxjs}{precise-text=false}}
-\DeclareOption{precisetext}{\setkeys{bxjs}{precise-text=true}}
-\newif\ifbxjs@simplejasetup \bxjs@simplejasetuptrue
-\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}
-\DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
-\DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
+\bxjs@declare@bool@option{whole-zw-lines}{whole@zw@lines}{true}
+\bxjs@declare@bool@option{jaspace-cmd}{jaspace@cmd}{true}
+\define@key{bxjs}{xkanjiskip-cmd}[true]{\setkeys{bxjs}{jaspace-cmd=#1}}
+\bxjs@declare@bool@option{fix-at-cmd}{fix@at@cmd}{true}
+\bxjs@declare@bool@option{hyperref-enc}{hyperref@enc}{true}
+\chardef\bxjs@everyparhook@@none=0
+\chardef\bxjs@everyparhook@@compat=1
+\chardef\bxjs@everyparhook@@modern=2
+\bxjs@declare@enum@option{everyparhook}{everyparhook}{%
+  \if j\jsEngine compat\else modern\fi}
+\chardef\bxjs@label@section@@none=0
+\chardef\bxjs@label@section@@compat=1
+\chardef\bxjs@label@section@@modern=2
+\bxjs@declare@enum@option{label-section}{label@section}{compat}
+\bxjs@declare@bool@option{use-zw}{usezw}{true}
+\DeclareOption{nozw}{\bxjs@depre@opt@do{nozw}{use-zw=false}}
+\DeclareOption{zw}{\bxjs@depre@opt@do{zw}{use-zw=true}}
+\bxjs@declare@bool@option{disguise-js}{disguise@js}{true}
+\DeclareOption{nojs}{\bxjs@depre@opt@do{nojs}{disguise-js=false}}
+\DeclareOption{js}{\bxjs@depre@opt@do{js}{disguise-js=true}}
+\bxjs@declare@bool@option{precise-text}{precisetext}{false}
+\DeclareOption{noprecisetext}{\bxjs@depre@opt@do{noprecisetext}{precise-text=false}}
+\DeclareOption{precisetext}{\bxjs@depre@opt@do{precisetext}{precise-text=true}}
+\bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}{true}
+\DeclareOption{nosimplejasetup}{\bxjs@depre@opt@do{nosimplejasetup}{simple-ja-setup=false}}
+\DeclareOption{simplejasetup}{\bxjs@depre@opt@do{simplejasetup}{simple-ja-setup=true}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -814,9 +781,9 @@
      {When you use a Japanese-driver you must specify a correct\MessageBreak
       engine option.\MessageBreak\@ehc}
 \fi\fi
-\ifx\bxjs@magstyle@default\bxjs@magstyle@mag\else
-  \ifx\bxjs@magstyle\bxjs@magstyle@mag
-    \let\bxjs@magstyle\bxjs@magstyle@default
+\ifx\bxjs@magstyle@@default\bxjs@magstyle@@mag\else
+  \ifx\bxjs@magstyle\bxjs@magstyle@@mag
+    \let\bxjs@magstyle\bxjs@magstyle@@default
     \ClassError\bxjs@clsname
      {The engine does not support 'magstyle=usemag'}%
      {LuaTeX v0.87 or later no longer supports the "mag" feature of TeX.\MessageBreak
@@ -865,9 +832,9 @@
 \fi
 \ifdim\bxjs@param@basefontsize<10pt \def\n@baseline{15}%
 \else \def\n@baseline{16}\fi
-\ifx\bxjs@magstyle\bxjs@magstyle@mag
+\ifx\bxjs@magstyle\bxjs@magstyle@@mag
   \jsc@magtrue
-\else\ifx\bxjs@magstyle\bxjs@magstyle@xreal
+\else\ifx\bxjs@magstyle\bxjs@magstyle@@xreal
   \jsc@mag@xrealtrue
 \fi\fi
 \ifx\bxjs@param@mag\relax
@@ -1110,15 +1077,29 @@
 \setlength{\topskip}{10\p@?}
 \def\bxjs@unit@trueQ{0.25truemm}\let\bxjs@unit@trueH\bxjs@unit@trueQ
 \def\bxjs@unit@zw{\jsZw}\let\bxjs@unit@zh\bxjs@unit@zw
-\def\bxjs@tmpdo{\futurelet\bxjs@tmpa\bxjs@tmpdo@a}
-\def\bxjs@tmpdo@a{%
-  \ifx\bxjs@tmpa\bgroup \expandafter\bxjs@tmpdo@b
-  \else \expandafter\bxjs@tmpdo@c \fi}
-\def\bxjs@tmpdo@b#1#2#3\@nil{\edef\bxjs@param@paper{papersize={#1,#2}}}
-\def\bxjs@tmpdo@c#1\@nil{\bxjs@tmpdo@d#1,,\@nil}
-\def\bxjs@tmpdo@d#1,#2,#3\@nil{%
-  \ifx\@nil#3\@nil\else \edef\bxjs@param@paper{papersize={#1,#2}}\fi}
-\expandafter\bxjs@tmpdo\bxjs@param@paper\@empty\@empty\@nil
+\@tempswafalse
+\def\bxjs@tmpdo{\@ifnextchar\bgroup\bxjs@tmpdo@a\remove@to@nnil}
+\def\bxjs@tmpdo@a#1{\edef\bxjs@tmpa{#1}%
+  \@ifnextchar\bgroup\bxjs@tmpdo@b\remove@to@nnil}
+\def\bxjs@tmpdo@b#1{\edef\bxjs@tmpa{\bxjs@tmpa,#1}%
+  \@ifnextchar\@nnil\bxjs@tmpdo@c\remove@to@nnil}
+\def\bxjs@tmpdo@c\@nnil{\@tempswatrue
+  \edef\bxjs@param@paper{papersize={\bxjs@tmpa}}}
+\expandafter\bxjs@tmpdo\bxjs@param@paper\@nnil
+\if@tempswa\else
+  \def\bxjs@tmpa{\@nil,\@nil}
+  \def\bxjs@tmpdo#1,#2,#3\@nnil{%
+    \def\bxjs@tmpb{#3}\ifx\bxjs@tmpa\bxjs@tmpb
+      \@tempswatrue\edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+  \expandafter\bxjs@tmpdo\bxjs@param@paper,\@nil,\@nil\@nnil
+\fi
+\if@tempswa\else
+  \def\bxjs@tmpa{\@nil*\@nil}
+  \def\bxjs@tmpdo#1*#2*#3\@nnil{%
+    \def\bxjs@tmpb{#3}\ifx\bxjs@tmpa\bxjs@tmpb
+      \@tempswatrue\edef\bxjs@param@paper{papersize={#1,#2}}\fi}
+  \expandafter\bxjs@tmpdo\bxjs@param@paper*\@nil*\@nil\@nnil
+\fi
 \edef\bxjs@layout@paper{%
   \ifjsc@mag truedimen,\fi
   \if@landscape landscape,\fi
@@ -1212,7 +1193,7 @@
   \def\bxjs@apply@bd@pre@geometry@hook{%
     \AddToHook{begindocument}[\bxjs@geometry@name]}
 \fi
-\ifx\bxjs@geometry\bxjs@geometry@class
+\ifx\bxjs@geometry\bxjs@geometry@@class
 \ifbxjs@papersize
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \PassOptionsToPackage{dvipdfm}{geometry}
@@ -1260,7 +1241,7 @@
     \noexpand\geometry{\bxjs@next}%
   }\bxjs@next
   \bxjs@postproc@layout}
-\else\ifx\bxjs@geometry\bxjs@geometry@user
+\else\ifx\bxjs@geometry\bxjs@geometry@@user
 \g@addto@macro\bxjs@begin@document@hook{%
   \ifdim\textwidth=.5\maxdimen
     \ClassError\bxjs@clsname
@@ -1515,11 +1496,11 @@
   \else \csname label#1\endcsname
   \fi}
 \def\@seccntformat#1{\bxjs@label@sect{#1}\quad}
-\ifnum\bxjs@label@section=\bxjs@label@section@compat\else
+\ifnum\bxjs@label@section=\bxjs@label@section@@compat\else
 \def\@secapp{\presectionname}
 \def\@secpos{\postsectionname}
 \fi
-\ifnum\bxjs@label@section=\bxjs@label@section@modern
+\ifnum\bxjs@label@section=\bxjs@label@section@@modern
 \def\labelsection{\@secapp\thesection\@secpos}
 \fi
 \def\@startsection#1#2#3#4#5#6{%
@@ -1546,7 +1527,7 @@
   \@ifstar
     {\@ssect{#3}{#4}{#5}{#6}}%
     {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
   \let\bxjs@if@ceph\@firstofone
 \else \let\bxjs@if@ceph\@gobble
 \fi
@@ -2290,7 +2271,7 @@
   \llap{\@makefnmark\hskip0.3\jsZw}#1}
 \let\jsInhibitGlueAtParTop\@empty
 \def\everyparhook{\jsInhibitGlueAtParTop}
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
 \g@addto@macro\bxjs@begin@document@hook{\everypar{\everyparhook}}
 \fi
 \ifx j\jsEngine
@@ -2322,7 +2303,7 @@
     \fi
   \fi}
 \fi
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@compat
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@compat
 \def\@doendpe{%
   \@endpetrue
   \def\par{%
@@ -2409,7 +2390,7 @@
       \everypar{\everyparhook}%
     \fi\everyparhook}}
 \fi
-\ifnum\bxjs@everyparhook=\bxjs@everyparhook@none\else
+\ifnum\bxjs@everyparhook=\bxjs@everyparhook@@none\else
 \AtEndOfPackage{%
 \def\@gnewline #1{%
   \ifvmode

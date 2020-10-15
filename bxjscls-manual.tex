@@ -11,8 +11,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.3}
-\newcommand{\PkgDate}{2020/10/10}
+\newcommand{\PkgVersion}{2.4}
+\newcommand{\PkgDate}{2020/10/16}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -645,11 +645,55 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   \footnote{これはJSクラスの設計に基づく値である。
     ただし実装の都合で、JSクラスの実際のスケール値はこれから
     僅かだけずれている。}
+\item 用紙サイズオプション\Means
+  用紙サイズ名のオプションはJSクラスで定義されているもの
+  （\ref{ssec:JS-inherited-option}節参照）の他に以下のものが使える。
+  \begin{itemize}
+  \item |iso-bsize|\Means
+    |bNpaper| の名前のオプションをISO~B判の指定と見なす。
+    既定では |bNpaper| はJIS~B判の指定と見なされる。
+  \item \Pkg{geometry}パッケージ（5.x版）の用紙サイズ名のオプション\Means
+    以下に挙げるもの
+    \footnote{JSクラスにあるオプションも含めている。}：
+    \begin{quote}
+      |a0paper|～|a6paper|、
+      |b0paper|～|b6paper|、
+      |c0paper|～|c6paper|、
+      |b0j|～|b6j|、
+      |ansiapaper|～|ansiepaper|、
+      |letterpaper|、|executivepaper|、|legalpaper|、
+      |screen|
+    \end{quote}
+    \Note |bNpaper| は\Pkg{geometry}ではISO~B判を意味するが、
+    JSクラスとの互換のため、BXJSでの意味は |iso-bsize| の有無に従う
+    （つまり既定ではJIS~B判）。
+    |bNj| は\Pkg{geometry}と同じく常にJIS~B判である。
+  \item 末尾が |～paper| でない名前のオプションについて、
+    末尾に |～paper| を付けたもの。
+    以下のものが該当する
+    \footnote{|aNj|・|bNj| は |aNpaper|・|bNpaper| で代用できるので
+      除いている。}：
+    \begin{quote}
+      |a4varpaper|、|b5varpaper|、|screenpaper|
+    \end{quote}
+    \Note Pandocで |-V papersize=a4var| 等の指定を可能にするため。
+  \item |custompaper|\Means
+    実際には何もしないダミーの用紙サイズ指定オプション。
+    \Note 外部ツールと連携する場合に、
+    「何らかの用紙サイズの名前が要求されるが、用紙サイズは別の方法
+    （|paper| オプション等）で指定したい」
+    という場合のダミーとして利用する。
+  \end{itemize}
 \item |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}|\Means
-  用紙サイズ設定。
-  |a4paper| 等と同じ役割で、任意の長さ値を指定できる。
+  長さ値の直接指定による用紙サイズ設定。
   用紙サイズの既定値はA4縦
   （$\mbox{210\,mm}\times\mbox{294\,mm}$）である。
+\item |paper=|\Meta{横幅}|*|\Meta{縦幅}\Means
+  用紙サイズ指定の別形式で、
+  |paper={|\Meta{横幅}|}{|\Meta{縦幅}|}| と等価。
+  \Note Pandocで波括弧の扱いが面倒になる場合があることへの対策。
+  \Note 用紙サイズ指定にはさらに\Pkg{jlreq}互換の別形式 %
+    |paper={|\Meta{横幅}|,|\Meta{縦幅}|}| もある。
 \item |enablejfam=|\Meta{値}\Means
   数式中の和文出力をサポートするか否か。
   値は |true|（有効）\JSl|false|（無効）\JSl|default|（既定値に従う）
@@ -721,14 +765,14 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   パッケージが読み込まれた場合も無効化される。
   特に、和文ドライバがstandardである場合は、必ず\Pkg{xeCJK}が
   読み込まれるため、このオプションは無意味である。
-\item |a4varpaper|、|b5varpaper|\Means
-  用紙サイズ指定オプション |a4var|、|b5var| の別名。
-  \Note Pandocで |-V papersize=a4var| の指定を可能にするため。
-\item |custompaper|\Means
-  実際には何もしない用紙サイズ指定オプション。
-  \Note Pandocを使う際に「用紙サイズは |classoption=paper=...|
-  で指定するから |papersize| は不要だが何か指定しないといけない」
-  という場合に |-V papersize=custom| を指定する。
+%\item |a4varpaper|、|b5varpaper|\Means
+%  用紙サイズ指定オプション |a4var|、|b5var| の別名。
+%  \Note Pandocで |-V papersize=a4var| の指定を可能にするため。
+%\item |custompaper|\Means
+%  実際には何もしない用紙サイズ指定オプション。
+%  \Note Pandocを使う際に「用紙サイズは |classoption=paper=...|
+%  で指定するから |papersize| は不要だが何か指定しないといけない」
+%  という場合に |-V papersize=custom| を指定する。
 \item |mag=|\Meta{整数}\Means
   版面拡大率（mag値）の直接設定。
   既定は基底フォントサイズから算出する。
@@ -1243,6 +1287,9 @@ minimalに配置している。}%
 \item それ以外の場合\Means
   「updmap-kanji-configで指定されたファミリ名」が |jafont|
   の値に指定されたと見なされる。
+  \footnote{|updmap-kanji-config| の |--jis2004| オプションにより
+  2004JIS字形が選択されている場合は、さらに |jis2004| 和文パラメタを
+  有効にする。}
 \end{itemize}
 
 %===========================================================
@@ -1310,8 +1357,27 @@ standard用のものに加えて、以下の和文ドライバパラメタが存
   \item |boldsans|\Means
     太字サンセリフ（|\sffamily\bfseries|）。
   \end{itemize}
-  \Note PandocモードではPandocの重要（Strong）要素は |\strong| 命令
+  \Note Pandocモードの既定ではPandocの重要（Strong）要素は |\strong| 命令
   で実現されるので、このパラメタの設定に追随する。
+\item |fix-strong=|\Meta{真偽値}\Means
+  |\textbf| 命令の動作を |\strong| と同等にするか。
+  既定値は真。
+  \Note Pandocの重要（Strong）要素は{\LaTeX}への変換において |\textbf|
+  命令が適用される。
+  和文フォントを単ウェイトで用いている場合、生の |\textbf| は体裁
+  が悪い（ゴシックの和文とセリフの欧文の組み合わせになる）ため、
+  |\strong| に移譲して調整ができるようにしている。
+  \footnote{|\strong| に適用される書体は、|strong| パラメタで選択
+    できるが、その他に（{\XeLaTeX}・{\LuaLaTeX}の場合は）
+    \Pkg{fontspec}の |\strongfontdeclare| 命令でも設定できる。}
+  \Note |\bfseries| 命令の動作は変わらない。
+\item |fix-code=|\Meta{真偽値}\Means
+  |\texttt| 命令と周囲の和文の間に和欧文間空白が常に入るようにするか。
+  既定値は真。
+  \Note Pandocのインラインコード（Code）要素は{\LaTeX}への変換に
+  おいて |\texttt| 命令が適用される。
+  \Note 真である場合、|\texttt| の出力の周囲に欧文ゴーストが挿入される。
+
 \end{itemize}
 
 %===========================================================
