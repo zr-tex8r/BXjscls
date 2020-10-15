@@ -1491,17 +1491,9 @@
   \let\bxjs@driver@given\bxjs@driver@@xetex}
 %    \end{macrocode}
 %
-% |dvipdfmx-if-dvi| は互換性のためのオプションで、|dvi=dvipdfmx| と
-% 同値である。
-% \Note 2.0版より |dvipdfmx-if-dvi| は非推奨となった。
+% |dvipdfmx-if-dvi| は2.0版より非推奨となった。
 %    \begin{macrocode}
-\DeclareOption{dvipdfmx-if-dvi}{%
-  \ClassWarningNoLine\bxjs@clsname
-   {The old option 'dvipdfmx-if-dvi' is DEPRECATED\MessageBreak
-    and may be abolished in future!\MessageBreak
-    You should write 'dvi=dvipdfmx' instead}%
-  \setkeys{bxjs}{dvi=dvipdfmx}}
-
+\DeclareOption{dvipdfmx-if-dvi}{\bxjs@depre@opt@do{dvipdfmx-if-dvi}{dvi=dvipdfmx}}
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -1510,6 +1502,26 @@
 % \mbox{}
 % \begin{ZRnote}
 % \TODO 互換用オプションを分離する（2.0版で？）。
+%
+% \begin{macro}{\bxjs@depre@opt}
+% \begin{macro}{\bxjs@depre@opt@do}
+% 非推奨のオプションについて警告を出す。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@depre@opt
+\def\bxjs@depre@opt#1#2{%
+  \ClassWarningNoLine\bxjs@clsname
+   {The old option '#1' is DEPRECATED\MessageBreak
+    and may be abolished in future!\MessageBreak
+    You should instead write:\MessageBreak
+    \space\space #2}}
+\@onlypreamble\bxjs@depre@opt@do
+\def\bxjs@depre@opt@do#1#2{%
+  \bxjs@depre@opt{#1}{#2}%
+  \setkeys{bxjs}{#2}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
 % \begin{macro}{\ifbxjs@bigcode}
 % {\upTeX}で有効化するToUnicode CMapとして
 % 「|UTF8-UCS2|」の代わりに「|UTF8-UTF16|」を使うか。
@@ -1697,7 +1709,7 @@
 %
 % |noscale| オプションの処理。
 %    \begin{macrocode}
-\DeclareOption{noscale}{\setkeys{bxjs}{scale=1}}
+\DeclareOption{noscale}{\bxjs@depre@opt@do{noscale}{scale=1}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@param@mag}
@@ -1729,7 +1741,8 @@
 % \Note |jadriver| は0.9版で用いられた旧称。
 % \Note 単なる |ja| という指定は無視される（Pandoc 対策）。
 %    \begin{macrocode}
-\define@key{bxjs}{jadriver}{\edef\bxjs@jadriver@opt{#1}}
+\define@key{bxjs}{jadriver}{%
+  \bxjs@depre@opt{jadriver}{ja=#1}\edef\bxjs@jadriver@opt{#1}}
 \define@key{bxjs}{ja}[\relax]{%
   \ifx\relax#1\else\edef\bxjs@jadriver@opt{#1}\fi}
 %    \end{macrocode}
@@ -1896,6 +1909,7 @@
 %    \begin{macrocode}
 %\let\bxjs@textwidth@limit@opt\@undefined
 \define@key{bxjs}{textwidth-limit}{%
+  \bxjs@depre@opt{textwidth-limit}{textwidth=#1zw}%
   \edef\bxjs@textwidth@limit@opt{#1}}
 %    \end{macrocode}
 % \end{macro}
@@ -1982,8 +1996,8 @@
 % 〔スイッチ〕 |use-zw| の指定値。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{use-zw}{usezw}{true}
-\DeclareOption{nozw}{\setkeys{bxjs}{use-zw=false}}
-\DeclareOption{zw}{\setkeys{bxjs}{use-zw=true}}
+\DeclareOption{nozw}{\bxjs@depre@opt@do{nozw}{use-zw=false}}
+\DeclareOption{zw}{\bxjs@depre@opt@do{zw}{use-zw=true}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1991,8 +2005,8 @@
 % 〔スイッチ〕 |disguise-js| の指定値。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{disguise-js}{disguise@js}{true}
-\DeclareOption{nojs}{\setkeys{bxjs}{disguise-js=false}}
-\DeclareOption{js}{\setkeys{bxjs}{disguise-js=true}}
+\DeclareOption{nojs}{\bxjs@depre@opt@do{nojs}{disguise-js=false}}
+\DeclareOption{js}{\bxjs@depre@opt@do{js}{disguise-js=true}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2000,8 +2014,8 @@
 % 〔スイッチ〕 |precise-text| の指定値。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{precise-text}{precisetext}{false}
-\DeclareOption{noprecisetext}{\setkeys{bxjs}{precise-text=false}}
-\DeclareOption{precisetext}{\setkeys{bxjs}{precise-text=true}}
+\DeclareOption{noprecisetext}{\bxjs@depre@opt@do{noprecisetext}{precise-text=false}}
+\DeclareOption{precisetext}{\bxjs@depre@opt@do{precisetext}{precise-text=true}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2009,8 +2023,8 @@
 % 〔スイッチ〕 |simple-ja-setup| の指定値。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}{true}
-\DeclareOption{nosimplejasetup}{\setkeys{bxjs}{simple-ja-setup=false}}
-\DeclareOption{simplejasetup}{\setkeys{bxjs}{simple-ja-setup=true}}
+\DeclareOption{nosimplejasetup}{\bxjs@depre@opt@do{nosimplejasetup}{simple-ja-setup=false}}
+\DeclareOption{simplejasetup}{\bxjs@depre@opt@do{simplejasetup}{simple-ja-setup=true}}
 %    \end{macrocode}
 % \end{macro}
 %
