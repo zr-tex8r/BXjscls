@@ -99,6 +99,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.4a 〈2021/01/27〉
+      - pandoc 和文ドライバにおいて、Polyglossia で `japanese` が指定
+        された場合も独自処理に切り替える。
   * Version 2.4  〈2020/10/16〉
       - geometry と互換の用紙サイズ名オプションを追加。
       - `iso-bsize` オプションを追加。
