@@ -10739,6 +10739,14 @@
         definitions will be employed}%
       \bxjs@pandoc@polyglossia@ja
 %    \end{macrocode}
+% 言語名が |japanese| だった場合も同様。
+%    \begin{macrocode}
+    }{\ifstrequal{##2}{japanese}{%
+      \ClassWarning\bxjs@clsname
+       {Main language is japanese, thus the fallback\MessageBreak
+        definitions will be employed}%
+      \bxjs@pandoc@polyglossia@ja
+%    \end{macrocode}
 % 言語名が非空ならば、本来の |polyglossia| の処理を実行する。
 %    \begin{macrocode}
     }{%else
@@ -10750,7 +10758,7 @@
         \noexpand\RequirePackage[\bxjs@polyglossia@options]{polyglossia}[]%
       }\bxjs@next
       \setmainlanguage[##1]{##2}%
-    }}}
+    }}}}
 %    \end{macrocode}
 %
 % プレアンブルで |polyglossia| の読込が指示されなかった場合、
@@ -10767,6 +10775,9 @@
 % Pandoc側で |lang=ja| が指定されていた場合の処理。
 % この場合はPolyglossiaの処理を無効化するためにダミーの定義を行う。
 % その時点でダミーの |\setotherlanguage(s)| を定義する。
+% \Note 現在ではPolyglossiaの日本語用の定義ファイル
+% （|gloss-japanese.ldf|）が存在するので、本来なら普通に処理できる
+% はずであるが、現状の定義ファイルはアレなので回避したい。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@pandoc@polyglossia@ja
 \def\bxjs@pandoc@polyglossia@ja{%

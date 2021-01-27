@@ -115,6 +115,11 @@
        {Main language is invalid, thus the fallback\MessageBreak
         definitions will be employed}%
       \bxjs@pandoc@polyglossia@ja
+    }{\ifstrequal{##2}{japanese}{%
+      \ClassWarning\bxjs@clsname
+       {Main language is japanese, thus the fallback\MessageBreak
+        definitions will be employed}%
+      \bxjs@pandoc@polyglossia@ja
     }{%else
       \ClassWarning\bxjs@clsname
        {Main language is valid (##2),\MessageBreak
@@ -124,7 +129,7 @@
         \noexpand\RequirePackage[\bxjs@polyglossia@options]{polyglossia}[]%
       }\bxjs@next
       \setmainlanguage[##1]{##2}%
-    }}}
+    }}}}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@polyglossia@options\relax
     \csundef{ver@polyglossia.sty}%
