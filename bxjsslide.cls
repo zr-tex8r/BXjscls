@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2021/01/27 v2.4a BXJS document classes]
+  [2021/02/02 v2.5  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -630,6 +630,8 @@
 \bxjs@declare@bool@option{simple-ja-setup}{simplejasetup}{true}
 \DeclareOption{nosimplejasetup}{\bxjs@depre@opt@do{nosimplejasetup}{simple-ja-setup=false}}
 \DeclareOption{simplejasetup}{\bxjs@depre@opt@do{simplejasetup}{simple-ja-setup=true}}
+\bxjs@declare@bool@option{plautopatch}{plautopatch}{false}
+\g@addto@macro\bxjs@plautopatchfalse{\def\bxjs@plautopatch@given{false}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
@@ -765,6 +767,13 @@
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
+\def\bxjs@@pandoc{pandoc}
+\ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
+  \bxjs@plautopatchtrue
+\fi\fi
+\ifx j\jsEngine \ifbxjs@plautopatch
+  \RequirePackage{plautopatch}[2018/08/22]%v0.3
+\fi\fi
 \ifx\bxjs@jadriver@opt\@undefined\else
   \ifx\bxjs@engine@given\@undefined
     \ClassError\bxjs@clsname

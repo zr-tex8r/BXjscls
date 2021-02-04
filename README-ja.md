@@ -99,6 +99,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.5  〈2021/02/02〉
+      - `plautopatch` オプションを追加。
   * Version 2.4a 〈2021/01/27〉
       - pandoc 和文ドライバにおいて、Polyglossia で `japanese` が指定
         された場合も独自処理に切り替える。

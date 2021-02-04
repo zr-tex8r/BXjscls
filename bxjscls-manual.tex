@@ -11,8 +11,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.4a}
-\newcommand{\PkgDate}{2021/01/27}
+\newcommand{\PkgVersion}{2.5}
+\newcommand{\PkgDate}{2021/02/02}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -765,14 +765,11 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   パッケージが読み込まれた場合も無効化される。
   特に、和文ドライバがstandardである場合は、必ず\Pkg{xeCJK}が
   読み込まれるため、このオプションは無意味である。
-%\item |a4varpaper|、|b5varpaper|\Means
-%  用紙サイズ指定オプション |a4var|、|b5var| の別名。
-%  \Note Pandocで |-V papersize=a4var| の指定を可能にするため。
-%\item |custompaper|\Means
-%  実際には何もしない用紙サイズ指定オプション。
-%  \Note Pandocを使う際に「用紙サイズは |classoption=paper=...|
-%  で指定するから |papersize| は不要だが何か指定しないといけない」
-%  という場合に |-V papersize=custom| を指定する。
+\item |plautopatch=|\Meta{真偽値}\Means
+  エンジンが\,(u){\pLaTeX}である場合に（十分に早い時点で）%
+  \Pkg{plautopatch}パッケージを読み込む。
+  既定値は偽。
+  \Note ただし、Pandocモードの場合は既定値が真になる。
 \item |mag=|\Meta{整数}\Means
   版面拡大率（mag値）の直接設定。
   既定は基底フォントサイズから算出する。
