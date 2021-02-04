@@ -2029,6 +2029,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@plautopatch}
+% 〔スイッチ〕 |plautopatch| の指定値。
+%    \begin{macrocode}
+\bxjs@declare@bool@option{plautopatch}{plautopatch}{false}
+\g@addto@macro\bxjs@plautopatchfalse{\def\bxjs@plautopatch@given{false}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \end{ZRnote}
 %
 % \paragraph{オプションの実行}
@@ -2297,6 +2305,20 @@
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
+%    \end{macrocode}
+%
+% |plautopatch| が真の場合はここで |plautopatch| を読み込む。
+% \Note この時点で既に読み込まれているパッケージは、
+% |calc|、|keyval|、|ifpdf|。
+% \Note Pandocモードでは |plautopatch| の既定値を真とする。
+%    \begin{macrocode}
+\def\bxjs@@pandoc{pandoc}
+\ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
+  \bxjs@plautopatchtrue
+\fi\fi
+\ifx j\jsEngine \ifbxjs@plautopatch
+  \RequirePackage{plautopatch}[2018/08/22]%v0.3
+\fi\fi
 %    \end{macrocode}
 %
 % エンジンオプションがない場合はエラーを出す。
