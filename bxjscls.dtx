@@ -9815,6 +9815,14 @@
 %    \begin{macrocode}
 \ifbxjs@hyperref@enc
   \bxjs@check@hyperref@unicode{false}
+%    \end{macrocode}
+% 暫定的なナニカ。
+%    \begin{macrocode}
+  \ifjsWithupTeX\ifbxjs@old@hook@system\else
+    \IfFileExists{pxjahyper-uni.def}{%
+      \AddToHook{package/after/hyperref}{\input{pxjahyper-uni.def}}
+    }{}
+  \fi\fi
 \fi
 %    \end{macrocode}
 %
