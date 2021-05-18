@@ -99,6 +99,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.5a 〈2021/05/18〉
+      - 新版の Pandoc テンプレートへの対策。
   * Version 2.5  〈2021/02/02〉
       - `plautopatch` オプションを追加。
   * Version 2.4a 〈2021/01/27〉
