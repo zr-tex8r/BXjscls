@@ -10536,6 +10536,17 @@
 \RequirePackage{bxjspandoc}
 %    \end{macrocode}
 %
+% {\eTeX}ではない場合に警告を出す。
+% \Note 近い将来に{\eTeX}拡張を必須にする予定。
+%    \begin{macrocode}
+\ifjsWitheTeX\else
+  \ClassWarningNoLine\bxjs@clsname
+   {!!!!!!!! WARNING !!!!!!!!\MessageBreak
+    This engine does not support e-TeX extension!\MessageBreak
+    Some feature might not work properly}
+\fi
+%    \end{macrocode}
+%
 % \begin{macro}{\bxjs@endpreamble@hook}
 % |etoolbox| の |\AtEndPreamble| で実行されるBXJSクラス用のフック。
 % \Note {\eTeX}以外では無効になる。
@@ -10543,12 +10554,18 @@
 %    \begin{macrocode}
 \@onlypreamble\bxjs@endpreamble@hook
 \let\bxjs@endpreamble@hook\@empty
+%    \end{macrocode}
+% \end{macro}
+%
+% パッケージ読込。
+%    \begin{macrocode}
+\RequirePackage{iftex}[2013/04/04]% v0.2
 \ifjsWitheTeX
   \RequirePackage{etoolbox}[2010/08/21]% v2.0
   \AtEndPreamble{\bxjs@endpreamble@hook}
+  \RequirePackage{filehook}[2011/10/12]% v0.5d
 \fi
 %    \end{macrocode}
-% \end{macro}
 %
 %^^A----------------
 % \subsection{和文ドライバパラメタ}
@@ -11126,6 +11143,79 @@
     \expandafter\def\expandafter\verb\expandafter{%
       \expandafter\bxjs@pan@eghost\verb}
     \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+  \fi
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{ifPDFTeXスイッチ}
+%
+% PandocモードではPandocの既定テンプレートを（無理やり）{(u)\pTeX}に
+% 対応させることを目的にしている。
+%
+% 旧版のテンプレートでは|ifxetex|と|ifluatex|パッケージを読み込んだ
+% 上で「{\XeTeX}でも{\LuaTeX}でもないものは{pdf\TeX}」という前提の
+% 動作をしていた。
+% よって、{(u)\pTeX}に対応させる際には「{pdf\TeX}用の処理が実行される」
+% ことを前提にすればよかった。
+%
+% ところが、Pandocの2.12版では|iftex|パッケージが導入されて
+% 「{pdf\TeX}の判定を直接 |\ifPDFTeX| で行う」ように改修された。
+% このため、{(u)\pTeX}での実行でどのコードが実行されるかを予期する
+% ことが困難になってしまった。
+%
+% これに対処するため、
+% 「文書ファイルのプレアンブル実行中に限って |\ifPDFTeX| が
+% （実際とは異なり）真になるようにする」
+% という細工を施すことで、従来通り「{pdf\TeX}用の処理が実行される」
+% 前提が維持されるようにする。
+%
+%    \begin{macrocode}
+\if j\jsEngine
+%    \end{macrocode}
+% \begin{macro}{\bxjs@check@frontier}
+% |\bxjs@check@frontier\CS| は現在のパッケージ読込ネストレベルが
+% 丁度1であるときにのみ |\CS| を実行する。
+%    \begin{macrocode}
+  \def\bxjs@check@frontier{%
+    \expandafter\bxjs@check@frontier@a\@currnamestack\noindent...\@nil}
+  \def\bxjs@check@frontier@a#1#2#3#4#5\@nil#6{%
+    \ifx\noindent#4#6\fi}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bxjs@unforge@ifPDFTeX}
+% |\ifPDFTeX| を偽（正しい値）にする。
+%    \begin{macrocode}
+  \@onlypreamble\bxjs@unforge@ifPDFTeX
+  \def\bxjs@unforge@ifPDFTeX{\global\bxjs@csletcs{ifPDFTeX}{iffalse}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bxjs@forge@ifPDFTeX}
+% |\ifPDFTeX| を真（偽装した値）にする。
+%    \begin{macrocode}
+  \@onlypreamble\bxjs@forge@ifPDFTeX
+  \def\bxjs@forge@ifPDFTeX{\global\bxjs@csletcs{ifPDFTeX}{iftrue}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bxjs@unload@forge@ifPDFTeX}
+% |\ifPDFTeX| に対する細工を無効化する。
+%    \begin{macrocode}
+  \def\bxjs@unload@forge@ifPDFTeX{%
+    \bxjs@unforge@ifPDFTeX
+    \global\let\bxjs@check@frontier\@gobble}
+%    \end{macrocode}
+% \end{macro}
+% プレアンブル開始時は |\ifPDFTeX| は真で、終了時に偽装を無効化する。
+% |filehook| のフックで「パッケージ読込中は偽装を解除する」ことを
+% 実現している。
+%    \begin{macrocode}
+  \jsAtEndOfClass{\bxjs@forge@ifPDFTeX}
+  \ifjsWitheTeX
+    \AtBeginOfEveryFile{\bxjs@check@frontier\bxjs@unforge@ifPDFTeX}%
+    \AtEndOfEveryFile{\bxjs@check@frontier\bxjs@forge@ifPDFTeX}%
+    \g@addto@macro\bxjs@endpreamble@hook{\bxjs@unload@forge@ifPDFTeX}
+  \else
+    \g@addto@macro\bxjs@begin@document@hook{\bxjs@unload@forge@ifPDFTeX}
   \fi
 \fi
 %    \end{macrocode}

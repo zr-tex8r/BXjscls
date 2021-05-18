@@ -24,11 +24,19 @@
   [2021/02/02 v2.5  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
+\ifjsWitheTeX\else
+  \ClassWarningNoLine\bxjs@clsname
+   {!!!!!!!! WARNING !!!!!!!!\MessageBreak
+    This engine does not support e-TeX extension!\MessageBreak
+    Some feature might not work properly}
+\fi
 \@onlypreamble\bxjs@endpreamble@hook
 \let\bxjs@endpreamble@hook\@empty
+\RequirePackage{iftex}[2013/04/04]% v0.2
 \ifjsWitheTeX
   \RequirePackage{etoolbox}[2010/08/21]% v2.0
   \AtEndPreamble{\bxjs@endpreamble@hook}
+  \RequirePackage{filehook}[2011/10/12]% v0.5d
 \fi
 \newif\ifbxjs@jp@fix@strong \bxjs@jp@fix@strongtrue
 \let\bxjs@kv@fixstrong@true\bxjs@jp@fix@strongtrue
@@ -291,6 +299,27 @@
     \expandafter\def\expandafter\verb\expandafter{%
       \expandafter\bxjs@pan@eghost\verb}
     \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+  \fi
+\fi
+\if j\jsEngine
+  \def\bxjs@check@frontier{%
+    \expandafter\bxjs@check@frontier@a\@currnamestack\noindent...\@nil}
+  \def\bxjs@check@frontier@a#1#2#3#4#5\@nil#6{%
+    \ifx\noindent#4#6\fi}
+  \@onlypreamble\bxjs@unforge@ifPDFTeX
+  \def\bxjs@unforge@ifPDFTeX{\global\bxjs@csletcs{ifPDFTeX}{iffalse}}
+  \@onlypreamble\bxjs@forge@ifPDFTeX
+  \def\bxjs@forge@ifPDFTeX{\global\bxjs@csletcs{ifPDFTeX}{iftrue}}
+  \def\bxjs@unload@forge@ifPDFTeX{%
+    \bxjs@unforge@ifPDFTeX
+    \global\let\bxjs@check@frontier\@gobble}
+  \jsAtEndOfClass{\bxjs@forge@ifPDFTeX}
+  \ifjsWitheTeX
+    \AtBeginOfEveryFile{\bxjs@check@frontier\bxjs@unforge@ifPDFTeX}%
+    \AtEndOfEveryFile{\bxjs@check@frontier\bxjs@forge@ifPDFTeX}%
+    \g@addto@macro\bxjs@endpreamble@hook{\bxjs@unload@forge@ifPDFTeX}
+  \else
+    \g@addto@macro\bxjs@begin@document@hook{\bxjs@unload@forge@ifPDFTeX}
   \fi
 \fi
 \endinput
