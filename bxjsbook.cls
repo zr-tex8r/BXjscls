@@ -778,8 +778,9 @@
 \fi
 \def\bxjs@@pandoc{pandoc}
 \ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
+    \ifjsWitheTeX
   \bxjs@plautopatchtrue
-\fi\fi
+\fi\fi\fi
 \ifx j\jsEngine \ifbxjs@plautopatch
   \RequirePackage{plautopatch}[2018/08/22]%v0.3
 \fi\fi
