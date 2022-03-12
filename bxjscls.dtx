@@ -10685,8 +10685,9 @@
 % この時に何らかのコードを実行させることができる。
 %
 % \begin{macro}{\bxjs@set@dupload@proc}
-% |\bxjs@set@dupload@proc{|\Meta{ファイル名}|}{|\Meta{定義本体}|}|
-% 特定のファイルの読込が |\@filewithoptions| で指示されて、しかも
+% |\bxjs@set@dupload@proc{|\Meta{ファイル名}|}{|\Meta{定義本体}|}|\Means
+% 指定の名前の特定のファイルの読込が |\@filewithoptions| で
+% 指示されて、しかも
 % そのファイルが読込済である場合に、オプション重複検査をスキップして、
 % 代わりに\Meta{定義本体}のコードを実行する。
 % このコード中で |#1| は渡されたオプション列のテキストに置換される。
@@ -10698,7 +10699,7 @@
 \def\bxjs@set@dupload@proc@a#1{%
   \@onlypreamble#1\def#1##1}
 \def\bxjs@unset@dupload@proc#1{%
-  \expandafter\let\csname bxjs@dlp/#1\endcsname\@undefined}
+  \bxjs@cslet{bxjs@dlp/#1}\@undefined}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -10739,6 +10740,9 @@
 % Pandocはこれに対応していないため
 % 不完全なBabelやPolyglossiaの設定を出力してしまう。
 % これを防ぐための対策を行う。
+% \Note Pandoc 2.12版で |lang=ja| 指定に対応し、
+% 正しく{\LaTeX}側の言語名 |japanese| に変換されるようになった。
+% しかし、日本語指定の場合は相変わらず調整処理が必要である。
 %
 % \begin{macro}{\bxjs@polyglossia@options}
 % Polyglossiaのオプション列のテキスト。
@@ -10757,7 +10761,7 @@
 % \end{macro}
 %
 % \paragraph{Polyglossiaについて}
-% つまり{\XeTeX}・{Lua\TeX}の場合。
+% つまり{\XeTeX}および{Lua\TeX}（古いPandocで）の場合。
 % \Note この場合 |etoolbox| が使用可能になっている。
 %    \begin{macrocode}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
@@ -10770,7 +10774,7 @@
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \bxjs@unset@dupload@proc{polyglossia.sty}%
   \ClassWarning\bxjs@clsname
-   {Package polyglossia is required}%
+   {Package polyglossia is requested}%
   \def\bxjs@polyglossia@options{#1}%
 %    \end{macrocode}
 %
@@ -10783,33 +10787,27 @@
 %    \end{macrocode}
 % もし、言語名が空の |\setmainlanguage{}| が実行された場合は、
 % |lang=ja| が指定されたと見なす。
-%    \begin{macrocode}
-    \ifblank{##2}{%
-      \ClassWarning\bxjs@clsname
-       {Main language is invalid, thus the fallback\MessageBreak
-        definitions will be employed}%
-      \bxjs@pandoc@polyglossia@ja
-%    \end{macrocode}
 % 言語名が |japanese| だった場合も同様。
 %    \begin{macrocode}
-    }{\ifstrequal{##2}{japanese}{%
+    \ifboolexpr{test{\ifblank{##2}}or test{\ifstrequal{##2}{japanese}}}{%
       \ClassWarning\bxjs@clsname
-       {Main language is japanese, thus the fallback\MessageBreak
+       {Main language is 'japanese', thus fallback\MessageBreak
         definitions will be employed}%
       \bxjs@pandoc@polyglossia@ja
 %    \end{macrocode}
-% 言語名が非空ならば、本来の |polyglossia| の処理を実行する。
+% それ以外は、改めて |polyglossia| を読み込んで、
+% 本来の処理を実行する。
 %    \begin{macrocode}
     }{%else
       \ClassWarning\bxjs@clsname
-       {Main language is valid (##2),\MessageBreak
+       {Main language is '##2',\MessageBreak
         thus polyglossia will be loaded}%
       \csundef{ver@polyglossia.sty}%
       \edef\bxjs@next{%
         \noexpand\RequirePackage[\bxjs@polyglossia@options]{polyglossia}[]%
       }\bxjs@next
       \setmainlanguage[##1]{##2}%
-    }}}}
+    }}}
 %    \end{macrocode}
 %
 % プレアンブルで |polyglossia| の読込が指示されなかった場合、
@@ -10866,7 +10864,7 @@
 \bxjs@set@dupload@proc{babel.sty}{%
   \bxjs@unset@dupload@proc{babel.sty}%
   \ClassWarning\bxjs@clsname
-   {Package babel is required}%
+   {Package babel is requested}%
 %    \end{macrocode}
 % パッケージオプションに言語名が空の |main=| があるかを調べる。
 % ある場合は |lang=ja| 対策を実行する。
@@ -10881,7 +10879,7 @@
     \fi}%
   \if@tempswa
     \ClassWarning\bxjs@clsname
-     {Main language is invalid, so fallback\MessageBreak
+     {Main language is 'japanese', thus fallback\MessageBreak
       definitions will be employed}%
     \bxjs@pandoc@babel@ja
 %    \end{macrocode}
@@ -10889,9 +10887,9 @@
 %    \begin{macrocode}
   \else
     \ClassWarning\bxjs@clsname
-     {Main language is valid,\MessageBreak
+     {Main language is not 'japanese',\MessageBreak
       thus babel will be loaded}%
-    \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+    \bxjs@cslet{ver@babel.sty}\@undefined
     \RequirePackage[#1]{babel}[]%
   \fi}
 %    \end{macrocode}
@@ -10901,7 +10899,7 @@
 %    \begin{macrocode}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@babel@options\relax
-    \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+    \bxjs@cslet{ver@babel.sty}\@undefined
   \fi}
 %    \end{macrocode}
 % 
@@ -10910,7 +10908,7 @@
 %    \begin{macrocode}
 \@onlypreamble\bxjs@pandoc@babel@ja
 \def\bxjs@pandoc@babel@ja{%
-  \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+  \bxjs@cslet{ver@babel.sty}\@undefined
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
   }\bxjs@next
@@ -10996,6 +10994,7 @@
       \parindent=\the\parindent\relax
       \parskip=\the\parskip\relax}}
 \fi
+%    \end{macrocode}
 %
 % \paragraph{secnumdepthについて}
 % |secnumdepth| の値を決めるのはnumbersections変数
@@ -11003,13 +11002,18 @@
 % やsecnumdepth変数であるが、何れにしても |secnumdepth|
 % の値は書き換えられる。
 % そのため、|secnumdepth| を復帰させる。
+%    \begin{macrocode}
 \ifbxjs@jp@or@secnumdepth\else
   \bxjs@info@or@ban{secnumdepth}
   \eappto\bxjs@endpreamble@hook{%
     \c@secnumdepth=\the\c@secnumdepth\relax}
 \fi
+%    \end{macrocode}
 %
 % \paragraph{block-headingについて}
+% |\paragraph|、|\subparagraph| を別行見出しに変える処理を抑止する。
+% \Note 2.7.1版以前では別行見出し変更が既定で有効であった。
+%    \begin{macrocode}
 \ifbxjs@jp@or@block@heading\else
   \let\bxjs@frozen@paragraph\paragraph
   \let\bxjs@frozen@subparagraph\subparagraph
@@ -11019,6 +11023,10 @@
   \let\paragraph\bxjs@frozen@paragraph
   \let\subparagraph\bxjs@frozen@subparagraph}
 \fi
+%    \end{macrocode}
+%
+% 以上。
+%    \begin{macrocode}
 \fi
 %    \end{macrocode}
 %
@@ -11064,7 +11072,9 @@
 %
 %^^A----------------
 % \subsection{全角空白文字}
-%
+% {\LaTeX}でない入力では、全角空きを入れるために全角空白文字
+% （U+3000）が使われる可能性があるので、
+% 全角空白文字を和文文字でなく空きとして扱うようにしておく。
 %    \begin{macrocode}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
   \catcode"3000=\active
