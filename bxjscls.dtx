@@ -12036,6 +12036,24 @@ FE70,FFF0,%
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjsp@begin@document@hook}
+% 文書本体開始時フック。
+%    \begin{macrocode}
+\@onlypreamble\bxjsp@begin@document@hook
+\let\bxjsp@begin@document@hook\@empty
+\AtBeginDocument{\bxjsp@begin@document@hook}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjsp@babel@used}
+% 〔スイッチ〕Babelが読み込まれたか。
+%    \begin{macrocode}
+\newif\ifbxjsp@babel@used
+\g@addto@macro\bxjsp@begin@document@hook{%
+  \@ifpackageloaded{babel}{\bxjsp@babel@usedtrue}{}}
+%    \end{macrocode}
+% \end{macro}
+%
 %^^A----------------
 %\subsection{パッケージオプション}
 %
@@ -12163,20 +12181,36 @@ FE70,FFF0,%
 % 1.9f版で非数式の |\ldots| を全て |…| に戻す動作に変更した。
 %    \begin{macrocode}
 \DeclareRobustCommand{\pandocLdots}{%
-  \relax\ifmmode \expandafter\bxjsp@org@ldots
-  \else \expandafter\bxjsp@ja@ellipsis
-  \fi}
+  \let\bxjsp@do\bxjsp@ja@ellipsis
+  \ifmmode \let\bxjsp@do\bxjsp@org@ldots
+  \else\ifbxjsp@babel@used
+    \expandafter\ifx\csname bxjsp@ld/\languagename\endcsname\relax
+      \let\bxjsp@do\bxjsp@org@ldots \fi
+  \fi\fi \bxjsp@do}
+\@namedef{bxjsp@ld/japanese}{1}
 \def\bxjsp@ja@ellipsis{…}
 \let\bxjsp@org@ldots\ldots
 %    \end{macrocode}
 % \end{macro}
 %
-% |\ldots| の実装を置き換える。
-% \Note B|english| オプション指定時は置き換えない。
+% |\ldots| の実装を |\pandocLdots| に置き換える。
 %    \begin{macrocode}
-\AtBeginDocument{%
+\g@addto@macro\bxjsp@begin@document@hook{%
   \let\bxjsp@org@ldots\ldots
-  \ifbxjsp@english\else \let\ldots\pandocLdots \fi}
+%    \end{macrocode}
+% もしここで |\newcommand\pandocLdots{\ldots}| という定義である場合は
+% 置き換えない。
+%    \begin{macrocode}
+  \long\def\bxjsp@tmpa{\ldots}%
+  \ifx\pandocLdots\bxjsp@tmpa\else
+%    \end{macrocode}
+% |english| オプションが指定されていてかつBabelが読み込まれていない場合も
+% 置き換えない。
+%    \begin{macrocode}
+    \ifnum0\ifbxjsp@english\ifbxjsp@babel@used\else1\fi\fi=0
+      \let\ldots\pandocLdots
+    \fi
+  \fi}
 %    \end{macrocode}
 %
 % |\ldots| の直後の文字が非英字の場合、Pandocは「|\ldots。|」の
