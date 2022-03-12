@@ -10873,10 +10873,12 @@
 %    \begin{macrocode}
   \@tempswafalse \let\bxjs@babel@options\@empty
   \def\bxjs@tmpb{main=}%
+  \def\bxjs@next{main=japanese}%
   \@for\bxjs@tmpa:=#1\do{%
     \ifx\bxjs@tmpa\bxjs@tmpb \@tempswatrue
+    \else\ifx\bxjs@tmpa\bxjs@next \@tempswatrue
     \else \edef\bxjs@babel@options{\bxjs@babel@options,\bxjs@tmpa}%
-    \fi}%
+    \fi\fi}%
   \if@tempswa
     \ClassWarning\bxjs@clsname
      {Main language is 'japanese', thus fallback\MessageBreak
