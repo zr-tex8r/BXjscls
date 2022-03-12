@@ -11074,18 +11074,28 @@
 %
 %^^A----------------
 % \subsection{全角空白文字}
+%
 % {\LaTeX}でない入力では、全角空きを入れるために全角空白文字
 % （U+3000）が使われる可能性があるので、
 % 全角空白文字を和文文字でなく空きとして扱うようにしておく。
+% \Note {(u)\pLaTeX}では対応できないので対象外。
+%
+% \begin{macro}{\pandocZWSpace}
+% 全角空白文字の入力で実行されるコード。
+%    \begin{macrocode}
+\def\pandocZWSpace{\zwspace}
+%    \end{macrocode}
+% \end{macro}
+% 全角空白文字の入力で |\pandocZWSpace| が実行されるようにする。
 %    \begin{macrocode}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
   \catcode"3000=\active
   \begingroup \catcode`\!=7
-  \protected\gdef!!!!3000{\zwspace}
+  \protected\gdef!!!!3000{\pandocZWSpace}
   \endgroup
 \else\ifx\DeclareUnicodeCharacter\@undefined\else
   \DeclareUnicodeCharacter{3000}{\bxjs@zsp@char}
-  \bxjs@protected\def\bxjs@zsp@char{\zwspace}
+  \bxjs@protected\def\bxjs@zsp@char{\pandocZWSpace}
 \fi\fi
 %    \end{macrocode}
 %
