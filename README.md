@@ -89,6 +89,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.6  〈2022/03/20〉
+      - Support LaTeX kernel 2021/11/15.
   * Version 2.5a 〈2021/05/18〉
   * Version 2.5  〈2021/02/02〉
   * Version 2.4a 〈2021/01/27〉

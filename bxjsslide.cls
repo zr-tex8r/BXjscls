@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2021/05/18 v2.5a BXJS document classes]
+  [2022/03/20 v2.6  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -87,6 +87,8 @@
 \let\PackageWarningNoLine\bxjs@tmpa
 \@nameuse{RevokeOldLuaTeXBehavior}
 \let\ifjsInPdfMode\ifpdf
+\newif\ifbxjs@explIII
+\@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
 \newif\ifbxjs@TUenc
 \def\bxjs@tmpa{TU}\edef\bxjs@tmpb{\f@encoding}
 \ifx\bxjs@tmpa\bxjs@tmpb
@@ -94,6 +96,11 @@
 \fi
 \newif\ifbxjs@old@hook@system
 \@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+\@ifl@t@r\fmtversion{2021/11/15}{%
+  \def\bxjs@CGHN#1{#1}%
+}{%else
+  \def\bxjs@CGHN#1{\bxjs@CGHN@a#1//}%
+  \def\bxjs@CGHN@a#1/#2/#3//{#1/#3/#2}}
 \@gobbletwo\if\if \def\bxjs@cond#1\fi{%
   #1\expandafter\@firstoftwo
   \else\expandafter\@secondoftwo
@@ -105,6 +112,21 @@
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
 \def\bxjs@ifplus#1{\@ifnextchar+{\@firstoftwo{#1}}}
+\def\bxjs@trim#1{\expandafter\bxjs@trim@a#1\@nil#1}
+\def\bxjs@trim@a{\futurelet\bxjs@tmpb\bxjs@trim@b}
+\def\bxjs@trim@b{\bxjs@cond\ifx\bxjs@tmpb\@sptoken\fi
+  {\bxjs@trim@c\bxjs@trim@a}{\bxjs@trim@d}}
+\def\bxjs@trim@c#1 {#1}
+\def\bxjs@trim@d#1\@nil{\bxjs@trim@e#1\@nil: \@nil\@nnil}
+\def\bxjs@trim@e#1 \@nil#2\@nnil{\bxjs@cond\ifx\@nnil#2\@nnil\fi
+  {\bxjs@trim@f#1\@nnil}{\bxjs@trim@e#1\@nil: \@nil\@nnil}}
+\def\bxjs@trim@f#1\@nil#2\@nnil#3{\def#3{#1}}
+\def\bxjs@set@array@from@clist#1#2{%
+  \@tempcnta\z@
+  \@for\bxjs@tmpa:=\@empty#2\do{%
+     \bxjs@trim\bxjs@tmpa \bxjs@cslet{#1/\the\@tempcnta}\bxjs@tmpa
+     \advance\@tempcnta\@ne}
+  \bxjs@cslet{#1/\the\@tempcnta}\relax}
 \let\c@bxjs@tempcnta\@tempcnta
 \def\bxjs@gset@tempcnta{\setcounter{bxjs@tempcnta}}
 \def\jsSetQHLength#1#2{%
@@ -730,10 +752,17 @@
 \else \@tempswatrue
 \fi\fi\fi
 \if@tempswa
-  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@opt\@undefined\else
-    \ClassWarningNoLine\bxjs@clsname
-    {No driver option is given}
-  \fi\fi
+  \ifx\bxjs@driver@opt\@undefined
+    \if \ifbxjs@explIII T\else\ifx\bxjs@jadriver@opt\@undefined F\else T\fi\fi T%
+      \ClassWarningNoLine\bxjs@clsname
+       {A driver option is MISSING!!\MessageBreak
+        You should properly specify one of the valid\MessageBreak
+        driver options according to the DVI driver\MessageBreak
+        that is in use:\MessageBreak
+        \@spaces dvips, dvipdfmx, dviout, xdvi,\MessageBreak
+        \@spaces nodvidriver}
+    \fi
+  \fi
   \ifbxjs@dvi@opt
     \edef\bxjs@next{%
       \let\noexpand\bxjs@driver@given

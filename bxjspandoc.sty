@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxjspandoc}
-  [2021/05/18 v2.5a BXJS document classes]
+  [2022/03/20 v2.6  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjsp@pkgname{bxjscjkcat}
 \let\bxjsp@engine=n
@@ -35,6 +35,12 @@
 \bxjsp@do\XeTeXversion{\let\bxjsp@engine=x}
 \bxjsp@do\pdftexversion{\let\bxjsp@engine=p}
 \bxjsp@do\luatexversion{\let\bxjsp@engine=l}
+\@onlypreamble\bxjsp@begin@document@hook
+\let\bxjsp@begin@document@hook\@empty
+\AtBeginDocument{\bxjsp@begin@document@hook}
+\newif\ifbxjsp@babel@used
+\g@addto@macro\bxjsp@begin@document@hook{%
+  \@ifpackageloaded{babel}{\bxjsp@babel@usedtrue}{}}
 \newif\ifbxjsp@english
 \DeclareOption{english}{\bxjsp@englishtrue}
 \ProcessOptions*
@@ -64,14 +70,23 @@
   \newcommand*\UseMicrotypeSet[2][]{}
 \fi
 \DeclareRobustCommand{\pandocLdots}{%
-  \relax\ifmmode \expandafter\bxjsp@org@ldots
-  \else \expandafter\bxjsp@ja@ellipsis
-  \fi}
+  \let\bxjsp@do\bxjsp@ja@ellipsis
+  \ifmmode \let\bxjsp@do\bxjsp@org@ldots
+  \else\ifbxjsp@babel@used
+    \expandafter\ifx\csname bxjsp@ld/\languagename\endcsname\relax
+      \let\bxjsp@do\bxjsp@org@ldots \fi
+  \fi\fi \bxjsp@do}
+\@namedef{bxjsp@ld/japanese}{1}
 \def\bxjsp@ja@ellipsis{…}
 \let\bxjsp@org@ldots\ldots
-\AtBeginDocument{%
+\g@addto@macro\bxjsp@begin@document@hook{%
   \let\bxjsp@org@ldots\ldots
-  \ifbxjsp@english\else \let\ldots\pandocLdots \fi}
+  \long\def\bxjsp@tmpa{\ldots}%
+  \ifx\pandocLdots\bxjsp@tmpa\else
+    \ifnum0\ifbxjsp@english\ifbxjsp@babel@used\else1\fi\fi=0
+      \let\ldots\pandocLdots
+    \fi
+  \fi}
 \chardef\bxjsp@cc@other=12
 \@onlypreamble\bxjsp@makeother@range
 \def\bxjsp@makeother@range#1#2{%

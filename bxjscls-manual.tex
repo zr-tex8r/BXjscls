@@ -11,8 +11,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.5a}
-\newcommand{\PkgDate}{2021/05/18}
+\newcommand{\PkgVersion}{2.6}
+\newcommand{\PkgDate}{2022/03/20}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -32,6 +32,17 @@
 \author{八登崇之\ （Takayuki YATO; aka.~``ZR''）}
 \date{v\PkgVersion\quad[\PkgDate]}
 \maketitle
+
+\begin{abstract}
+本パッケージに含まれる文書クラス集は、
+奥村晴彦氏および“日本語{\TeX}開発コミュニティ”により作製された
+\Pkg{jsclasses}パッケージの文書クラス集
+の拡張版に相当する。
+元の\Pkg{jsclasses}のクラスが{\pLaTeX}と{\upLaTeX}のみを
+サポートするのに対して、
+本パッケージのクラスは主要エンジンの全てをサポートする。
+\end{abstract}
+
 \tableofcontents
 
 %===========================================================
@@ -42,7 +53,7 @@ BXJS文書クラスについては、サイト“{\TeX} Wiki”中の記事、
 およびそこからたどれる情報も併せて参照してほしい。
 
 %===========================================================
-\section{概要}
+\section{本パッケージの目的}
 \label{sec:Ovewview}
 
 本パッケージに含まれる文書クラス集
@@ -70,6 +81,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   同様の機能が提供されている。
 \item 用紙サイズや基底フォントサイズについて、任意の値を指定する
   ことができる。
+\item 文書形式変換ツールPandocを用いた日本語{\LaTeX}文書生成の
+  ために調整された設定である「Pandocモード」が利用できる。
 \end{itemize}
 
 %===========================================================
@@ -197,7 +210,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 次の設定と大体同じであるが、ただし文書レイアウトは
 \Pkg{article}でなく\Pkg{jsarticle}とほぼ同じになっている：
 \begin{quote}\small\begin{verbatim}
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{article}%ただしレイアウトはjsarticle相当
 \usepackage[whole,autotilde]{bxcjkjatype}
 \end{verbatim}\end{quote}
 
@@ -256,7 +269,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 次の設定と大体同じであるが、ただし文書レイアウトは
 \Pkg{jsarticle}とほぼ同じになっている：
 \begin{quote}\small\begin{verbatim}
-\documentclass[a4paper,twocolumn]{article}
+\documentclass[a4paper,twocolumn]{article}%ただしレイアウトはjsarticle相当
 \usepackage{zxjatype}
 \setCJKmainfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiMincho-Regular.otf}
 \setCJKsansfont[BoldFont=HaranoAjiGothic-Medium.otf]{HaranoAjiGothic-Medium.otf}
@@ -289,8 +302,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 （ただし\Pkg{luatexja-preset}は実際には読み込まれない）：
 \begin{quote}\small\begin{verbatim}
 \documentclass[b5paper,9pt]{ltjsarticle}
-\usepackage{luatexja-fontspec}
-\usepackage[haranoaji]{luatexja-preset}
+\usepackage[haranoaji]{luatexja-preset}%実際にはパッケージは読み込まれない
 \end{verbatim}\end{quote}
 
 \Note 2.0版より、既定の和文フォントが「IPAexフォント」から
@@ -303,8 +315,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 次の設定とほぼ等価になる：
 \begin{quote}\small\begin{verbatim}
 \documentclass[b5paper]{ltjsarticle}
-\usepackage{luatexja-fontspec}
-\usepackage[ms]{luatexja-preset}
+\usepackage[ms]{luatexja-preset}%実際にパッケージが読み込まれる
 \end{verbatim}\end{quote}
 
 \Note 補足：
@@ -379,13 +390,47 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \end{itemize}
 
 %===========================================================
-\section{Pandocモードの使い方}
+\section{Pandocモード}
 \label{sec:Pandoc-mode}
 
 「Pandocモード」は文書形式変換ツールである
 Pandoc\footnote{\url{http://pandoc.org/}}%
 を用いた日本語{\LaTeX}文書生成（および{\LaTeX}経由のPDF生成）
 のために調整された設定である。
+特に
+「Pandoc（2.0版以降）の既定の{\LaTeX}出力用テンプレートをそのまま
+用いても日本語文書として適切な出力が得られる」
+ことを主要な目的としている。
+
+現状のPandocモードでは以下の調整が行われる。
+\Note これらの一部についてはユーザによる設定変更が可能である。
+詳細は\ref{ssec:pandoc-param}節、\ref{ssec:ja-settings}節を参照。
+
+\begin{itemize}
+\item PandocのStrong（重要）要素の出力を |\strong| 命令に合わせるため、
+  |\textbf| 命令を |\strong| 命令に移譲させる。
+\item |\texttt| 命令・|\verb| 命令と和文との間に入る和欧文間空白を
+  調節している。
+\item Pandocは入力文書中の三点リーダ“…”を |\ldots| 命令に変換するが、
+  このせいで欧文扱いになるのを回避するため、
+  |\ldots| を一定の条件下において和文で出力させる。
+\item 全角空白文字の入力を（文字ではなく）空きの挿入と解釈する。
+\item Pandocの一部の設定は |\paragraph| の見出しの体裁を変更するが、
+  この場合に連動して |paragraph-mark| の既定値を空に変更する。
+\item Pandocの一部の設定はプレアンブルでの\Pkg{geometry}の読込を
+  発生させるが、この場合に重複読込のエラーになるのを回避するため、
+  \Pkg{geometry}の読込を |\setpagelayout*| の呼出に振り替える。
+\item 入力文書が言語指定を含む場合にはBabelパッケージが読み込まれるが、
+  この際に発生する可能性がある不整合を回避する。
+\item \Pkg{hyperref}パッケージの |unicode| オプションの有無について
+  適切な選択（エンジンにより決まる）を強制する。
+  （(u){\pLaTeX}をサポートするための措置。）
+\end{itemize}
+
+%-------------------
+\subsection{Pandocモードの使い方}
+
+Pandocモードを使う場合はクラスオプションを以下のように指定する。
 
 \begin{quote}
 |\documentclass[pandoc,|\Meta{ドライバ}%
@@ -407,20 +452,25 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   従来通り使用できる。
 \end{itemize}
 
-以下でPandocでBXJSクラスを用いる例を示す。
+%-------------------
+\subsection{Pandocの設定の例}
+
+BXJSクラスを用いる場合のPandocの設定について、以下で例を示す。
 
 \Note なお、以下の記述はPandoc 2.x版に従う。
-（オプション体系が1.x版とかなり異なるので注意。）
+Pandocのオプション体系は2.x版と1.x版とでかなり異なることに
+注意されたい。
 
-\begin{itemize}
-\item \Pkg{bxjsarticle}クラスを使用する一例。
+\paragraph{bxjsarticleの例}
+
+以下の設定で\Pkg{bxjsarticle}クラスを使用したい。
   \begin{itemize}
   \item {\XeLaTeX}経由
   \item 用紙サイズはA4判
   \item 和文フォント設定は |ipaex|
   \end{itemize}
 
-  コマンド行は次のようになる。
+  この場合のコマンド行は次のようになる：
   \footnote{もちろん、実際には改行を含めず1行で書く。
     なお、日本語文書の場合、変換先書式（|-t|）は |latex|
     でなく |lates-smart|（|smart| 機能を無効化）とすべきである。}
@@ -441,7 +491,10 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
     |\documentclass[a4paper,jafont=ipaex,pandoc]{bxjsarticle}|
   \end{quote}
 
-\item \Pkg{bxjsbook}クラスを用いる場合の一例。
+\paragraph{bxjsbookの例}
+
+以下の設定で\Pkg{bxjsbook}クラスを使用したい。
+
   \begin{itemize}
   \item 節番号を出力する
   \item Lua{\LaTeX}経由
@@ -451,7 +504,7 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
   \item 欧文フォントをPandocの機能で設定
   \end{itemize}
 
-  コマンド行は次のようになる：
+  この場合のコマンド行は次のようになる：
   \begin{quote}
   |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
@@ -468,30 +521,30 @@ Pandoc\footnote{\url{http://pandoc.org/}}%
     |-V sansfont="TeX Gyre Heros"|
   \end{quote}
 
-  注意事項：
+\Note 注意事項：
   \begin{itemize}
   \item \Pkg{bxjsbook}クラスは「章（|\chapter|）」をもつクラスなので、
     Pandocで |--top-level-division=|\linebreak[0]|chapter| の指定
     が必要。
   \end{itemize}
 
-\item Pandocで{\LaTeX}経由でPDFを出力する場合、
-  エンジン指定（|--pdf-engine|）は
-  |pdflatex|、|xelatex|、|lualatex|のみがサポートされる。
-  しかし、Pandocの出力を「単体の{\LaTeX}文書」（|-s|指定）とすることで、
-  {\LaTeX}エンジンに(u){\pLaTeX}を使用することができる。
-  出力された{\LaTeX}文書は通常の方法でPDFやPostScript形式に
-  変換できる。
-  
-  \begin{quote}\small
-\begin{verbatim}
-pandoc mydoc.md -o mydoc.tex -s -V documentclass=bxjsarticle -V classoption=pandoc
+\paragraph{(u)\pLaTeX の使用}
+
+Pandocで{\LaTeX}経由でPDFを出力する場合、
+エンジン指定（|--pdf-engine|）は
+|pdflatex|、|xelatex|、|lualatex|のみがサポートされる。
+これに対して、Pandocの出力を「単体の{\LaTeX}文書」（|-s|指定）と
+するとPandocが{\LaTeX}を実行しなくなり、
+この場合は{\LaTeX}エンジンに(u){\pLaTeX}を使用することができる。
+出力された{\LaTeX}文書は通常の方法でPDFやPostScript形式に
+変換できる。
+
+\begin{quote}\small\begin{verbatim}
+pandoc mydoc.md -o mydoc.tex -s -V documentclass=bxjsreport -V classoption=pandoc ...
 uplatex mydoc
 uplatex mydoc
 dvipdfmx mydoc
-\end{verbatim}
-  \end{quote}
-\end{itemize}
+\end{verbatim}\end{quote}
 
 %===========================================================
 \section{クラスオプション}
@@ -791,6 +844,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
       パラメタを自分で設定しても構わない。
       ただし\Pkg{geometry}の読込が強く推奨される。
       （\Pkg{geometry}非読込時の動作テストはほとんど行っていない。）}
+    \Note 「自動読込の際に指定するはずのオプション列」
+      が |\jsGeometryOptions| に保存されている。
   \end{itemize}
   \Note 「どうしても\Pkg{geometry}パッケージを自分で読み込みたい」
   という人のための設定。
@@ -1339,6 +1394,7 @@ minimal和文ドライバには有効な和文ドライバパラメタは存在�
 
 %-------------------
 \subsection{pandoc和文ドライバの場合}
+\label{ssec:pandoc-param}
 
 standard用のものに加えて、以下の和文ドライバパラメタが存在する。
 
@@ -1533,11 +1589,16 @@ vscale=0.944, vmarginratio=1:1
 
 \begin{itemize}
 \item |\strong{|\Meta{テキスト}|}|\Means
-  引数のテキストに、重要性を表す装飾を施す。
-  具体的には\,|\bfseries|（太字）が適用される。
+  引数のテキストに、重要性を表す書体変更を適用する。
 \item |strongenv|環境\Means
   |\strong|の環境版。
-  \Note 以上の2つの機能は\Pkg{fontspec}パッケージとの互換を
+\item |\strongfontdeclare{|\Meta{書体変更命令列}|,...}|\Means
+  |\strong| で実際に適用される書体変更（宣言型命令の列）を指定する。
+  コンマ区切りで複数の値が指定可能で、
+  $n$重の |\strong| が適用されたテキストに対して
+  $n$番目の書体変更命令列が実行される。
+  \Note 既定値は“|\bfseries|”であり、|\strong| は太字で出力される。
+  \Note 以上の3つの機能は\Pkg{fontspec}パッケージとの互換を
   目的としたものである。
   |strong-cmd=false| 指定時はこれらの機能は無効になる。
   ただし、\Pkg{fontspec}が読み込まれている場合は、
@@ -1692,6 +1753,40 @@ standard和文ドライバ（およびそれを継承するドライバ）では
   \makebox[#1\zw][s]{#2}}}
 \end{verbatim}\end{quote}
 
+\subsubsection{pandoc和文ドライバで追加される命令}
+
+Pandocモードにおける出力の調整の対象となる要素について、
+以下の命令を再定義することで
+調整方法をカスタマイズできる。
+例えば
+\begin{quote}\small
+|\renewcommand{\pandocZWSpace}{\jachar{|\JSS|}}|
+\end{quote}
+（ここで {\JSS} は全角空白文字）と再定義することで、
+「全角空白文字の入力を空きに変換する」
+調整を実質的に無効化できる。
+
+\begin{itemize}
+\item |\pandocZWSpace|\Means
+  全角空白文字が入力されたときに実際に実行される命令。
+  \Note |\pandocZWSpace| を再定義する際に、その定義内容の中で
+  全角空白文字を直接使うと無限ループになってしまうため、
+  代わりに |\jachar{|\JSS|}| と書く必要がある。
+
+\item |\pandocLdots|\Means
+  非数式で |\ldots| を実行したときに実際に実行される命令。
+  \Note 一般にPandocの{\LaTeX}出力においては
+  入力文書中の“…”が |\ldots| 命令に変換される。
+  \Note |\pandocLdots| を再定義する際に、その定義内容の中で |\ldots| を
+  使うと無限ループになってしまうため、
+  代わりに |\textellipsis| 等を適宜使う必要がある。
+  ただし特別な規約として
+  \begin{quote}\small
+  |\renewcommand{\pandocLdots}{\ldots}|
+  \end{quote}
+  と再定義した場合は、|\ldots| に対する調整自体が無効になる。
+\end{itemize}
+
 %===========================================================
 \section{数式中の和文出力について}
 \label{sec:Ja-math-fonts}
@@ -1828,7 +1923,7 @@ Class bxjsarticle Warning: Some old font commands were used in text:
 \end{itemize}
 
 %-------------------
-\subsection{将来的な二文字フォント命令の扱い}
+\subsection{将来の二文字フォント命令の扱い}
 
 \jemph{現在の版で存在する}和文ドライバを使用する場合には、
 将来にわたって以下の方針が維持される。
@@ -1837,7 +1932,7 @@ Class bxjsarticle Warning: Some old font commands were used in text:
 \item 二文字フォント命令に対する警告の様式は、
   今後変更される可能性がある。
 \item しかし、将来に二文字フォント命令のサポートが廃止されることはない。
-\item |oldfontcommands| オプションよおび |\allowoldfontcommands| 命令
+\item |oldfontcommands| オプションおよび |\allowoldfontcommands| 命令
   は継続して提供され、
   これらの機能を用いた場合は、二文字フォント命令に関する警告が
   端末に表示されることは一切無い。

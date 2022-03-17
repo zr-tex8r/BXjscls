@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2021/05/18 v2.5a BXJS document classes]
+  [2022/03/20 v2.6  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \ifjsWitheTeX\else
@@ -29,6 +29,18 @@
    {!!!!!!!! WARNING !!!!!!!!\MessageBreak
     This engine does not support e-TeX extension!\MessageBreak
     Some feature might not work properly}
+\fi
+\newif\ifbxjs@bxghost@available
+\ifjsWitheTeX
+  \RequirePackage{pdftexcmds}[2009/09/22]% v0.5
+  \IfFileExists{bxghost.sty}{%
+    \bxjs@bxghost@availabletrue
+    \@namedef{bxjs@bgbv/79E70A0991967E27981832C84DB5DF99}{1}%v0.2.0
+    \ifx\pdf@filemdfivesum\@undefined\else
+      \expandafter\ifx\csname bxjs@bgbv/\pdf@filemdfivesum{bxghost.sty}%
+          \endcsname\relax\else \bxjs@bxghost@availablefalse \fi
+    \fi
+  }{}
 \fi
 \@onlypreamble\bxjs@endpreamble@hook
 \let\bxjs@endpreamble@hook\@empty
@@ -82,7 +94,7 @@
 \def\bxjs@set@dupload@proc@a#1{%
   \@onlypreamble#1\def#1##1}
 \def\bxjs@unset@dupload@proc#1{%
-  \expandafter\let\csname bxjs@dlp/#1\endcsname\@undefined}
+  \bxjs@cslet{bxjs@dlp/#1}\@undefined}
 \@onlypreamble\bxjs@org@if@ptions
 \let\bxjs@org@if@ptions\@if@ptions
 \@onlypreamble\bxjs@org@reset@ptions
@@ -115,29 +127,24 @@
 \bxjs@set@dupload@proc{polyglossia.sty}{%
   \bxjs@unset@dupload@proc{polyglossia.sty}%
   \ClassWarning\bxjs@clsname
-   {Package polyglossia is required}%
+   {Package polyglossia is requested}%
   \def\bxjs@polyglossia@options{#1}%
   \newcommand*\setmainlanguage[2][]{%
-    \ifblank{##2}{%
+    \ifboolexpr{test{\ifblank{##2}}or test{\ifstrequal{##2}{japanese}}}{%
       \ClassWarning\bxjs@clsname
-       {Main language is invalid, thus the fallback\MessageBreak
-        definitions will be employed}%
-      \bxjs@pandoc@polyglossia@ja
-    }{\ifstrequal{##2}{japanese}{%
-      \ClassWarning\bxjs@clsname
-       {Main language is japanese, thus the fallback\MessageBreak
+       {Main language is 'japanese', thus fallback\MessageBreak
         definitions will be employed}%
       \bxjs@pandoc@polyglossia@ja
     }{%else
       \ClassWarning\bxjs@clsname
-       {Main language is valid (##2),\MessageBreak
+       {Main language is '##2',\MessageBreak
         thus polyglossia will be loaded}%
       \csundef{ver@polyglossia.sty}%
       \edef\bxjs@next{%
         \noexpand\RequirePackage[\bxjs@polyglossia@options]{polyglossia}[]%
       }\bxjs@next
       \setmainlanguage[##1]{##2}%
-    }}}}
+    }}}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@polyglossia@options\relax
     \csundef{ver@polyglossia.sty}%
@@ -159,32 +166,34 @@
 \bxjs@set@dupload@proc{babel.sty}{%
   \bxjs@unset@dupload@proc{babel.sty}%
   \ClassWarning\bxjs@clsname
-   {Package babel is required}%
+   {Package babel is requested}%
   \@tempswafalse \let\bxjs@babel@options\@empty
   \def\bxjs@tmpb{main=}%
+  \def\bxjs@next{main=japanese}%
   \@for\bxjs@tmpa:=#1\do{%
     \ifx\bxjs@tmpa\bxjs@tmpb \@tempswatrue
+    \else\ifx\bxjs@tmpa\bxjs@next \@tempswatrue
     \else \edef\bxjs@babel@options{\bxjs@babel@options,\bxjs@tmpa}%
-    \fi}%
+    \fi\fi}%
   \if@tempswa
     \ClassWarning\bxjs@clsname
-     {Main language is invalid, so fallback\MessageBreak
+     {Main language is 'japanese', thus fallback\MessageBreak
       definitions will be employed}%
-    \bxjs@pandoc@polyglossia@ja
+    \bxjs@pandoc@babel@ja
   \else
     \ClassWarning\bxjs@clsname
-     {Main language is valid,\MessageBreak
+     {Main language is not 'japanese',\MessageBreak
       thus babel will be loaded}%
-    \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+    \bxjs@cslet{ver@babel.sty}\@undefined
     \RequirePackage[#1]{babel}[]%
   \fi}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@babel@options\relax
-    \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+    \bxjs@cslet{ver@babel.sty}\@undefined
   \fi}
 \@onlypreamble\bxjs@pandoc@babel@ja
 \def\bxjs@pandoc@babel@ja{%
-  \expandafter\let\csname ver@babel.sty\endcsname\@undefined
+  \bxjs@cslet{ver@babel.sty}\@undefined
   \edef\bxjs@next{%
     \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
   }\bxjs@next
@@ -244,14 +253,15 @@
   \if@tempswa\ifx\jsParagraphMark\bxjs@org@paragraph@mark
     \let\jsParagraphMark\@empty
   \fi\fi}
+\def\pandocZWSpace{\zwspace}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>\z@
   \catcode"3000=\active
   \begingroup \catcode`\!=7
-  \protected\gdef!!!!3000{\zwspace}
+  \protected\gdef!!!!3000{\pandocZWSpace}
   \endgroup
 \else\ifx\DeclareUnicodeCharacter\@undefined\else
   \DeclareUnicodeCharacter{3000}{\bxjs@zsp@char}
-  \bxjs@protected\def\bxjs@zsp@char{\zwspace}
+  \bxjs@protected\def\bxjs@zsp@char{\pandocZWSpace}
 \fi\fi
 \if j\jsEngine
   \bxjs@fix@hyperref@unicode{false}
@@ -260,13 +270,13 @@
 \fi
 \ifbxjs@jp@fix@strong\ifbxjs@jp@strong@cmd
   \let\orgtextbf\textbf
-  \DeclareRobustCommand\bxjstextbf[1]{%
+  \DeclareRobustCommand\pandocTextbf[1]{%
     \begingroup
       \let\textbf\orgtextbf
       \strong{#1}%
     \endgroup}%
   \g@addto@macro\bxjs@begin@document@hook{%
-    \let\textbf\bxjstextbf}
+    \let\textbf\pandocTextbf}
 \fi\fi
 \jsAtEndOfClass{%
   \ifx\strongfontdeclare\@undefined\else
@@ -276,6 +286,10 @@
     \fi
   \fi}
 \ifbxjs@jp@fix@code
+  \ifbxjs@bxghost@available
+    \RequirePackage[verb]{bxghost}[2020/01/31]% v0.3.0
+    \let\bxjs@eghostguarded\eghostguarded
+  \else
   \chardef\bxjs@eghost@c=23
   \ifx j\jsEngine \xspcode\bxjs@eghost@c=3
   \else\ifx l\jsEngine \ltjsetparameter{alxspmode={\bxjs@eghost@c,3}}
@@ -285,20 +299,25 @@
   \ifx\bxjs@eghost@c\@undefined\else
     \font\bxjs@eghost@f=ec-lmr10 at 1.23456pt
     \def\bxjs@pan@eghost{\bgroup\bxjs@eghost@f\bxjs@eghost@c\egroup}
+    \def\bxjs@eghostguarded#1{%
+      \bxjs@pan@eghost\null#1\null\bxjs@pan@eghost}
+  \fi
+  \fi
+  \ifx\bxjs@eghostguarded\@undefined\else
     \let\orgtexttt\texttt
-    \DeclareRobustCommand\bxjstexttt[1]{%
+    \DeclareRobustCommand\pandocTexttt[1]{%
       \ifmmode \nfss@text{\ttfamily #1}%
       \else
         \ifvmode \leavevmode \fi
-        \bxjs@pan@eghost\null
-        \begingroup \ttfamily #1\endgroup
-        \null\bxjs@pan@eghost
+        \bxjs@eghostguarded{\begingroup\ttfamily#1\endgroup}%
       \fi}
     \g@addto@macro\bxjs@begin@document@hook{%
-      \let\texttt\bxjstexttt}
+      \let\texttt\pandocTexttt}
+    \ifbxjs@bxghost@available\else
     \expandafter\def\expandafter\verb\expandafter{%
       \expandafter\bxjs@pan@eghost\verb}
     \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+    \fi
   \fi
 \fi
 \if j\jsEngine
