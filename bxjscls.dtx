@@ -481,6 +481,15 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@explIII}
+% 〔スイッチ〕
+% expl3がカーネルに組み込まれているか。
+%    \begin{macrocode}
+\newif\ifbxjs@explIII
+\@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifbxjs@TUenc}
 % 〔スイッチ〕
 % {\LaTeX}の既定のフォントエンコーディングがTUであるか。
@@ -2288,10 +2297,17 @@
 % \Note ただし |ja| 非指定の場合はスキップする
 % （0.3 版との互換性のため）。
 %    \begin{macrocode}
-  \ifx\bxjs@driver@opt\@undefined \ifx\bxjs@jadriver@opt\@undefined\else
-    \ClassWarningNoLine\bxjs@clsname
-    {No driver option is given}
-  \fi\fi
+  \ifx\bxjs@driver@opt\@undefined
+    \if \ifbxjs@explIII T\else\ifx\bxjs@jadriver@opt\@undefined F\else T\fi\fi T%
+      \ClassWarningNoLine\bxjs@clsname
+       {A driver option is MISSING!!\MessageBreak
+        You should properly specify one of the valid\MessageBreak
+        driver options according to the DVI driver\MessageBreak
+        that is in use:\MessageBreak
+        \@spaces dvips, dvipdfmx, dviout, xdvi,\MessageBreak
+        \@spaces nodvidriver}
+    \fi
+  \fi
 %    \end{macrocode}
 % |dvi=XXX| が指定されていた場合は、
 % |XXX| が指定された時と同じ動作にする。
