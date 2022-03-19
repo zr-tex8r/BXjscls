@@ -569,6 +569,37 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@trim}
+% |\bxjs@trim\CS| で、|\CS| の内容のトークン列を先頭と末尾の
+% 空白トークン群を除去したものに置き換える。
+%    \begin{macrocode}
+\def\bxjs@trim#1{\expandafter\bxjs@trim@a#1\@nil#1}
+\def\bxjs@trim@a{\futurelet\bxjs@tmpb\bxjs@trim@b}
+\def\bxjs@trim@b{\bxjs@cond\ifx\bxjs@tmpb\@sptoken\fi
+  {\bxjs@trim@c\bxjs@trim@a}{\bxjs@trim@d}}
+\def\bxjs@trim@c#1 {#1}
+\def\bxjs@trim@d#1\@nil{\bxjs@trim@e#1\@nil: \@nil\@nnil}
+\def\bxjs@trim@e#1 \@nil#2\@nnil{\bxjs@cond\ifx\@nnil#2\@nnil\fi
+  {\bxjs@trim@f#1\@nnil}{\bxjs@trim@e#1\@nil: \@nil\@nnil}}
+\def\bxjs@trim@f#1\@nil#2\@nnil#3{\def#3{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@set@array@from@clist}
+% |\bxjs@set@array@from@clist{|\Meta{配列名接頭辞}|}{|%
+% \Meta{コンマ区切りリスト}|}|\Means
+% コンマ区切りの値のリストから擬似配列を生成する。
+% \Note 各要素について、先頭・末尾の空白トークン群は除去される。
+%    \begin{macrocode}
+\def\bxjs@set@array@from@clist#1#2{%
+  \@tempcnta\z@
+  \@for\bxjs@tmpa:=\@empty#2\do{%
+     \bxjs@trim\bxjs@tmpa \bxjs@cslet{#1/\the\@tempcnta}\bxjs@tmpa
+     \advance\@tempcnta\@ne}
+  \bxjs@cslet{#1/\the\@tempcnta}\relax}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@gset@tempcnta}
 % |calc| の整数式を用いて |\@tempcnta| の値を設定する。
 %    \begin{macrocode}
@@ -9235,10 +9266,18 @@
 % 既定の設定は |\bfseries|（太字）である。
 % \Note |\strongfontdeclare| は試験的機能とする。
 %    \begin{macrocode}
-    \@ifdefinable{\strongfontdeclare}{\bxjs@protected\def\strongfontdeclare#1{%
-      \bxjs@strong@font@declare@a#1,\@nil}}%
-    \def\bxjs@strong@font@declare@a#1,#2\@nil{\def\bxjs@strong@font{#1}}%
-    \def\bxjs@strong@font{\bfseries}%
+    \newcommand*{\strongfontdeclare}{\bxjs@strongfontdeclare}%
+    \newcount\bxjs@strong@level
+    \bxjs@protected\def\bxjs@strongfontdeclare#1{%
+      \bxjs@set@array@from@clist{bxjs@strong}{#1}%
+      \bxjs@strong@level\z@}%
+    \bxjs@strongfontdeclare{\bfseries}%
+    \def\bxjs@strong@font{%
+      \bxjs@csletcs{bxjs@tmpa}{bxjs@strong/\the\bxjs@strong@level}%
+      \ifx\bxjs@tmpa\relax
+        \advance\bxjs@strong@level\m@ne \bxjs@strong@font
+      \else \advance\bxjs@strong@level\@ne \bxjs@tmpa
+      \fi}%
   \fi\fi
 }\fi
 %    \end{macrocode}
