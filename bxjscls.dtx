@@ -10557,6 +10557,24 @@
 \fi
 %    \end{macrocode}
 %
+% \begin{macro}{\ifbxjs@bxghost@available}
+% 〔スイッチ〕|bxghost| パッケージが利用できるか。
+%    \begin{macrocode}
+\newif\ifbxjs@bxghost@available
+\ifjsWitheTeX
+  \RequirePackage{pdftexcmds}[2009/09/22]% v0.5
+  \IfFileExists{bxghost.sty}{%
+    \bxjs@bxghost@availabletrue
+    \@namedef{bxjs@bgbv/79E70A0991967E27981832C84DB5DF99}{1}%v0.2.0
+    \ifx\pdf@filemdfivesum\@undefined\else
+      \expandafter\ifx\csname bxjs@bgbv/\pdf@filemdfivesum{bxghost.sty}%
+          \endcsname\relax\else \bxjs@bxghost@availablefalse \fi
+    \fi
+  }{}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@endpreamble@hook}
 % |etoolbox| の |\AtEndPreamble| で実行されるBXJSクラス用のフック。
 % \Note {\eTeX}以外では無効になる。
@@ -11121,13 +11139,13 @@
 %    \begin{macrocode}
 \ifbxjs@jp@fix@strong\ifbxjs@jp@strong@cmd
   \let\orgtextbf\textbf
-  \DeclareRobustCommand\bxjstextbf[1]{%
+  \DeclareRobustCommand\pandocTextbf[1]{%
     \begingroup
       \let\textbf\orgtextbf
       \strong{#1}%
     \endgroup}%
   \g@addto@macro\bxjs@begin@document@hook{%
-    \let\textbf\bxjstextbf}
+    \let\textbf\pandocTextbf}
 \fi\fi
 %    \end{macrocode}
 %
@@ -11146,8 +11164,18 @@
 %
 % インラインコード(Code)要素に対する{\LaTeX}出力は |\texttt| となる。
 % |\texttt| の両端に欧文ゴーストが入るようにする。
+% さらに |\verb| の外側にも欧文ゴーストが入るようにする。
+%
 %    \begin{macrocode}
 \ifbxjs@jp@fix@code
+%    \end{macrocode}
+% |bxghost| パッケージが利用できる場合はその機能を利用する。
+% 使えない場合は自前実装を用いる。
+%    \begin{macrocode}
+  \ifbxjs@bxghost@available
+    \RequirePackage[verb]{bxghost}[2020/01/31]% v0.3.0
+    \let\bxjs@eghostguarded\eghostguarded
+  \else
   \chardef\bxjs@eghost@c=23
   \ifx j\jsEngine \xspcode\bxjs@eghost@c=3
   \else\ifx l\jsEngine \ltjsetparameter{alxspmode={\bxjs@eghost@c,3}}
@@ -11157,24 +11185,29 @@
   \ifx\bxjs@eghost@c\@undefined\else
     \font\bxjs@eghost@f=ec-lmr10 at 1.23456pt
     \def\bxjs@pan@eghost{\bgroup\bxjs@eghost@f\bxjs@eghost@c\egroup}
+    \def\bxjs@eghostguarded#1{%
+      \bxjs@pan@eghost\null#1\null\bxjs@pan@eghost}
+  \fi
+  \fi
+  \ifx\bxjs@eghostguarded\@undefined\else
     \let\orgtexttt\texttt
-    \DeclareRobustCommand\bxjstexttt[1]{%
+    \DeclareRobustCommand\pandocTexttt[1]{%
       \ifmmode \nfss@text{\ttfamily #1}%
       \else
         \ifvmode \leavevmode \fi
-        \bxjs@pan@eghost\null
-        \begingroup \ttfamily #1\endgroup
-        \null\bxjs@pan@eghost
+        \bxjs@eghostguarded{\begingroup\ttfamily#1\endgroup}%
       \fi}
     \g@addto@macro\bxjs@begin@document@hook{%
-      \let\texttt\bxjstexttt}
+      \let\texttt\pandocTexttt}
 %    \end{macrocode}
-% さらに |\verb| の外側にも欧文ゴーストが入るようにする。
-% \Note |bxjaghost| の実装を参考にした。
+% |bxghost| を使わない場合の |\verb| の処理。
+% \Note |bxghost| の実装を参考にした。
 %    \begin{macrocode}
+    \ifbxjs@bxghost@available\else
     \expandafter\def\expandafter\verb\expandafter{%
       \expandafter\bxjs@pan@eghost\verb}
     \g@addto@macro\verb@egroup{\bxjs@pan@eghost}
+    \fi
   \fi
 \fi
 %    \end{macrocode}
