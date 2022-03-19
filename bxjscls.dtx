@@ -509,6 +509,20 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@CGHN}
+% カーネルの2021/11/15版の改修で“要素の順が変わった”フック名について、
+% 新仕様の名前を“使用中の{\LaTeX}において正しい名前”に変換する。
+% \Note 例えば、“|package/after/PKG|”は新仕様で
+% “|package/PKG/after|”に変更された。
+%    \begin{macrocode}
+\@ifl@t@r\fmtversion{2021/11/15}{%
+  \def\bxjs@CGHN#1{#1}%
+}{%else
+  \def\bxjs@CGHN#1{\bxjs@CGHN@a#1//}%
+  \def\bxjs@CGHN@a#1/#2/#3//{#1/#3/#2}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@cond}
 % |\bxjs@cond\ifXXX|……|\fi{|\Meta{真}|}{|\Meta{偽}|}|\par
 % {\TeX}のif-文（|\ifXXX|……\Meta{真}|\else|\Meta{偽}|\fi|）を
@@ -9822,7 +9836,7 @@
 %    \begin{macrocode}
   \ifjsWithupTeX\ifbxjs@old@hook@system\else
     \IfFileExists{pxjahyper-uni.def}{%
-      \AddToHook{package/after/hyperref}{\input{pxjahyper-uni.def}}
+      \AddToHook{\bxjs@CGHN{package/hyperref/after}}{\input{pxjahyper-uni.def}}
     }{}
   \fi\fi
 \fi
