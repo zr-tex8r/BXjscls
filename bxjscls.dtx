@@ -734,6 +734,32 @@
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
 %    \end{macrocode}
 %
+% \paragraph{環境検査 \ZRX}
+% 
+% {\TeX}処理系のバージョンがサポート対象であるかを検査する。
+% \Note 現状での処理系バージョン要件は
+% 「{\XeTeX}は0.997版（2007年頃）以上」
+% という現実離れしたものになっている。
+% \TODO 3.0版において、もっと現実的なバージョン要件を定める予定。
+% 多分「本体」と「標準和文ドライバ」で条件を分けることになる。
+%    \begin{macrocode}
+\@tempswatrue
+\if x\jsEngine
+  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
+    \@tempswafalse \fi
+\fi
+%    \end{macrocode}
+% 非サポートのバージョン場合は強制終了させる。
+%    \begin{macrocode}
+\if@tempswa \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use is all too old}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+%    \end{macrocode}
+%
 % 万が一「2.09互換モード」になっていた場合は、
 % これ以上進むと危険なので強制終了させる。
 %    \begin{macrocode}
@@ -8866,11 +8892,13 @@
 %
 % \begin{macro}{\bxjs@do@simplejasetup}
 % |simplejasetup| オプションの実際の処理内容。
+% \TODO バージョン要件を見直して暫定措置を解除する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@do@simplejasetup
 \def\bxjs@do@simplejasetup{%
+  \@namedef{bxjs@zeroglue/0.0pt}{T}%
   \ifnum\XeTeXinterchartokenstate>\z@
-  \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
+  \else\expandafter\ifx\csname bxjs@zeroglue/\the\XeTeXlinebreakskip\endcsname\relax\else
     \jsSimpleJaSetup
     \ClassInfo\bxjs@clsname
      {'\string\jsSimpleJaSetup' is applied\@gobble}%
@@ -10134,11 +10162,19 @@
 % 「{\XeTeX}のバージョンが0.99992以上の場合に |unicode| を既定で
 % 有効にする」
 % ことにする。
+% \Note {\TeX}の小数の精度は十進で4桁までしか保証されないので、
+% |\strcmp| を利用して文字列で比較している。
+% （整数部が多桁になっても大丈夫。）
+% しかし実は、|\strcmp| プリミティブが追加されたのは
+% 0.9994版（2009年6月）かららしい。
+% \TODO バージョン要件を見直して暫定措置を解除する。
 %    \begin{macrocode}
+\ifx\strcmp\@undefined\else %未定義なら条件を満たさない
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
   \ifbxjs@hyperref@enc
     \PassOptionsToPackage{unicode}{hyperref}
   \fi
+\fi
 \fi
 %    \end{macrocode}
 %
