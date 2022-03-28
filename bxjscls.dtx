@@ -2349,16 +2349,23 @@
 %
 % \paragraph{その他のBXJS特有の後処理 \ZRX}
 %
+% 標準の和文ドライバの名前の定数。
+%    \begin{macrocode}
+\def\bxjs@@minimal{minimal}
+\def\bxjs@@standard{standard}
+\def\bxjs@@pandoc{pandoc}
+\def\bxjs@@modern{modern}
+%    \end{macrocode}
+%
 % |\bxjs@jadriver| の正規化。
 % 値が未指定の場合は |minimal| に変える。
 % ただしエンジンが{(u)\pTeX}である場合は |standard|
 % に変える。
 % \Note {(u)\pTeX}以外で |ja| を省略するのは2.0版より非推奨となった。
 %    \begin{macrocode}
-\def\bxjs@@minimal{minimal}
 \ifx\bxjs@jadriver\relax
   \ifx j\jsEngine
-    \def\bxjs@jadriver{standard}
+    \let\bxjs@jadriver\bxjs@@standard
   \else
     \ClassWarningNoLine\bxjs@clsname
      {The option 'ja' is MISSING!!\MessageBreak
@@ -2376,7 +2383,6 @@
 % |calc|、|keyval|、|ifpdf|。
 % \Note Pandocモードでは |plautopatch| の既定値を真とする。
 %    \begin{macrocode}
-\def\bxjs@@pandoc{pandoc}
 \ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
     \ifjsWitheTeX
   \bxjs@plautopatchtrue
@@ -9972,7 +9978,7 @@
 \bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
-\def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
+\ifx\bxjs@jadriver\bxjs@@pandoc\else
   \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{autotilde}}
 \fi
 \edef\bxjs@next{%
