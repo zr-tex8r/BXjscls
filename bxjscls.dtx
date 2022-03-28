@@ -727,28 +727,6 @@
 \@onlypreamble\bxjs@tmpdo@d
 %    \end{macrocode}
 %
-% \TODO 以下の処理は{\LuaTeX}の版を0.65以上に限るならば
-% 既に |bxjscompat| で処理されているので不要のはず。\par
-% Lua\TeX の場合、原版のコード中のコントロールワード中に現れる
-% 日本語文字のカテゴリコードを一時的に11に変更する。
-% クラス読込終了時点で元に戻される。
-% \Note 現在の{Lua\LaTeX}では、漢字のカテゴリコードは最初から11に
-% なっているので、この処理は特段の意味を持たない。
-% しかし、昔は12になっていて、この場合、日本語文字の
-% コントロールワードの命令を使用するには、カテゴリコードを11に
-% 変更する必要がある。
-%    \begin{macrocode}
-\if l\jsEngine
-\def\bxjs@tmpdo#1{%
-  \xdef\bxjs@pre@jadriver@hook{%
-    \bxjs@pre@jadriver@hook
-    \catcode`#1=\the\catcode`#1\relax}%
-  \catcode`#1=11\relax}
-\@tfor\bxjs@tmpa:=和西暦\do
-  {\expandafter\bxjs@tmpdo\bxjs@tmpa}
-\fi
-%    \end{macrocode}
-%
 % |\jsInhibitGlue| は |\inhibitglue| が定義されていればそれを
 % 実行し、未定義ならば何もしない。
 %    \begin{macrocode}
