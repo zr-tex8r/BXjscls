@@ -19,21 +19,33 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * フォーマット： LaTeX
   * DVI ウェア： 不問
   * 必須パッケージ：
-      - keyval
       - calc
-      - geometry（v5.0以降）
-  * standard 和文ドライバで連携するパッケージ：
-      - (pdf)LaTeX の場合： 
-        CJK / bxcjkjatype（v0.2c以降）
-      - XeLaTeX の場合： 
-        xeCJK（v3.0以降） / zxjatype（v0.6以降）
-      - LuaLaTeX の場合： 
-        LuaTeX-ja
-  * その他、場合により必須となるパッケージ：
-      - type1cm ： `magstyle` が `real`/`xreal` である場合
-      - pxchfon（v0.5以降）： pLaTeX で `jafont` を指定した場合
-      - zxjafont（v0.2a以降）： XeLaTeX で `jafont` を指定した場合
-      - bxwareki ： 日付の和暦表示機能を使う場合
+      - geometry v5.0以降
+      - ifpdf
+      - keyval
+  * 場合により必須となるパッケージ：
+      - bxwareki： 日付の和暦表示機能を使う場合
+      - jslogo： `jslogo` 指定時
+      - plautopatch v0.3以降： (u)pLaTeX かつ `plautopatch` 指定時
+      - type1cm： `magstyle=nomag*` 指定時
+      - standard 和文ドライバ使用時：
+          + bxcalc v1.0以降： 和文パラメタ `units` 指定時
+          + bxcjkjatype v0.2c以降： (pdf)LaTeX 使用時
+          + CJK： (pdf)LaTeX 使用時
+          + LuaTeX-ja： LuaLaTeX 使用時
+          + pxchfon v0.5以降： (u)pLaTeX かつ `jafont` 指定時
+          + pxjahyper-enc： インストール済なら使用する
+          + xeCJK v3.0以降： XeLaTeX 使用時
+          + zxjafont v0.2a以降： XeLaTeX かつ `jafont` 指定時
+          + zxjatype： XeLaTeX 使用時
+      - Pandoc モード使用時： ※standard のものに追加して
+          + bxghost v0.3.0以降： インストール済なら使用する
+          + bxorigcapt： Babel 使用時
+          + etoolbox v2.0以降： e-TeX なら
+          + filehook v0.5d以降： e-TeX なら
+          + iftex
+          + pdftexcmds v0.5以降
+          + pxbabel： (u)pLaTeX かつ Babel 使用時
   * エンジンが (u)pTeX 以外で、かつ和文ドライバが standard 以外の場合、
     そのエンジンに対応する日本語処理パッケージが必要となる。
 
@@ -102,7 +114,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * Version 2.6  〈2022/03/20〉
       - LaTeX カーネル 2021/11/15 版への対応。
       - 新版の Pandoc テンプレートへの対策。
-      - `\strongfontdeclare` 環境の補填。
+      - `\strongfontdeclare` 命令の補填。
   * Version 2.5a 〈2021/05/18〉
       - 新版の Pandoc テンプレートへの対策。
   * Version 2.5  〈2021/02/02〉

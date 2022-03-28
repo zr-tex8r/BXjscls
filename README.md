@@ -14,26 +14,38 @@ packages that provide capability of Japanese typesetting.
 ### SYSTEM REQUIREMENTS
 
   * TeX engine: pdfTeX, XeTeX, LuaTeX, pTeX, upTeX or pTeX-ng.
-      - e-TeX extension is not needed.
+      - e-TeX extension is not needed for (u)pTeX.
       - XeTeX must be of version 0.997 or later.
   * TeX format: LaTeX.
-  * DVIware: Anything.
+  * DVIware (in DVI mode): Anything.
   * Prerequisite packages:
-      - keyval
       - calc
-      - geometry (v5.0+)
-  * Packages that the standard ja-driver cooperates with:
-      - On (pdf)LaTeX:
-        CJK + bxcjkjatype (v0.2c+)
-      - On XeLaTeX:
-        xeCJK (v3.0+) + zxjatype (v0.6+)
-      - On LuaLaTeX:
-        LuaTeX-ja
-  * Other packages required on occasion:
-      - type1cm: when `magstyle` is `nomag`/`nomag*`
-      - pxchfon (v0.5+): when `jafont` is used on pLaTeX
-      - zxjafont (v0.2a+):  when `jafont` is used on XeLaTeX
+      - geometry v5.0+
+      - ifpdf
+      - keyval
+  * Packages required on occasion:
       - bxwareki: when the wareki feature is used
+      - jslogo: if use `jslogo`
+      - plautopatch v0.3+: if use (u)pLaTeX and `plautopatch`
+      - type1cm: if use `magstyle=nomag*`
+      - When using the standard ja-driver:
+          + bxcalc v1.0+: if use ja-parameter `units`
+          + bxcjkjatype v0.2c+: if use (pdf)LaTeX
+          + CJK:  if use (pdf)LaTeX
+          + LuaTeX-ja: if use LuaLaTeX
+          + pxchfon v0.5+: if use (u)pLaTeX and `jafont`
+          + pxjahyper-enc: loaded if installed
+          + xeCJK v3.0+: if use XeLaTeX
+          + zxjafont v0.2a+: if use XeLaTeX and `jafont`
+          + zxjatype: if use XeLaTeX
+      - When using Pandoc mode, in addition to those of standard:
+          + bxghost v0.3.0+: loaded if installed
+          + bxorigcapt: if use Babel
+          + etoolbox v2.0+
+          + filehook v0.5d+
+          + iftex
+          + pdftexcmds v0.5+
+          + pxbabel: if use (u)pLaTeX and Babel
   * When you use ja-drivers other than standard, you generally need
     packages for processing Japanese documents that the employed
     combination of the ja-driver and the engine supports.
