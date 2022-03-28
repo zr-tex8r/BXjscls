@@ -3666,7 +3666,6 @@
 % \Note |geometry| のbegin-documentフックにおいて、Lua{\TeX}の
 % 旧版互換を有効にする。
 %    \begin{macrocode}
-\bxjs@apply@bd@pre@geometry@hook
 \bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
 \bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
 \bxjs@preproc@layout
@@ -9026,6 +9025,11 @@
   \global\let\bxjs@pagestyle@hook\relax}
 %    \end{macrocode}
 %
+% 終わり。
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
 % \paragraph{和文空白命令}
 %    \begin{macrocode}
 \ifbxjs@jaspace@cmd
@@ -9069,10 +9073,6 @@
   \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
 %    \end{macrocode}
 % \end{macro}
-%
-%    \begin{macrocode}
-\fi
-%    \end{macrocode}
 %
 % 終わり。
 %    \begin{macrocode}
