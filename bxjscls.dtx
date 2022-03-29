@@ -10974,11 +10974,9 @@
 %
 % \paragraph{Babelについて}
 % {\XeTeX}以外の場合。
-% \Note Pandoc 2.6版において、{\LuaTeX}で用いられる多言語パッケージが
-% PolyglossiaからBabelに変更された。
-%    \begin{macrocode}
-\if x\jsEngine\else
-%    \end{macrocode}
+% \Note Pandoc 2.15版から、テンプレートで用いられる多言語パッケージが
+% Babelに統一された。
+% （{\LuaTeX}は2.6版でPolyglossiaからBabelに変更されている。）
 %
 % パッケージの読込を検知するため読込済のマークを付けて
 % duploadの処理を仕込む。
@@ -11046,9 +11044,6 @@
 % \end{macro}
 %
 % lang対策はこれで終わり。
-%    \begin{macrocode}
-\fi
-%    \end{macrocode}
 %
 %^^A----------------
 % \subsection{geometry変数}
