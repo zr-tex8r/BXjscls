@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2022/03/20 v2.6  BXJS document classes]
+  [2022/03/30 v2.7  BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -312,8 +312,9 @@
 \fi
 \@onlypreamble\bxjs@do@simplejasetup
 \def\bxjs@do@simplejasetup{%
+  \@namedef{bxjs@zeroglue/0.0pt}{T}%
   \ifnum\XeTeXinterchartokenstate>\z@
-  \else\ifnum\strcmp{\the\XeTeXlinebreakskip}{\the\z@}=\z@
+  \else\expandafter\ifx\csname bxjs@zeroglue/\the\XeTeXlinebreakskip\endcsname\relax\else
     \jsSimpleJaSetup
     \ClassInfo\bxjs@clsname
      {'\string\jsSimpleJaSetup' is applied\@gobble}%
@@ -388,6 +389,7 @@
 \g@addto@macro\bxjs@begin@document@hook{%
   \bxjs@pagestyle@hook
   \global\let\bxjs@pagestyle@hook\relax}
+\fi
 \ifbxjs@jaspace@cmd
   \def\jaenspace{\hskip.5\jsZw\relax}
   \def\jathinspace{\hskip\z@skip}
@@ -402,7 +404,6 @@
   \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
   \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
   \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
-\fi
 \fi
 \endinput
 %%

@@ -22,15 +22,16 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsbook}
-  [2022/03/20 v2.6  BXJS document classes]
+  [2022/03/30 v2.7  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsbook}
 \newif\ifjsc@needsp@tch
 \jsc@needsp@tchfalse
 \RequirePackage{calc}
 \RequirePackage{keyval}
+\def\jsAtEndOfClass{%
+  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 \IfFileExists{bxjscompat.sty}{%
-  \let\jsAtEndOfClass\@gobble
   \RequirePackage{bxjscompat}%
 }{}
 \let\jsArticle=a
@@ -172,24 +173,25 @@
 \let\bxjs@post@option@hook\@empty
 \@onlypreamble\bxjs@pre@jadriver@hook
 \let\bxjs@pre@jadriver@hook\@empty
-\def\jsAtEndOfClass{%
-  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
 \@onlypreamble\bxjs@tmpdo
 \@onlypreamble\bxjs@tmpdo@a
 \@onlypreamble\bxjs@tmpdo@b
 \@onlypreamble\bxjs@tmpdo@c
 \@onlypreamble\bxjs@tmpdo@d
-\if l\jsEngine
-\def\bxjs@tmpdo#1{%
-  \xdef\bxjs@pre@jadriver@hook{%
-    \bxjs@pre@jadriver@hook
-    \catcode`#1=\the\catcode`#1\relax}%
-  \catcode`#1=11\relax}
-\@tfor\bxjs@tmpa:=和西暦\do
-  {\expandafter\bxjs@tmpdo\bxjs@tmpa}
-\fi
 \bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
+\@tempswatrue
+\if x\jsEngine
+  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
+    \@tempswafalse \fi
+\fi
+\if@tempswa \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use is all too old}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
 \if@compatibility
   \ClassError\bxjs@clsname
    {Something went chaotic!\MessageBreak
@@ -792,9 +794,12 @@
   \bxjs@papersizefalse
 \fi
 \def\bxjs@@minimal{minimal}
+\def\bxjs@@standard{standard}
+\def\bxjs@@pandoc{pandoc}
+\def\bxjs@@modern{modern}
 \ifx\bxjs@jadriver\relax
   \ifx j\jsEngine
-    \def\bxjs@jadriver{standard}
+    \let\bxjs@jadriver\bxjs@@standard
   \else
     \ClassWarningNoLine\bxjs@clsname
      {The option 'ja' is MISSING!!\MessageBreak
@@ -805,7 +810,6 @@
     \let\bxjs@jadriver\bxjs@@minimal
   \fi
 \fi
-\def\bxjs@@pandoc{pandoc}
 \ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
     \ifjsWitheTeX
   \bxjs@plautopatchtrue
@@ -1243,7 +1247,6 @@
 \else
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
-\bxjs@apply@bd@pre@geometry@hook
 \bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
 \bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
 \bxjs@preproc@layout
@@ -2502,7 +2505,7 @@
     \global\let\bxjs@wareki@used\@empty
     \ClassWarning\bxjs@clsname
      {Wareki mode is not supported, since\MessageBreak
-      'bxwareki' is unavailable, found}}
+      'bxwareki' is unavailable, reported}}
   \g@addto@macro\bxjs@begin@document@hook{%
     \let\bxjs@wareki@used\@empty}
 \fi

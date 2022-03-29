@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2022/03/20 v2.6  BXJS document classes]
+  [2022/03/30 v2.7  BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -456,7 +456,7 @@
 \bxjs@resolve@jafont@paren\bxjs@tmpa
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa\bxjs@jp@font}
 \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{whole}}
-\def\bxjs@tmpb{pandoc}\ifx\bxjs@tmpb\bxjs@jadriver\else
+\ifx\bxjs@jadriver\bxjs@@pandoc\else
   \edef\bxjs@tmpa{\bxjs@catopt\bxjs@tmpa{autotilde}}
 \fi
 \edef\bxjs@next{%
@@ -537,10 +537,12 @@
     \noexpand\RequirePackage[\bxjs@tmpa]{zxjafont}[2013/01/28]% v0.2a
   }\bxjs@next
 \fi
+\ifx\strcmp\@undefined\else %未定義なら条件を満たさない
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
   \ifbxjs@hyperref@enc
     \PassOptionsToPackage{unicode}{hyperref}
   \fi
+\fi
 \fi
 \AtEndOfPackage{%
 \def\@gnewline #1{%

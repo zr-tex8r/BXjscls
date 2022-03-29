@@ -1,6 +1,7 @@
 % 文字コードは UTF-8
 % lualatex で組版する
 \documentclass[a4paper]{ltjsarticle}
+\renewcommand{\headfont}{\romanseries{sbc}\sffamily}
 \usepackage{color}
 \definecolor{myblue}{rgb}{0,0,0.75}
 \definecolor{mygreen}{rgb}{0,0.45,0}
@@ -11,8 +12,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.6}
-\newcommand{\PkgDate}{2022/03/20}
+\newcommand{\PkgVersion}{2.7}
+\newcommand{\PkgDate}{2022/03/30}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -949,6 +950,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \paragraph{旧版との互換用のオプション}\mbox{}
 
 2.0版以降では、これらのオプションの使用は\jemph{非推奨}である。
+\Note (|no|)|zw|、(|no|)|js|、|jadriver|、|noscale| については、
+3.0版で\jemph{廃止}する予定。
 
 \begin{itemize}
 \item |zw|\Means

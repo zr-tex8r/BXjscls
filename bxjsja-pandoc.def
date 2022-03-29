@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2022/03/20 v2.6  BXJS document classes]
+  [2022/03/30 v2.7  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \ifjsWitheTeX\else
@@ -161,7 +161,6 @@
       \setotherlangauge{\bxjs@tmpa}}}%
   \let\bxjs@polyglossia@options\relax}%
 \fi
-\if x\jsEngine\else
 \pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \bxjs@unset@dupload@proc{babel.sty}%
@@ -202,7 +201,6 @@
   \else
     \RequirePackage{bxorigcapt}[]%
   \fi}
-\fi
 \bxjs@set@dupload@proc{geometry.sty}{%
   \setpagelayout*{#1}}
 \if l\jsEngine
@@ -217,7 +215,7 @@
 \@onlypreamble\bxjs@info@or@ban
 \def\bxjs@info@or@ban#1{%
   \PackageInfo\bxjs@clsname
-   {Freeze layout on '#1',\MessageBreak detected}}
+   {Freeze layout on '#1',\MessageBreak reported}}
 \unless\ifbxjs@jp@or@indent
   \bxjs@info@or@ban{indent}
   \IfFileExists{parskip.sty}{%
