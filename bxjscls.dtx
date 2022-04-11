@@ -694,11 +694,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ifbxjs@after@preamble}
+% 〔スイッチ〕
+% 文書本体が開始しているか。
+%    \begin{macrocode}
+\newif\ifbxjs@after@preamble
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\bxjs@begin@document@hook}
 % BXJSクラス用の文書本体開始時フック。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@begin@document@hook
-\let\bxjs@begin@document@hook\@empty
+\def\bxjs@begin@document@hook{\bxjs@after@preambletrue}
 \AtBeginDocument{\bxjs@begin@document@hook}
 %    \end{macrocode}
 % \end{macro}
@@ -4453,6 +4461,16 @@
 %    \begin{macrocode}
 \let\pltx@cleartorightpage\pltx@cleartooddpage
 \let\pltx@cleartoleftpage\pltx@cleartoevenpage
+%    \end{macrocode}
+%
+% |\vsize| の値がアレな場合は本体開始まで |\clearpage| を無効にする。
+%    \begin{macrocode}
+\ifdim\vsize=\z@
+\begingroup
+\toks@\expandafter{\clearpage}
+\xdef\clearpage{\noexpand\ifbxjs@after@preamble\the\toks@\noexpand\fi}
+\endgroup
+\fi
 %    \end{macrocode}
 % \end{ZRnote}
 %
