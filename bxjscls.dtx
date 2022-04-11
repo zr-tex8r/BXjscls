@@ -8825,7 +8825,7 @@
 % \subsection{{\pdfTeX}用の処理}
 %
 %    \begin{macrocode}
-\else\ifx p\jsEngine
+\else\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
 %    \end{macrocode}
 %
 % |\jsLetHeadChar| をUTF-8バイト列に対応させる。
@@ -9986,7 +9986,7 @@
 % \subsection{{\pdfTeX}用設定： CJK + bxcjkjatype}
 %
 %    \begin{macrocode}
-\else\if p\jsEngine
+\else\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
 %    \end{macrocode}
 %
 % \paragraph{bxcjkjatypeパッケージの読込}
