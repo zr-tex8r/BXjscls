@@ -8184,9 +8184,11 @@
 % \end{macro}
 %
 % \begin{macro}{\jayear}
-% 和暦における年の表記（元号+年数）。
+% 和暦における年の表記の「年」以前の部分（元号+年数）。
+% \Note |\heisei| の代替となる機能（だから常に和暦を扱う）。
 % \begin{macro}{\heisei}
 % 年数を表す整数レジスタで、元号が「平成」である場合にのみ定義される。
+% \Note JSクラスと互換の機能。
 %    \begin{macrocode}
 \ifbxjs@bxwareki@avail
   \let\jayear\warekiyear
@@ -8194,7 +8196,7 @@
     \newcount\heisei \heisei=\value{warekiyear}
   \fi
 %    \end{macrocode}
-% |bxwareki| が使えない場合は西暦表示にする。
+% ただし |bxwareki| が使えない場合は西暦表示にフォールバックする。
 %    \begin{macrocode}
 \else
   \edef\jayear{\the\year \bxjs@iai}
@@ -10886,12 +10888,27 @@
 %^^A----------------
 % \subsection{lang変数}
 % |lang=ja| という言語指定が行われると、
-% Pandocはこれに対応していないため
-% 不完全なBabelやPolyglossiaの設定を出力してしまう。
-% これを防ぐための対策を行う。
-% \Note Pandoc 2.12版で |lang=ja| 指定に対応し、
-% 正しく{\LaTeX}側の言語名 |japanese| に変換されるようになった。
-% しかし、日本語指定の場合は相変わらず調整処理が必要である。
+% 2.12版より前のPandocはこれに対応していなかったため
+% 不完全なBabelやPolyglossiaの設定を出力してしまっていた。
+% 現在では |lang=ja| 指定について
+% 正しく{\LaTeX}側の言語名 |japanese| に変換されるようになっているが、
+% それでも日本語指定の場合は相変わらず調整処理が必要である。
+% \Note そもそもBXJSクラスは日本語用の文書クラスであるため、
+% もし言語設定が行われているのであれば
+% 「メイン言語は日本語である」であるはずなので、
+% 「サブ言語が日本語である」ことは考慮しない。
+%
+% \paragraph{Polyglossiaについて}
+% 現在CTANに登録されている日本語用のglossファイルは超絶アレでかつ
+% 有害な設定を行うため、これの読込を避ける必要がある。
+% そのため、メイン言語が |japanese| である場合
+% （古いPandocではこの場合に引数が空の |\setmainlanguage{}| が
+% 実行されるがこのパターンも同様に扱う）
+% には、Polyglossiaの処理を無効化してしまうことにする。
+% つまり、Polyglossiaが提供する命令について、何もしないダミーの
+% 定義を与える。
+% \Note Polyglossiaは古いPandocのテンプレートにおいて、
+% エンジンが{\XeTeX}か{\LuaTeX}の場合に利用されていた。
 %
 % \begin{macro}{\bxjs@polyglossia@options}
 % Polyglossiaのオプション列のテキスト。
@@ -10901,16 +10918,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\bxjs@babel@options}
-% Babelのオプション列のテキスト。
-% “実際には読み込まれていない”場合は |\relax| になる。
-%    \begin{macrocode}
-\let\bxjs@babel@options\relax
-%    \end{macrocode}
-% \end{macro}
-%
-% \paragraph{Polyglossiaについて}
-% つまり{\XeTeX}および{\LuaTeX}（古いPandocで）の場合。
+% エンジンが{\XeTeX}か{\LuaTeX}の場合が対象になる。
 % \Note この場合 |etoolbox| が使用可能になっている。
 %    \begin{macrocode}
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
@@ -10930,13 +10938,12 @@
 % |polyglossia| の読込が指示された場合、
 % 直後に |\setmainlanguage| が実行されることを想定して、
 % フック用の |\setmainlanguage| を定義する。
-% \Note 先に |\setmainlanguage| 以外が実行された場合はエラーになる。
+% \Note 最初に |\setmainlanguage| 以外が実行された場合はエラーになる。
 %    \begin{macrocode}
   \newcommand*\setmainlanguage[2][]{%
 %    \end{macrocode}
-% もし、言語名が空の |\setmainlanguage{}| が実行された場合は、
-% |lang=ja| が指定されたと見なす。
-% 言語名が |japanese| だった場合も同様。
+% もし、|\setmainlanguage| の引数が空または |japanese| だった
+% 場合はメインが日本語である（|lang=ja| 指定）と見なす。
 %    \begin{macrocode}
     \ifboolexpr{test{\ifblank{##2}}or test{\ifstrequal{##2}{japanese}}}{%
       \ClassWarning\bxjs@clsname
@@ -10961,7 +10968,7 @@
 %
 % プレアンブルで |polyglossia| の読込が指示されなかった場合、
 % Polyglossiaと連携するパッケージの誤動作を防ぐため、
-% 読込済マークを外す。
+% （|\AtEndPreamble| において）読込済マークを外す。
 %    \begin{macrocode}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@polyglossia@options\relax
@@ -10972,10 +10979,10 @@
 % \begin{macro}{\bxjs@pandoc@polyglossia@ja}
 % Pandoc側で |lang=ja| が指定されていた場合の処理。
 % この場合はPolyglossiaの処理を無効化するためにダミーの定義を行う。
-% その時点でダミーの |\setotherlanguage(s)| を定義する。
-% \Note 現在ではPolyglossiaの日本語用の定義ファイル
-% （|gloss-japanese.ldf|）が存在するので、本来なら普通に処理できる
-% はずであるが、現状の定義ファイルはアレなので回避したい。
+% すなわち、サブ言語 |xxx| の各々について、|xxx| 環境と |\textxxx|
+% 命令を（特に何も加工しないものとして）定義する。
+% この目的のため、|\setotherlanguage(s)| をダミーを定義する
+% 命令として定義する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@pandoc@polyglossia@ja
 \def\bxjs@pandoc@polyglossia@ja{%
@@ -10999,10 +11006,18 @@
 %    \end{macrocode}
 %
 % \paragraph{Babelについて}
-% {\XeTeX}以外の場合。
-% \Note Pandoc 2.15版から、テンプレートで用いられる多言語パッケージが
-% Babelに統一された。
-% （{\LuaTeX}は2.6版でPolyglossiaからBabelに変更されている。）
+% 現在のPandocでは、テンプレートで用いられる多言語パッケージとして
+% エンジンの種別によらずにBabelが使われる。
+% \Note {\XeTeX}では2.15版で、{\LuaTeX}は2.6版で
+% PolyglossiaからBabelに変更されている。
+%
+% \begin{macro}{\bxjs@babel@options}
+% Babelのオプション列のテキスト。
+% “実際には読み込まれていない”場合は |\relax| になる。
+%    \begin{macrocode}
+\let\bxjs@babel@options\relax
+%    \end{macrocode}
+% \end{macro}
 %
 % パッケージの読込を検知するため読込済のマークを付けて
 % duploadの処理を仕込む。
