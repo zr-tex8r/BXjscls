@@ -101,6 +101,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.7a 〈2022/04/10〉
   * Version 2.7  〈2022/03/30〉
   * Version 2.6  〈2022/03/20〉
       - Support LaTeX kernel 2021/11/15.

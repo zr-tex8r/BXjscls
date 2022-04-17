@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2022/03/30 v2.7  BXJS document classes]
+  [2022/04/10 v2.7a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -450,7 +450,7 @@
       \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
     \fi}
 \fi
-\else\if p\jsEngine
+\else\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
 \bxjs@adjust@jafont{f}
 \let\bxjs@jafont@paren\@firstofone
 \bxjs@resolve@jafont@paren\bxjs@tmpa

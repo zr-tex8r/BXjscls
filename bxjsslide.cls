@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2022/03/30 v2.7  BXJS document classes]
+  [2022/04/10 v2.7a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -166,8 +166,9 @@
     \fi
   \fi}
   \def\bxjs@unit@Q{0.25mm}\let\bxjs@unit@H\bxjs@unit@Q
+\newif\ifbxjs@after@preamble
 \@onlypreamble\bxjs@begin@document@hook
-\let\bxjs@begin@document@hook\@empty
+\def\bxjs@begin@document@hook{\bxjs@after@preambletrue}
 \AtBeginDocument{\bxjs@begin@document@hook}
 \@onlypreamble\bxjs@post@option@hook
 \let\bxjs@post@option@hook\@empty
@@ -463,6 +464,9 @@
 \DeclareOption{nodvidriver}{%
   \def\bxjs@driver@opt{nodvidriver}%
   \let\bxjs@driver@given\bxjs@driver@@none}
+\DeclareOption{nodvidriver*}{%
+  \def\bxjs@driver@opt{nodvidriver*}%
+  \let\bxjs@driver@given\bxjs@driver@@none}
 \DeclareOption{pdftex}{%
   \def\bxjs@driver@opt{pdftex}%
   \let\bxjs@driver@given\bxjs@driver@@pdfmode}
@@ -602,6 +606,7 @@
 \let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@nodvidriver=\bxjs@driver@@none
+\bxjs@cslet{bxjs@dvidriver@@nodvidriver*}\bxjs@driver@@none
 \define@key{bxjs}{dvi}{%
   \bxjs@csletcs{bxjs@tmpa}{bxjs@dvidriver@@#1}%
   \ifx\bxjs@tmpa\relax
@@ -1301,6 +1306,12 @@
   \fi\fi}
 \let\pltx@cleartorightpage\pltx@cleartooddpage
 \let\pltx@cleartoleftpage\pltx@cleartoevenpage
+\ifdim\vsize=\z@
+\begingroup
+\toks@\expandafter{\clearpage}
+\xdef\clearpage{\noexpand\ifbxjs@after@preamble\the\toks@\noexpand\fi}
+\endgroup
+\fi
 \def\ps@plainfoot{%
   \let\@mkboth\@gobbletwo
   \let\@oddhead\@empty

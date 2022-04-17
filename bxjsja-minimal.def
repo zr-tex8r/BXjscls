@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2022/03/30 v2.7  BXJS document classes]
+  [2022/04/10 v2.7a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
@@ -272,7 +272,7 @@
 \fi
 \endgroup
 \@namedef{ver@minijs.sty}{}
-\else\ifx p\jsEngine
+\else\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
 \let\bxjs@let@hchar@chr\bxjs@let@hchar@chr@ue
 \@onlypreamble\bxjs@cjk@loaded
 \def\bxjs@cjk@loaded{%
