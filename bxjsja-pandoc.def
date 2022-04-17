@@ -121,7 +121,6 @@
     \bxjs@next{#3}}%
   \@firstoftwo}
 \let\bxjs@polyglossia@options\relax
-\let\bxjs@babel@options\relax
 \ifnum0\if x\jsEngine1\fi\if l\jsEngine1\fi>0
 \pandocSkipLoadPackage{polyglossia}
 \bxjs@set@dupload@proc{polyglossia.sty}{%
@@ -161,6 +160,7 @@
       \setotherlangauge{\bxjs@tmpa}}}%
   \let\bxjs@polyglossia@options\relax}%
 \fi
+\let\bxjs@babel@options\relax
 \pandocSkipLoadPackage{babel}
 \bxjs@set@dupload@proc{babel.sty}{%
   \bxjs@unset@dupload@proc{babel.sty}%
@@ -168,39 +168,52 @@
    {Package babel is requested}%
   \@tempswafalse \let\bxjs@babel@options\@empty
   \def\bxjs@tmpb{main=}%
-  \def\bxjs@next{main=japanese}%
   \@for\bxjs@tmpa:=#1\do{%
-    \ifx\bxjs@tmpa\bxjs@tmpb \@tempswatrue
-    \else\ifx\bxjs@tmpa\bxjs@next \@tempswatrue
-    \else \edef\bxjs@babel@options{\bxjs@babel@options,\bxjs@tmpa}%
-    \fi\fi}%
-  \if@tempswa
-    \ClassWarning\bxjs@clsname
-     {Main language is 'japanese', thus fallback\MessageBreak
-      definitions will be employed}%
-    \bxjs@pandoc@babel@ja
-  \else
-    \ClassWarning\bxjs@clsname
-     {Main language is not 'japanese',\MessageBreak
-      thus babel will be loaded}%
-    \bxjs@cslet{ver@babel.sty}\@undefined
-    \RequirePackage[#1]{babel}[]%
-  \fi}
+    \ifx\bxjs@tmpa\bxjs@tmpb \def\bxjs@tmpa{main=japanese}\fi
+    \edef\bxjs@babel@options{\bxjs@babel@options,\bxjs@tmpa}}%
+  \bxjs@cslet{ver@babel.sty}\@undefined
+  \edef\bxjs@next{%
+    \noexpand\RequirePackage[\bxjs@babel@options]{babel}\relax
+  }\bxjs@next
+  \RequirePackage{bxorigcapt}\relax}
 \g@addto@macro\bxjs@endpreamble@hook{%
   \ifx\bxjs@babel@options\relax
     \bxjs@cslet{ver@babel.sty}\@undefined
   \fi}
-\@onlypreamble\bxjs@pandoc@babel@ja
-\def\bxjs@pandoc@babel@ja{%
-  \bxjs@cslet{ver@babel.sty}\@undefined
-  \edef\bxjs@next{%
-    \noexpand\RequirePackage[\bxjs@babel@options,english]{babel}[]%
-  }\bxjs@next
-  \if j\jsEngine
-    \RequirePackage[main=japanese]{pxbabel}[]%
-  \else
-    \RequirePackage{bxorigcapt}[]%
+\ifjsWitheTeX
+\AtBeginOfFile{japanese.ldf}{\bxjs@begin@japanese@ldf@hook}
+\def\bxjs@begin@japanese@ldf@hook{%
+  \let\bxjs@begin@japanese@ldf@hook\relax
+  \let\bxjs@save@ProvidesLanguage\ProvidesLanguage
+  \let\bxjs@save@LdfInit\LdfInit
+  \def\ProvidesLanguage##1[##2]{\bxjs@do@japanese@ldf{##2}}%
+  \def\LdfInit##1##2{\bxjs@do@japanese@ldf{0000/00/00}}}
+\def\bxjs@do@japanese@ldf#1{\bxjs@do@japanese@ldf@a#1\@nil}
+\def\bxjs@do@japanese@ldf@a#1/#2/#3#4#5\@nil{%
+  \let\LdfInit\bxjs@save@LdfInit
+  \ClassInfo\bxjs@clsname
+   {Release date of japanese.ldf is:\MessageBreak
+    \@spaces #1/#2/#3#4\@gobble}%
+  \ifnum#1#2#3#4<20201206 % v3.0
+    \let\bxjs@japanese@ldf@skipped=t\csuse{endinput}%
   \fi}
+\AtEndOfFile{japanese.ldf}{\bxjs@end@japanese@ldf@hook}
+\def\bxjs@end@japanese@ldf@hook{%
+  \let\bxjs@end@japanese@ldf@hook\relax
+  \let\ProvidesLanguage\bxjs@save@ProvidesLanguage
+  \let\LdfInit\bxjs@save@LdfInit
+  \ifx t\bxjs@japanese@ldf@skipped
+    \ClassWarningNoLine\bxjs@clsname
+     {Loading japanese.ldf is skipped}%
+    \ifundef\l@japanese{\chardef\l@japanese\z@}{}%
+    \let\datejapanese\@empty\let\captionsjapanese\@empty
+    \let\extrasjapanese\@empty\let\noextrasjapanese\@empty
+    \main@language{japanese}%
+  \fi}
+\g@addto@macro\bxjs@begin@document@hook{%
+  \let\bxjs@begin@japanese@ldf@hook\relax
+  \let\bxjs@end@japanese@ldf@hook\relax}
+\fi
 \bxjs@set@dupload@proc{geometry.sty}{%
   \setpagelayout*{#1}}
 \if l\jsEngine
