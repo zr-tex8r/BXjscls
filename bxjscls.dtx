@@ -481,23 +481,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\ifjsInPdfMode}
-% 〔スイッチ〕
-% {\pdfTeX}／{\LuaTeX}がPDFモードで動作しているか。
-% \Note {\LuaTeX} 0.8x版でのプリミティブ名変更に対応。
-% \TODO |iftex| パッケージ（＋自前実装）に置き換える。
-%    \begin{macrocode}
-\newif\ifjsInPdfMode
-\@nameuse{ImposeOldLuaTeXBehavior}
-\let\bxjs@tmpa\PackageWarningNoLine
-\let\PackageWarningNoLine\PackageInfo % suppress warning
-\RequirePackage{ifpdf}
-\let\PackageWarningNoLine\bxjs@tmpa
-\@nameuse{RevokeOldLuaTeXBehavior}
-\let\ifjsInPdfMode\ifpdf
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\ifbxjs@explIII}
 % 〔スイッチ〕
 % expl3がカーネルに組み込まれているか。
@@ -575,6 +558,20 @@
 %    \begin{macrocode}
 \def\bxjs@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifjsInPdfMode}
+% 〔スイッチ〕
+% {\pdfTeX}／{\LuaTeX}がPDFモードで動作しているか。
+%    \begin{macrocode}
+\RequirePackage{iftex}
+\newif\ifjsInPdfMode
+\@nameuse{jsInPdfMode\ifnum0%
+  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
+  \ifx\outputmode\@undefined\else\the\outputmode\fi
+  >0 true\else false \fi}
+\ifx\pdffalse\@undefined\else \bxjs@csletcs{ifjsInPdfMode}{ifpdf}\fi
 %    \end{macrocode}
 % \end{macro}
 %
