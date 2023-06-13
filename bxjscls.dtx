@@ -2131,6 +2131,7 @@
 % 〔スイッチ〕 |plautopatch| の指定値。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{plautopatch}{plautopatch}{false}
+\g@addto@macro\bxjs@plautopatchtrue{\let\bxjs@plautopatch@given\@undefined}
 \g@addto@macro\bxjs@plautopatchfalse{\def\bxjs@plautopatch@given{false}}
 %    \end{macrocode}
 % \end{macro}
@@ -2386,6 +2387,14 @@
 %    \end{macrocode}
 %
 % \paragraph{その他のBXJS特有の後処理 \ZRX}
+%
+% |\documentclass| より前に |plautopatch| パッケージが読み込まれて
+% いる場合は |bxjs@plautopatch| を真にする。
+%    \begin{macrocode}
+\@ifpackageloaded{plautopatch}{%
+  \bxjs@plautopatchtrue
+}{}
+%    \end{macrocode}
 %
 % 標準の和文ドライバの名前の定数。
 %    \begin{macrocode}
