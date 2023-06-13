@@ -4772,6 +4772,7 @@
 % |\subtitle| の定義を |\title| の実行まで遅延させることにする。
 % もしどうしても主題より前に副題を設定したい場合は、
 % |\jsSubtitle| 命令を直接用いればよい。
+% \TODO |\subtitle| の遅延処理はPandocモードに移す。
 % 
 % 本体を |\jsSubtitle| として定義する。
 %    \begin{macrocode}
@@ -11384,6 +11385,8 @@
 % \subsection{hyperref対策}
 %
 % |hyperref| の |unicode| オプションの固定を行う。
+% \TODO |hyperref| の開発状況を鑑みる限り、|unicode| オプションの固定処理
+% は“危険”だと思われるので、可能ならば廃止したい。
 %    \begin{macrocode}
 \if j\jsEngine
   \bxjs@fix@hyperref@unicode{false}
