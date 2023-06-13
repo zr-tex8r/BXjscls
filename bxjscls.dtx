@@ -9757,6 +9757,8 @@
 % \begin{macro}{\jsCheckHyperrefUnicode}
 % 「|hyperref| の |unicode| オプションの値を検証する」ための
 % 本体開始時のフック。
+% \Note |pxjahyper-uni.def| はこのフックを |\relax| に上書きする
+% ことで検証を無効化している。
 %    \begin{macrocode}
 \@onlypreamble\jsCheckHyperrefUnicode
 \let\jsCheckHyperrefUnicode\@empty
@@ -9968,19 +9970,85 @@
 %    \end{macrocode}
 %
 % \paragraph{hyperref対策}
+% |hyperref| の |unicode| オプションに対する調整を行う。
+% \Note |pxjahyper| パッケージの「|unicode| 対応」サポートの履歴：
+% \begin{itemize}
+% \item 0.7版[2021-02-13]：{\upLaTeX}上に限り|unicode|対応。
+% \item 0.9c版[2021-06-06]：|pxjahyper-uni.def| ファイルを追加。
+% \item 1.0版[2022-04-01]：{\pLaTeX}上の|unicode|対応を試験的サポート。
+% \item 1.3版[2023-03-01]：{\pLaTeX}上の|unicode|対応を正式サポート。
+% \end{itemize}
 %
-% |unicode| にしてはいけない。
 %    \begin{macrocode}
 \ifbxjs@hyperref@enc
+%    \end{macrocode}
+% |unicode| オプションが偽であることを検証する。
+% ただし、|pxjahyper| パッケージまたは |pxjahyper-uni.def| が読み込まれて
+% （前提条件を満たしていて）「|unicode| 対応」が行われた場合は
+% 検証は無効化される。
+%    \begin{macrocode}
   \bxjs@check@hyperref@unicode{false}
 %    \end{macrocode}
-% 暫定的なナニカ。
+% |\bxjs@plautopatch@new| は「|pxjahyper| の自動読込に対応した
+% 版の |plautopatch| が読み込まれているか」のフラグ。
 %    \begin{macrocode}
-  \ifjsWithupTeX\ifbxjs@old@hook@system\else
-    \IfFileExists{pxjahyper-uni.def}{%
-      \AddToHook{\bxjs@CGHN{package/hyperref/after}}{\input{pxjahyper-uni.def}}
-    }{}
-  \fi\fi
+  \@ifpackagelater{plautopatch}{2020/05/25}{% v0.9g
+    \let\bxjs@plautopatch@new=t}{}
+%    \end{macrocode}
+% 「|unicode| を有効にできるか」を判定する。
+% まず必要条件として
+% 「|pxjahyper-uni.def| が存在すること」
+% 「|\bxjs@plautopatch@new| が真、または、ファイルフックが利用可能
+% であること」
+% を検査する。
+% \Note |pxjahyper-uni.def| をもつ |pxjahyper| の版であれば、
+% {\upLaTeX}上の |unicode| には対応していることに注意。
+%    \begin{macrocode}
+  \let\bxjs@avail@hy@unicode=f
+  \if \ifx t\bxjs@plautopatch@new T%
+      \else\ifbxjs@old@hook@system F\else T\fi\fi T%
+    \IfFileExists{pxjahyper-uni.def}{\let\bxjs@avail@hy@unicode=t}{}
+  \fi
+  \if t\bxjs@avail@hy@unicode
+    \ifjsWithupTeX
+%    \end{macrocode}
+% 必要条件が満たされていて、かつ{\upLaTeX}である場合の処理。
+% もしファイルフックが利用可能ならば、|hyperref| が読み込まれた場合に
+% その直後に |pxjahyper-uni.def| が読まれるようにする。
+% \Note そうでないなら、前提条件より |pxjahyper| が読み込まれるはず
+% なので何もしなくてよい。
+%    \begin{macrocode}
+      \ifbxjs@old@hook@system\else
+        \AddToHook{\bxjs@CGHN{package/hyperref/after}}{%
+          \input{pxjahyper-uni.def}}
+      \fi
+    \else
+%    \end{macrocode}
+% 必要条件が満たされていて、かつ{\pLaTeX}である場合の処理。
+% |pxjahyper| が
+% 「{\pLaTeX}上の |unicode| 対応をもつほど新しい版（1.3版以降）」
+% であるかを判定する方法はない。
+% しかし、新しい{\LaTeX}システムで |unicode| を無効にするのは
+% 避けたいので、{\LaTeX}カーネルが2023-06-01以降である場合に
+% |pxjahyper| も十分に新しいと推定することにする。
+% すなわち「|pxjahyper| が読み込まれるはず」かつ
+% 「{\LaTeX}がカーネルが新しい」かを判定する。
+%    \begin{macrocode}
+      \let\bxjs@avail@hy@unicode=f
+      \ifx t\bxjs@plautopatch@new
+        \@ifl@t@r\fmtversion{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
+      \fi
+    \fi
+  \fi
+%    \end{macrocode}
+% この時点で「|unicode| を有効にできるか」の判定結果が
+% フラグ |\bxjs@avail@hy@unicode| に入っている。
+% |unicode| を有効にできない場合は |unicode| の既定値を
+% 偽に設定する。
+%    \begin{macrocode}
+  \if f\bxjs@avail@hy@unicode
+    \PassOptionsToPackage{unicode=false}{hyperref}
+  \fi
 \fi
 %    \end{macrocode}
 %
