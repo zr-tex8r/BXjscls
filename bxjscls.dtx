@@ -339,7 +339,7 @@
 %    \end{macrocode}
 % クラスの本体ではこの他に以下のパッケージが読み込まれる。
 % \begin{quote}
-%   |geometry|、|ifpdf|
+%   |geometry|、|iftex|
 % \end{quote}
 % また状況によっては以下のパッケージが読み込まれる可能性がある。
 % \begin{quote}
@@ -570,7 +570,7 @@
 \@nameuse{jsInPdfMode\ifnum0%
   \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
   \ifx\outputmode\@undefined\else\the\outputmode\fi
-  >0 true\else false \fi}
+  >0 true\else false\fi}
 \ifx\pdffalse\@undefined\else \bxjs@csletcs{ifjsInPdfMode}{ifpdf}\fi
 %    \end{macrocode}
 % \end{macro}
@@ -2409,7 +2409,7 @@
 %
 % |plautopatch| が真の場合はここで |plautopatch| を読み込む。
 % \Note この時点で既に読み込まれているパッケージは、
-% |calc|、|keyval|、|ifpdf|。
+% |calc|、|keyval|、|iftex|。
 % \Note Pandocモードでは |plautopatch| の既定値を真とする。
 %    \begin{macrocode}
 \ifx\bxjs@jadriver\bxjs@@pandoc \ifx\bxjs@plautopatch@given\@undefined
@@ -10816,7 +10816,7 @@
 \let\bxjs@kv@orblockheading@true\bxjs@jp@or@block@headingtrue
 \let\bxjs@kv@orblockheading@false\bxjs@jp@or@block@headingfalse
 \define@key{bxjsPan}{or-block-heading}[true]{%
-  \bxjs@set@keyval{blockheading}{#1}{}}
+  \bxjs@set@keyval{orblockheading}{#1}{}}
 %    \end{macrocode}
 %
 % 実際の |japaram| の値を適用する。
@@ -11105,7 +11105,6 @@
   \let\bxjs@end@japanese@ldf@hook\relax}
 \fi
 %    \end{macrocode}
-% \end{macro}
 %
 % lang対策はこれで終わり。
 %
