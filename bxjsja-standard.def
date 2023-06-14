@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2022/04/10 v2.7a BXJS document classes]
+  [2023/06/14 v2.8  BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -405,11 +405,29 @@
 \bxjs@g@tmpa
 \ifbxjs@hyperref@enc
   \bxjs@check@hyperref@unicode{false}
-  \ifjsWithupTeX\ifbxjs@old@hook@system\else
-    \IfFileExists{pxjahyper-uni.def}{%
-      \AddToHook{\bxjs@CGHN{package/hyperref/after}}{\input{pxjahyper-uni.def}}
-    }{}
-  \fi\fi
+  \@ifpackagelater{plautopatch}{2020/05/25}{% v0.9g
+    \let\bxjs@plautopatch@new=t}{}
+  \let\bxjs@avail@hy@unicode=f
+  \if \ifx t\bxjs@plautopatch@new T%
+      \else\ifbxjs@old@hook@system F\else T\fi\fi T%
+    \IfFileExists{pxjahyper-uni.def}{\let\bxjs@avail@hy@unicode=t}{}
+  \fi
+  \if t\bxjs@avail@hy@unicode
+    \ifjsWithupTeX
+      \ifbxjs@old@hook@system\else
+        \AddToHook{\bxjs@CGHN{package/hyperref/after}}{%
+          \input{pxjahyper-uni.def}}
+      \fi
+    \else
+      \let\bxjs@avail@hy@unicode=f
+      \ifx t\bxjs@plautopatch@new
+        \@ifl@t@r\fmtversion{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
+      \fi
+    \fi
+  \fi
+  \if f\bxjs@avail@hy@unicode
+    \PassOptionsToPackage{unicode=false}{hyperref}
+  \fi
 \fi
 \if \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx T%
     \else\ifjsWithpTeXng T\else F\fi\fi T%

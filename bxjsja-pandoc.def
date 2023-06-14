@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2022/04/10 v2.7a BXJS document classes]
+  [2023/06/14 v2.8  BXJS document classes]
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \ifjsWitheTeX\else
@@ -84,7 +84,7 @@
 \let\bxjs@kv@orblockheading@true\bxjs@jp@or@block@headingtrue
 \let\bxjs@kv@orblockheading@false\bxjs@jp@or@block@headingfalse
 \define@key{bxjsPan}{or-block-heading}[true]{%
-  \bxjs@set@keyval{blockheading}{#1}{}}
+  \bxjs@set@keyval{orblockheading}{#1}{}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsPan}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
 \@onlypreamble\bxjs@set@dupload@proc

@@ -21,7 +21,7 @@ packages that provide capability of Japanese typesetting.
   * Prerequisite packages:
       - calc
       - geometry v5.0+
-      - ifpdf
+      - iftex
       - keyval
   * Packages required on occasion:
       - bxwareki: when the wareki feature is used
@@ -43,7 +43,6 @@ packages that provide capability of Japanese typesetting.
           + bxorigcapt: if use Babel
           + etoolbox v2.0+
           + filehook v0.5d+
-          + iftex
           + pdftexcmds v0.5+
           + pxbabel: if use (u)pLaTeX and Babel
   * When you use ja-drivers other than standard, you generally need
@@ -101,6 +100,8 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.8  〈2023/06/14〉
+      - Sync with jsclasses 2023/02/23.
   * Version 2.7a 〈2022/04/10〉
   * Version 2.7  〈2022/03/30〉
   * Version 2.6  〈2022/03/20〉

@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2022/04/10 v2.7a BXJS document classes]
+  [2023/06/14 v2.8  BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsarticle}
 \newif\ifjsc@needsp@tch
@@ -80,14 +80,6 @@
 \else
   \def\bxjs@robust@def{\DeclareRobustCommand*}
 \fi
-\newif\ifjsInPdfMode
-\@nameuse{ImposeOldLuaTeXBehavior}
-\let\bxjs@tmpa\PackageWarningNoLine
-\let\PackageWarningNoLine\PackageInfo % suppress warning
-\RequirePackage{ifpdf}
-\let\PackageWarningNoLine\bxjs@tmpa
-\@nameuse{RevokeOldLuaTeXBehavior}
-\let\ifjsInPdfMode\ifpdf
 \newif\ifbxjs@explIII
 \@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
 \newif\ifbxjs@TUenc
@@ -110,6 +102,13 @@
   \expandafter\let\csname#1\endcsname}
 \def\bxjs@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
+\RequirePackage{iftex}
+\newif\ifjsInPdfMode
+\@nameuse{jsInPdfMode\ifnum0%
+  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
+  \ifx\outputmode\@undefined\else\the\outputmode\fi
+  >0 true\else false\fi}
+\ifx\pdffalse\@undefined\else \bxjs@csletcs{ifjsInPdfMode}{ifpdf}\fi
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
 \def\bxjs@ifplus#1{\@ifnextchar+{\@firstoftwo{#1}}}
@@ -317,6 +316,7 @@
 \def\eqnarray{%
    \stepcounter{equation}%
    \def\@currentlabel{\p@equation\theequation}%
+   \def\@currentcounter{equation}%
    \global\@eqnswtrue
    \m@th
    \global\@eqcnt\z@
@@ -334,6 +334,7 @@
   \def\eqnarray{%
     \stepcounter{equation}%
     \def\@currentlabel{\p@equation\theequation}%
+    \def\@currentcounter{equation}%
     \global\@eqnswtrue\m@th
     \global\@eqcnt\z@
     \tabskip\mathindent
@@ -660,6 +661,7 @@
 \DeclareOption{nosimplejasetup}{\bxjs@depre@opt@do{nosimplejasetup}{simple-ja-setup=false}}
 \DeclareOption{simplejasetup}{\bxjs@depre@opt@do{simplejasetup}{simple-ja-setup=true}}
 \bxjs@declare@bool@option{plautopatch}{plautopatch}{false}
+\g@addto@macro\bxjs@plautopatchtrue{\let\bxjs@plautopatch@given\@undefined}
 \g@addto@macro\bxjs@plautopatchfalse{\def\bxjs@plautopatch@given{false}}
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
@@ -789,6 +791,9 @@
 \ifx\bxjs@driver@given\bxjs@driver@@none
   \bxjs@papersizefalse
 \fi
+\@ifpackageloaded{plautopatch}{%
+  \bxjs@plautopatchtrue
+}{}
 \def\bxjs@@minimal{minimal}
 \def\bxjs@@standard{standard}
 \def\bxjs@@pandoc{pandoc}
@@ -861,7 +866,8 @@
 \ifbxjs@oldfontcommands
   \AtEndOfClass{\allowoldfontcommands}
 \fi
-\newdimen\stockwidth \newdimen\stockheight
+\ifx\stockwidth\@undefined\newdimen\stockwidth\fi
+\ifx\stockheight\@undefined\newdimen\stockheight\fi
 \begingroup\expandafter\expandafter\expandafter\endgroup
 \expandafter\ifx\csname iftombow\expandafter\endcsname\csname iftrue\endcsname
   \setlength{\stockwidth}{\paperwidth}
@@ -2193,6 +2199,7 @@
     \splittopskip\footnotesep
     \splitmaxdepth \dp\strutbox \floatingpenalty \@MM
     \hsize\columnwidth \@parboxrestore
+    \def\@currentcounter{footnote}%
     \protected@edef\@currentlabel{%
        \csname p@footnote\endcsname\@thefnmark
     }%

@@ -21,7 +21,7 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
   * 必須パッケージ：
       - calc
       - geometry v5.0以降
-      - ifpdf
+      - iftex
       - keyval
   * 場合により必須となるパッケージ：
       - bxwareki： 日付の和暦表示機能を使う場合
@@ -43,7 +43,6 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
           + bxorigcapt： Babel 使用時
           + etoolbox v2.0以降： e-TeX なら
           + filehook v0.5d以降： e-TeX なら
-          + iftex
           + pdftexcmds v0.5以降
           + pxbabel： (u)pLaTeX かつ Babel 使用時
   * エンジンが (u)pTeX 以外で、かつ和文ドライバが standard 以外の場合、
@@ -111,6 +110,9 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.8  〈2023/06/14〉
+      - jsclasses の 2023/02/23 と同期。
+      - hyperref の unicode 設定に対する調整処理の見直し。
   * Version 2.7a 〈2022/04/10〉
       - (試験的) `nodvidriver*` オプションを追加。
   * Version 2.7  〈2022/03/30〉
