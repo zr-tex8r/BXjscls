@@ -3728,13 +3728,14 @@
 % \Note |geometry| のbegin-documentフックにおいて、{\LuaTeX}の
 % 旧版互換を有効にする。
 %    \begin{macrocode}
-\bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
-\bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{%
+  \bxjs@bd@pre@geometry@hook
+  \@nameuse{ImposeOldLuaTeXBehavior}}
 \bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\bxjs@apply@bd@pre@geometry@hook{\RevokeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{\@nameuse{RevokeOldLuaTeXBehavior}}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjs@geometry@driver}
