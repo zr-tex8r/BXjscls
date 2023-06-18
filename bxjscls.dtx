@@ -7536,10 +7536,14 @@
 % それより後に実行されるため捕捉できない。
 % これに対処するため、|\end{document}| 中に実行される |\clearpage| の処理の
 % 直後に |\bxjs....final| が呼ばれるようにする。
+% \Note 新しい{\LaTeX}ではフックシステムの機能を利用する。
 %    \begin{macrocode}
-\def\bxjs@warnoldfontcmd@kick@final{%
-  \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
-\AtEndDocument{\bxjs@warnoldfontcmd@kick@final}
+\ifbxjs@old@hook@system
+  \AtEndDocument{%
+    \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
+\else
+  \AddToHook{enddocument/afterlastpage}{\bxjs@warnoldfontcmd@final}
+\fi
 %    \end{macrocode}
 %
 % \end{ZRnote}
