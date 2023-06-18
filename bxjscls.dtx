@@ -349,45 +349,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \paragraph{依存パッケージ読込 \ZRX}
-% \mbox{}
-% \TODO 環境検査の後に移動する。
-%
-% \begin{ZRnote}
-% 長さ値の指定で式を利用可能にするため |calc| を読み込む。
-%    \begin{macrocode}
-\RequirePackage{calc}
-%    \end{macrocode}
-% クラスオプションでkey-value形式を使用するため |keyval| を読み込む。
-%    \begin{macrocode}
-\RequirePackage{keyval}
-%    \end{macrocode}
-% クラスの本体ではこの他に以下のパッケージが読み込まれる。
-% \begin{quote}
-%   |geometry|、|iftex|
-% \end{quote}
-% また状況によっては以下のパッケージが読み込まれる可能性がある。
-% \begin{quote}
-%   |bxwareki|、|jslogo|、|plautopatch|、|type1cm|
-% \end{quote}
-% \Note 和文ドライバがさらにパッケージを読み込むこともある。
-%
-% \begin{macro}{\jsAtEndOfClass}
-% このクラスの読込終了時に対するフック。
-% （補助パッケージ中で用いられる。）
-%    \begin{macrocode}
-\def\jsAtEndOfClass{%
-  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
-%    \end{macrocode}
-% \end{macro}
-%
-% 互換性のための補助パッケージを読み込む。
-%    \begin{macrocode}
-\IfFileExists{bxjscompat.sty}{%
-  \RequirePackage{bxjscompat}%
-}{}
-%    \end{macrocode}
-%
 % \paragraph{環境検査 \ZRX}
 % \mbox{}
 %
@@ -411,6 +372,18 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@test@engine}
+% |\bxjs@test@engine\制御綴{|\Meta{コード}|}|\Means
+% |\制御綴| の意味が同名のプリミティブである場合にのみ
+% \Meta{コード}を実行する。
+%    \begin{macrocode}
+\def\bxjs@test@engine#1#2{%
+  \edef\bxjs@tmpa{\string#1}%
+  \edef\bxjs@tmpb{\meaning#1}%
+  \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
 % エンジン（{\TeX}の種類）の種別\Means
@@ -424,10 +397,6 @@
 %
 %    \begin{macrocode}
 \let\jsEngine=n
-\def\bxjs@test@engine#1#2{%
-  \edef\bxjs@tmpa{\string#1}%
-  \edef\bxjs@tmpb{\meaning#1}%
-  \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
 \bxjs@test@engine\kanjiskip{\let\jsEngine=j}
 \bxjs@test@engine\jintercharskip{\let\jsEngine=J}
 \bxjs@test@engine\Omegaversion{\let\jsEngine=O}
@@ -436,6 +405,73 @@
 \bxjs@test@engine\luatexversion{\let\jsEngine=l}
 %    \end{macrocode}
 % \end{macro}
+%
+% 非サポートのエンジンの場合は強制終了させる。
+% \Note NTT j{\TeX}とOmega系。
+%    \begin{macrocode}
+\let\bxjs@tmpa\relax
+\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
+\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
+\ifx\bxjs@tmpa\relax \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use (\bxjs@tmpa) is not supported}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+%    \end{macrocode}
+%
+% 現状での処理系バージョン要件は以下の通りである
+% （{\XeTeX}のみの設定で、しかも現実離れしている）。
+% \begin{itemize}
+% \item \XeTeX\Means 0.997版（2007年）以上
+% \end{itemize}
+% \TODO 以下で3.0版での予定について述べておく。
+%
+% 3.0版での処理系バージョン要件は以下の通りである。
+% \begin{itemize}
+% \item \TeX\Means    3.0版[1990/03]以上
+% \item \pTeX\Means   2.0版[1995/03]以上
+% \item \upTeX\Means  0.10版[2007/07]以上
+% \item \pdfTeX\Means 1.40版[2007/01]以上
+% \item \LuaTeX\Means 0.60版[2010/04]以上
+% \item \XeTeX\Means  0.9994版[2009/06]以上
+% \end{itemize}
+% \Note 標準和文ドライバについてはまた別に要件を定める。
+%
+% {\TeX}処理系のバージョンがサポート対象であるかを検査する。
+%    \begin{macrocode}
+\@tempswatrue
+\if x\jsEngine
+  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
+    \@tempswafalse \fi
+\fi
+%    \end{macrocode}
+% 非サポートのバージョン場合は強制終了させる。
+%    \begin{macrocode}
+\if@tempswa \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use is all too old}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+%    \end{macrocode}
+%
+% 万が一「2.09互換モード」になっていた場合は、
+% これ以上進むと危険なので強制終了させる。
+%    \begin{macrocode}
+\if@compatibility
+  \ClassError\bxjs@clsname
+   {Something went chaotic!\MessageBreak
+    (How come '\string\documentstyle' is there?)\MessageBreak
+    I cannot go a single step further...}
+   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
+    then there'll still be hope....}
+  \expandafter\@firstofone
+\else \expandafter\@gobble
+\fi{\typeout{Farewell!}\endinput\@@end}
+%    \end{macrocode}
 %
 % \begin{macro}{\ifjsWithupTeX}
 % 〔スイッチ〕
@@ -467,49 +503,15 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% 非サポートのエンジンの場合は強制終了させる。
-% \Note NTT j{\TeX}とOmega系。
+% \begin{macro}{\ifjsInPdfMode}
+% 〔スイッチ〕
+% {\pdfTeX}／{\LuaTeX}がPDFモードで動作しているか。
 %    \begin{macrocode}
-\let\bxjs@tmpa\relax
-\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
-\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
-\ifx\bxjs@tmpa\relax \expandafter\@gobble
-\else
-  \ClassError\bxjs@clsname
-   {The engine in use (\bxjs@tmpa) is not supported}
-   {It's a fatal error. I'll quit right now.}
-  \expandafter\@firstofone
-\fi{\endinput\@@end}
-%    \end{macrocode}
-%
-% \paragraph{BXJSクラス特有の設定 \ZRX}
-% \mbox{}
-%
-% {\LuaTeX}の場合、本クラス用のLuaモジュールを用意する。
-%    \begin{macrocode}
-\ifx l\jsEngine
-  \directlua{ bxjs = {} }
-\fi
-%    \end{macrocode}
-%
-% \begin{macro}{\bxjs@protected}
-% {\eTeX}拡張が有効な場合にのみ |\protected|
-% の効果をもつ。
-%    \begin{macrocode}
-\ifjsWitheTeX \let\bxjs@protected\protected
-\else \let\bxjs@protected\@empty
-\fi
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@robust@def}
-% 無引数の頑強な命令を定義する。
-%    \begin{macrocode}
-\ifjsWitheTeX
-  \def\bxjs@robust@def{\protected\def}
-\else
-  \def\bxjs@robust@def{\DeclareRobustCommand*}
-\fi
+\newif\ifjsInPdfMode
+\@nameuse{jsInPdfMode\ifnum0%
+  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
+  \ifx\outputmode\@undefined\else\the\outputmode\fi
+  >0 true\else false\fi}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -547,6 +549,89 @@
 %    \begin{macrocode}
 \newif\ifbxjs@old@hook@system
 \@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+%    \end{macrocode}
+% \end{macro}
+%
+% \paragraph{依存パッケージ読込 \ZRX}
+% \mbox{}
+%
+% 長さ値の指定で式を利用可能にするため |calc| を読み込む。
+%    \begin{macrocode}
+\RequirePackage{calc}
+%    \end{macrocode}
+% クラスオプションでkey-value形式を使用するため |keyval| を読み込む。
+%    \begin{macrocode}
+\RequirePackage{keyval}
+%    \end{macrocode}
+% PDFモードの判定を{\LaTeX}公式のパッケージに任せたいので、
+% もし「|iftex| の |\ifpdf|」が利用できるならば、
+% |jsInPdfMode| スイッチをその値に一致させる。
+% \Note |iftex| で |\ifpdf| が利用できるのは1.0版[2019/10/24]から。
+%    \begin{macrocode}
+\IfFileExists{iftex.sty}{%
+  \RequirePackage{iftex}
+}{}
+\begingroup\expandafter\endgroup
+\expandafter\ifx\csname ifpdf\endcsname\@undefined\else
+  \expandafter\let\csname ifjsInPdfMode\expandafter\endcsname
+      \csname ifpdf\endcsname
+\fi
+%    \end{macrocode}
+%
+% クラスの本体ではこの他に以下のパッケージが読み込まれる。
+% \begin{quote}
+%   |geometry|
+% \end{quote}
+% また状況によっては以下のパッケージが読み込まれる可能性がある。
+% \begin{quote}
+%   |bxwareki|、|jslogo|、|plautopatch|、|type1cm|
+% \end{quote}
+% \Note 和文ドライバがさらにパッケージを読み込むこともある。
+%
+% \begin{macro}{\jsAtEndOfClass}
+% このクラスの読込終了時に対するフック。
+% （補助パッケージ中で用いられる。）
+%    \begin{macrocode}
+\def\jsAtEndOfClass{%
+  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
+%    \end{macrocode}
+% \end{macro}
+%
+% 互換性のための補助パッケージを読み込む。
+%    \begin{macrocode}
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
+}{}
+%    \end{macrocode}
+%
+% \paragraph{BXJSクラス特有の設定 \ZRX}
+% \mbox{}
+%
+% {\LuaTeX}の場合、本クラス用のLuaモジュールを用意する。
+%    \begin{macrocode}
+\ifx l\jsEngine
+  \directlua{ bxjs = {} }
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@protected}
+% {\eTeX}拡張が有効な場合にのみ |\protected|
+% の効果をもつ。
+%    \begin{macrocode}
+\ifjsWitheTeX \let\bxjs@protected\protected
+\else \let\bxjs@protected\@empty
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@robust@def}
+% 無引数の頑強な命令を定義する。
+%    \begin{macrocode}
+\ifjsWitheTeX
+  \def\bxjs@robust@def{\protected\def}
+\else
+  \def\bxjs@robust@def{\DeclareRobustCommand*}
+\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -590,20 +675,6 @@
 %    \begin{macrocode}
 \def\bxjs@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\ifjsInPdfMode}
-% 〔スイッチ〕
-% {\pdfTeX}／{\LuaTeX}がPDFモードで動作しているか。
-%    \begin{macrocode}
-\RequirePackage{iftex}
-\newif\ifjsInPdfMode
-\@nameuse{jsInPdfMode\ifnum0%
-  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
-  \ifx\outputmode\@undefined\else\the\outputmode\fi
-  >0 true\else false\fi}
-\ifx\pdffalse\@undefined\else \bxjs@csletcs{ifjsInPdfMode}{ifpdf}\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -774,49 +845,6 @@
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
 %    \end{macrocode}
 % \end{macro}	
-%
-% \paragraph{環境検査（続） \ZRX}
-% 
-% {\TeX}処理系のバージョンがサポート対象であるかを検査する。
-% \Note 現状での処理系バージョン要件は
-% 「{\XeTeX}は0.997版（2007年頃）以上」
-% という現実離れしたものになっている。
-% \TODO 3.0版において、もっと現実的なバージョン要件を定める予定。
-% 多分「本体」と「標準和文ドライバ」で条件を分けることになる。
-%    \begin{macrocode}
-\@tempswatrue
-\if x\jsEngine
-  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
-    \@tempswafalse \fi
-\fi
-%    \end{macrocode}
-% 非サポートのバージョン場合は強制終了させる。
-%    \begin{macrocode}
-\if@tempswa \expandafter\@gobble
-\else
-  \ClassError\bxjs@clsname
-   {The engine in use is all too old}
-   {It's a fatal error. I'll quit right now.}
-  \expandafter\@firstofone
-\fi{\endinput\@@end}
-%    \end{macrocode}
-%
-% 万が一「2.09互換モード」になっていた場合は、
-% これ以上進むと危険なので強制終了させる。
-%    \begin{macrocode}
-\if@compatibility
-  \ClassError\bxjs@clsname
-   {Something went chaotic!\MessageBreak
-    (How come '\string\documentstyle' is there?)\MessageBreak
-    I cannot go a single step further...}
-   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
-    then there'll still be hope....}
-  \expandafter\@firstofone
-\else \expandafter\@gobble
-\fi{\typeout{Farewell!}\endinput\@@end}
-%    \end{macrocode}
-%
-% \end{ZRnote}
 %
 % \section{オプション}
 %
@@ -6443,9 +6471,14 @@
 %
 % 段落のマーク（■）が必ず和文フォントで出力されるようにする。
 %
-% |\jsJaChar| はstandard和文ドライバが読み込まれた場合は\
-% |\jachar| と同義になるが、それ以外は何もしない。
-% \TODO |\jsJaChar| を移動。
+% \begin{macro}{\jsJaChar}
+% standard和文ドライバが読み込まれた場合は |\jachar| と同義で、
+% それ以外は何もしない。
+%    \begin{macrocode}
+\let\jsJaChar\@empty
+%    \end{macrocode}
+% \end{macro}
+%
 % \end{ZRnote}
 %    \begin{macrocode}
 \newcommand\jsParagraphMark{\relax\jsJaChar{■}}
@@ -6455,7 +6488,6 @@
 \else\ifx\bxjs@paragraph@mark\@undefined\else
   \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
 \fi\fi
-\let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{\if@slide .4\Cvs \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
@@ -6701,17 +6733,14 @@
 % \begin{ZRnote}
 % 和文の括弧で囲むための補助命令 |\jsInJaParen| を
 % 定義して |\labelenumii| でそれを用いている。
-% \Note 現状の |zxjatype| の |\inhibitglue| の実装には
-% 「前後のグルーを消してしまう」という不備があって、
-% そのため |enumii| の出力が異常になるという不具合があった。
-% |zxjatype| を修正するまでの回避策として、サイズがゼロの
-% 罫（|\bxjs@dust|）でガードしておく。
+%^^A \Note 現状の |zxjatype| の |\inhibitglue| の実装には
+%^^A 「前後のグルーを消してしまう」という不備があって、
+%^^A そのため |enumii| の出力が異常になるという不具合があった。
 % \end{ZRnote}
 %
 %    \begin{macrocode}
-\def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
 \newcommand*{\jsInJaParen}[1]{%
-  \bxjs@dust\jsInhibitGlue （#1）\jsInhibitGlue\bxjs@dust}
+  \mbox{\jsInhibitGlue （#1）\jsInhibitGlue}}
 \newcommand{\labelenumi}{\theenumi.}
 \newcommand{\labelenumii}{\jsInJaParen{\theenumii}}
 \newcommand{\labelenumiii}{\theenumiii.}
@@ -8531,8 +8560,7 @@
     \else
       \clubpenalty \@clubpenalty
       \everypar{\everyparhook}%
-    \fi
-    \everyparhook}%
+    \fi\everyparhook}%
   \if@noitemarg
     \@noitemargfalse
     \if@nmbrlist
