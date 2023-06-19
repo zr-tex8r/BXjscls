@@ -12544,7 +12544,9 @@
   \edef\bxjx@tmpb{\meaning#1}%
   \ifx\bxjx@tmpa\bxjx@tmpb #2\fi}
 \bxjx@tmpdo\kanjiskip{\let\bxjx@engine=j}
-\bxjx@tmpdo\enablecjktoken{\let\bxjx@engine=u}
+\bxjx@tmpdo\enablecjktoken{%
+  \ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
+    \let\bxjx@engine=u\fi\fi}
 \bxjx@tmpdo\XeTeXversion{\let\bxjx@engine=x}
 \bxjx@tmpdo\pdftexversion{\let\bxjx@engine=p}
 \bxjx@tmpdo\luatexversion{\let\bxjx@engine=l}
