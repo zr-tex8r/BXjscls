@@ -110,6 +110,8 @@ XeLaTeX / LuaLaTeX の上でも日本語処理パッケージと連携して使�
 更新履歴
 --------
 
+  * Version 2.8a 〈2023/06/20〉
+      - バグ修正。
   * Version 2.8  〈2023/06/14〉
       - jsclasses の 2023/02/23 と同期。
       - hyperref の unicode 設定に対する調整処理の見直し。

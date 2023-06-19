@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxjscjkcat}
-  [2023/06/14 v2.8  BXJS document classes]
+  [2023/06/20 v2.8a BXJS document classes]
 \def\bxjx@pkgname{bxjscjkcat}
 \newcount\bxjx@cnta
 \@onlypreamble\bxjx@tmpdo
@@ -34,7 +34,9 @@
   \edef\bxjx@tmpb{\meaning#1}%
   \ifx\bxjx@tmpa\bxjx@tmpb #2\fi}
 \bxjx@tmpdo\kanjiskip{\let\bxjx@engine=j}
-\bxjx@tmpdo\enablecjktoken{\let\bxjx@engine=u}
+\bxjx@tmpdo\enablecjktoken{%
+  \ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
+    \let\bxjx@engine=u\fi\fi}
 \bxjx@tmpdo\XeTeXversion{\let\bxjx@engine=x}
 \bxjx@tmpdo\pdftexversion{\let\bxjx@engine=p}
 \bxjx@tmpdo\luatexversion{\let\bxjx@engine=l}

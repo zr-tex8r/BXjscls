@@ -22,43 +22,27 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2023/06/14 v2.8  BXJS document classes]
+  [2023/06/20 v2.8a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsreport}
 \newif\ifjsc@needsp@tch
 \jsc@needsp@tchfalse
-\RequirePackage{calc}
-\RequirePackage{keyval}
-\def\jsAtEndOfClass{%
-  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
-\IfFileExists{bxjscompat.sty}{%
-  \RequirePackage{bxjscompat}%
-}{}
 \let\jsArticle=a
 \let\jsBook=b
 \let\jsReport=r
 \let\jsSlide=s
 \let\jsDocClass\jsReport
-\let\jsEngine=n
 \def\bxjs@test@engine#1#2{%
   \edef\bxjs@tmpa{\string#1}%
   \edef\bxjs@tmpb{\meaning#1}%
   \ifx\bxjs@tmpa\bxjs@tmpb #2\fi}
+\let\jsEngine=n
 \bxjs@test@engine\kanjiskip{\let\jsEngine=j}
 \bxjs@test@engine\jintercharskip{\let\jsEngine=J}
 \bxjs@test@engine\Omegaversion{\let\jsEngine=O}
 \bxjs@test@engine\XeTeXversion{\let\jsEngine=x}
 \bxjs@test@engine\pdftexversion{\let\jsEngine=p}
 \bxjs@test@engine\luatexversion{\let\jsEngine=l}
-\newif\ifjsWithupTeX
-\ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
-  \jsWithupTeXtrue
-\fi\fi
-\let\if@jsc@uplatex\ifjsWithupTeX
-\newif\ifjsWithpTeXng
-\bxjs@test@engine\ngbanner{\jsWithpTeXngtrue}
-\newif\ifjsWitheTeX
-\bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
 \let\bxjs@tmpa\relax
 \ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
 \ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
@@ -69,6 +53,66 @@
    {It's a fatal error. I'll quit right now.}
   \expandafter\@firstofone
 \fi{\endinput\@@end}
+\@tempswatrue
+\if x\jsEngine
+  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
+    \@tempswafalse \fi
+\fi
+\if@tempswa \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use is all too old}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+\if@compatibility
+  \ClassError\bxjs@clsname
+   {Something went chaotic!\MessageBreak
+    (How come '\string\documentstyle' is there?)\MessageBreak
+    I cannot go a single step further...}
+   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
+    then there'll still be hope....}
+  \expandafter\@firstofone
+\else \expandafter\@gobble
+\fi{\typeout{Farewell!}\endinput\@@end}
+\newif\ifjsWithupTeX
+\ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
+  \jsWithupTeXtrue
+\fi\fi
+\let\if@jsc@uplatex\ifjsWithupTeX
+\newif\ifjsWithpTeXng
+\bxjs@test@engine\ngbanner{\jsWithpTeXngtrue}
+\newif\ifjsWitheTeX
+\bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
+\newif\ifjsInPdfMode
+\@nameuse{jsInPdfMode\ifnum0%
+  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
+  \ifx\outputmode\@undefined\else\the\outputmode\fi
+  >0 true\else false\fi}
+\newif\ifbxjs@explIII
+\@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
+\newif\ifbxjs@TUenc
+\def\bxjs@tmpa{TU}\edef\bxjs@tmpb{\f@encoding}
+\ifx\bxjs@tmpa\bxjs@tmpb
+  \bxjs@TUenctrue
+\fi
+\newif\ifbxjs@old@hook@system
+\@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+\RequirePackage{calc}
+\RequirePackage{keyval}
+\IfFileExists{iftex.sty}{%
+  \RequirePackage{iftex}
+}{}
+\begingroup\expandafter\endgroup
+\expandafter\ifx\csname ifpdf\endcsname\@undefined\else
+  \expandafter\let\csname ifjsInPdfMode\expandafter\endcsname
+      \csname ifpdf\endcsname
+\fi
+\def\jsAtEndOfClass{%
+  \expandafter\g@addto@macro\csname\bxjs@clsname.cls-h@@k\endcsname}
+\IfFileExists{bxjscompat.sty}{%
+  \RequirePackage{bxjscompat}%
+}{}
 \ifx l\jsEngine
   \directlua{ bxjs = {} }
 \fi
@@ -80,15 +124,6 @@
 \else
   \def\bxjs@robust@def{\DeclareRobustCommand*}
 \fi
-\newif\ifbxjs@explIII
-\@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
-\newif\ifbxjs@TUenc
-\def\bxjs@tmpa{TU}\edef\bxjs@tmpb{\f@encoding}
-\ifx\bxjs@tmpa\bxjs@tmpb
-  \bxjs@TUenctrue
-\fi
-\newif\ifbxjs@old@hook@system
-\@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
 \@ifl@t@r\fmtversion{2021/11/15}{%
   \def\bxjs@CGHN#1{#1}%
 }{%else
@@ -102,13 +137,6 @@
   \expandafter\let\csname#1\endcsname}
 \def\bxjs@csletcs#1#2{%
   \expandafter\let\csname#1\expandafter\endcsname\csname#2\endcsname}
-\RequirePackage{iftex}
-\newif\ifjsInPdfMode
-\@nameuse{jsInPdfMode\ifnum0%
-  \ifx\pdfoutput\@undefined\else\the\pdfoutput\fi
-  \ifx\outputmode\@undefined\else\the\outputmode\fi
-  >0 true\else false\fi}
-\ifx\pdffalse\@undefined\else \bxjs@csletcs{ifjsInPdfMode}{ifpdf}\fi
 \def\bxjs@catopt#1#2{%
   #1\if\relax#1\relax\else\if\relax#2\relax\else,\fi\fi#2}
 \def\bxjs@ifplus#1{\@ifnextchar+{\@firstoftwo{#1}}}
@@ -180,28 +208,6 @@
 \@onlypreamble\bxjs@tmpdo@d
 \bxjs@robust@def\jsInhibitGlue{%
   \ifx\inhibitglue\@undefined\else \inhibitglue \fi}
-\@tempswatrue
-\if x\jsEngine
-  \ifdim\the\XeTeXversion\XeTeXrevision\p@<0.997\p@
-    \@tempswafalse \fi
-\fi
-\if@tempswa \expandafter\@gobble
-\else
-  \ClassError\bxjs@clsname
-   {The engine in use is all too old}
-   {It's a fatal error. I'll quit right now.}
-  \expandafter\@firstofone
-\fi{\endinput\@@end}
-\if@compatibility
-  \ClassError\bxjs@clsname
-   {Something went chaotic!\MessageBreak
-    (How come '\string\documentstyle' is there?)\MessageBreak
-    I cannot go a single step further...}
-   {If the chant of '\string\documentstyle' was just a blunder of yours,\MessageBreak
-    then there'll still be hope....}
-  \expandafter\@firstofone
-\else \expandafter\@gobble
-\fi{\typeout{Farewell!}\endinput\@@end}
 \newif\if@restonecol
 \newif\if@titlepage
 \newif\if@openright
@@ -1232,13 +1238,14 @@
 \else
   \PassOptionsToPackage{driver=none}{geometry}
 \fi
-\bxjs@apply@bd@pre@geometry@hook{\bxjs@bd@pre@geometry@hook}
-\bxjs@apply@bd@pre@geometry@hook{\ImposeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{%
+  \bxjs@bd@pre@geometry@hook
+  \@nameuse{ImposeOldLuaTeXBehavior}}
 \bxjs@preproc@layout
 \edef\bxjs@next{%
   \noexpand\RequirePackage[\bxjs@layout@paper,\bxjs@layout]{geometry}%
 }\bxjs@next
-\bxjs@apply@bd@pre@geometry@hook{\RevokeOldLuaTeXBehavior}
+\bxjs@apply@bd@pre@geometry@hook{\@nameuse{RevokeOldLuaTeXBehavior}}
 \let\bxjs@geometry@driver\Gm@driver
 \bxjs@postproc@layout
 \g@addto@macro\bxjs@bd@pre@geometry@hook{%
@@ -1820,6 +1827,7 @@
     {\if@slide .5\Cvs \@plus.3\Cdp \else \z@ \fi}%
     {\normalfont\normalsize\headfont}}
 \fi
+\let\jsJaChar\@empty
 \newcommand\jsParagraphMark{\relax\jsJaChar{■}}
 \let\bxjs@org@paragraph@mark\jsParagraphMark
 \ifx\bxjs@paragraph@mark\@empty
@@ -1827,7 +1835,6 @@
 \else\ifx\bxjs@paragraph@mark\@undefined\else
   \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
 \fi\fi
-\let\jsJaChar\@empty
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
     {\z@}{\if@slide .4\Cvs \else -1\jsZw\fi}% 改行せず 1\jsZw のアキ
@@ -1905,9 +1912,8 @@
 \renewcommand{\theenumii}{\@alph\c@enumii}
 \renewcommand{\theenumiii}{\@roman\c@enumiii}
 \renewcommand{\theenumiv}{\@Alph\c@enumiv}
-\def\bxjs@dust{\vrule\@width\z@\@height\z@\@depth\z@}
 \newcommand*{\jsInJaParen}[1]{%
-  \bxjs@dust\jsInhibitGlue （#1）\jsInhibitGlue\bxjs@dust}
+  \mbox{\jsInhibitGlue （#1）\jsInhibitGlue}}
 \newcommand{\labelenumi}{\theenumi.}
 \newcommand{\labelenumii}{\jsInJaParen{\theenumii}}
 \newcommand{\labelenumiii}{\theenumiii.}
@@ -2123,9 +2129,12 @@
       class provides\MessageBreak
       the old font commands only for compatibility}
   \fi}
-\def\bxjs@warnoldfontcmd@kick@final{%
-  \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
-\AtEndDocument{\bxjs@warnoldfontcmd@kick@final}
+\ifbxjs@old@hook@system
+  \AtEndDocument{%
+    \g@addto@macro\clearpage{\bxjs@warnoldfontcmd@final}}
+\else
+  \AddToHook{enddocument/afterlastpage}{\bxjs@warnoldfontcmd@final}
+\fi
 \jsc@DeclareOldFontCommand{\mc}{\normalfont\mcfamily}{\mathmc}
 \jsc@DeclareOldFontCommand{\gt}{\normalfont\gtfamily}{\mathgt}
 \jsc@DeclareOldFontCommand{\rm}{\normalfont\rmfamily}{\mathrm}
@@ -2437,8 +2446,7 @@
     \else
       \clubpenalty \@clubpenalty
       \everypar{\everyparhook}%
-    \fi
-    \everyparhook}%
+    \fi\everyparhook}%
   \if@noitemarg
     \@noitemargfalse
     \if@nmbrlist
