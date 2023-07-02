@@ -3472,8 +3472,6 @@
 %   \@xipt    10.95      \@xiipt  12      \@xivpt  14.4
 %\end{verbatim}
 %
-%^^A\begin{macro}{\@setfontsize}
-%
 % ここでは |\@setfontsize| の定義を少々変更して，
 % 段落の字下げ |\parindent|，
 % 和文文字間のスペース |\kanjiskip|，
@@ -3497,21 +3495,38 @@
 % [2008-02-18] |english| オプションで |\parindent| を 1em にしました。
 %
 % \begin{ZRnote}
-% \begin{macro}{\set@fontsize}
 % |\fontsize| 命令（|\large| 等でなく）でフォントサイズ変更した場合
 % にもフックが実行されるように、|\@setfontsize| では
 % なく |\set@fontsize| に対してパッチを当てるように変更。
+% \begin{macro}{\bxjs@patch@set@fontsize}
+% |\set@fontsize| にパッチを当てる。
+% \Note |\set@fontsize| を書き換えるパッケージへの対策のため、
+% クラス読込中に複数回実行する。
+% 前回の実行直後から |\set@fontsize| が更新されている場合にのみ
+% 実際にパッチを当てる。
+% \TODO 新しい{\LaTeX}カーネルでは |selectfont| フックを利用したい。
 %    \begin{macrocode}
-\def\bxjs@tmpa{\def\set@fontsize##1##2##3}
+%\let\bxjs@prev@set@fontsize\@undefined
+\@onlypreamble\bxjs@patch@set@fontsize
+\def\bxjs@patch@set@fontsize{%
+  \ifx\bxjs@prev@set@fontsize\set@fontsize\else
+    \def\bxjs@tmpa{\def\set@fontsize####1####2####3}%
 \expandafter\bxjs@tmpa\expandafter{%
-  \set@fontsize{#1}{#2}{#3}%
+  \set@fontsize{##1}{##2}{##3}%
 % 末尾にコードを追加
   \expandafter\def\expandafter\size@update\expandafter{%
     \size@update
     \jsFontSizeChanged}%
 }
+    \let\bxjs@prev@set@fontsize\set@fontsize
+  \fi}
 %    \end{macrocode}
 % \end{macro}
+% この場とパッケージ末尾で作動させる。
+%    \begin{macrocode}
+\bxjs@patch@set@fontsize
+\AtEndOfPackage{\bxjs@patch@set@fontsize}
+%    \end{macrocode}
 %
 % \begin{macro}{\jsFontSizeChanged}
 % フォントサイズ変更時に呼ばれるフック。
@@ -3533,7 +3548,7 @@
 % \begin{macro}{\jsResetDimen}
 % ユーザ定義用のフック。
 %    \begin{macrocode}
-\newcommand*\jsResetDimen{}
+\providecommand*\jsResetDimen{}
 %    \end{macrocode}
 % \end{macro}
 % \end{ZRnote}
@@ -11103,6 +11118,10 @@
 \edef\bxjs@next{%
   \noexpand\RequirePackage[scale=\jsScale]{luatexja-fontspec}[2015/08/26]%
 }\bxjs@next
+%    \end{macrocode}
+% |\set@fontsize| へのパッチ適用を再度行う。
+%    \begin{macrocode}
+\bxjs@patch@set@fontsize
 %    \end{macrocode}
 %
 % フォント代替の明示的定義。
