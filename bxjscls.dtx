@@ -2567,17 +2567,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
-% （和文を含むマクロ定義を通用させるため。）
-%    \begin{macrocode}
-\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
-  \@tempcnta="80 \loop \ifnum\@tempcnta<"100
-    \catcode\@tempcnta\active
-    \advance\@tempcnta\@ne
-  \repeat
-\fi
-%    \end{macrocode}
-%
 % |disguise-js=true| 指定時は、jsarticle（または jsbook）クラスを
 % 読込済のように振舞う。
 % \Note 「2つのクラスを読み込んだ状態」は |\LoadClass| を使用した
@@ -12304,6 +12293,7 @@
   \edef\bxac@tmpa{\string#1}%
   \edef\bxac@tmpb{\meaning#1}%
   \ifx\bxac@tmpa\bxac@tmpb #2\fi}
+\bxac@do\kanjiskip{\let\bxac@engine=j}
 \bxac@do\XeTeXversion{\let\bxac@engine=x}
 \bxac@do\luatexversion{\let\bxac@engine=l}
 %    \end{macrocode}
@@ -12335,7 +12325,27 @@
 % \end{macro}
 %
 %^^A----------------
-% \subsection{{\XeTeX}部分}
+% \subsection{8bit欧文{\TeX}}
+%    \begin{macrocode}
+\ifx n\bxac@engine
+%    \end{macrocode}
+%
+% 和文を含むマクロ定義を通用させるため、
+% 高位バイトをアクティブ化しておく。
+%    \begin{macrocode}
+\@tempcnta="80 \loop \ifnum\@tempcnta<"100
+  \catcode\@tempcnta\active
+  \advance\@tempcnta\@ne
+\repeat
+%    \end{macrocode}
+%
+% 以上。
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{\XeTeX}
 %    \begin{macrocode}
 \ifx x\bxac@engine
 %    \end{macrocode}
@@ -12411,7 +12421,7 @@
 %    \end{macrocode}
 %
 %^^A----------------
-% \subsection{{\LuaTeX}部分}
+% \subsection{\LuaTeX}
 %    \begin{macrocode}
 \ifx l\bxac@engine
 %    \end{macrocode}
