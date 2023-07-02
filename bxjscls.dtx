@@ -1615,7 +1615,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \Note |nodvidriver*| はBXJSクラスの仕様上は |nodvidriver| と完全に
+% \Note |class-nodvidriver| はBXJSクラスの仕様上は |nodvidriver| と完全に
 % 等価であるが、「グローバルオプションに何があるか」の点で異なる。
 %    \begin{macrocode}
 \DeclareOption{dvips}{%
@@ -1633,8 +1633,8 @@
 \DeclareOption{nodvidriver}{%
   \def\bxjs@driver@opt{nodvidriver}%
   \let\bxjs@driver@given\bxjs@driver@@none}
-\DeclareOption{nodvidriver*}{%
-  \def\bxjs@driver@opt{nodvidriver*}%
+\DeclareOption{class-nodvidriver}{%
+  \def\bxjs@driver@opt{class-nodvidriver}%
   \let\bxjs@driver@given\bxjs@driver@@none}
 \DeclareOption{pdftex}{%
   \def\bxjs@driver@opt{pdftex}%
@@ -2011,7 +2011,7 @@
 \let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@nodvidriver=\bxjs@driver@@none
-\bxjs@cslet{bxjs@dvidriver@@nodvidriver*}\bxjs@driver@@none
+\bxjs@cslet{bxjs@dvidriver@@class-nodvidriver}\bxjs@driver@@none
 %    \end{macrocode}
 %
 % |dvi| オプションの処理。
