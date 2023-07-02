@@ -100,6 +100,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.8b 〈2023/07/01〉
   * Version 2.8a 〈2023/06/20〉
   * Version 2.8  〈2023/06/14〉
       - Sync with jsclasses 2023/02/23.

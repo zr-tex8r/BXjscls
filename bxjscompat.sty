@@ -22,13 +22,14 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxjscompat}
-  [2023/06/20 v2.8a BXJS document classes]
+  [2023/07/01 v2.8b BXJS document classes]
 \def\bxac@pkgname{bxjscompat}
 \let\bxac@engine=n
 \def\bxac@do#1#2{%
   \edef\bxac@tmpa{\string#1}%
   \edef\bxac@tmpb{\meaning#1}%
   \ifx\bxac@tmpa\bxac@tmpb #2\fi}
+\bxac@do\kanjiskip{\let\bxac@engine=j}
 \bxac@do\XeTeXversion{\let\bxac@engine=x}
 \bxac@do\luatexversion{\let\bxac@engine=l}
 \ifx\jsAtEndOfClass\@undefined
@@ -38,6 +39,12 @@
 \newif\ifbxac@in@old@behavior
 \let\ImposeOldLuaTeXBehavior\relax
 \let\RevokeOldLuaTeXBehavior\relax
+\ifx n\bxac@engine
+\@tempcnta="80 \loop \ifnum\@tempcnta<"100
+  \catcode\@tempcnta\active
+  \advance\@tempcnta\@ne
+\repeat
+\fi
 \ifx x\bxac@engine
 \ifx\XeTeXcharclass\@undefined\else
 \bxac@delayed@if@bxjs{%

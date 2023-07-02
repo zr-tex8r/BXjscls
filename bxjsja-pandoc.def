@@ -21,7 +21,10 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2023/06/20 v2.8a BXJS document classes]
+  [2023/07/01 v2.8b BXJS document classes]
+\if x\jsEngine
+  \PassOptionsToPackage{nospace}{xeCJK}
+\fi
 \input{bxjsja-standard.def}
 \RequirePackage{bxjspandoc}
 \ifjsWitheTeX\else

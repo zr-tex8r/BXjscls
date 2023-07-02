@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2023/06/20 v2.8a BXJS document classes]
+  [2023/07/01 v2.8b BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -471,8 +471,8 @@
 \DeclareOption{nodvidriver}{%
   \def\bxjs@driver@opt{nodvidriver}%
   \let\bxjs@driver@given\bxjs@driver@@none}
-\DeclareOption{nodvidriver*}{%
-  \def\bxjs@driver@opt{nodvidriver*}%
+\DeclareOption{class-nodvidriver}{%
+  \def\bxjs@driver@opt{class-nodvidriver}%
   \let\bxjs@driver@given\bxjs@driver@@none}
 \DeclareOption{pdftex}{%
   \def\bxjs@driver@opt{pdftex}%
@@ -528,19 +528,17 @@
 \def\bxjs@declare@enum@option#1#2#3{%
   \bxjs@csletcs{bxjs@#2}{bxjs@#2@@#3}%
   \define@key{bxjs}{#1}{%
-    \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
+    \@ifundefined{bxjs@#2@@##1}{%
       \bxjs@error@keyval{#1}{##1}%
-    \else \bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}%
-    \fi}}
+    }{\bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}}}}
 \@onlypreamble\bxjs@declare@bool@option
 \def\bxjs@declare@bool@option#1#2#3{%
   \csname newif\expandafter\endcsname\csname ifbxjs@#2\endcsname
   \@nameuse{bxjs@#2#3}%
   \define@key{bxjs}{#1}[true]{%
-    \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
+    \@ifundefined{bxjs@#2##1}{%
       \bxjs@error@keyval{#1}{##1}%
-    \else \@nameuse{bxjs@#2##1}%
-    \fi}}
+    }{\@nameuse{bxjs@#2##1}}}}
 \def\bxjs@set@keyval#1#2#3{%
   \bxjs@csletcs{bxjs@next}{bxjs@kv@#1@#2}%
   \ifx\bxjs@next\relax
@@ -613,7 +611,7 @@
 \let\bxjs@dvidriver@@dviout=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@xdvi=\bxjs@driver@@dvimode
 \let\bxjs@dvidriver@@nodvidriver=\bxjs@driver@@none
-\bxjs@cslet{bxjs@dvidriver@@nodvidriver*}\bxjs@driver@@none
+\bxjs@cslet{bxjs@dvidriver@@class-nodvidriver}\bxjs@driver@@none
 \define@key{bxjs}{dvi}{%
   \bxjs@csletcs{bxjs@tmpa}{bxjs@dvidriver@@#1}%
   \ifx\bxjs@tmpa\relax
@@ -680,11 +678,6 @@
 \bxjs@post@option@hook
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
-\fi
-\if@landscape
-  \setlength\@tempdima  {\paperheight}
-  \setlength\paperheight{\paperwidth}
-  \setlength\paperwidth {\@tempdima}
 \fi
 \def\bxjs@tmpdo{%
   \def\bxjs@tmpa{\@gobble}%
@@ -858,12 +851,6 @@
   \fi
 \fi
 \let\Cjascale\jsScale
-\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
-  \@tempcnta="80 \loop \ifnum\@tempcnta<"100
-    \catcode\@tempcnta\active
-    \advance\@tempcnta\@ne
-  \repeat
-\fi
 \ifbxjs@disguise@js
 \def\bxjs@js@clsname{jsarticle}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
@@ -983,13 +970,20 @@
 \ifbxjs@fix@at@cmd
   \def\@{\bxjs@SE{}}
 \fi
-\def\bxjs@tmpa{\def\set@fontsize##1##2##3}
+\@onlypreamble\bxjs@patch@set@fontsize
+\def\bxjs@patch@set@fontsize{%
+  \ifx\bxjs@prev@set@fontsize\set@fontsize\else
+    \def\bxjs@tmpa{\def\set@fontsize####1####2####3}%
 \expandafter\bxjs@tmpa\expandafter{%
-  \set@fontsize{#1}{#2}{#3}%
+  \set@fontsize{##1}{##2}{##3}%
   \expandafter\def\expandafter\size@update\expandafter{%
     \size@update
     \jsFontSizeChanged}%
 }
+    \let\bxjs@prev@set@fontsize\set@fontsize
+  \fi}
+\bxjs@patch@set@fontsize
+\AtEndOfPackage{\bxjs@patch@set@fontsize}
 \newcommand*\jsFontSizeChanged{%
   \jsZw=\f@size\p@
   \jsZw=\jsScale \jsZw
@@ -999,7 +993,7 @@
     \fi
   \fi\relax
   \jsResetDimen}
-\newcommand*\jsResetDimen{}
+\providecommand*\jsResetDimen{}
 \ifjsc@mag
   \let\jsc@setfontsize\@setfontsize
 \else
@@ -1520,10 +1514,7 @@
   }
 \fi
 \def\bxjs@label@sect#1{%
-  \expandafter\ifx\csname label#1\endcsname\relax
-    \csname the#1\endcsname
-  \else \csname label#1\endcsname
-  \fi}
+  \@ifundefined{label#1}{\@nameuse{the#1}}{\@nameuse{label#1}}}
 \def\@seccntformat#1{\bxjs@label@sect{#1}\quad}
 \ifnum\bxjs@label@section=\bxjs@label@section@@compat\else
 \def\@secapp{\presectionname}
@@ -2008,8 +1999,8 @@
   \global\let\bxjs@warnoldfontcmd@final\@empty
   \let\@tempa\@empty
   \def\do##1{%
-    \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
-      \edef\@tempa{\@tempa \space\string##1}\fi}
+    \@ifundefined{bxjs@ofc/\string##1}{}{%else
+      \edef\@tempa{\@tempa \space\string##1}}}%
   \bxjs@oldfontcmd@list
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
@@ -2410,13 +2401,12 @@
 \let\bxjs@iai\@empty
 }
 \bxjs@decl@Seireki@cmds
-\let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
-\bxjs@test@engine\unexpanded{%
-  \let\bxjs@unxp\unexpanded \def\bxjs@onxp{\unexpanded\expandafter}}
 \newif\ifbxjs@bxwareki@avail
 \IfFileExists{bxwareki.sty}{%
-  \RequirePackage{bxwareki}[]%
-  \bxjs@bxwareki@availtrue}{}
+  \if \if n\jsEngine \ifjsWitheTeX T\else F\fi\else T\fi T%
+    \RequirePackage{bxwareki}[2018/04/08]%v0.2
+    \bxjs@bxwareki@availtrue
+  \fi}{}
 \ifbxjs@bxwareki@avail \let\bxjs@wareki@used\@empty
 \else
   \bxjs@robust@def\bxjs@wareki@used{%
@@ -2435,11 +2425,16 @@
 \else
   \edef\jayear{\the\year \bxjs@iai}
 \fi
+\begingroup
 \let\bxjs@next\relax
 \ifbxjs@bxwareki@avail \ifx\warekigengo\@empty\else
-  \def\bxjs@next{\bxjs@onxp{\warekitoday}}
+  \def\bxjs@next{\warekitoday}
+  \bxjs@test@engine\unexpanded{%
+    \def\bxjs@next{\unexpanded\expandafter{\warekitoday}}}
 \fi\fi
-\edef\bxjs@today{%
+\def\!#1#2#3{\noexpand#1\noexpand#2\noexpand#3}
+\ifx\bxjs@iai\@empty \let\!\@empty \fi
+\xdef\bxjs@today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
@@ -2449,11 +2444,12 @@
     \ifx\bxjs@next\relax \expandafter\@firstoftwo
     \else \noexpand\bxjs@if@use@seireki
     \fi {%
-      \number\year\bxjs@iai\bxjs@unxp{年}%
-      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
-      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+      \number\year\bxjs@iai\!年%
+      \bxjs@iai\number\month\bxjs@iai\!月%
+      \bxjs@iai\number\day\bxjs@iai\!日%
     }{\bxjs@next}%
   \fi}
+\endgroup
 \let\today\bxjs@today
 \g@addto@macro\bxjs@begin@document@hook{%
   \ifx\bbl@jpn@maybekansuji\@undefined\else
