@@ -11457,9 +11457,16 @@
 %^^A----------------
 % \subsection{準備}
 %
-% standardドライバの設定を引き継ぐ。
+% |space| してはいけない。
 %    \begin{macrocode}
 %<*pandoc>
+\if x\jsEngine
+  \PassOptionsToPackage{nospace}{xeCJK}
+\fi
+%    \end{macrocode}
+%
+% standardドライバの設定を引き継ぐ。
+%    \begin{macrocode}
 \input{bxjsja-standard.def}
 %    \end{macrocode}
 %
