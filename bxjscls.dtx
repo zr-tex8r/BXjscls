@@ -1764,10 +1764,9 @@
 \def\bxjs@declare@enum@option#1#2#3{%
   \bxjs@csletcs{bxjs@#2}{bxjs@#2@@#3}%
   \define@key{bxjs}{#1}{%
-    \expandafter\ifx\csname bxjs@#2@@##1\endcsname\relax
+    \@ifundefined{bxjs@#2@@##1}{%
       \bxjs@error@keyval{#1}{##1}%
-    \else \bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}%
-    \fi}}
+    }{\bxjs@csletcs{bxjs@#2}{bxjs@#2@@##1}}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1782,10 +1781,9 @@
   \csname newif\expandafter\endcsname\csname ifbxjs@#2\endcsname
   \@nameuse{bxjs@#2#3}%
   \define@key{bxjs}{#1}[true]{%
-    \expandafter\ifx\csname bxjs@#2##1\endcsname\relax
+    \@ifundefined{bxjs@#2##1}{%
       \bxjs@error@keyval{#1}{##1}%
-    \else \@nameuse{bxjs@#2##1}%
-    \fi}}
+    }{\@nameuse{bxjs@#2##1}}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -5658,10 +5656,7 @@
 % 未定義ならばカウンタの出力書式 |\theXXX| が使われる。
 %    \begin{macrocode}
 \def\bxjs@label@sect#1{%
-  \expandafter\ifx\csname label#1\endcsname\relax
-    \csname the#1\endcsname
-  \else \csname label#1\endcsname
-  \fi}
+  \@ifundefined{label#1}{\@nameuse{the#1}}{\@nameuse{label#1}}}
 \def\@seccntformat#1{\bxjs@label@sect{#1}\quad}
 %    \end{macrocode}
 % \end{macro}
@@ -7498,8 +7493,8 @@
   \global\let\bxjs@warnoldfontcmd@final\@empty
   \let\@tempa\@empty
   \def\do##1{%
-    \expandafter\ifx\csname bxjs@ofc/\string##1\endcsname\relax\else
-      \edef\@tempa{\@tempa \space\string##1}\fi}
+    \@ifundefined{bxjs@ofc/\string##1}{}{%else
+      \edef\@tempa{\@tempa \space\string##1}}}%
   \bxjs@oldfontcmd@list
   \ifx\@tempa\@empty\else
     \ClassWarningNoLine\bxjs@clsname
