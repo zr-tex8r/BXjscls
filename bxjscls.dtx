@@ -1542,8 +1542,7 @@
 % \end{ZRnote}
 %
 % \paragraph{エンジン・ドライバオプション \ZRX}
-% \mbox{}
-% \begin{ZRnote}
+%
 % \begin{macro}{\bxjs@engine@given}
 % 〔暗黙文字トークン〕
 % オプションで明示されたエンジンの種別。
@@ -1653,11 +1652,8 @@
 \DeclareOption{dvipdfmx-if-dvi}{\bxjs@depre@opt@do{dvipdfmx-if-dvi}{dvi=dvipdfmx}}
 %    \end{macrocode}
 %
-% \end{ZRnote}
-%
 % \paragraph{その他のBXJS独自オプション \ZRX}
-% \mbox{}
-% \begin{ZRnote}
+%
 % \TODO 互換用オプションを分離する（2.0版で？）。
 %
 % \begin{macro}{\bxjs@depre@opt}
@@ -1719,8 +1715,6 @@
   \bxjs@oldfontcommandstrue}
 %    \end{macrocode}
 %
-% \end{ZRnote}
-%
 % \paragraph{JSクラスのオプションで無効なもの \ZRX}
 % |ltjsclasses| に倣って警告を出す。
 %
@@ -1740,8 +1734,7 @@
 %    \end{macrocode}
 %
 % \paragraph{keyval型のオプション \ZRX}
-% \mbox{}
-% \begin{ZRnote}
+%
 % その他のオプションは |keyval| の機構を用いて処理する。
 %    \begin{macrocode}
 \DeclareOption*{%
@@ -2206,8 +2199,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \end{ZRnote}
-%
 % \paragraph{オプションの実行}
 % \mbox{}
 % \begin{ZRnote}
@@ -2254,8 +2245,6 @@
 %    \end{macrocode}
 %
 % \paragraph{グローバルオプションの整理 \ZRX}
-% \mbox{}
-% \begin{ZRnote}
 %
 % グローバルオプションのトークン列に |{ }| が含まれていると、
 % やはり後のパッケージの読込処理で不具合を起こすようである
@@ -2289,8 +2278,6 @@
 \@expandtwoargs\@removeelement
   {noscale}\@classoptionslist\@classoptionslist
 %    \end{macrocode}
-%
-% \end{ZRnote}
 %
 % \paragraph{使用エンジンの検査・自動判定}
 %
@@ -2361,6 +2348,8 @@
   \g@addto@macro\@classoptionslist{,uplatex}
 \fi
 %    \end{macrocode}
+%
+% \end{ZRnote}
 %
 % \paragraph{ドライバ指定 \ZRX}
 %
@@ -2577,9 +2566,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \end{ZRnote}
-% \begin{ZRnote}
-%
 % 8bit欧文{\TeX}の場合は、高位バイトをアクティブ化しておく。
 % （和文を含むマクロ定義を通用させるため。）
 %    \begin{macrocode}
@@ -2617,7 +2603,6 @@
   \AtEndOfClass{\allowoldfontcommands}
 \fi
 %    \end{macrocode}
-% \end{ZRnote}
 %
 % \paragraph{papersizeスペシャルの出力}
 %
@@ -4021,7 +4006,6 @@
 %
 % \paragraph{準備 \ZRX}
 % \mbox{}
-% \begin{ZRnote}
 %
 % \begin{macro}{\bxjs@bd@pre@geometry@hook}
 % begin-documentフックのコード内で、|geometry| パッケージが挿入する
@@ -4285,11 +4269,10 @@
   \bxjs@layout@paper,\bxjs@layout}
 %    \end{macrocode}
 % \end{macro}
-% \end{ZRnote}
 %
 % \paragraph{geometry パッケージを読み込む \ZRX}
 % \mbox{}
-% \begin{ZRnote}
+%
 % \begin{macro}{\bxjs@apply@bd@pre@geometry@hook}
 % |geometry| パッケージのbegin-documentフックの処理に割り込む。
 % \Note {\LaTeX}のフックシステムがある場合はムニャムニャ。
@@ -4395,11 +4378,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \end{ZRnote}
-%
 % \paragraph{geometry パッケージを読み込まない \ZRX}
-% \mbox{}
-% \begin{ZRnote}
+%
 % |geometry=user|の場合の処理。
 %    \begin{macrocode}
 \else\ifx\bxjs@geometry\bxjs@geometry@@user
@@ -4435,8 +4415,9 @@
 %
 \fi\fi
 %    \end{macrocode}
-% \end{ZRnote}
 %
+% \paragraph{縦方向のスペース}
+% \mbox{}
 % \begin{ZRnote}
 % ここでは、|jsclasse.dtx| との差分を抑制するために、
 % オリジナルのコードを無効化した状態で挿入しておく。
@@ -4444,8 +4425,6 @@
 %    \begin{macrocode}
 %<*jsclasses>
 %    \end{macrocode}
-%
-% \paragraph{縦方向のスペース}
 %
 % \begin{macro}{\headheight}
 % \begin{macro}{\topskip}
@@ -4820,7 +4799,7 @@
 %</jsclasses>
 %    \end{macrocode}
 %
-% \paragraph{JSクラスと共通処理の開始 \ZRX}
+% \paragraph{脚注}
 % \mbox{}
 % \begin{ZRnote}
 % ここからのコードは以下の点を除いて JS クラスのものを踏襲する。
@@ -4829,8 +4808,6 @@
 % \item article/report/book/slide の切り分けの処理が異なる。
 % \end{itemize}
 % \end{ZRnote}
-%
-% \paragraph{脚注}
 %
 % \begin{macro}{\footnotesep}
 %
@@ -9011,8 +8988,6 @@
 %
 %
 % \paragraph{BXJS独自の追加処理 \ZRX}
-% \mbox{}
-% \begin{ZRnote}
 %
 % フックを実行する。
 %    \begin{macrocode}
@@ -9022,9 +8997,6 @@
 %    \begin{macrocode}
 \input{bxjsja-\bxjs@jadriver.def}
 %    \end{macrocode}
-%
-% おしまい。
-% \end{ZRnote}
 %
 % \section{実験的コード}
 %
