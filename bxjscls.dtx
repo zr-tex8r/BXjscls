@@ -8837,20 +8837,22 @@
 \let\bxjs@iai\@empty
 }
 \bxjs@decl@Seireki@cmds
-\let\bxjs@unxp\@firstofone \let\bxjs@onxp\@firstofone
-\bxjs@test@engine\unexpanded{%
-  \let\bxjs@unxp\unexpanded \def\bxjs@onxp{\unexpanded\expandafter}}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
 %
 % \begin{macro}{\ifbxjs@bxwareki@avail}
 % |bxwareki| パッケージが使用できるか。
+% \Note 8ビット欧文でかつ非e-TeXなエンジン（現状ではサポート外だが）
+% では |bxwareki| を読むだけでエラーが発生してしまうので、
+% この場合は読込を回避する。
 %    \begin{macrocode}
 \newif\ifbxjs@bxwareki@avail
 \IfFileExists{bxwareki.sty}{%
-  \RequirePackage{bxwareki}[]%
-  \bxjs@bxwareki@availtrue}{}
+  \if \if n\jsEngine \ifjsWitheTeX T\else F\fi\else T\fi T%
+    \RequirePackage{bxwareki}[2018/04/08]%v0.2
+    \bxjs@bxwareki@availtrue
+  \fi}{}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -8922,11 +8924,16 @@
     令和\pltx@today@year@{2018}%
   \fi\fi}
 %</jsclasses>
+\begingroup
 \let\bxjs@next\relax
 \ifbxjs@bxwareki@avail \ifx\warekigengo\@empty\else
-  \def\bxjs@next{\bxjs@onxp{\warekitoday}}
+  \def\bxjs@next{\warekitoday}
+  \bxjs@test@engine\unexpanded{%
+    \def\bxjs@next{\unexpanded\expandafter{\warekitoday}}}
 \fi\fi
-\edef\bxjs@today{%
+\def\!#1#2#3{\noexpand#1\noexpand#2\noexpand#3}
+\ifx\bxjs@iai\@empty \let\!\@empty \fi
+\xdef\bxjs@today{%
   \if@english
     \ifcase\month\or
       January\or February\or March\or April\or May\or June\or
@@ -8936,11 +8943,12 @@
     \ifx\bxjs@next\relax \expandafter\@firstoftwo
     \else \noexpand\bxjs@if@use@seireki
     \fi {%
-      \number\year\bxjs@iai\bxjs@unxp{年}%
-      \bxjs@iai\number\month\bxjs@iai\bxjs@unxp{月}%
-      \bxjs@iai\number\day\bxjs@iai\bxjs@unxp{日}%
+      \number\year\bxjs@iai\!年%
+      \bxjs@iai\number\month\bxjs@iai\!月%
+      \bxjs@iai\number\day\bxjs@iai\!日%
     }{\bxjs@next}%
   \fi}
+\endgroup
 \let\today\bxjs@today
 %    \end{macrocode}
 % \end{macro}
