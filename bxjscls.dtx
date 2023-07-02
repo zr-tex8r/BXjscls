@@ -2232,16 +2232,19 @@
 %    \end{macrocode}
 %
 % 後処理
+% \Note |landscape| の処理のコードはBXJSでは無意味なので除外する。
 %
 %    \begin{macrocode}
 \if@slide
   \def\maybeblue{\@ifundefined{ver@color.sty}{}{\color{blue}}}
 \fi
+%<*jsclasses>
 \if@landscape
   \setlength\@tempdima  {\paperheight}
   \setlength\paperheight{\paperwidth}
   \setlength\paperwidth {\@tempdima}
 \fi
+%</jsclasses>
 %    \end{macrocode}
 %
 % \paragraph{グローバルオプションの整理 \ZRX}
