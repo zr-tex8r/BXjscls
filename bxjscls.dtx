@@ -871,6 +871,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@endpreamble@hook}
+% BXJSクラス用の |\AtEndPreamble| フック。
+% \Note |\AtEndPreamble| が利用できない場合は無効になる。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@endpreamble@hook
+\let\bxjs@endpreamble@hook\@empty
+\AtEndOfClass{%
+  \ifx\AtEndPreamble\@undefined\else
+    \AtEndPreamble{\bxjs@endpreamble@hook}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
 % 一時的な手続き用の制御綴。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@tmpdo
@@ -10011,16 +10024,32 @@
 %^^A----------------
 % \subsection{準備}
 %
-% まず minimal ドライバを読み込む。
 %    \begin{macrocode}
 %<*standard>
 %% このファイルは日本語文字を含みます
+%    \end{macrocode}
+%
+% まずminimalドライバを読み込む。
+%    \begin{macrocode}
 \input{bxjsja-minimal.def}
 %    \end{macrocode}
 %
 % |simplejasetup| はstandardでは無効になる。
 %    \begin{macrocode}
 \bxjs@simplejasetupfalse
+%    \end{macrocode}
+%
+% \paragraph{パッケージ読込}
+%
+% 利用可能な場合は |etoolbox| パッケージを読み込む。
+% \Note 1.3版は「etoolboxパッケージ」としての最古の版であるらしい。
+% |\AtEndPreamble| はこの版で既に利用可能である。
+%    \begin{macrocode}
+\ifjsWitheTeX
+  \IfFileExists{etoolbox.sty}{%
+    \RequirePackage{etoolbox}[2007/10/08]% v1.3
+  }{}
+\fi
 %    \end{macrocode}
 %
 %^^A----------------
@@ -11632,22 +11661,11 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\bxjs@endpreamble@hook}
-% |etoolbox| の |\AtEndPreamble| で実行されるBXJSクラス用のフック。
-% \Note {\eTeX}以外では無効になる。
-% （将来pandocの外に出す可能性あり。）
-%    \begin{macrocode}
-\@onlypreamble\bxjs@endpreamble@hook
-\let\bxjs@endpreamble@hook\@empty
-%    \end{macrocode}
-% \end{macro}
-%
 % パッケージ読込。
 %    \begin{macrocode}
 \RequirePackage{iftex}[2013/04/04]% v0.2
 \ifjsWitheTeX
   \RequirePackage{etoolbox}[2010/08/21]% v2.0
-  \AtEndPreamble{\bxjs@endpreamble@hook}
   \RequirePackage{filehook}[2011/10/12]% v0.5d
 \fi
 %    \end{macrocode}
