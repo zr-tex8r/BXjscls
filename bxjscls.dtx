@@ -484,6 +484,22 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@if@package@at@least}
+% |\bxjs@if@package@at@least{|\Meta{名前}|}{|\Meta{日付}|}{|\Meta
+% {真}|}{|\Meta{偽}|}|\Means
+% ぞの名前のパッケージの指定の日付以降の版が読み込まれているか。
+% そもそも読み込まれていない場合は偽になる。
+% \Note 2017/04/15版より前のカーネルの |\@ifpackagelater| は
+% 非読込の場合に実行するとエラーになることに注意。
+%    \begin{macrocode}
+\bxjs@if@format@at@least{2017/04/15}{%
+  \let\bxjs@if@package@at@least\@ifpackagelater
+}{%else
+  \def\bxjs@if@package@at@least#1#2{%
+    \@ifpackageloaded{#1}{\@ifpackagelater{#1}{#2}}{\@secondoftwo}}}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifjsWithupTeX}
 % 〔スイッチ〕
 % エンジンが（内部漢字コードがUnicodeの）{\upTeX}であるか。
@@ -10770,7 +10786,7 @@
 % |\bxjs@plautopatch@new| は「|pxjahyper| の自動読込に対応した
 % 版の |plautopatch| が読み込まれているか」のフラグ。
 %    \begin{macrocode}
-  \@ifpackagelater{plautopatch}{2020/05/25}{% v0.9g
+  \bxjs@if@package@at@least{plautopatch}{2020/05/25}{% v0.9g
     \let\bxjs@plautopatch@new=t}{}
 %    \end{macrocode}
 % 「|unicode| を有効にできるか」を判定する。
