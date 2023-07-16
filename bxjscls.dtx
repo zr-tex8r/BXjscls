@@ -2722,27 +2722,17 @@
 % 以降のレイアウト指定ではこちらを使います。
 %
 % \begin{ZRnote}
-% |\mag| する場合（現状はこれが既定）にコードの変更を低減するために、
-% 以下では必要に応じて、|\jsc@mpt| を |\p@?| と書く。
-% その上で、|\mag| する場合は |?| を無視して |\p@| と解釈させ、
-% |\mag| しない場合は |?| を英字扱いにして |\p@?| という制御綴を
-% |\jsc@mpt| と同値にする。
-% \Note （多分2.0版あたりで）JSクラスに合わせるため |\p@?| 表記を
-% 止める予定。
+% \Note 2.9版において |\p@?| 表記を廃止。
 %    \begin{macrocode}
 \newdimen\jsc@mpt
 \newdimen\jsc@mmm
 \ifjsc@mag
   \jsc@mpt=1\p@
   \jsc@mmm=1mm
-  \catcode`\?=9 % \p@? read as \p@
 \else
   \jsc@mpt=\jsc@magscale\p@
   \jsc@mmm=\jsc@magscale mm
-  \catcode`\?=11 \let\p@?\jsc@mpt
 \fi
-\chardef\bxjs@qmcc=\catcode`\?\relax
-\g@addto@macro\bxjs@pre@jadriver@hook{\catcode`\?=12\relax}
 %    \end{macrocode}
 %
 % ここで{p\TeX}のzwに相当する単位として用いる長さ変数 |\jsZw| を作成する。
@@ -3695,9 +3685,9 @@
 % いましたが，結局，微調節してみることにしました。
 %
 %    \begin{macrocode}
-  \abovedisplayskip 11\p@? \@plus3\p@? \@minus4\p@?
-  \abovedisplayshortskip \z@ \@plus3\p@?
-  \belowdisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
+  \abovedisplayskip 11\jsc@mpt \@plus3\jsc@mpt \@minus4\jsc@mpt
+  \abovedisplayshortskip \z@ \@plus3\jsc@mpt
+  \belowdisplayskip 9\jsc@mpt \@plus3\jsc@mpt \@minus4\jsc@mpt
   \belowdisplayshortskip \belowdisplayskip
 %    \end{macrocode}
 %
@@ -3780,8 +3770,8 @@
 %<!kiyou>    \jsc@setfontsize\small\@ixpt{13}%
 %<kiyou>    \jsc@setfontsize\small{8.8888}{13.2418}%
   }%
-  \abovedisplayskip 9\p@? \@plus3\p@? \@minus4\p@?
-  \abovedisplayshortskip  \z@ \@plus3\p@?
+  \abovedisplayskip 9\jsc@mpt \@plus3\jsc@mpt \@minus4\jsc@mpt
+  \abovedisplayshortskip  \z@ \@plus3\jsc@mpt
   \belowdisplayskip \abovedisplayskip
   \belowdisplayshortskip \belowdisplayskip
   \def\@listi{\leftmargin\leftmargini
@@ -3806,8 +3796,8 @@
 %<!kiyou>    \jsc@setfontsize\footnotesize\@viiipt{11}%
 %<kiyou>    \jsc@setfontsize\footnotesize{8.8888}{13.2418}%
   }%
-  \abovedisplayskip 6\p@? \@plus2\p@? \@minus3\p@?
-  \abovedisplayshortskip  \z@ \@plus2\p@?
+  \abovedisplayskip 6\jsc@mpt \@plus2\jsc@mpt \@minus3\jsc@mpt
+  \abovedisplayshortskip  \z@ \@plus2\jsc@mpt
   \belowdisplayskip \abovedisplayskip
   \belowdisplayshortskip \belowdisplayskip
   \def\@listi{\leftmargin\leftmargini
@@ -4029,7 +4019,7 @@
 \ifjsc@mag
 \mag=\bxjs@param@mag
 \fi
-\setlength{\topskip}{10\p@?}
+\setlength{\topskip}{10\jsc@mpt}
 %    \end{macrocode}
 %
 % |\jsSetQHLength| のための和文単位の定義。
@@ -4833,7 +4823,7 @@
 % なので、実際の設定値を直接使うことにする。
 % \end{ZRnote}
 %    \begin{macrocode}
-\footnotesep=11\p@? \footnotesep=0.7\footnotesep
+\footnotesep=11\jsc@mpt \footnotesep=0.7\footnotesep
 %    \end{macrocode}
 % \end{macro}
 %
@@ -4844,7 +4834,7 @@
 % 和文の行送りを考えてもうちょっと大きくします。
 %
 %    \begin{macrocode}
-\setlength{\skip\footins}{16\p@? \@plus 5\p@? \@minus 2\p@?}
+\setlength{\skip\footins}{16\jsc@mpt \@plus 5\jsc@mpt \@minus 2\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -4970,9 +4960,9 @@
 % |\intextsep| は本文の途中に出力されるフロートと本文との距離です。
 %
 %    \begin{macrocode}
-\setlength\floatsep    {12\p@? \@plus 2\p@? \@minus 2\p@?}
-\setlength\textfloatsep{20\p@? \@plus 2\p@? \@minus 4\p@?}
-\setlength\intextsep   {12\p@? \@plus 2\p@? \@minus 2\p@?}
+\setlength\floatsep    {12\jsc@mpt \@plus 2\jsc@mpt \@minus 2\jsc@mpt}
+\setlength\textfloatsep{20\jsc@mpt \@plus 2\jsc@mpt \@minus 4\jsc@mpt}
+\setlength\intextsep   {12\jsc@mpt \@plus 2\jsc@mpt \@minus 2\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -4984,8 +4974,8 @@
 % 二段組のときの段抜きのフロートについての値です。
 %
 %    \begin{macrocode}
-\setlength\dblfloatsep    {12\p@? \@plus 2\p@? \@minus 2\p@?}
-\setlength\dbltextfloatsep{20\p@? \@plus 2\p@? \@minus 4\p@?}
+\setlength\dblfloatsep    {12\jsc@mpt \@plus 2\jsc@mpt \@minus 2\jsc@mpt}
+\setlength\dbltextfloatsep{20\jsc@mpt \@plus 2\jsc@mpt \@minus 4\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -5000,9 +4990,9 @@
 % |\@fpsep| はフロート間に入ります。
 %
 %    \begin{macrocode}
-\setlength\@fptop{0\p@? \@plus 1fil}
-\setlength\@fpsep{8\p@? \@plus 2fil}
-\setlength\@fpbot{0\p@? \@plus 1fil}
+\setlength\@fptop{0\jsc@mpt \@plus 1fil}
+\setlength\@fpsep{8\jsc@mpt \@plus 2fil}
+\setlength\@fpbot{0\jsc@mpt \@plus 1fil}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -5015,9 +5005,9 @@
 % 段抜きフロートについての値です。
 %
 %    \begin{macrocode}
-\setlength\@dblfptop{0\p@? \@plus 1fil}
-\setlength\@dblfpsep{8\p@? \@plus 2fil}
-\setlength\@dblfpbot{0\p@? \@plus 1fil}
+\setlength\@dblfptop{0\jsc@mpt \@plus 1fil}
+\setlength\@dblfpsep{8\jsc@mpt \@plus 2fil}
+\setlength\@dblfpbot{0\jsc@mpt \@plus 1fil}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -5473,7 +5463,7 @@
         \begin{center}
           \mbox{} \\[1\jsZw]
           \large
-          {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
+          {\maybeblue\hrule height0\jsc@mpt depth2\jsc@mpt\relax}\par
           \jsc@smallskip
           \@title
           \ifx\bxjs@subtitle\@undefined\else
@@ -5481,16 +5471,16 @@
             {\small \bxjs@subtitle\par}
           \fi
           \jsc@smallskip
-          {\maybeblue\hrule height0\p@? depth2\p@?\relax}\par
+          {\maybeblue\hrule height0\jsc@mpt depth2\jsc@mpt\relax}\par
           \vfill
           {\small \@author}%
         \end{center}
       \else
-      \vskip 60\p@?
+      \vskip 60\jsc@mpt
       \begin{center}%
         {\LARGE \@title \par}%
         \ifx\bxjs@subtitle\@undefined\else
-          \vskip5\p@?
+          \vskip5\jsc@mpt
           {\normalsize \bxjs@subtitle\par}
         \fi
         \vskip 3em%
@@ -5569,7 +5559,7 @@
       \let\footnote\thanks
       {\LARGE \@title \par}%
       \ifx\bxjs@subtitle\@undefined\else
-        \vskip3\p@?
+        \vskip3\jsc@mpt
         {\normalsize \bxjs@subtitle\par}
       \fi
       \vskip 1.5em
@@ -6190,7 +6180,7 @@
     \normalfont
     \ifnum \c@secnumdepth >-2\relax
       \huge\headfont \prepartname\thepart\postpartname
-      \par\vskip20\p@?
+      \par\vskip20\jsc@mpt
     \fi
     \Huge \headfont #2\par}%
   \@endpart}
@@ -7081,7 +7071,7 @@
 % |array| 環境の列間には |\arraycolsep| の2倍の幅の空きが入ります。
 %
 %    \begin{macrocode}
-\setlength\arraycolsep{5\p@?}
+\setlength\arraycolsep{5\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7090,7 +7080,7 @@
 % |tabular| 環境の列間には |\tabcolsep| の2倍の幅の空きが入ります。
 %
 %    \begin{macrocode}
-\setlength\tabcolsep{6\p@?}
+\setlength\tabcolsep{6\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -7147,7 +7137,7 @@
 % |\fbox|，|\framebox| の罫線の幅です。
 %
 %    \begin{macrocode}
-\setlength\fboxsep{3\p@?}
+\setlength\fboxsep{3\jsc@mpt}
 \setlength\fboxrule{.4\p@}
 %    \end{macrocode}
 % \end{macro}
@@ -7357,8 +7347,8 @@
 %    \begin{macrocode}
 \newlength\abovecaptionskip
 \newlength\belowcaptionskip
-\setlength\abovecaptionskip{5\p@?} % 元: 10\p@
-\setlength\belowcaptionskip{5\p@?} % 元: 0\p@
+\setlength\abovecaptionskip{5\jsc@mpt} % 元: 10\p@
+\setlength\belowcaptionskip{5\jsc@mpt} % 元: 0\p@
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -7711,7 +7701,7 @@
   \ifnum \c@tocdepth >-2\relax
 %<!book&!report>    \addpenalty\@secpenalty
 %<book|report>    \addpenalty{-\@highpenalty}%
-    \addvspace{2.25em \@plus\p@?}%
+    \addvspace{2.25em \@plus\jsc@mpt}%
     \begingroup
       \parindent \z@
 %     \@pnumwidth should be \@tocrmarg
@@ -7742,7 +7732,7 @@
 \newcommand*{\l@chapter}[2]{%
   \ifnum \c@tocdepth >\m@ne
     \addpenalty{-\@highpenalty}%
-    \addvspace{1.0em \@plus\p@?}
+    \addvspace{1.0em \@plus\jsc@mpt}
 %   \vskip 1.0em \@plus\p@   % book.clsでは↑がこうなっている
     \begingroup
       \parindent\z@
@@ -7770,7 +7760,7 @@
 \newcommand*{\l@section}[2]{%
   \ifnum \c@tocdepth >\z@
     \addpenalty{\@secpenalty}%
-    \addvspace{1.0em \@plus\p@?}%
+    \addvspace{1.0em \@plus\jsc@mpt}%
     \begingroup
       \parindent\z@
 %     \rightskip\@pnumwidth
@@ -7897,7 +7887,7 @@
 \def\jsTocLine{\leaders\hbox{%
   $\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}
 \def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
-  \vskip \z@ \@plus.2\p@?
+  \vskip \z@ \@plus.2\jsc@mpt
   {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
     \parindent #2\relax\@afterindenttrue
    \interlinepenalty\@M
@@ -8140,7 +8130,7 @@
 %<!book&!report>    \@mkboth{\indexname}{\indexname}%
     \plainifnotempty % \thispagestyle{plain}
     \parindent\z@
-    \parskip\z@ \@plus .3\p@?\relax
+    \parskip\z@ \@plus .3\jsc@mpt\relax
     \let\item\@idxitem
     \raggedright
     \footnotesize\narrowbaselines
@@ -8175,7 +8165,7 @@
 % 索引で先頭文字ごとのブロックの間に入るスペースです。
 %
 %    \begin{macrocode}
-\newcommand{\indexspace}{\par \vskip 10\p@? \@plus5\p@? \@minus3\p@?\relax}
+\newcommand{\indexspace}{\par \vskip 10\jsc@mpt \@plus5\jsc@mpt \@minus3\jsc@mpt\relax}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -8274,9 +8264,9 @@
 %
 %    \begin{macrocode}
 \renewcommand{\footnoterule}{%
-  \kern-2.6\p@? \kern-.4\p@
+  \kern-2.6\jsc@mpt \kern-.4\p@
   \hrule width .4\columnwidth
-  \kern 2.6\p@?}
+  \kern 2.6\jsc@mpt}
 %    \end{macrocode}
 % \end{macro}
 %
