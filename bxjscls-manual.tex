@@ -12,8 +12,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.8b}
-\newcommand{\PkgDate}{2023/07/01}
+\newcommand{\PkgVersion}{2.9}
+\newcommand{\PkgDate}{2023/07/17}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -24,7 +24,7 @@
 \newcommand{\xast}{\mbox{}\mbox{$^*$}}
 \newcommand{\JSl}{\mbox{}／\mbox{}}
 \newcommand{\JSS}{\raisebox{-0.12\zw}{\makebox[1\zw]{%
-  \rule{0.4pt}{0.12\zw}\rule{0.9\zw}{0.4pt}\rule{0.4pt}{0.12\zw}}}}
+  \rule{0.4pt}{0.25\zw}\rule{0.9\zw}{0.4pt}\rule{0.4pt}{0.25\zw}}}}
 %-----------------------------------------------------------
 \begin{document}
 \title{\Pkg{BXjscls} パッケージ\\
@@ -578,7 +578,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 
 \begin{itemize}
 \item エンジンオプション\Means
-  実際に使用するエンジン（{\LaTeX}コマンド名）を指定する。
+  実際に使用する{\LaTeX}エンジン（実行コマンド名）を指定する。
   有効な値は |latex|、|platex|、|uplatex|、|pdflatex|、|xelatex|、
   |lualatex|、|platex-ng| である。
   エンジンオプション（と次項の |autodetect-engine| の何れか）
@@ -617,8 +617,10 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |nodvidriver|\Means
   特殊なドライバオプションの一種で、BXJSクラスが持つ
   ドライバ依存の機能を全て抑止することを指定する。
-  \footnote{従って、ドライバ依存のパッケージを使用しなければ、
-    出力されるDVIファイルは特定のDVIウェアに依存しないものになる。}
+  \footnote{従って、別にドライバ依存の機能を使用しなければ、
+    出力されるDVIファイルは特定のDVIウェアに依存しないものになる。
+    ただし最近の{\LaTeX}カーネルはそれ自身がドライバ依存をもつ
+    ことに注意。}
 \item |dvi=|\Meta{ドライバ名}\Means
   エンジンがDVI出力の場合に限り、指定のドライバオプションを
   有効にする。
@@ -631,8 +633,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   「Pandocモード」（\ref{sec:Pandoc-mode}節参照）を指定する。
   以下の設定が行われる：
   \begin{itemize}
-  \item エンジンオプションが |autodetect-engine| に固定される。
-  \item 和文ドライバが |pandoc| に固定される。
+  \item エンジンオプションが |autodetect-engine| に\jemph{固定}される。
+  \item 和文ドライバが |pandoc| に\jemph{固定}される。
   \item ドライバオプションについて |dvi=dvipdfmx| が既定になる
     （明示指定で上書可能）。
   \end{itemize}
@@ -652,7 +654,8 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   エンジンが |platex| か |uplatex| の時は |ja| の
   既定値は |standard| である。
   それ以外の場合は、一応 |minimal| となるが、
-  2.0版以降ではこの場合の |ja| の省略は\jemph{非推奨}である。
+  2.0版以降ではこの場合の |ja| の省略は\jemph{非推奨}であり、
+  3.0版で\jemph{禁止}される予定である。
 \item |jafont=|\Meta{名前}\Means
   「和文フォントプリセット指定」の名前を設定する。
   既定値は空。
@@ -670,8 +673,15 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   「和文ドライバパラメタ」の値を設定する。
   既定値は空。
   \Note 詳細は\ref{sec:Ja-Driver-Param}節を参照。
+  \Note |japaram| を複数回指定した場合は各々の指定内容
+  （キーと値の組の列）が累積する。
   \Note |jafont| と |japaram| の値がどのように解釈されるかは
   和文ドライバの仕様次第である。
+\item |ja:|\Meta{キー}|=|\Meta{値}\Means
+  和文ドライバパラメタ設定の代替書式で、
+  |japaram={|\Meta{キー}|=|\Meta{値}|}|
+  と書いたのと同値である。
+  \Note Pandocで波括弧の扱いが面倒になる場合があることへの対策。
 \item |base=|\Meta{長さ\xast}\Means
   基底フォントサイズ（|\normalsize| のサイズ）を指定する。
   JSクラスの |10pt|、|11pt| 等と同じ役割で、任意の長さ値を指定できる。
@@ -719,7 +729,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
       |screen|
     \end{quote}
     \Note |bNpaper| は\Pkg{geometry}ではISO~B判を意味するが、
-    JSクラスとの互換のため、BXJSでの意味は |iso-bsize| の有無に従う
+    BXJSでの意味は |iso-bsize| の有無に従う
     （つまり既定ではJIS~B判）。
     |bNj| は\Pkg{geometry}と同じく常にJIS~B判である。
   \item 末尾が |～paper| でない名前のオプションについて、
@@ -1554,6 +1564,9 @@ vscale=0.944, vmarginratio=1:1
     つまり |chapterabstract| 環境と等価。
   \end{itemize}
 
+\item |\Seireki|／|\Wareki|\Means
+  |\西暦|／|\和暦| と等価な英字名の命令。
+
 \item |\jayear|\Means
   和暦表示（|\和暦|）が有効な時の |\today| のテキスト中の年号
   （「年」より前の部分、例えば「平成28」）
@@ -1615,7 +1628,7 @@ vscale=0.944, vmarginratio=1:1
 \begin{itemize}
 \item |\jsZw|\Means
   和文の全角幅を表す長さ命令。
-  例えば |2\jsZw| が pLaTeX の |2zw| に相当する。
+  例えば |2\jsZw| が{\pLaTeX}の |2zw| に相当する。
 \item |\zw|\Means
   |\jsZw| の別名。
   \footnote{\Pkg{\LuaTeX-ja}では「実際の全角幅」を表す

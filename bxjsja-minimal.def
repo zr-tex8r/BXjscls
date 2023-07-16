@@ -21,8 +21,18 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2023/07/01 v2.8b BXJS document classes]
+  [2023/07/17 v2.9  BXJS document classes]
 %% このファイルは日本語文字を含みます
+\let\bxjs@tmpa\relax
+\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
+\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
+\ifx\bxjs@tmpa\relax \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use (\bxjs@tmpa) is not supported}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
 \def\DeclareJaTextFontCommand#1#2{%
   \DeclareRobustCommand#1[1]{%
     \relax

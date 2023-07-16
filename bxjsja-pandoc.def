@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2023/07/01 v2.8b BXJS document classes]
+  [2023/07/17 v2.9  BXJS document classes]
 \if x\jsEngine
   \PassOptionsToPackage{nospace}{xeCJK}
 \fi
@@ -45,12 +45,9 @@
     \fi
   }{}
 \fi
-\@onlypreamble\bxjs@endpreamble@hook
-\let\bxjs@endpreamble@hook\@empty
 \RequirePackage{iftex}[2013/04/04]% v0.2
 \ifjsWitheTeX
   \RequirePackage{etoolbox}[2010/08/21]% v2.0
-  \AtEndPreamble{\bxjs@endpreamble@hook}
   \RequirePackage{filehook}[2011/10/12]% v0.5d
 \fi
 \newif\ifbxjs@jp@fix@strong \bxjs@jp@fix@strongtrue

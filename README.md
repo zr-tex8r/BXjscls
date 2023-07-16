@@ -13,22 +13,23 @@ packages that provide capability of Japanese typesetting.
 
 ### SYSTEM REQUIREMENTS
 
-  * TeX engine: pdfTeX, XeTeX, LuaTeX, pTeX, upTeX or pTeX-ng.
-      - e-TeX extension is not needed for (u)pTeX.
+  * TeX engine: TeX, pdfTeX, XeTeX, LuaTeX, pTeX, upTeX or pTeX-ng.
+      - The e-TeX extension is not needed.
+          + When using the standard mode, the e-TeX extension is required
+            except on (u)pTeX.
       - XeTeX must be of version 0.997 or later.
   * TeX format: LaTeX.
   * DVIware (in DVI mode): Anything.
   * Prerequisite packages:
       - calc
       - geometry v5.0+
-      - iftex
       - keyval
   * Packages required on occasion:
       - bxwareki: when the wareki feature is used
       - jslogo: if use `jslogo`
       - plautopatch v0.3+: if use (u)pLaTeX and `plautopatch`
       - type1cm: if use `magstyle=nomag*`
-      - When using the standard ja-driver:
+      - When using the standard mode (standard ja-driver):
           + bxcalc v1.0+: if use ja-parameter `units`
           + bxcjkjatype v0.2c+: if use (pdf)LaTeX
           + CJK:  if use (pdf)LaTeX
@@ -43,6 +44,7 @@ packages that provide capability of Japanese typesetting.
           + bxorigcapt: if use Babel
           + etoolbox v2.0+
           + filehook v0.5d+
+          + iftex v0.2+
           + pdftexcmds v0.5+
           + pxbabel: if use (u)pLaTeX and Babel
   * When you use ja-drivers other than standard, you generally need
@@ -100,6 +102,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.9  〈2023/07/17〉
   * Version 2.8b 〈2023/07/01〉
   * Version 2.8a 〈2023/06/20〉
   * Version 2.8  〈2023/06/14〉

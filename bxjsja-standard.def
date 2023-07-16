@@ -21,10 +21,15 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2023/07/01 v2.8b BXJS document classes]
+  [2023/07/17 v2.9  BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
+\ifjsWitheTeX
+  \IfFileExists{etoolbox.sty}{%
+    \RequirePackage{etoolbox}[2007/10/08]% v1.3
+  }{}
+\fi
 \newif\ifbxjs@jp@jismmiv
 \bxjs@cslet{bxjs@kv@jis2004@true}\bxjs@jp@jismmivtrue
 \bxjs@cslet{bxjs@kv@jis2004@false}\bxjs@jp@jismmivfalse
@@ -37,7 +42,7 @@
   \bxjs@set@keyval{units}{#1}{}}
 \let\bxjs@jp@font\@empty
 \define@key{bxjsStd}{font}{%
-  \edef\bxjs@jp@font{#1}}
+  \edef\bxjs@jp@font{\bxjs@catopt\bxjs@jp@font{#1}}}
 \newif\ifbxjs@jp@strong@cmd \bxjs@jp@strong@cmdtrue
 \let\bxjs@kv@strongcmd@true\bxjs@jp@strong@cmdtrue
 \let\bxjs@kv@strongcmd@false\bxjs@jp@strong@cmdfalse
@@ -405,7 +410,7 @@
 \bxjs@g@tmpa
 \ifbxjs@hyperref@enc
   \bxjs@check@hyperref@unicode{false}
-  \@ifpackagelater{plautopatch}{2020/05/25}{% v0.9g
+  \bxjs@if@package@at@least{plautopatch}{2020/05/25}{% v0.9g
     \let\bxjs@plautopatch@new=t}{}
   \let\bxjs@avail@hy@unicode=f
   \if \ifx t\bxjs@plautopatch@new T%
@@ -421,7 +426,7 @@
     \else
       \let\bxjs@avail@hy@unicode=f
       \ifx t\bxjs@plautopatch@new
-        \@ifl@t@r\fmtversion{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
+        \bxjs@if@format@at@least{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
       \fi
     \fi
   \fi
@@ -562,7 +567,7 @@
   \fi
 \fi
 \fi
-\AtEndOfPackage{%
+\AtEndOfClass{%
 \def\@gnewline #1{%
   \ifvmode \@nolnerr
   \else
