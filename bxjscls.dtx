@@ -475,6 +475,15 @@
 \fi{\typeout{Farewell!}\endinput\@@end}
 %    \end{macrocode}
 %
+% \begin{macro}{\bxjs@if@format@at@least}
+% |\bxjs@if@format@at@least{|\Meta{日付}|}{|\Meta
+% {真}|}{|\Meta{偽}|}|\Means
+% {\LaTeX}カーネルの版が指定の日付以降であるか。
+%    \begin{macrocode}
+\def\bxjs@if@format@at@least{\@ifl@t@r\fmtversion}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifjsWithupTeX}
 % 〔スイッチ〕
 % エンジンが（内部漢字コードがUnicodeの）{\upTeX}であるか。
@@ -522,7 +531,23 @@
 % expl3がカーネルに組み込まれているか。
 %    \begin{macrocode}
 \newif\ifbxjs@explIII
-\@ifl@t@r\fmtversion{2020/02/02}{\bxjs@explIIItrue}{}
+\bxjs@if@format@at@least{2020/02/02}{\bxjs@explIIItrue}{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@brace@safe}
+% 〔スイッチ〕
+% オプション中の波括弧の使用にカーネルが対応しているか。
+% \Note 正確に言うと、2021-06-01版以降のカーネルでは
+% 「未使用オプション判定」
+% の処理で |=| 以降のトークン列
+% （key-valueのvalueの部分）
+% を無視するので、この部分には波括弧を含めることができる。
+% \Note |\@removeelement| と |\in@| の実装は変更されておらず、
+% これらのマクロの第1引数には波括弧を含むトークン列を指定できない。
+%    \begin{macrocode}
+\newif\ifbxjs@brace@safe
+\bxjs@if@format@at@least{2021/06/01}{\bxjs@brace@safetrue}{}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -550,7 +575,7 @@
 % \Note カーネルの2020/10/01版で導入された。
 %    \begin{macrocode}
 \newif\ifbxjs@old@hook@system
-\@ifl@t@r\fmtversion{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+\bxjs@if@format@at@least{2020/10/01}{}{\bxjs@old@hook@systemtrue}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -644,7 +669,7 @@
 % 例えば、|\bxjs@CGHN{package/PKG/after}| は旧仕様の{\LaTeX}では
 % “|package/after/PKG|”に展開される。
 %    \begin{macrocode}
-\@ifl@t@r\fmtversion{2021/11/15}{%
+\bxjs@if@format@at@least{2021/11/15}{%
   \def\bxjs@CGHN#1{#1}%
 }{%else
   \def\bxjs@CGHN#1{\bxjs@CGHN@a#1//}%
@@ -1739,7 +1764,7 @@
 % その他のオプションは |keyval| の機構を用いて処理する。
 %    \begin{macrocode}
 \DeclareOption*{%
-  \def\bxjs@next{\bxjs@safe@setkeys{bxjs}}%
+  \def\bxjs@next{\bxjs@cls@setkeys{bxjs}}%
   \expandafter\bxjs@next\expandafter{\CurrentOption}}
 %    \end{macrocode}
 %
@@ -1751,6 +1776,21 @@
   \let\bxjs@save@KV@errx\KV@errx \let\KV@errx\@gobble
   \setkeys{#1}{#2}%
   \let\KV@errx\bxjs@save@KV@errx}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@cls@setkeys}
+% 未知のキーに対して（エラー無しで）|\OptionNotUsed| を行う |\setkeys|。
+% |\DeclareOption*| 中で用いる。
+%    \begin{macrocode}
+\def\bxjs@cls@setkeys#1#2{%
+  \let\bxjs@save@KV@errx\KV@errx
+  \def\KV@errx##1{\OptionNotUsed}%
+  \setkeys{#1}{#2}%
+  \let\KV@errx\bxjs@save@KV@errx}
+\ifbxjs@brace@safe\else
+  \let\bxjs@cls@setkeys\bxjs@safe@setkeys
+\fi
 %    \end{macrocode}
 % \end{macro}
 %
@@ -2201,19 +2241,24 @@
 % \paragraph{オプションの実行}
 % \mbox{}
 % \begin{ZRnote}
-% {\LaTeX}の実装では、クラスやパッケージのオプションのトークン列の
-% 中に |{ }| が含まれると正常に処理ができない。
-% これに対処する為 |\@removeelement| の実装に少し手を加える
-% （仕様は変わらない）。
-% \Note クラスに |\DeclareOption*| がある場合は |\@unusedoptions|
+% {\LaTeX}カーネルの2021-06-01より前の版では、
+% クラスやパッケージのオプションのトークン列の中に波括弧が含まれると
+% 正常に処理ができない。
+% これに対処する為 |\@removeelement| の実装に少し手を加えて
+% 「第2引数が空の場合の処理をショートカットする」
+% ことにより、この場合に波括弧を含む第1引数が通るようにする。
+% \Note クラスに |\DeclareOption*| があり |\OptionNotUsed| を使って
+% いない場合は |\@unusedoptions|
 % は常に空のままであることを利用している。
 %    \begin{macrocode}
+\ifbxjs@brace@safe\else
 \let\bxjs@org@removeelement\@removeelement
 \def\@removeelement#1#2#3{%
   \def\reserved@a{#2}%
   \ifx\reserved@a\@empty \let#3\@empty
   \else \bxjs@org@removeelement{#1}{#2}{#3}%
   \fi}
+\fi
 %    \end{macrocode}
 %
 % \end{ZRnote}
@@ -2248,10 +2293,11 @@
 %
 % \paragraph{グローバルオプションの整理 \ZRX}
 %
+% 2021-06-01より前の版の{\LaTeX}カーネルでは、
 % グローバルオプションのトークン列に |{ }| が含まれていると、
-% やはり後のパッケージの読込処理で不具合を起こすようである
-% （|\ProcessOptions*| がエラーになる）。
+% 後のパッケージで |\ProcessOptions*| がエラーを起こす。
 % 従って、このようなオプションは除外することにする。
+% \TODO 2021-06-01版以降での扱いをどうするか。
 %    \begin{macrocode}
 \def\bxjs@tmpdo{%
   \def\bxjs@tmpa{\@gobble}%
@@ -10729,7 +10775,7 @@
 %    \begin{macrocode}
       \let\bxjs@avail@hy@unicode=f
       \ifx t\bxjs@plautopatch@new
-        \@ifl@t@r\fmtversion{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
+        \bxjs@if@format@at@least{2023/06/01}{\let\bxjs@avail@hy@unicode=t}{}
       \fi
     \fi
   \fi
