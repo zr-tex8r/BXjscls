@@ -138,7 +138,7 @@
 %\usepackage[ipaex]{luatexja-preset}
 \renewcommand{\headfont}{\romanseries{sbc}\sffamily}
 \usepackage{bxtexlogo}
-\bxtexlogoimport{*}
+\bxtexlogoimport{*,JTeX}
 \usepackage{doc}
 \usepackage{color}
 \newcommand{\Pkg}[1]{\textsf{#1}}
@@ -408,23 +408,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% 非サポートのエンジンの場合は強制終了させる。
-% \Note NTT j{\TeX}とOmega系。
-%    \begin{macrocode}
-\let\bxjs@tmpa\relax
-\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
-\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
-\ifx\bxjs@tmpa\relax \expandafter\@gobble
-\else
-  \ClassError\bxjs@clsname
-   {The engine in use (\bxjs@tmpa) is not supported}
-   {It's a fatal error. I'll quit right now.}
-  \expandafter\@firstofone
-\fi{\endinput\@@end}
-%    \end{macrocode}
-%
-% 現状での処理系バージョン要件は以下の通りである
-% （{\XeTeX}のみの設定で、しかも現実離れしている）。
+% 現状での処理系バージョン要件は以下の通りである。
 % \begin{itemize}
 % \item \XeTeX\Means 0.997版（2007年）以上
 % \end{itemize}
@@ -439,7 +423,12 @@
 % \item \LuaTeX\Means 0.60版[2010/04]以上
 % \item \XeTeX\Means  0.9994版[2009/06]以上
 % \end{itemize}
-% \Note 標準和文ドライバについてはまた別に要件を定める。
+% \Note OmegaとNTT {\JTeX}は“公式にはサポート外”の扱い
+% （動作は何も保証されない）
+% であるが、クラス本体では処理系の種類は敢えて検査しないことにする。
+% \Note クラス本体での要件は敢えて緩くしている。
+% 標準和文ドライバ（minimalも含む）についてまた別に要件を定めるので、
+% 実質的にはそちらの要件を満たすことが求められる。
 %
 % {\TeX}処理系のバージョンがサポート対象であるかを検査する。
 %    \begin{macrocode}
@@ -9262,13 +9251,34 @@
 % \TODO 本来は「minimalにすら依存しない」はずのものがminimalの
 % コード中に書かれているような気がする……。
 %
-%^^A----------------
-% \subsection{補助マクロ}
-%
 %    \begin{macrocode}
 %<*minimal>
 %% このファイルは日本語文字を含みます
 %    \end{macrocode}
+%
+% \paragraph{環境検査}
+% \mbox{}
+%
+% minimal和文ドライバの処理系バージョン要件はクラス本体と同じとする。
+% 
+% ただし「公式にはサポート外」のエンジンが使われている場合は
+% 強制終了させる。
+% \Note NTT {\JTeX}とOmega系。
+%    \begin{macrocode}
+\let\bxjs@tmpa\relax
+\ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
+\ifx O\jsEngine \def\bxjs@tmpa{Omega}\fi
+\ifx\bxjs@tmpa\relax \expandafter\@gobble
+\else
+  \ClassError\bxjs@clsname
+   {The engine in use (\bxjs@tmpa) is not supported}
+   {It's a fatal error. I'll quit right now.}
+  \expandafter\@firstofone
+\fi{\endinput\@@end}
+%    \end{macrocode}
+%
+%^^A----------------
+% \subsection{補助マクロ}
 %
 % \begin{macro}{\DeclareJaTextFontCommand}
 % 和文書体のための、「余計なこと」をしない |\DeclareTextFontCommand|。
@@ -10038,6 +10048,26 @@
 %    \begin{macrocode}
 \bxjs@simplejasetupfalse
 %    \end{macrocode}
+%
+% \paragraph{環境検査}
+% \mbox{}
+% \TODO 以下で3.0版でのバージョン要件の予定について述べておく。
+%
+% standard和文ドライバの処理系バージョン要件
+% （minimalからの差分）
+% は以下の通りである。
+% \begin{itemize}
+% \item \upTeX\Means  0.29版[2010/01]以上
+% \item \LuaTeX\Means 0.85版[2015/11]以上
+% \item \XeTeX\Means  0.9999版[2013/03]以上
+% \end{itemize}
+% 加えて、以下の要件を定める。
+% \begin{itemize}
+% \item {\pTeX}系以外のエンジンでは{\eTeX}拡張を必須とする。
+%   \Note |bxcjkjatype| パッケージが{\eTeX}拡張を要求するため。
+% \item {\LuaTeX}のDVIモードはサポートしない。
+%   \Note {\LuaTeX-ja}パッケージがサポートしていないため。
+% \end{itemize}
 %
 % \paragraph{パッケージ読込}
 %
@@ -11626,6 +11656,18 @@
 %    \begin{macrocode}
 \input{bxjsja-standard.def}
 %    \end{macrocode}
+%
+% \paragraph{環境検査}
+% \mbox{}
+% \TODO 以下で3.0版でのバージョン要件の予定について述べておく。
+%
+% pandoc和文ドライバの処理系バージョン要件はstandardと同じとする。
+% 加えて、以下の要件を定める。
+% \begin{itemize}
+% \item {\pTeX}系も含めて全てのエンジン種別で{\eTeX}拡張を要求する。
+% \item 特に |etoolbox| の2.0版以上を要求する。
+%   \Note もちろん他にも追加の依存パッケージがある。
+% \end{itemize}
 %
 % |bxjspandoc| パッケージを読み込む。
 %    \begin{macrocode}
