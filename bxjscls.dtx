@@ -3526,7 +3526,7 @@
 % この場とパッケージ末尾で作動させる。
 %    \begin{macrocode}
 \bxjs@patch@set@fontsize
-\AtEndOfPackage{\bxjs@patch@set@fontsize}
+\AtEndOfClass{\bxjs@patch@set@fontsize}
 %    \end{macrocode}
 %
 % \begin{macro}{\jsFontSizeChanged}
@@ -8608,7 +8608,7 @@
 % \end{ZRnote}
 %    \begin{macrocode}
 \ifnum\bxjs@everyparhook=\bxjs@everyparhook@@none\else
-\AtEndOfPackage{%
+\AtEndOfClass{%
 \def\@gnewline #1{%
   \ifvmode
     \@nolnerr
@@ -11019,7 +11019,7 @@
 % 強制改行直後のグルー禁止処理、のような怪しげな何か。
 %
 %    \begin{macrocode}
-\AtEndOfPackage{%
+\AtEndOfClass{%
 \def\@gnewline #1{%
   \ifvmode \@nolnerr
   \else
@@ -13108,7 +13108,7 @@ FE70,FFF0,%
 %    \begin{macrocode}
 %<*ancpandoc>
 %% このファイルは日本語文字を含みます.
-\def\bxjsp@pkgname{bxjscjkcat}
+\def\bxjsp@pkgname{bxjspandoc}
 %    \end{macrocode}
 %
 % \begin{macro}{\bxjsp@engine}
