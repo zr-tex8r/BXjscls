@@ -1819,9 +1819,30 @@
 % その他のオプションは |keyval| の機構を用いて処理する。
 %    \begin{macrocode}
 \DeclareOption*{%
+  \bxjs@check@ja@prefix \ifx\bxjs@next\relax
   \def\bxjs@next{\bxjs@cls@setkeys{bxjs}}%
-  \expandafter\bxjs@next\expandafter{\CurrentOption}}
+  \expandafter\bxjs@next\expandafter{\CurrentOption}%
+  \else
 %    \end{macrocode}
+% オプションが |ja:XXX| という形式である場合は |japaram={XXX}| に
+% 振り替える。
+%    \begin{macrocode}
+    \edef\bxjs@next{%
+      \noexpand\setkeys{bxjs}{japaram={\bxjs@next}}%
+    }\bxjs@next
+  \fi}
+%    \end{macrocode}
+% \begin{macro}{\bxjs@check@ja@prefix}
+% オプション文字列が |ja:| で始まるかを検査し、そうである場合は
+% 後続の文字列を |\bxjs@next| に代入する。
+%    \begin{macrocode}
+\def\bxjs@check@ja@prefix{%
+  \let\bxjs@next\relax
+  \expandafter\bxjs@check@ja@prefix@a\CurrentOption\@nil ja:\@nil\@nnil}
+\def\bxjs@check@ja@prefix@a#1ja:#2\@nil#3\@nnil{%
+  \ifx\@nil#1\@nil \def\bxjs@next{#2}\fi}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\bxjs@safe@setkeys}
 % 未知のキーに対してエラー無しで無視する |\setkeys|。
@@ -10047,9 +10068,10 @@
 % \end{macro}
 %
 % |font| オプションの処理。
+% \Note 2.9版より、複数回指定した場合には累積させる。
 %    \begin{macrocode}
 \define@key{bxjsStd}{font}{%
-  \edef\bxjs@jp@font{#1}}
+  \edef\bxjs@jp@font{\bxjs@catopt\bxjs@jp@font{#1}}}
 %    \end{macrocode}
 %
 % \begin{macro}{\ifbxjs@jp@strong@cmd}
