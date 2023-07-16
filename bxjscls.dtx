@@ -141,12 +141,14 @@
 \bxtexlogoimport{*,JTeX}
 \usepackage{doc}
 \usepackage{color}
+\newcommand{\Strong}[1]{\textsf{#1}}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}#1\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
 \newcommand{\Means}{：\quad}
-\newcommand{\TODO}{\par\noindent
-  {\usefont{OT1}{cmss}{sbc}{n}\color{red}TODO:}\ }
+\newcommand{\TODO}[1][]{\par\noindent
+  {\usefont{OT1}{cmss}{sbc}{n}\color{red}TODO:%
+   \textsubscript{#1}}\ }
 \newcommand{\OR}{$\;|\;$}
 \newcommand{\ZRX}{☃}
 \newenvironment{ZRnote}
@@ -202,8 +204,24 @@
 % \section{はじめに}
 %
 % \begin{ZRnote}
-% この文書は「BXJSドキュメントクラス」のDocStrip形式のソースである。
-% インストール時のモジュール指定は以下のようである。
+% この文書は\Strong{「BXJSドキュメントクラス」}のDocStrip形式の
+% ソースである。
+% BXJSドキュメントクラス（以降では\Strong{「BXJSクラス」}と
+% 略称する）は
+% 奥村晴彦氏および日本語{\TeX}開発コミュニティによる
+% \Strong{「{\pLaTeXe}新ドキュメントクラス」}（以降では
+% \Strong{「JSクラス」}と呼ぶ）
+% に改変を加えたものである。
+%
+% BXJSクラスに関する解説と原版著者による原版に対する解説を
+% 区別するために、以下の規則を設ける。
+% \begin{itemize}
+% \item 見出しに“{\ZRX}”印が付いている節・小節・段落の記述は
+% BXJSクラスのものである。
+% \item \Strong{この形式の枠}の中の記述はBXJSクラスのものである。
+% \end{itemize}
+%
+% インストール時のモジュール指定は以下のものが用意されている。
 % \begin{quote}
 %   \begin{tabular}{lll}
 %     $\langle$\textsf{article}$\rangle$ & \texttt{bxjsarticle.cls}
@@ -234,11 +252,6 @@
 % \Note このソースには\texttt{jsclasses.dtx}との差分を抑制する
 % ために“jspf”・“kiyou”・“minijs”のモジュール指定を残しているが、
 % これらの指定が行われることは想定していない。
-%
-% 本ドキュメントクラスは奥村晴彦氏および日本語TeX開発コミュニティ
-% による「p\LaTeXe 新ドキュメントクラス」に改変を加えたものである。
-% 本ドキュメントクラスに関する説明は全てこの形式の枠の中に記す。
-% 枠の外にあるものは原版著者による原版に対する解説である。
 % \end{ZRnote}
 %
 % これは\LaTeX3 Projectの \texttt{classes.dtx} と
@@ -388,15 +401,15 @@
 %
 % \begin{macro}{\jsEngine}
 % 〔暗黙文字トークン〕
-% エンジン（{\TeX}の種類）の種別\Means
+% エンジン（{\TeX}処理系）の種別\Means
 % |j|＝{\pTeX}系、
 % |x|＝{\XeTeX}、
-% |p|＝{\pdfTeX}（含DVIモード）、
+% |p|＝{\pdfTeX}、
 % |l|＝{\LuaTeX}、
-% |J|＝NTT j{\TeX}、
+% |J|＝NTT {\JTeX}、
 % |O|＝Omega系、
 % |n|＝以上の何れでもない。
-%
+% \Note {\pdfTeX}と{\LuaTeX}についてはDVIモードの場合も含む。
 %    \begin{macrocode}
 \let\jsEngine=n
 \bxjs@test@engine\kanjiskip{\let\jsEngine=j}
@@ -412,9 +425,10 @@
 % \begin{itemize}
 % \item \XeTeX\Means 0.997版（2007年）以上
 % \end{itemize}
-% \TODO 以下で3.0版での予定について述べておく。
 %
-% 3.0版での処理系バージョン要件は以下の通りである。
+% \TODO[3.0] 以下で3.0版でのバージョン要件の予定について述べておく。
+%
+% 3.0版での\Strong{クラス本体の}処理系バージョン要件は以下の通りである。
 % \begin{itemize}
 % \item \TeX\Means    3.0版[1990/03]以上
 % \item \pTeX\Means   2.0版[1995/03]以上
@@ -491,7 +505,12 @@
 %
 % \begin{macro}{\ifjsWithupTeX}
 % 〔スイッチ〕
-% エンジンが（内部漢字コードがUnicodeの）{\upTeX}であるか。
+% エンジンが「内部漢字コードがUnicodeの{\upTeX}」であるか。
+% \Note つまり、|\jsEngine|＝|j| である場合、このスイッチが真なら
+% {\upLaTeX}、偽なら{\pLaTeX}である。
+% 2023年6月に{\pLaTeX}の{\TeX}処理系が「{\epTeX}」から
+% 「内部漢字コードが非Unicodeの{\eupTeX}」に変わったが、
+% これによる影響はない。
 %    \begin{macrocode}
 \newif\ifjsWithupTeX
 \ifx\ucs\@undefined\else \ifnum\ucs"3000="3000
@@ -513,6 +532,9 @@
 % \begin{macro}{\ifjsWitheTeX}
 % 〔スイッチ〕
 % エンジンが{\eTeX}拡張をもつか。
+% \Note {\XeTeX}と{\LuaTeX}は{\eTeX}拡張をもつ版のみがあり、
+% NTT {\JTeX}はもたない版のみがある。
+% その他のエンジンは両方の版がある。
 %    \begin{macrocode}
 \newif\ifjsWitheTeX
 \bxjs@test@engine\eTeXversion{\jsWitheTeXtrue}
@@ -521,7 +543,7 @@
 %
 % \begin{macro}{\ifjsInPdfMode}
 % 〔スイッチ〕
-% {\pdfTeX}／{\LuaTeX}がPDFモードで動作しているか。
+% {\pdfTeX}・{\LuaTeX}がPDFモードで動作しているか。
 %    \begin{macrocode}
 \newif\ifjsInPdfMode
 \@nameuse{jsInPdfMode\ifnum0%
@@ -534,6 +556,7 @@
 % \begin{macro}{\ifbxjs@explIII}
 % 〔スイッチ〕
 % expl3がカーネルに組み込まれているか。
+% \Note 2020/02/02版以降のカーネルには組み込まれている。
 %    \begin{macrocode}
 \newif\ifbxjs@explIII
 \bxjs@if@format@at@least{2020/02/02}{\bxjs@explIIItrue}{}
@@ -543,7 +566,7 @@
 % \begin{macro}{\ifbxjs@brace@safe}
 % 〔スイッチ〕
 % オプション中の波括弧の使用にカーネルが対応しているか。
-% \Note 正確に言うと、2021-06-01版以降のカーネルでは
+% \Note 正確に言うと、2021/06/01版以降のカーネルでは
 % 「未使用オプション判定」
 % の処理で |=| 以降のトークン列
 % （key-valueのvalueの部分）
@@ -559,7 +582,7 @@
 % \begin{macro}{\ifbxjs@TUenc}
 % 〔スイッチ〕
 % {\LaTeX}の既定のフォントエンコーディングがTUであるか。
-% \Note 2017年1月以降の{\LaTeX}カーネルにおいて
+% \Note 2017/01/01以降の{\LaTeX}カーネルにおいて
 % 「Unicodeを表す{\LaTeX}公式のフォントエンコーディング」
 % である“TU”が導入され、
 % これ以降の{\LaTeX}を{\XeTeX}または{\LuaTeX}で動かしている場合は、
@@ -576,7 +599,7 @@
 %
 % \begin{macro}{\ifbxjs@old@hook@system}
 % 〔スイッチ〕
-% {\LaTeX}の新しいフック管理システムが未導入であるか。
+% {\LaTeX}の新しいフック管理システムが\Strong{未導入}であるか。
 % \Note カーネルの2020/10/01版で導入された。
 %    \begin{macrocode}
 \newif\ifbxjs@old@hook@system
@@ -694,6 +717,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \TODO[2.9] |\bxjs@expanded| を定義する。
+%
 % \begin{macro}{\bxjs@cslet}
 % |\bxjs@cslet{|\Meta{名前1}|}\制御綴|\Means
 %    \begin{macrocode}
@@ -713,7 +738,7 @@
 % \begin{macro}{\bxjs@catopt}
 % |\bxjs@catopt{|\Meta{文字列1}|}{|\Meta{文字列2}|}|\Means
 % 2つの文字列を |,| で繋いだ文字列。
-% ただし片方が空の場合は |,| を入れない。
+% ただし少なくとも一方が空の場合は |,| を入れない。
 % 完全展開可能。
 %    \begin{macrocode}
 \def\bxjs@catopt#1#2{%
@@ -1499,7 +1524,7 @@
 %
 % \paragraph{複合設定オプション \ZRX}
 % \mbox{}
-% \TODO |\bxjs@invscale| を書く場所を決める。
+% \TODO[3.x] |\bxjs@invscale| を書く場所を決める。
 % （JSクラスと同じにはできなそう。）
 % \begin{macro}{\bxjs@invscale}
 % |\bxjs@invscale| は{\TeX}における「長さのスケール」の逆関数を求めるもの。
@@ -1698,7 +1723,7 @@
 %
 % \paragraph{その他のBXJS独自オプション \ZRX}
 %
-% \TODO 互換用オプションを分離する（2.0版で？）。
+% \TODO[3.x] 互換用オプションを分離する。
 %
 % \begin{macro}{\bxjs@depre@opt}
 % \begin{macro}{\bxjs@depre@opt@do}
@@ -1977,7 +2002,7 @@
 %    \end{macrocode}
 %
 % |noscale| オプションの処理。
-% \TODO |noscale| は3.0版で廃止の予定。
+% \TODO[3.0] |noscale| は廃止の予定。
 %    \begin{macrocode}
 \DeclareOption{noscale}{\bxjs@depre@opt@do{noscale}{scale=1}}
 %    \end{macrocode}
@@ -2014,7 +2039,7 @@
 %
 % |ja| オプションの処理。
 % \Note |jadriver| は0.9版で用いられた旧称。
-% \TODO |jadriver| は3.0版で廃止の予定。
+% \TODO[3.0] |jadriver| は廃止の予定。
 % \Note 単なる |ja| という指定は無視される（Pandoc 対策）。
 %    \begin{macrocode}
 \define@key{bxjs}{jadriver}{%
@@ -2271,7 +2296,7 @@
 %
 % \begin{macro}{\ifbxjs@usezw}
 % 〔スイッチ〕 |use-zw| の指定値。
-% \TODO |zw|/|nozw| は3.0版で廃止の予定。
+% \TODO[3.0] |zw|/|nozw| は廃止の予定。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{use-zw}{usezw}{true}
 \DeclareOption{nozw}{\bxjs@depre@opt@do{nozw}{use-zw=false}}
@@ -2281,7 +2306,7 @@
 %
 % \begin{macro}{\ifbxjs@disguise@js}
 % 〔スイッチ〕 |disguise-js| の指定値。
-% \TODO |js|/|nojs| は3.0版で廃止の予定。
+% \TODO[3.0] |js|/|nojs| は廃止の予定。
 %    \begin{macrocode}
 \bxjs@declare@bool@option{disguise-js}{disguise@js}{true}
 \DeclareOption{nojs}{\bxjs@depre@opt@do{nojs}{disguise-js=false}}
@@ -2319,7 +2344,7 @@
 % \paragraph{オプションの実行}
 % \mbox{}
 % \begin{ZRnote}
-% {\LaTeX}カーネルの2021-06-01より前の版では、
+% {\LaTeX}カーネルの2021/06/01より前の版では、
 % クラスやパッケージのオプションのトークン列の中に波括弧が含まれると
 % 正常に処理ができない。
 % これに対処する為 |\@removeelement| の実装に少し手を加えて
@@ -2371,11 +2396,12 @@
 %
 % \paragraph{グローバルオプションの整理 \ZRX}
 %
-% 2021-06-01より前の版の{\LaTeX}カーネルでは、
+% 2021/06/01より前の版の{\LaTeX}カーネルでは、
 % グローバルオプションのトークン列に |{ }| が含まれていると、
 % 後のパッケージで |\ProcessOptions*| がエラーを起こす。
 % 従って、このようなオプションは除外することにする。
-% \TODO 2021-06-01版以降での扱いをどうするか。
+% \TODO[3.0] 2021/06/01版以降のカーネルについてこの処理を廃止する。
+% （仕様変更に準じる扱いとする。）
 %    \begin{macrocode}
 \def\bxjs@tmpdo{%
   \def\bxjs@tmpa{\@gobble}%
@@ -2395,6 +2421,7 @@
 %
 % |papersize|、|10pt|、|noscale| の各オプションは他のパッケージと衝突を
 % 起こす可能性があるため、グローバルオプションから外す。
+% \TODO[3.0] |noscale| オプションは廃止予定。
 %
 %    \begin{macrocode}
 \@expandtwoargs\@removeelement
@@ -3619,7 +3646,7 @@
 % クラス読込中に複数回実行する。
 % 前回の実行直後から |\set@fontsize| が更新されている場合にのみ
 % 実際にパッチを当てる。
-% \TODO 新しい{\LaTeX}カーネルでは |selectfont| フックを利用したい。
+% \TODO[3.0] 新しい{\LaTeX}カーネルで |selectfont| フックを利用する。
 %    \begin{macrocode}
 %\let\bxjs@prev@set@fontsize\@undefined
 \@onlypreamble\bxjs@patch@set@fontsize
@@ -5485,7 +5512,7 @@
 % |\subtitle| の定義を |\title| の実行まで遅延させることにする。
 % もしどうしても主題より前に副題を設定したい場合は、
 % |\jsSubtitle| 命令を直接用いればよい。
-% \TODO |\subtitle| の遅延処理はPandocモードに移す。
+% \TODO[3.0] |\subtitle| の遅延処理はPandocモードに移す。
 % 
 % 本体を |\jsSubtitle| として定義する。
 %    \begin{macrocode}
@@ -9248,8 +9275,14 @@
 % 選択の余地がないため、このドライバにおいて、
 % 「JSクラスと同等の指定」を完成させるためのコードを記述する。
 %
-% \TODO 本来は「minimalにすら依存しない」はずのものがminimalの
-% コード中に書かれているような気がする……。
+% \TODO minimalのコード中に何を置くべきかについて検討する。
+% 現状では、本来は「minimalにすら依存しない」
+% はずのものがminimal中に置かれている。
+% \TODO[3.0] とりあえず、新しい補助ファイルを導入する。
+% 文書クラスや和文ドライバの種別に関わらず必ず読み込まれるもの。
+%
+%^^A----------------
+% \subsection{準備}
 %
 %    \begin{macrocode}
 %<*minimal>
@@ -9257,7 +9290,6 @@
 %    \end{macrocode}
 %
 % \paragraph{環境検査}
-% \mbox{}
 %
 % minimal和文ドライバの処理系バージョン要件はクラス本体と同じとする。
 % 
@@ -9277,8 +9309,8 @@
 \fi{\endinput\@@end}
 %    \end{macrocode}
 %
-%^^A----------------
-% \subsection{補助マクロ}
+% \paragraph{補助マクロ}
+% \mbox{}
 %
 % \begin{macro}{\DeclareJaTextFontCommand}
 % 和文書体のための、「余計なこと」をしない |\DeclareTextFontCommand|。
@@ -9576,7 +9608,7 @@
 % 欧文総称フォント命令で和文フォントが連動するように修正する。
 % その他の和文フォント関係の定義を行う。
 %
-% \Note 2020-02-02のNFSSの改修に対する |jsclasses| の対策を
+% \Note 2020/02/02のNFSSの改修に対する |jsclasses| の対策を
 % 取り入れた。
 %    \begin{macrocode}
 \@ifl@t@r\fmtversion{2020/10/01}
@@ -9787,7 +9819,7 @@
 %
 % \begin{macro}{\bxjs@do@simplejasetup}
 % |simplejasetup| オプションの実際の処理内容。
-% \TODO バージョン要件を見直して暫定措置を解除する。
+% \TODO[3.0] バージョン要件を見直して暫定措置を解除する。
 %    \begin{macrocode}
 \@onlypreamble\bxjs@do@simplejasetup
 \def\bxjs@do@simplejasetup{%
@@ -10029,8 +10061,6 @@
 % \item |\autoxspacing|/|\noautoxspacing|
 % \end{itemize}
 %
-% \paragraph{和文フォント指定の扱い}
-%
 %^^A----------------
 % \subsection{準備}
 %
@@ -10051,7 +10081,7 @@
 %
 % \paragraph{環境検査}
 % \mbox{}
-% \TODO 以下で3.0版でのバージョン要件の予定について述べておく。
+% \TODO[3.0] 以下で3.0版でのバージョン要件の予定について述べておく。
 %
 % standard和文ドライバの処理系バージョン要件
 % （minimalからの差分）
@@ -10904,7 +10934,7 @@
 % 「{\pLaTeX}上の |unicode| 対応をもつほど新しい版（1.3版以降）」
 % であるかを判定する方法はない。
 % しかし、新しい{\LaTeX}システムで |unicode| を無効にするのは
-% 避けたいので、{\LaTeX}カーネルが2023-06-01以降である場合に
+% 避けたいので、{\LaTeX}カーネルが2023/06/01版以降である場合に
 % |pxjahyper| も十分に新しいと推定することにする。
 % すなわち「|pxjahyper| が読み込まれるはず」かつ
 % 「{\LaTeX}がカーネルが新しい」かを判定する。
@@ -11167,7 +11197,7 @@
 % （整数部が多桁になっても大丈夫。）
 % しかし実は、|\strcmp| プリミティブが追加されたのは
 % 0.9994版（2009年6月）かららしい。
-% \TODO バージョン要件を見直して暫定措置を解除する。
+% \TODO[3.0] バージョン要件を見直して暫定措置を解除する。
 %    \begin{macrocode}
 \ifx\strcmp\@undefined\else %未定義なら条件を満たさない
 \ifnum\strcmp{\the\XeTeXversion\XeTeXrevision}{0.99992}>\m@ne
@@ -11644,9 +11674,14 @@
 %^^A----------------
 % \subsection{準備}
 %
-% |space| してはいけない。
 %    \begin{macrocode}
 %<*pandoc>
+%    \end{macrocode}
+%
+% |xeCJK| で |space| が有効になるのを阻止する。
+% \Note |bxjsja-standard.def| の中で |xeCJK| が読み込まれるため
+% この位置に置いている。
+%    \begin{macrocode}
 \if x\jsEngine
   \PassOptionsToPackage{nospace}{xeCJK}
 \fi
@@ -11659,7 +11694,7 @@
 %
 % \paragraph{環境検査}
 % \mbox{}
-% \TODO 以下で3.0版でのバージョン要件の予定について述べておく。
+% \TODO[3.0] 以下で3.0版でのバージョン要件の予定について述べておく。
 %
 % pandoc和文ドライバの処理系バージョン要件はstandardと同じとする。
 % 加えて、以下の要件を定める。
@@ -11669,13 +11704,14 @@
 %   \Note もちろん他にも追加の依存パッケージがある。
 % \end{itemize}
 %
+% \paragraph{パッケージ読込}
+%
 % |bxjspandoc| パッケージを読み込む。
 %    \begin{macrocode}
 \RequirePackage{bxjspandoc}
 %    \end{macrocode}
 %
 % {\eTeX}ではない場合に警告を出す。
-% \Note 近い将来に{\eTeX}拡張を必須にする予定。
 %    \begin{macrocode}
 \ifjsWitheTeX\else
   \ClassWarningNoLine\bxjs@clsname
@@ -11703,7 +11739,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% パッケージ読込。
+% その他の依存パッケージを読み込む。
 %    \begin{macrocode}
 \RequirePackage{iftex}[2013/04/04]% v0.2
 \ifjsWitheTeX
@@ -11814,6 +11850,9 @@
 %
 %^^A----------------
 % \subsection{duploadシステム}
+%
+% \TODO 新しいカーネルで利用可能な機構での代替を検討する。
+% カーネルへのパッチは排除したいので。
 %
 % パッケージが重複して読み込まれたときに“option clash”の
 % 検査をスキップする。
@@ -12271,8 +12310,8 @@
 % \subsection{hyperref対策}
 %
 % |hyperref| の |unicode| オプションの固定を行う。
-% \TODO |hyperref| の開発状況を鑑みる限り、|unicode| オプションの固定処理
-% は“危険”だと思われるので、可能ならば廃止したい。
+% \TODO |unicode| オプションの固定処理は可能なら廃止したい。
+% |hyperref| の開発状況を鑑みる限り、固定処理は危険なので。
 %    \begin{macrocode}
 \if j\jsEngine
   \bxjs@fix@hyperref@unicode{false}
@@ -12469,6 +12508,10 @@
 % \section{補助パッケージ：bxjscompat \ZRX}
 %
 % 古いやつをどうにかするためのムニャムニャ。
+%
+% \Note すなわちBXJSクラスにおいては
+% 「新しいシステムにおいてはbxjscompatがなくても正常に動作する」
+% 状態を保つべき。
 %
 %^^A----------------
 % \subsection{準備}
