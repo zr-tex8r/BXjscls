@@ -1741,22 +1741,61 @@
   \bxjs@oldfontcommandstrue}
 %    \end{macrocode}
 %
-% \paragraph{JSクラスのオプションで無効なもの \ZRX}
-% |ltjsclasses| に倣って警告を出す。
+% \paragraph{無効および廃止されたオプション \ZRX}
 %
+% \begin{macro}{\bxjs@register@badopt}
+% badoptマクロを登録する。
+% 文書本体開始時に、当該オプションが「未使用のグローバルオプション」に
+% なっている場合にbadoptマクロが実行される。
 %    \begin{macrocode}
-\DeclareOption{winjis}{%
-  \ClassWarningNoLine\bxjs@clsname
-   {This class does not support `winjis' option}%
-}
-\DeclareOption{mingoth}{%
-  \ClassWarningNoLine\bxjs@clsname
-   {This class does not support `mingoth' option}%
-}
-\DeclareOption{jis}{%
-  \ClassWarningNoLine\bxjs@clsname
-   {This class does not support `jis' option}%
-}
+\ifbxjs@brace@safe
+  \@onlypreamble\bxjs@register@badopt
+  \def\bxjs@register@badopt#1{%
+    \expandafter\@onlypreamble\csname bxjs@badopt/#1\endcsname
+    \@namedef{bxjs@badopt/#1}}
+  \g@addto@macro\bxjs@begin@document@hook{%
+    \@for\bxjs@tmpa:=\@unusedoptionlist\do{%
+      \@nameuse{bxjs@badopt/\bxjs@tmpa}}}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@invalid@opt}
+% 無効オプションを宣言する。
+% そのオプションが指定された場合、それがグローバルオプションとして
+% 他のパッケージによって使用されていなければ、
+% 文書本体開始時にエラーを出す。
+% \Note 古いカーネルでは未使用検査ができないため、その場で警告を出す。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@invalid@opt
+\ifbxjs@brace@safe
+  \def\bxjs@invalid@opt#1#2{%
+    \bxjs@register@badopt{#1}{\ClassError\bxjs@clsname{#2}\@ehc}}
+\else
+  \def\bxjs@invalid@opt#1#2{%
+    \DeclareOption{#1}{\ClassWarningNoLine\bxjs@clsname{#2}}}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% JSクラスにはあるがBXJSクラスにはないオプションを
+% 「無効オプション」として宣言する。
+% \Note |ltjsclasses| クラスでも警告を出している。
+%    \begin{macrocode}
+\bxjs@invalid@opt{winjis}{%
+  This class does not support 'winjis' option}
+\bxjs@invalid@opt{mingoth}{%
+  This class does not support 'mingoth' option}
+\bxjs@invalid@opt{jis}{%
+  This class does not support 'jis' option}
+\if j\jsEngine\else
+\bxjs@invalid@opt{tombo}{%
+  Option 'tombo' can be used only on (u)pLaTeX}
+\bxjs@invalid@opt{tombow}{%
+  Option 'tombow' can be used only on (u)pLaTeX}
+\bxjs@invalid@opt{mentuke}{%
+  Option 'mentuke' can be used only on (u)pLaTeX}
+\fi
 %    \end{macrocode}
 %
 % \paragraph{keyval型のオプション \ZRX}
