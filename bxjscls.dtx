@@ -9188,19 +9188,44 @@
 % \paragraph{共通命令の実装}
 %
 % |\jQ| 等の「単位」系の共通命令を実装する。
-% まず{\eTeX}拡張が使えるか検査する。
+%
+% \begin{macro}{\bxjs@const@unit}
+% 固定値の単位として使える制御綴を定義する。
+%
+% {\eTeX}拡張が使える場合は、
+% 「|\dimexpr|外部寸法表記|\relax|」の形式
+% （これは内部値なので単位として使える）
+% に展開されるマクロとして定義する。
 %    \begin{macrocode}
+\@onlypreamble\bxjs@const@unit
+\@onlypreamble\bxjs@const@unit@a
 \ifjsWitheTeX
+  \def\bxjs@const@unit#1#2#3{%
+    \@ovyy=#3\relax \edef#1{\dimexpr\the\@ovyy\relax}}
 %    \end{macrocode}
-% 使える場合は、「|\dimexpr|外部寸法表記|\relax|」の形式
-% （これは内部値なので単位として使える）で各命令を定義する。
+% {\eTeX}拡張が使えない場合は、何らかの寸法パラメタに値を保持する必要が
+% あるが、レジスタは貴重なので代わりに
+% 「ダミーのTFMを定義してその |\fontdimen| を使う」
+% というテクニックを用いる（アレ）。
+%    \begin{macrocode}
+\else
+  \let\bxjs@Ct\fontdimen \font\bxjs@Ut=cmtex9 at 0.98245pt
+  \bxjs@Ct8\bxjs@Ut=8sp \bxjs@Ct16\bxjs@Ut=\z@
+  \def\bxjs@const@unit#1#2{%
+    \expandafter\bxjs@const@unit@a\csname bxjs@#2@\endcsname#1}
+  \def\bxjs@const@unit@a#1#2#3{%
+    \@ovyy\bxjs@Ct8\bxjs@Ut \advance\@ovyy1sp
+    \bxjs@Ct8\bxjs@Ut\@ovyy \chardef#1\@ovyy
+    \bxjs@Ct\@ovyy\bxjs@Ut=#3\relax \def#2{\bxjs@Ct#1\bxjs@Ut}}
+\fi
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\jQ}
 % \begin{macro}{\jH}
 % |\jQ| と |\jH| はともに0.25\,mmに等しい。
 %    \begin{macrocode}
-\@tempdima=0.25mm
-\protected\edef\jQ{\dimexpr\the\@tempdima\relax}
+\bxjs@const@unit\jQ{jQ}{0.25mm}
 \let\jH\jQ
 %    \end{macrocode}
 % \end{macro}
@@ -9215,10 +9240,10 @@
   \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
   \@tempdima=2.5mm
   \bxjs@invscale\@tempdima\bxjs@tmpa
-  \protected\edef\trueQ{\dimexpr\the\@tempdima\relax}
+  \bxjs@const@unit\trueQ{trueQ}{\@tempdima}
   \@tempdima=10pt
   \bxjs@invscale\@tempdima\bxjs@tmpa
-  \protected\edef\bxjs@truept{\dimexpr\the\@tempdima\relax}
+  \bxjs@const@unit\bxjs@truept{truept}{\@tempdima}
 \else \let\trueQ\jQ \let\bxjs@truept\p@
 \fi
 \let\trueH\trueQ
@@ -9235,10 +9260,9 @@
 % 同様に、|\ascpt| は |truept| を和文スケールで割った値。
 %    \begin{macrocode}
 \@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
-\protected\edef\ascQ{\dimexpr\the\@tempdima\relax}
+\bxjs@const@unit\ascQ{ascQ}{\@tempdima}
 \@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
-\protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
-\fi
+\bxjs@const@unit\ascpt{ascpt}{\@tempdima}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
@@ -9249,7 +9273,7 @@
 % 等しくなるようにフォントサイズを指定する。
 % この命令の引数では、|Q|/|H| の単位が使用できる。
 %    \begin{macrocode}
-\def\jafontsize#1#2{%
+\DeclareRobustCommand*\jsJaFontSize[2]{%
   \begingroup
     \bxjs@jafontsize@a{#1}%
     \@tempdimb\jsInverseScale\@tempdima
@@ -10293,6 +10317,10 @@
 %
 %^^A----------------
 % \subsection{共通処理(1)}
+%
+%    \begin{macrocode}
+\let\jafontsize\jsJaFontSize
+%    \end{macrocode}
 %
 % \paragraph{jis2004パラメタ}
 %
