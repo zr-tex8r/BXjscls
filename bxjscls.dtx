@@ -9185,6 +9185,85 @@
 %
 % \section{BXJS独自の追加処理 \ZRX}
 %
+% \paragraph{共通命令の実装}
+%
+% |\jQ| 等の「単位」系の共通命令を実装する。
+% まず{\eTeX}拡張が使えるか検査する。
+%    \begin{macrocode}
+\ifjsWitheTeX
+%    \end{macrocode}
+% 使える場合は、「|\dimexpr|外部寸法表記|\relax|」の形式
+% （これは内部値なので単位として使える）で各命令を定義する。
+%
+% \begin{macro}{\jQ}
+% \begin{macro}{\jH}
+% |\jQ| と |\jH| はともに0.25\,mmに等しい。
+%    \begin{macrocode}
+\@tempdima=0.25mm
+\protected\edef\jQ{\dimexpr\the\@tempdima\relax}
+\let\jH\jQ
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\trueQ}
+% \begin{macro}{\trueH}
+% |\trueQ| と |\trueH| はともに0.25\,true\,mmに等しい。
+%    \begin{macrocode}
+\ifjsc@mag
+  \@tempdimb=\jsBaseFontSize\relax
+  \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
+  \@tempdima=2.5mm
+  \bxjs@invscale\@tempdima\bxjs@tmpa
+  \protected\edef\trueQ{\dimexpr\the\@tempdima\relax}
+  \@tempdima=10pt
+  \bxjs@invscale\@tempdima\bxjs@tmpa
+  \protected\edef\bxjs@truept{\dimexpr\the\@tempdima\relax}
+\else \let\trueQ\jQ \let\bxjs@truept\p@
+\fi
+\let\trueH\trueQ
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\ascQ}
+% \begin{macro}{\ascpt}
+% |\ascQ| は |\trueQ| を和文スケール値で割った値。
+% 例えば、|\fontsize{12\ascQ}{16\trueH}| とすると、
+% 和文が12Qになる。
+%
+% 同様に、|\ascpt| は |truept| を和文スケールで割った値。
+%    \begin{macrocode}
+\@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
+\protected\edef\ascQ{\dimexpr\the\@tempdima\relax}
+\@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
+\protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\jafontsize}
+% |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
+% 和文フォント規準で、すなわち、1\,zwが\Meta{フォントサイズ}に
+% 等しくなるようにフォントサイズを指定する。
+% この命令の引数では、|Q|/|H| の単位が使用できる。
+%    \begin{macrocode}
+\def\jafontsize#1#2{%
+  \begingroup
+    \bxjs@jafontsize@a{#1}%
+    \@tempdimb\jsInverseScale\@tempdima
+    \bxjs@jafontsize@a{#2}%
+    \xdef\bxjs@g@tmpa{%
+      \noexpand\fontsize{\the\@tempdimb}{\the\@tempdima}}%
+  \endgroup\bxjs@g@tmpa}
+\def\bxjs@jafontsize@a#1{%
+  \bxjs@parse@qh{#1}%
+  \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
+  \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
+%    \end{macrocode}
+% \end{macro}
+%
 % \paragraph{和文ドライバ読込}
 %
 % フックを実行する。
@@ -10084,9 +10163,6 @@
 %   和文ファミリ連動
 % \item |\mcfamily|/|\gtfamily|
 % \item |\textmc|/|\textgt|
-% \item |\zw|
-% \item |\jQ|/|\jH|
-% \item |\trueQ|/|\trueH|/|\ascQ|
 % \item |\setkanjiskip|/|\getkanjiskip|
 % \item |\setxkanjiskip|/|\getxkanjiskip|
 % \item |\autospacing|/|\noautospacing|
@@ -10325,83 +10401,6 @@
 % \end{macro}
 %
 % \paragraph{共通命令の実装}
-%
-% |\jQ| 等の「単位」系の共通命令を実装する。
-% まず{$\varepsilon$-\TeX}拡張が使えるか検査する。
-%    \begin{macrocode}
-\ifjsWitheTeX
-%    \end{macrocode}
-% 使える場合は、「|\dimexpr|外部寸法表記|\relax|」の形式
-% （これは内部値なので単位として使える）で各命令定義する。
-%
-% \begin{macro}{\jQ}
-% \begin{macro}{\jH}
-% |\jQ| と |\jH| はともに0.25\,mmに等しい。
-%    \begin{macrocode}
-  \@tempdima=0.25mm
-  \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
-  \let\jH\jQ
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\trueQ}
-% \begin{macro}{\trueH}
-% |\trueQ| と |\trueH| はともに0.25\,true\,mmに等しい。
-%    \begin{macrocode}
-  \ifjsc@mag
-    \@tempdimb=\jsBaseFontSize\relax
-    \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
-    \@tempdima=2.5mm
-    \bxjs@invscale\@tempdima\bxjs@tmpa
-    \protected\edef\trueQ{\dimexpr\the\@tempdima\relax}
-    \@tempdima=10pt
-    \bxjs@invscale\@tempdima\bxjs@tmpa
-    \protected\edef\bxjs@truept{\dimexpr\the\@tempdima\relax}
-  \else \let\trueQ\jQ \let\bxjs@truept\p@
-  \fi
-  \let\trueH\trueQ
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\ascQ}
-% \begin{macro}{\ascpt}
-% |\ascQ| は |\trueQ| を和文スケール値で割った値。
-% 例えば、|\fontsize{12\ascQ}{16\trueH}| とすると、
-% 和文が12Qになる。
-%
-% 同様に、|\ascpt| は |truept| を和文スケールで割った値。
-%    \begin{macrocode}
-  \@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
-  \protected\edef\ascQ{\dimexpr\the\@tempdima\relax}
-  \@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
-  \protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
-\fi
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\jafontsize}
-% |\jafontsize{|\Meta{フォントサイズ}|}{|\Meta{行送り}|}|\Means
-% 和文フォント規準で、すなわち、1\,zwが\Meta{フォントサイズ}に
-% 等しくなるようにフォントサイズを指定する。
-% この命令の引数では、|Q|/|H| の単位が使用できる。
-%    \begin{macrocode}
-\def\jafontsize#1#2{%
-  \begingroup
-    \bxjs@jafontsize@a{#1}%
-    \@tempdimb\jsInverseScale\@tempdima
-    \bxjs@jafontsize@a{#2}%
-    \xdef\bxjs@g@tmpa{%
-      \noexpand\fontsize{\the\@tempdimb}{\the\@tempdima}}%
-  \endgroup\bxjs@g@tmpa}
-\def\bxjs@jafontsize@a#1{%
-  \bxjs@parse@qh{#1}%
-  \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
-  \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
-%    \end{macrocode}
-% \end{macro}
 %
 % 続いて、和文間空白・和欧文間空白関連の命令を実装する。
 % （エンジン依存のコード。）
