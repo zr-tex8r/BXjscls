@@ -9140,17 +9140,6 @@
 %    \end{macrocode}
 %
 %
-% \paragraph{BXJS独自の追加処理 \ZRX}
-%
-% フックを実行する。
-%    \begin{macrocode}
-\bxjs@pre@jadriver@hook
-%    \end{macrocode}
-% 和文ドライバのファイルを読み込む。
-%    \begin{macrocode}
-\input{bxjsja-\bxjs@jadriver.def}
-%    \end{macrocode}
-%
 % \section{実験的コード}
 %
 % \begin{ZRnote}
@@ -9164,11 +9153,25 @@
 % exppl2eパッケージが読みこまれていない場合は通常版として動作しますので，
 % ここで終了します。
 %
+% 以上です。
+%
+% \section{BXJS独自の追加処理 \ZRX}
+%
+% \paragraph{和文ドライバ読込}
+%
+% フックを実行する。
+%    \begin{macrocode}
+\bxjs@pre@jadriver@hook
+%    \end{macrocode}
+% 和文ドライバのファイルを読み込む。
+%    \begin{macrocode}
+\input{bxjsja-\bxjs@jadriver.def}
+%    \end{macrocode}
+%
+% おしまい。
 %    \begin{macrocode}
 %</class>
 %    \end{macrocode}
-%
-% 以上です。
 %
 %^^A////////////////////////////////////////////////////////
 % \clearpage
