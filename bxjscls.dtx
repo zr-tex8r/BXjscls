@@ -9185,6 +9185,37 @@
 %
 % \section{BXJS独自の追加処理 \ZRX}
 %
+% \paragraph{\textbackslash strong命令の補填}
+%
+% |fontspec| で提供される |\strong| 命令と |strongenv| 環境を
+% 全てのエンジンで使えるようにする。
+% \Note この実装は特にエンジンや和文処理パッケージに依存しないはず
+% であるが、現状ではstandard和文ドライバでの提供となっていて、
+% そこで有効化のオプションが定義されている。
+% ここでは |\js～| の名前で定義することにする。
+%
+% \begin{macro}{\jsStrongText}
+% 強調用の宣言型命令。
+%    \begin{macrocode}
+\bxjs@robust@def\jsStrongText{\bxjs@strong@text}%
+%    \end{macrocode}
+% |fontspec| と互換の |\strongfontdeclare| 命令も提供する。
+% 既定の設定は |\bfseries|（太字）である。
+% \Note |\strongfontdeclare| は試験的機能とする。
+%    \begin{macrocode}
+\chardef\bxjs@strong@level=0
+\DeclareRobustCommand*\jsStrongDeclare[1]{%
+  \bxjs@set@array@from@clist{bxjs@strong}{#1}%
+  \chardef\bxjs@strong@level\z@}
+\jsStrongDeclare{\bfseries}
+\def\bxjs@strong@text{%
+  \bxjs@csletcs{bxjs@tmpa}{bxjs@strong/\the\bxjs@strong@level}%
+  \ifx\bxjs@tmpa\relax
+    \bxjs@advance@qc\bxjs@strong@level\m@ne \bxjs@strong@text
+  \else \bxjs@advance@qc\bxjs@strong@level\@ne \bxjs@tmpa
+  \fi}
+% \end{macro}
+%
 % \paragraph{共通命令の実装}
 %
 % |\jQ| 等の「単位」系の共通命令を実装する。
@@ -9201,7 +9232,7 @@
 \@onlypreamble\bxjs@const@unit@a
 \ifjsWitheTeX
   \def\bxjs@const@unit#1#2#3{%
-    \@ovyy=#3\relax \edef#1{\dimexpr\the\@ovyy\relax}}
+    \protected\edef#1{\dimexpr\the\dimexpr#3\relax\relax}}
 %    \end{macrocode}
 % {\eTeX}拡張が使えない場合は、何らかの寸法パラメタに値を保持する必要が
 % あるが、レジスタは貴重なので代わりに
@@ -9214,9 +9245,8 @@
   \def\bxjs@const@unit#1#2{%
     \expandafter\bxjs@const@unit@a\csname bxjs@#2@\endcsname#1}
   \def\bxjs@const@unit@a#1#2#3{%
-    \@ovyy\bxjs@Ct8\bxjs@Ut \advance\@ovyy1sp
-    \bxjs@Ct8\bxjs@Ut\@ovyy \chardef#1\@ovyy
-    \bxjs@Ct\@ovyy\bxjs@Ut=#3\relax \def#2{\bxjs@Ct#1\bxjs@Ut}}
+    \chardef#1\bxjs@Ct8\bxjs@Ut \bxjs@advance@qc#1\@ne \bxjs@Ct8\bxjs@Ut#1sp
+    \bxjs@Ct#1\bxjs@Ut=#3\relax \def#2{\bxjs@Ct#1\bxjs@Ut}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -10397,31 +10427,14 @@
 %
 % \begin{macro}{\strong}
 % \begin{environment}{strongenv}
-% |fontspec| で提供される |\strong| 命令と |strongenv| 環境を
-% 全てのエンジンで使えるようにする。
-% \Note 既に利用可能である場合は何もしない。
+% 現在未定義（|fontspec| が未読込）である場合は、
+% クラス本体で定義した |\jsStrongText| を利用して定義する。
 %    \begin{macrocode}
 \ifbxjs@jp@strong@cmd\jsAtEndOfClass{%
   \ifx\strong\@undefined\ifx\strongenv\@undefined
-    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
-    \DeclareTextFontCommand{\strong}{\strongenv}%
-%    \end{macrocode}
-% |fontspec| と互換の |\strongfontdeclare| 命令も提供する。
-% 既定の設定は |\bfseries|（太字）である。
-% \Note |\strongfontdeclare| は試験的機能とする。
-%    \begin{macrocode}
-    \newcommand*{\strongfontdeclare}{\bxjs@strongfontdeclare}%
-    \newcount\bxjs@strong@level
-    \bxjs@protected\def\bxjs@strongfontdeclare#1{%
-      \bxjs@set@array@from@clist{bxjs@strong}{#1}%
-      \bxjs@strong@level\z@}%
-    \bxjs@strongfontdeclare{\bfseries}%
-    \def\bxjs@strong@font{%
-      \bxjs@csletcs{bxjs@tmpa}{bxjs@strong/\the\bxjs@strong@level}%
-      \ifx\bxjs@tmpa\relax
-        \advance\bxjs@strong@level\m@ne \bxjs@strong@font
-      \else \advance\bxjs@strong@level\@ne \bxjs@tmpa
-      \fi}%
+    \newcommand*{\strongenv}{\jsStrongText}%
+    \DeclareTextFontCommand{\strong}{\jsStrongText}%
+    \newcommand*{\strongfontdeclare}{\jsStrongDeclare}%
   \fi\fi
 }\fi
 %    \end{macrocode}
