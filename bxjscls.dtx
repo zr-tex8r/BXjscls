@@ -793,6 +793,34 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@advance@qc}
+% |\bxjs@advance@qc\CS{|\Meta{値}|}|\Means
+% 擬似整数レジスタに値を加算する。
+%    \begin{macrocode}
+\def\bxjs@advance@qc#1#2{%
+  \begingroup
+    \@tempcnta=#1\relax \advance\@tempcnta by#2\relax
+    \global\chardef\bxjs@g@tmpa\@tempcnta
+  \endgroup \let#1\bxjs@g@tmpa}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@new@count}
+% \begin{macro}{\bxjs@advance@count}
+% {\eTeX}拡張が有効なら通常の整数レジスタ、
+% 無効なら擬似整数レジスタを用いる。
+%    \begin{macrocode}
+\ifjsWitheTeX
+  \let\bxjs@new@count\newcount
+  \def\bxjs@advance@count#1#2{\advance#1by#2\relax}
+\else
+  \def\bxjs@new@count#1{\chardef#1\z@}
+  \let\bxjs@advance@count\bxjs@advance@qc
+\fi
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
 % \begin{macro}{\jsSetQHLength}
 % |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
 % |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
