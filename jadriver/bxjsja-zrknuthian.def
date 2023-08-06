@@ -1,0 +1,81 @@
+%%
+%% This is file 'bxjsja-zrknuthian.def'.
+%%
+%% Copyright (c) 2023 Takayuki YATO (aka. "ZR")
+%%   GitHub:   https://github.com/zr-tex8r
+%%   Twitter:  @zr_tex8r
+%%
+%% This package is distributed under the MIT License.
+%%
+
+%% declaration
+\ProvidesFile{bxjsja-zrknuthian.def}[2023/08/02 v0.2]
+
+%--------------------------------------- Check for e-TeX
+
+\ifjsWitheTeX
+  \ClassWarningNoLine\bxjs@clsname
+   {The engine in use has e-TeX extension,\MessageBreak
+    so the standard ja-driver is used instead}
+  \input{bxjsja-standard.def}
+\expandafter\endinput\fi\relax
+
+%--------------------------------------- Common process (1)
+
+% inherit 'minimal'
+\input{bxjsja-minimal.def}
+
+%%<*> \jafontsize
+\let\jafontsize\jsJaFontSize
+
+%--------------------------------------- Process for 8-bit TeX
+
+%% Load bxcjkjatype package (Lite version)
+\RequirePackage[whole,autotilde]{bxcjkjatype-lite}[]
+\bxjs@cjk@loaded
+
+%%<*> \setkanjiskip, etc.
+\newskip\jsKanjiSkip
+\newskip\jsXKanjiSkip
+\ifx\CJKecglue\@undefined
+  \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
+\fi
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\autospacing}{\jsEnableKanjiSkip}
+\newcommand*{\noautospacing}{\jsDisableKanjiSkip}
+\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
+\def\jsApplyKanjiSkip#1{%
+  \jsKanjiSkip=#1\relax
+  \let\CJKglue\bxjs@CJKglue}
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\newcommand*{\autoxspacing}{\jsEnableXKanjiSkip}
+\newcommand*{\noautoxspacing}{\jsDisableXKanjiSkip}
+\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
+\def\jsApplyXKanjiSkip#1{%
+  \jsXKanjiSkip=#1\relax
+  \let\CJKecglue\bxjs@CJKecglue}
+
+%% not support 'Japanese in math'
+\ifx t\bxjs@enablejfam
+  \ClassWarningNoLine\bxjs@clsname
+   {You cannot use 'enablejfam=true', since the\MessageBreak
+    CJK package does not support Japanese math}
+\fi
+
+%--------------------------------------- Common process (2)
+
+%%<*> \textmc, \textgt
+\DeclareJaTextFontCommand{\textmc}{\mcfamily}
+\DeclareJaTextFontCommand{\textgt}{\gtfamily}
+
+%%<*> \mathmc, \mathgt
+\ifx\mathmc\@undefined
+  \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
+  \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
+\fi
+
+%--------------------------------------- All done
+\endinput
+%% EOF
