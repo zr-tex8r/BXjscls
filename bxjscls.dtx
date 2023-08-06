@@ -9318,6 +9318,207 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% 続いて、和文間空白・和欧文間空白関連の命令を実装する。
+% この実装はエンジンや和文処理パッケージに依存するが、
+% ここでは共通の基盤となる部分を実装する。
+%
+%    \begin{macrocode}
+\def\bxjs@let@lenexpr{\edef}
+%    \end{macrocode}
+%
+% \begin{macro}{\bxjs@kanjiskip}
+% 和文間空白の量を表すテキスト。
+%    \begin{macrocode}
+\def\bxjs@kanjiskip{0pt}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jsSetKanjiSkip}
+% 和文間空白の量を設定する。
+% \Note |\setkanjiskip| の実体。
+%    \begin{macrocode}
+\DeclareRobustCommand*\jsSetKanjiSkip[1]{%
+  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
+  \bxjs@reset@kanjiskip}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jsGetKanjiSkip}
+% 和文間空白の量を表すテキストに展開する。
+% \Note |\getkanjiskip| の実体。
+%    \begin{macrocode}
+\newcommand*\jsGetKanjiSkip{%
+  \bxjs@kanjiskip}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifbxjs@kanjiskip@enabled}
+% 和文間空白の挿入が有効か。
+% \Note エンジン側の機能で制御する場合は、
+% このスイッチは常に真にしておく。
+%    \begin{macrocode}
+\newif\ifbxjs@kanjiskip@enabled \bxjs@kanjiskip@enabledtrue
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jsEnableKanjiSkip}
+% \begin{macro}{\jsDisableKanjiSkip}
+% 和文間空白の挿入を有効／無効にする。
+% \Note {\pTeX}系のエンジンや |luatexja| のパッケージを使用する場合は
+% それ自体がもつ制御機能を利用するため、これらの命令は使わない。
+%    \begin{macrocode}
+\bxjs@robust@def\jsEnableKanjiSkip{%
+  \bxjs@kanjiskip@enabledtrue
+  \bxjs@reset@kanjiskip}
+\bxjs@robust@def\jsDisableKanjiSkip{%
+  \bxjs@kanjiskip@enabledfalse
+  \bxjs@reset@kanjiskip}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@reset@kanjiskip}
+% 現在の和文間空白の設定を実際に反映させる。
+%    \begin{macrocode}
+\bxjs@robust@def\bxjs@reset@kanjiskip{%
+  \ifbxjs@kanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@kanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \jsApplyKanjiSkip\@tempskipa}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jsApplyKanjiSkip}
+% |\jsApplyKanjiSkip{|\Meta{グルー値}|}|\Means
+% 和文間空白を実際に設定するためのエンジン依存のコード。
+%    \begin{macrocode}
+\let\jsApplyKanjiSkip\@gobble
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bxjs@xkanjiskip}
+% \begin{macro}{\jsSetXKanjiSkip}
+% \begin{macro}{\jsGetXKanjiSkip}
+% \begin{macro}{\ifbxjs@xkanjiskip@enabled}
+% \begin{macro}{\jsEnableXKanjiSkip}
+% \begin{macro}{\jsDisableXKanjiSkip}
+% \begin{macro}{\bxjs@reset@xkanjiskip}
+% \begin{macro}{\jsApplyXKanjiSkip}
+% 和欧文間空白について同様のものを用意する。
+%    \begin{macrocode}
+\def\bxjs@xkanjiskip{0pt}
+\DeclareRobustCommand*\jsSetXKanjiSkip[1]{%
+  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
+  \bxjs@reset@xkanjiskip}
+\newcommand*\jsGetXKanjiSkip{%
+  \bxjs@xkanjiskip}
+\newif\ifbxjs@xkanjiskip@enabled \bxjs@xkanjiskip@enabledtrue
+\bxjs@robust@def\jsEnableXKanjiSkip{%
+  \bxjs@xkanjiskip@enabledtrue
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\jsDisableXKanjiSkip{%
+  \bxjs@xkanjiskip@enabledfalse
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\bxjs@reset@xkanjiskip{%
+  \ifbxjs@xkanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@xkanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \jsApplyXKanjiSkip\@tempskipa}
+\let\jsApplyXKanjiSkip\@gobble
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% |\jsResetDimen| を用いて、フォントサイズが変更された時に
+% 空白の量が追随するようにする。
+%    \begin{macrocode}
+\g@addto@macro\jsResetDimen{%
+  \bxjs@reset@kanjiskip
+  \bxjs@reset@xkanjiskip}
+%    \end{macrocode}
+%
+% 和文・和欧文間空白の初期値。
+%
+%    \begin{macrocode}
+\AtEndOfPackage{%
+\jsSetKanjiSkip{0pt plus.1\jsZw minus.01\jsZw}%
+\ifx\jsDocClass\jsSlide \jsSetXKanjiSkip{0.1em}%
+\else \jsSetXKanjiSkip{0.25em plus 0.15em minus 0.06em}%
+\fi
+}
+%    \end{macrocode}
+%
+% \paragraph{和文空白命令}
+%    \begin{macrocode}
+\ifbxjs@jaspace@cmd
+%    \end{macrocode}
+%
+% \begin{macro}{\jaenspace}
+% 半角幅の水平空き。
+%    \begin{macrocode}
+  \def\jaenspace{\hskip.5\jsZw\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jathinspace}
+% 和欧文間空白を入れるユーザ命令。
+%    \begin{macrocode}
+  \def\jathinspace{\hskip\bxjs@xkanjiskip\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\＿}
+% 全角空白文字1つからなる名前の制御綴。
+% |\zwspace| と等価になる。
+%    \begin{macrocode}
+  \def\　{\zwspace}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\>}
+% 非数式中では |\jathinspace| と等価になるように再定義する。
+% \Note 数式中では従来通り（|\:| と等価）。
+%    \begin{macrocode}
+  \bxjs@protected\def\bxjs@choice@jathinspace{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \jathinspace\ignorespaces
+    \fi}
+  \jsAtEndOfClass{%
+    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
+    \else \def\>{\protect\bxjs@choice@jathinspace}%
+    \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\jaspace}
+% |jlreq| クラスと互換の命令。
+%    \begin{macrocode}
+  \DeclareRobustCommand*{\jaspace}[1]{%
+    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
+      \ClassError\bxjs@clsname
+       {Unknown jaspace: #1}{\@eha}%
+    \else
+      \csname bxjs@jaspace@@#1\endcsname
+    \fi}
+  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
+  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
+  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% 終わり。
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
 % \paragraph{和文ドライバ読込}
 %
 % フックを実行する。
@@ -10153,55 +10354,6 @@
 \fi
 %    \end{macrocode}
 %
-% \paragraph{和文空白命令}
-%    \begin{macrocode}
-\ifbxjs@jaspace@cmd
-%    \end{macrocode}
-%
-% \begin{macro}{\jaenspace}
-% 半角幅の水平空き。
-%    \begin{macrocode}
-  \def\jaenspace{\hskip.5\jsZw\relax}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\jathinspace}
-% 和欧文間空白を入れるユーザ命令。
-% \Note minimalではダミー定義。
-%    \begin{macrocode}
-  \def\jathinspace{\hskip\z@skip}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\＿}
-% 全角空白文字1つからなる名前の制御綴。
-% |\zwspace| と等価になる。
-%    \begin{macrocode}
-  \def\　{\zwspace}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\jaspace}
-% |jlreq| クラスと互換の命令。
-%    \begin{macrocode}
-  \DeclareRobustCommand*{\jaspace}[1]{%
-    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
-      \ClassError\bxjs@clsname
-       {Unknown jaspace: #1}{\@eha}%
-    \else
-      \csname bxjs@jaspace@@#1\endcsname
-    \fi}
-  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
-  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
-  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
-%    \end{macrocode}
-% \end{macro}
-%
-% 終わり。
-%    \begin{macrocode}
-\fi
-%    \end{macrocode}
-%
 % 以上で終わり。
 %    \begin{macrocode}
 %</minimal>
@@ -10440,117 +10592,6 @@
 %    \end{macrocode}
 % \end{environment}
 % \end{macro}
-%
-% \paragraph{共通命令の実装}
-%
-% 続いて、和文間空白・和欧文間空白関連の命令を実装する。
-% （エンジン依存のコード。）
-%
-% \begin{macro}{\bxjs@kanjiskip}
-% 和文間空白の量を表すテキスト。
-%    \begin{macrocode}
-\def\bxjs@kanjiskip{0pt}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\setkanjiskip}
-% 和文間空白の量を設定する。
-%    \begin{macrocode}
-\newcommand*\setkanjiskip[1]{%
-  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
-  \bxjs@reset@kanjiskip}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\getkanjiskip}
-% 和文間空白の量を表すテキストに展開する。
-%    \begin{macrocode}
-\newcommand*\getkanjiskip{%
-  \bxjs@kanjiskip}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\ifbxjs@kanjiskip@enabled}
-% 和文間空白の挿入が有効か。
-% ただし{\pTeX}では自身の |\(no)autospacing| での制御を
-% 用いるのでこの変数は常に真とする。
-%    \begin{macrocode}
-\newif\ifbxjs@kanjiskip@enabled \bxjs@kanjiskip@enabledtrue
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@enable@kanjiskip}
-% \begin{macro}{\bxjs@disable@kanjiskip}
-% 和文間空白の挿入を有効／無効にする。（{\pTeX}以外）
-%    \begin{macrocode}
-\bxjs@robust@def\bxjs@enable@kanjiskip{%
-  \bxjs@kanjiskip@enabledtrue
-  \bxjs@reset@kanjiskip}
-\bxjs@robust@def\bxjs@disable@kanjiskip{%
-  \bxjs@kanjiskip@enabledfalse
-  \bxjs@reset@kanjiskip}
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@reset@kanjiskip}
-% 現在の和文間空白の設定を実際にエンジンに反映させる。
-%    \begin{macrocode}
-\bxjs@robust@def\bxjs@reset@kanjiskip{%
-  \ifbxjs@kanjiskip@enabled
-    \setlength{\@tempskipa}{\bxjs@kanjiskip}%
-  \else \@tempskipa\z@
-  \fi
-  \bxjs@apply@kanjiskip}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\bxjs@xkanjiskip}
-% \begin{macro}{\setxkanjiskip}
-% \begin{macro}{\getxkanjiskip}
-% \begin{macro}{\ifbxjs@xkanjiskip@enabled}
-% \begin{macro}{\bxjs@enable@xkanjiskip}
-% \begin{macro}{\bxjs@disable@xkanjiskip}
-% \begin{macro}{\bxjs@reset@xkanjiskip}
-% 和欧文間空白について同様のものを用意する。
-%    \begin{macrocode}
-\def\bxjs@xkanjiskip{0pt}
-\newcommand*\setxkanjiskip[1]{%
-  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
-  \bxjs@reset@xkanjiskip}
-\newcommand*\getxkanjiskip{%
-  \bxjs@xkanjiskip}
-\newif\ifbxjs@xkanjiskip@enabled \bxjs@xkanjiskip@enabledtrue
-\bxjs@robust@def\bxjs@enable@xkanjiskip{%
-  \bxjs@xkanjiskip@enabledtrue
-  \bxjs@reset@xkanjiskip}
-\bxjs@robust@def\bxjs@disable@xkanjiskip{%
-  \bxjs@xkanjiskip@enabledfalse
-  \bxjs@reset@xkanjiskip}
-\bxjs@robust@def\bxjs@reset@xkanjiskip{%
-  \ifbxjs@xkanjiskip@enabled
-    \setlength{\@tempskipa}{\bxjs@xkanjiskip}%
-  \else \@tempskipa\z@
-  \fi
-  \bxjs@apply@xkanjiskip}
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-%
-% |\jsResetDimen| を用いて、フォントサイズが変更された時に
-% 空白の量が追随するようにする。
-%    \begin{macrocode}
-\g@addto@macro\jsResetDimen{%
-  \bxjs@reset@kanjiskip
-  \bxjs@reset@xkanjiskip}
-\let\bxjs@apply@kanjiskip\relax
-\let\bxjs@apply@xkanjiskip\relax
-%    \end{macrocode}
 %
 % \paragraph{和文フォント指定の扱い}
 %
@@ -10814,10 +10855,14 @@
 % \paragraph{共通命令の実装}
 %
 %    \begin{macrocode}
-\def\bxjs@apply@kanjiskip{%
-  \kanjiskip\@tempskipa}
-\def\bxjs@apply@xkanjiskip{%
-  \xkanjiskip\@tempskipa}
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\def\jsApplyKanjiSkip#1{%
+  \kanjiskip=#1\relax}
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\def\jsApplyXKanjiSkip#1{%
+  \xkanjiskip=#1\relax}
 %    \end{macrocode}
 %
 % |\jaJaChar| のサブマクロ。
@@ -11166,17 +11211,21 @@
 \ifx\CJKecglue\@undefined
   \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
 \fi
-\let\autospacing\bxjs@enable@kanjiskip
-\let\noautospacing\bxjs@disable@kanjiskip
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\autospacing}{\jsEnableKanjiSkip}
+\newcommand*{\noautospacing}{\jsDisableKanjiSkip}
 \protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
-\def\bxjs@apply@kanjiskip{%
-  \jsKanjiSkip\@tempskipa
+\def\jsApplyKanjiSkip#1{%
+  \jsKanjiSkip=#1\relax
   \let\CJKglue\bxjs@CJKglue}
-\let\autoxspacing\bxjs@enable@xkanjiskip
-\let\noautoxspacing\bxjs@disable@xkanjiskip
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\newcommand*{\autoxspacing}{\jsEnableXKanjiSkip}
+\newcommand*{\noautoxspacing}{\jsDisableXKanjiSkip}
 \protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
-\def\bxjs@apply@xkanjiskip{%
-  \jsXKanjiSkip\@tempskipa
+\def\jsApplyXKanjiSkip#1{%
+  \jsXKanjiSkip=#1\relax
   \let\CJKecglue\bxjs@CJKecglue}
 %    \end{macrocode}
 %
@@ -11312,17 +11361,21 @@
 \ifx\CJKecglue\@undefined
   \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
 \fi
-\let\autospacing\bxjs@enable@kanjiskip
-\let\noautospacing\bxjs@disable@kanjiskip
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\autospacing}{\jsEnableKanjiSkip}
+\newcommand*{\noautospacing}{\jsDisableKanjiSkip}
 \protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
-\def\bxjs@apply@kanjiskip{%
-  \jsKanjiSkip\@tempskipa
+\def\jsApplyKanjiSkip#1{%
+  \jsKanjiSkip=#1\relax
   \xeCJKsetup{CJKglue={\bxjs@CJKglue}}}
-\let\autoxspacing\bxjs@enable@xkanjiskip
-\let\noautoxspacing\bxjs@disable@xkanjiskip
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\newcommand*{\autoxspacing}{\jsEnableXKanjiSkip}
+\newcommand*{\noautoxspacing}{\jsDisableXKanjiSkip}
 \protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
-\def\bxjs@apply@xkanjiskip{%
-  \jsXKanjiSkip\@tempskipa
+\def\jsApplyXKanjiSkip#1{%
+  \jsXKanjiSkip=#1\relax
   \xeCJKsetup{CJKecglue={\bxjs@CJKecglue}}}
 %    \end{macrocode}
 %
@@ -11553,6 +11606,10 @@
 % \paragraph{共通命令の実装}
 %
 %    \begin{macrocode}
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}
 \protected\def\noautospacing{%
@@ -11561,10 +11618,10 @@
   \ltjsetparameter{autoxspacing=true}}
 \protected\def\noautoxspacing{%
   \ltjsetparameter{autoxspacing=false}}
-\def\bxjs@apply@kanjiskip{%
-  \ltjsetparameter{kanjiskip={\@tempskipa}}}
-\def\bxjs@apply@xkanjiskip{%
-  \ltjsetparameter{xkanjiskip={\@tempskipa}}}
+\def\jsApplyKanjiSkip#1{%
+  \ltjsetparameter{kanjiskip={#1}}}
+\def\jsApplyXKanjiSkip#1{%
+  \ltjsetparameter{xkanjiskip={#1}}}
 %    \end{macrocode}
 %
 % |\jachar| のサブマクロの実装。
@@ -11627,33 +11684,6 @@
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
-%
-% \paragraph{和文空白命令}
-% \begin{macro}{\>}
-% 非数式中では |\jathinspace| と等価になるように再定義する。
-% \Note 数式中では従来通り（|\:| と等価）。
-%    \begin{macrocode}
-\ifbxjs@jaspace@cmd
-  \bxjs@protected\def\bxjs@choice@jathinspace{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \jathinspace\ignorespaces
-    \fi}
-  \jsAtEndOfClass{%
-    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
-    \else \def\>{\protect\bxjs@choice@jathinspace}%
-    \fi}
-\fi
-%    \end{macrocode}
-% \end{macro}
-%
-% \paragraph{和文・和欧文間空白の初期値}
-%
-%    \begin{macrocode}
-\setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
-\ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}
-\else \setxkanjiskip{0.25em plus 0.15em minus 0.06em}
-\fi
-%    \end{macrocode}
 %
 % 以上で終わり。
 %
