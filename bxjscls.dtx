@@ -3611,7 +3611,7 @@
 %
 %    \begin{macrocode}
 \chardef\bxjs@periodchar=`\.
-\bxjs@protected\def\bxjs@SE{%
+\bxjs@robust@def\bxjs@SE{%
   \ifnum\spacefactor<\@m \spacefactor\@m
   \else \spacefactor\sfcode\bxjs@periodchar
   \fi}
@@ -7643,9 +7643,9 @@
 % \begin{macro}{\disallowoldfontcommands}
 % “二文字フォント命令”の使用に対して警告を出す。
 %    \begin{macrocode}
-\newcommand*{\allowoldfontcommands}{%
+\DeclareRobustCommand*{\allowoldfontcommands}{%
   \@jsc@warnoldfontcmdexceptiontrue}
-\newcommand*{\disallowoldfontcommands}{%
+\DeclareRobustCommand*{\disallowoldfontcommands}{%
   \@jsc@warnoldfontcmdexceptionfalse}
 %    \end{macrocode}
 % \end{macro}
