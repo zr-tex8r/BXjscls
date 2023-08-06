@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2023/07/17 v2.9  BXJS document classes]
+  [2023/08/02 v2.9a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \let\bxjs@tmpa\relax
 \ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
@@ -399,21 +399,6 @@
 \g@addto@macro\bxjs@begin@document@hook{%
   \bxjs@pagestyle@hook
   \global\let\bxjs@pagestyle@hook\relax}
-\fi
-\ifbxjs@jaspace@cmd
-  \def\jaenspace{\hskip.5\jsZw\relax}
-  \def\jathinspace{\hskip\z@skip}
-  \def\　{\zwspace}
-  \DeclareRobustCommand*{\jaspace}[1]{%
-    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
-      \ClassError\bxjs@clsname
-       {Unknown jaspace: #1}{\@eha}%
-    \else
-      \csname bxjs@jaspace@@#1\endcsname
-    \fi}
-  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
-  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
-  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
 \fi
 \endinput
 %%

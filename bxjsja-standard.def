@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2023/07/17 v2.9  BXJS document classes]
+  [2023/08/02 v2.9a BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -49,6 +49,7 @@
 \define@key{bxjs}{strong-cmd}[true]{\bxjs@set@keyval{strongcmd}{#1}{}}
 \def\bxjs@next#1{\bxjs@safe@setkeys{bxjsStd}{#1}}
 \expandafter\bxjs@next\expandafter{\jsJaParam}
+\let\jafontsize\jsJaFontSize
 \@onlypreamble\bxjs@apply@mmiv
 \def\bxjs@apply@mmiv{%
   \g@addto@macro\@classoptionslist{,jis2004}
@@ -89,98 +90,11 @@
 \fi
 \ifbxjs@jp@strong@cmd\jsAtEndOfClass{%
   \ifx\strong\@undefined\ifx\strongenv\@undefined
-    \DeclareRobustCommand{\strongenv}{\bxjs@strong@font}%
-    \DeclareTextFontCommand{\strong}{\strongenv}%
-    \newcommand*{\strongfontdeclare}{\bxjs@strongfontdeclare}%
-    \newcount\bxjs@strong@level
-    \bxjs@protected\def\bxjs@strongfontdeclare#1{%
-      \bxjs@set@array@from@clist{bxjs@strong}{#1}%
-      \bxjs@strong@level\z@}%
-    \bxjs@strongfontdeclare{\bfseries}%
-    \def\bxjs@strong@font{%
-      \bxjs@csletcs{bxjs@tmpa}{bxjs@strong/\the\bxjs@strong@level}%
-      \ifx\bxjs@tmpa\relax
-        \advance\bxjs@strong@level\m@ne \bxjs@strong@font
-      \else \advance\bxjs@strong@level\@ne \bxjs@tmpa
-      \fi}%
+    \newcommand*{\strongenv}{\jsStrongText}%
+    \DeclareTextFontCommand{\strong}{\jsStrongText}%
+    \newcommand*{\strongfontdeclare}{\jsStrongDeclare}%
   \fi\fi
 }\fi
-\ifjsWitheTeX
-  \@tempdima=0.25mm
-  \protected\edef\jQ{\dimexpr\the\@tempdima\relax}
-  \let\jH\jQ
-  \ifjsc@mag
-    \@tempdimb=\jsBaseFontSize\relax
-    \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
-    \@tempdima=2.5mm
-    \bxjs@invscale\@tempdima\bxjs@tmpa
-    \protected\edef\trueQ{\dimexpr\the\@tempdima\relax}
-    \@tempdima=10pt
-    \bxjs@invscale\@tempdima\bxjs@tmpa
-    \protected\edef\bxjs@truept{\dimexpr\the\@tempdima\relax}
-  \else \let\trueQ\jQ \let\bxjs@truept\p@
-  \fi
-  \let\trueH\trueQ
-  \@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
-  \protected\edef\ascQ{\dimexpr\the\@tempdima\relax}
-  \@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
-  \protected\edef\ascpt{\dimexpr\the\@tempdima\relax}
-\fi
-\def\jafontsize#1#2{%
-  \begingroup
-    \bxjs@jafontsize@a{#1}%
-    \@tempdimb\jsInverseScale\@tempdima
-    \bxjs@jafontsize@a{#2}%
-    \xdef\bxjs@g@tmpa{%
-      \noexpand\fontsize{\the\@tempdimb}{\the\@tempdima}}%
-  \endgroup\bxjs@g@tmpa}
-\def\bxjs@jafontsize@a#1{%
-  \bxjs@parse@qh{#1}%
-  \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
-  \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
-\def\bxjs@kanjiskip{0pt}
-\newcommand*\setkanjiskip[1]{%
-  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
-  \bxjs@reset@kanjiskip}
-\newcommand*\getkanjiskip{%
-  \bxjs@kanjiskip}
-\newif\ifbxjs@kanjiskip@enabled \bxjs@kanjiskip@enabledtrue
-\bxjs@robust@def\bxjs@enable@kanjiskip{%
-  \bxjs@kanjiskip@enabledtrue
-  \bxjs@reset@kanjiskip}
-\bxjs@robust@def\bxjs@disable@kanjiskip{%
-  \bxjs@kanjiskip@enabledfalse
-  \bxjs@reset@kanjiskip}
-\bxjs@robust@def\bxjs@reset@kanjiskip{%
-  \ifbxjs@kanjiskip@enabled
-    \setlength{\@tempskipa}{\bxjs@kanjiskip}%
-  \else \@tempskipa\z@
-  \fi
-  \bxjs@apply@kanjiskip}
-\def\bxjs@xkanjiskip{0pt}
-\newcommand*\setxkanjiskip[1]{%
-  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
-  \bxjs@reset@xkanjiskip}
-\newcommand*\getxkanjiskip{%
-  \bxjs@xkanjiskip}
-\newif\ifbxjs@xkanjiskip@enabled \bxjs@xkanjiskip@enabledtrue
-\bxjs@robust@def\bxjs@enable@xkanjiskip{%
-  \bxjs@xkanjiskip@enabledtrue
-  \bxjs@reset@xkanjiskip}
-\bxjs@robust@def\bxjs@disable@xkanjiskip{%
-  \bxjs@xkanjiskip@enabledfalse
-  \bxjs@reset@xkanjiskip}
-\bxjs@robust@def\bxjs@reset@xkanjiskip{%
-  \ifbxjs@xkanjiskip@enabled
-    \setlength{\@tempskipa}{\bxjs@xkanjiskip}%
-  \else \@tempskipa\z@
-  \fi
-  \bxjs@apply@xkanjiskip}
-\g@addto@macro\jsResetDimen{%
-  \bxjs@reset@kanjiskip
-  \bxjs@reset@xkanjiskip}
-\let\bxjs@apply@kanjiskip\relax
-\let\bxjs@apply@xkanjiskip\relax
 \@onlypreamble\bxjs@adjust@jafont
 \def\bxjs@adjust@jafont#1{%
   \ifx\jsJaFont\bxjs@@auto
@@ -327,10 +241,14 @@
     \global\let\bxjs@urgent@special@a\relax}
 \fi
 \if j\jsEngine
-\def\bxjs@apply@kanjiskip{%
-  \kanjiskip\@tempskipa}
-\def\bxjs@apply@xkanjiskip{%
-  \xkanjiskip\@tempskipa}
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\def\jsApplyKanjiSkip#1{%
+  \kanjiskip=#1\relax}
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\def\jsApplyXKanjiSkip#1{%
+  \xkanjiskip=#1\relax}
 \def\bxjs@jachar#1{%
   \bxjs@jachar@a#1....\@nil}
 \def\bxjs@jachar@a#1#2#3#4#5\@nil{%
@@ -517,17 +435,21 @@
 \ifx\CJKecglue\@undefined
   \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
 \fi
-\let\autospacing\bxjs@enable@kanjiskip
-\let\noautospacing\bxjs@disable@kanjiskip
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\autospacing}{\jsEnableKanjiSkip}
+\newcommand*{\noautospacing}{\jsDisableKanjiSkip}
 \protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
-\def\bxjs@apply@kanjiskip{%
-  \jsKanjiSkip\@tempskipa
+\def\jsApplyKanjiSkip#1{%
+  \jsKanjiSkip=#1\relax
   \let\CJKglue\bxjs@CJKglue}
-\let\autoxspacing\bxjs@enable@xkanjiskip
-\let\noautoxspacing\bxjs@disable@xkanjiskip
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\newcommand*{\autoxspacing}{\jsEnableXKanjiSkip}
+\newcommand*{\noautoxspacing}{\jsDisableXKanjiSkip}
 \protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
-\def\bxjs@apply@xkanjiskip{%
-  \jsXKanjiSkip\@tempskipa
+\def\jsApplyXKanjiSkip#1{%
+  \jsXKanjiSkip=#1\relax
   \let\CJKecglue\bxjs@CJKecglue}
 \def\bxjs@jachar#1{%
   \CJKforced{#1}}
@@ -581,17 +503,21 @@
 \ifx\CJKecglue\@undefined
   \def\CJKtilde{\CJK@global\def~{\CJKecglue\ignorespaces}}
 \fi
-\let\autospacing\bxjs@enable@kanjiskip
-\let\noautospacing\bxjs@disable@kanjiskip
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\autospacing}{\jsEnableKanjiSkip}
+\newcommand*{\noautospacing}{\jsDisableKanjiSkip}
 \protected\def\bxjs@CJKglue{\hskip\jsKanjiSkip}
-\def\bxjs@apply@kanjiskip{%
-  \jsKanjiSkip\@tempskipa
+\def\jsApplyKanjiSkip#1{%
+  \jsKanjiSkip=#1\relax
   \xeCJKsetup{CJKglue={\bxjs@CJKglue}}}
-\let\autoxspacing\bxjs@enable@xkanjiskip
-\let\noautoxspacing\bxjs@disable@xkanjiskip
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
+\newcommand*{\autoxspacing}{\jsEnableXKanjiSkip}
+\newcommand*{\noautoxspacing}{\jsDisableXKanjiSkip}
 \protected\def\bxjs@CJKecglue{\hskip\jsXKanjiSkip}
-\def\bxjs@apply@xkanjiskip{%
-  \jsXKanjiSkip\@tempskipa
+\def\jsApplyXKanjiSkip#1{%
+  \jsXKanjiSkip=#1\relax
   \xeCJKsetup{CJKecglue={\bxjs@CJKecglue}}}
 \ifx\mcfamily\@undefined
   \protected\def\mcfamily{\CJKfamily{\CJKrmdefault}}
@@ -715,6 +641,10 @@
   \PassOptionsToPackage{unicode}{hyperref}
   \bxjs@check@hyperref@unicode{true}
 \fi
+\newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
+\newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
+\newcommand*{\setxkanjiskip}{\jsSetXKanjiSkip}
+\newcommand*{\getxkanjiskip}{\jsGetXKanjiSkip}
 \protected\def\autospacing{%
   \ltjsetparameter{autospacing=true}}
 \protected\def\noautospacing{%
@@ -723,10 +653,10 @@
   \ltjsetparameter{autoxspacing=true}}
 \protected\def\noautoxspacing{%
   \ltjsetparameter{autoxspacing=false}}
-\def\bxjs@apply@kanjiskip{%
-  \ltjsetparameter{kanjiskip={\@tempskipa}}}
-\def\bxjs@apply@xkanjiskip{%
-  \ltjsetparameter{xkanjiskip={\@tempskipa}}}
+\def\jsApplyKanjiSkip#1{%
+  \ltjsetparameter{kanjiskip={#1}}}
+\def\jsApplyXKanjiSkip#1{%
+  \ltjsetparameter{xkanjiskip={#1}}}
 \def\bxjs@jachar#1{%
   \ltjjachar`#1\relax}
 \ifbxjs@jaspace@cmd
@@ -746,20 +676,6 @@
 \ifx\mathmc\@undefined
   \DeclareJaMathFontCommand{\mathmc}{\mcfamily}
   \DeclareJaMathFontCommand{\mathgt}{\gtfamily}
-\fi
-\ifbxjs@jaspace@cmd
-  \bxjs@protected\def\bxjs@choice@jathinspace{%
-    \relax\ifmmode \mskip\medmuskip
-    \else \jathinspace\ignorespaces
-    \fi}
-  \jsAtEndOfClass{%
-    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
-    \else \def\>{\protect\bxjs@choice@jathinspace}%
-    \fi}
-\fi
-\setkanjiskip{0pt plus.1\jsZw minus.01\jsZw}
-\ifx\jsDocClass\jsSlide \setxkanjiskip{0.1em}
-\else \setxkanjiskip{0.25em plus 0.15em minus 0.06em}
 \fi
 \endinput
 %%

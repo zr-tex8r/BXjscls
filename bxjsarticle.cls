@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2023/07/17 v2.9  BXJS document classes]
+  [2023/08/02 v2.9a BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsarticle}
 \newif\ifjsc@needsp@tch
@@ -155,6 +155,18 @@
   \bxjs@cslet{#1/\the\@tempcnta}\relax}
 \let\c@bxjs@tempcnta\@tempcnta
 \def\bxjs@gset@tempcnta{\setcounter{bxjs@tempcnta}}
+\def\bxjs@advance@qc#1#2{%
+  \begingroup
+    \@tempcnta=#1\relax \advance\@tempcnta by#2\relax
+    \global\chardef\bxjs@g@tmpa\@tempcnta
+  \endgroup \let#1\bxjs@g@tmpa}
+\ifjsWitheTeX
+  \let\bxjs@new@count\newcount
+  \def\bxjs@advance@count#1#2{\advance#1by#2\relax}
+\else
+  \def\bxjs@new@count#1{\chardef#1\z@}
+  \let\bxjs@advance@count\bxjs@advance@qc
+\fi
 \def\jsSetQHLength#1#2{%
   \begingroup
     \bxjs@parse@qh{#2}%
@@ -1004,7 +1016,7 @@
 \newskip\jsc@smallskipamount
 \jsc@smallskipamount=3\jsc@mpt plus 1\jsc@mpt minus 1\jsc@mpt
 \chardef\bxjs@periodchar=`\.
-\bxjs@protected\def\bxjs@SE{%
+\bxjs@robust@def\bxjs@SE{%
   \ifnum\spacefactor<\@m \spacefactor\@m
   \else \spacefactor\sfcode\bxjs@periodchar
   \fi}
@@ -2022,9 +2034,9 @@
    {Old font command '\string#1' is used!!\MessageBreak
     The first occurrence is}%
 }
-\newcommand*{\allowoldfontcommands}{%
+\DeclareRobustCommand*{\allowoldfontcommands}{%
   \@jsc@warnoldfontcmdexceptiontrue}
-\newcommand*{\disallowoldfontcommands}{%
+\DeclareRobustCommand*{\disallowoldfontcommands}{%
   \@jsc@warnoldfontcmdexceptionfalse}
 \let\bxjs@oldfontcmd@list\@empty
 \def\bxjs@oldfontcmd#1{%
@@ -2509,6 +2521,135 @@
 \else
   \onecolumn
   \raggedbottom
+\fi
+\bxjs@robust@def\jsStrongText{\bxjs@strong@text}%
+\chardef\bxjs@strong@level=0
+\DeclareRobustCommand*\jsStrongDeclare[1]{%
+  \bxjs@set@array@from@clist{bxjs@strong}{#1}%
+  \chardef\bxjs@strong@level\z@}
+\jsStrongDeclare{\bfseries}
+\def\bxjs@strong@text{%
+  \bxjs@csletcs{bxjs@tmpa}{bxjs@strong/\the\bxjs@strong@level}%
+  \ifx\bxjs@tmpa\relax
+    \bxjs@advance@qc\bxjs@strong@level\m@ne \bxjs@strong@text
+  \else \bxjs@advance@qc\bxjs@strong@level\@ne \bxjs@tmpa
+  \fi}
+\@onlypreamble\bxjs@const@unit
+\@onlypreamble\bxjs@const@unit@a
+\ifjsWitheTeX
+  \def\bxjs@const@unit#1#2#3{%
+    \protected\edef#1{\dimexpr\the\dimexpr#3\relax\relax}}
+\else
+  \let\bxjs@Ct\fontdimen \font\bxjs@Ut=cmtex9 at 0.98245pt
+  \bxjs@Ct8\bxjs@Ut=8sp \bxjs@Ct16\bxjs@Ut=\z@
+  \def\bxjs@const@unit#1#2{%
+    \expandafter\bxjs@const@unit@a\csname bxjs@#2@\endcsname#1}
+  \def\bxjs@const@unit@a#1#2#3{%
+    \chardef#1\bxjs@Ct8\bxjs@Ut \bxjs@advance@qc#1\@ne \bxjs@Ct8\bxjs@Ut#1sp
+    \bxjs@Ct#1\bxjs@Ut=#3\relax \def#2{\bxjs@Ct#1\bxjs@Ut}}
+\fi
+\bxjs@const@unit\jQ{jQ}{0.25mm}
+\let\jH\jQ
+\ifjsc@mag
+  \@tempdimb=\jsBaseFontSize\relax
+  \edef\bxjs@tmpa{\strip@pt\@tempdimb}%
+  \@tempdima=2.5mm
+  \bxjs@invscale\@tempdima\bxjs@tmpa
+  \bxjs@const@unit\trueQ{trueQ}{\@tempdima}
+  \@tempdima=10pt
+  \bxjs@invscale\@tempdima\bxjs@tmpa
+  \bxjs@const@unit\bxjs@truept{truept}{\@tempdima}
+\else \let\trueQ\jQ \let\bxjs@truept\p@
+\fi
+\let\trueH\trueQ
+\@tempdima\trueQ \bxjs@invscale\@tempdima\jsScale
+\bxjs@const@unit\ascQ{ascQ}{\@tempdima}
+\@tempdima\bxjs@truept \bxjs@invscale\@tempdima\jsScale
+\bxjs@const@unit\ascpt{ascpt}{\@tempdima}
+\DeclareRobustCommand*\jsJaFontSize[2]{%
+  \begingroup
+    \bxjs@jafontsize@a{#1}%
+    \@tempdimb\jsInverseScale\@tempdima
+    \bxjs@jafontsize@a{#2}%
+    \xdef\bxjs@g@tmpa{%
+      \noexpand\fontsize{\the\@tempdimb}{\the\@tempdima}}%
+  \endgroup\bxjs@g@tmpa}
+\def\bxjs@jafontsize@a#1{%
+  \bxjs@parse@qh{#1}%
+  \ifx\bxjs@tmpb\relax \def\bxjs@tmpb{#1}\fi
+  \@defaultunits\@tempdima\bxjs@tmpb pt\relax\@nnil}
+\def\bxjs@let@lenexpr{\edef}
+\def\bxjs@kanjiskip{0pt}
+\DeclareRobustCommand*\jsSetKanjiSkip[1]{%
+  \bxjs@let@lenexpr\bxjs@kanjiskip{#1}%
+  \bxjs@reset@kanjiskip}
+\newcommand*\jsGetKanjiSkip{%
+  \bxjs@kanjiskip}
+\newif\ifbxjs@kanjiskip@enabled \bxjs@kanjiskip@enabledtrue
+\bxjs@robust@def\jsEnableKanjiSkip{%
+  \bxjs@kanjiskip@enabledtrue
+  \bxjs@reset@kanjiskip}
+\bxjs@robust@def\jsDisableKanjiSkip{%
+  \bxjs@kanjiskip@enabledfalse
+  \bxjs@reset@kanjiskip}
+\bxjs@robust@def\bxjs@reset@kanjiskip{%
+  \ifbxjs@kanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@kanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \jsApplyKanjiSkip\@tempskipa}
+\let\jsApplyKanjiSkip\@gobble
+\def\bxjs@xkanjiskip{0pt}
+\DeclareRobustCommand*\jsSetXKanjiSkip[1]{%
+  \bxjs@let@lenexpr\bxjs@xkanjiskip{#1}%
+  \bxjs@reset@xkanjiskip}
+\newcommand*\jsGetXKanjiSkip{%
+  \bxjs@xkanjiskip}
+\newif\ifbxjs@xkanjiskip@enabled \bxjs@xkanjiskip@enabledtrue
+\bxjs@robust@def\jsEnableXKanjiSkip{%
+  \bxjs@xkanjiskip@enabledtrue
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\jsDisableXKanjiSkip{%
+  \bxjs@xkanjiskip@enabledfalse
+  \bxjs@reset@xkanjiskip}
+\bxjs@robust@def\bxjs@reset@xkanjiskip{%
+  \ifbxjs@xkanjiskip@enabled
+    \setlength{\@tempskipa}{\bxjs@xkanjiskip}%
+  \else \@tempskipa\z@
+  \fi
+  \jsApplyXKanjiSkip\@tempskipa}
+\let\jsApplyXKanjiSkip\@gobble
+\g@addto@macro\jsResetDimen{%
+  \bxjs@reset@kanjiskip
+  \bxjs@reset@xkanjiskip}
+\AtEndOfPackage{%
+\jsSetKanjiSkip{0pt plus.1\jsZw minus.01\jsZw}%
+\ifx\jsDocClass\jsSlide \jsSetXKanjiSkip{0.1em}%
+\else \jsSetXKanjiSkip{0.25em plus 0.15em minus 0.06em}%
+\fi
+}
+\ifbxjs@jaspace@cmd
+  \def\jaenspace{\hskip.5\jsZw\relax}
+  \def\jathinspace{\hskip\bxjs@xkanjiskip\relax}
+  \def\　{\zwspace}
+  \bxjs@protected\def\bxjs@choice@jathinspace{%
+    \relax\ifmmode \mskip\medmuskip
+    \else \jathinspace\ignorespaces
+    \fi}
+  \jsAtEndOfClass{%
+    \ifjsWitheTeX \let\>\bxjs@choice@jathinspace
+    \else \def\>{\protect\bxjs@choice@jathinspace}%
+    \fi}
+  \DeclareRobustCommand*{\jaspace}[1]{%
+    \expandafter\ifx\csname bxjs@jaspace@@#1\endcsname\relax
+      \ClassError\bxjs@clsname
+       {Unknown jaspace: #1}{\@eha}%
+    \else
+      \csname bxjs@jaspace@@#1\endcsname
+    \fi}
+  \def\bxjs@jaspace@@zenkaku{\hskip 1\jsZw\relax}
+  \def\bxjs@jaspace@@nibu{\hskip .5\jsZw\relax}
+  \def\bxjs@jaspace@@shibu{\hskip .25\jsZw\relax}
 \fi
 \bxjs@pre@jadriver@hook
 \input{bxjsja-\bxjs@jadriver.def}

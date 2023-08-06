@@ -12,8 +12,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.9}
-\newcommand{\PkgDate}{2023/07/17}
+\newcommand{\PkgVersion}{2.9a}
+\newcommand{\PkgDate}{2023/08/02}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -67,7 +67,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 以下の点で改良が加えられている。
 \begin{itemize}
 \item JSクラスは{\pLaTeX}と{\upLaTeX}のみをサポートするが、
-  BXJSクラスはこれらに加えて{\pdfLaTeX}と{\XeLaTeX}と{\LuaLaTeX}を
+  BXJSクラスはこれらに加えて{(pdf)\LaTeX}と{\XeLaTeX}と{\LuaLaTeX}を
   サポートしており主要エンジンの全てで使用可能である。
 \item (u){\pLaTeX}以外では各々のエンジンの日本語処理パッケージを
   利用するが、“標準設定”を用いることで、それらのパッケージの
@@ -129,7 +129,8 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
   \end{itemize}
 \end{itemize}
 
-{\XeLaTeX}で\Pkg{bxjsarticle}クラスを用いた文書の例を示す。
+{\XeLaTeX}で\Pkg{bxjsarticle}クラスを用いた
+完全な文書ソースの例を示す。
 \footnote{組版結果における日付の出力はJSクラスと同様の
 「2015年7月3日」の形式になる。}%
 
@@ -221,7 +222,7 @@ JSクラスのレイアウトデザインと機能をほぼ踏襲しているが
 \end{verbatim}\end{quote}
 その値が\Pkg{bxcjkjatype}のフォントプリセットになる。
 \begin{quote}\small\begin{verbatim}
-\documentclass[a4paper]{article}
+\documentclass[a4paper]{article}%ただしレイアウトはjsarticle相当
 \usepackage[whole,autotilde,ipaex]{bxcjkjatype}
 \end{verbatim}\end{quote}
 
@@ -459,6 +460,7 @@ Pandocモードを使う場合はクラスオプションを以下のように�
 BXJSクラスを用いる場合のPandocの設定について、以下で例を示す。
 
 \Note なお、以下の記述はPandoc 2.x版に従う。
+（3,x版でも通用すると思われる。）
 Pandocのオプション体系は2.x版と1.x版とでかなり異なることに
 注意されたい。
 
@@ -473,8 +475,7 @@ Pandocのオプション体系は2.x版と1.x版とでかなり異なること�
 
   この場合のコマンド行は次のようになる：
   \footnote{もちろん、実際には改行を含めず1行で書く。
-    なお、日本語文書の場合、変換先書式（|-t|）は |latex|
-    でなく |lates-smart|（|smart| 機能を無効化）とすべきである。}
+    以降の例でも同様。}
   \begin{quote}
   |pandoc| \Meta{入力ファイル名}\ 
     |-o| \Meta{出力ファイル名}|.pdf|
@@ -491,6 +492,14 @@ Pandocのオプション体系は2.x版と1.x版とでかなり異なること�
   \begin{quote}
     |\documentclass[a4paper,jafont=ipaex,pandoc]{bxjsarticle}|
   \end{quote}
+
+\Note 注意事項：
+  \begin{itemize}
+  \item Pandocの |latex| 出力の |smart| 機能は
+    普通の日本語文書においては悪影響を及ぼすので、
+    変換先書式（|-t|）の値は |latex|
+    でなく |latex-smart|（|smart| 機能を無効化）とすべきである。
+  \end{itemize}
 
 \paragraph{bxjsbookの例}
 
@@ -527,6 +536,14 @@ Pandocのオプション体系は2.x版と1.x版とでかなり異なること�
   \item \Pkg{bxjsbook}クラスは「章（|\chapter|）」をもつクラスなので、
     Pandocで |--top-level-division=|\linebreak[0]|chapter| の指定
     が必要。
+  \item 既定テンプレート使用時は、|papersize=～| の指定は
+    「クラスオプションに |～paper| を指定する」
+    という形で反映される。
+    BXJSクラスでは |b～paper| はJISのB列を表すので、
+    |papersize=b5| でJIS~B5判に設定される。
+    出力形式を{\LaTeX}以外にする（あるいは他の文書クラスを利用する）
+    場合は |papersize=b5| でISO~B5判に設定される可能性が
+    あることに注意。
   \end{itemize}
 
 \paragraph{(u)\pLaTeX の使用}
@@ -614,14 +631,19 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   の指定は必須である。
   \footnote{ただし現状では、ドライバオプションが無い場合には
     エラーではなく警告が出る。}
-\item |nodvidriver|\Means
+\item |nodvidriver|／|class-nodvidriver|\Means
   特殊なドライバオプションの一種で、BXJSクラスが持つ
   ドライバ依存の機能を全て抑止することを指定する。
   \footnote{従って、別にドライバ依存の機能を使用しなければ、
     出力されるDVIファイルは特定のDVIウェアに依存しないものになる。
     ただし最近の{\LaTeX}カーネルはそれ自身がドライバ依存をもつ
     ことに注意。}
-\item |dvi=|\Meta{ドライバ名}\Means
+  \Note BXJSクラス内では |nodvidriver| と |class-nodvidriver| は
+  等価であるが、「何がグローバルオプションにあるか」という観点で
+  両者は異なる。
+  現状で |nodvidriver| オプションを認識するパッケージがあり、
+  |nodvidriver| の方はそれらのパッケージについても有効になる。
+\item |dvi=|\Meta{ドライバオプション名}\Means
   エンジンがDVI出力の場合に限り、指定のドライバオプションを
   有効にする。
   \footnote{実際にドライバオプションが有効化された場合は、
@@ -659,7 +681,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |jafont=|\Meta{名前}\Means
   「和文フォントプリセット指定」の名前を設定する。
   既定値は空。
-  \Note 詳細は\ref{ssec:ja-font-settings}節を参照。
+  \Note 詳細については\ref{ssec:ja-font-settings}節を参照。
   \par
   プリセット指定の値が丸括弧を含む（例えば“|sourcehan(-otc)|”）場合、
   以下のように解釈される。
@@ -672,7 +694,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |japaram={|\Meta{キー}|=|\Meta{値}|,...}|\Means
   「和文ドライバパラメタ」の値を設定する。
   既定値は空。
-  \Note 詳細は\ref{sec:Ja-Driver-Param}節を参照。
+  \Note 詳細については\ref{sec:Ja-Driver-Param}節を参照。
   \Note |japaram| を複数回指定した場合は各々の指定内容
   （キーと値の組の列）が累積する。
   \Note |jafont| と |japaram| の値がどのように解釈されるかは
@@ -695,7 +717,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   基底フォントサイズに14\,ptを設定する。
 \item |jbase=|\Meta{長さ\xast}\Means
   和文を基準にして基底フォントサイズを指定する。
-  すなわち和文フォントの |\normalsize| のサイズを指定の長さとする。
+  すなわち、和文フォントの |\normalsize| のサイズを指定の長さとする。
   \footnote{この場合に決定されるmag値は和文スケール値にも依存する
     ことに注意。}
   \Note 1.8版から、|base| と |jbase| の両方の指定が可能になった。
@@ -765,7 +787,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   エンジンや和文ドライバの種類により、
   既定値が有効・無効の何れになるかは異なり、また、
   そもそも有効・無効の一方しか選択できない場合もある。
-  詳細については\ref{sec:Ja-math-fonts}節を参照されたい。
+  \Note 詳細については\ref{sec:Ja-math-fonts}節を参照。
 \item |textwidth=|\Meta{長さ}\Means
   行長（本文領域の横幅；|\textwidth|）を指定する。
   \Note 実際には全角の整数倍に丸めた値が使われる
@@ -784,7 +806,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |number-of-lines=|\Meta{整数}\Means
   1ページあたりの行数を指定する。
   \Pkg{geometry}で |lines| を指定したのと同値。
-  既定では |lines| を指定しない。
+  既定では\Pkg{geometry}の |lines| は指定されない。
 \end{itemize}
 
 \paragraph{上級者向けのオプション}\mbox{}
@@ -841,7 +863,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
 \item |magstyle=|\Meta{値}\Means
   “版面拡大”の実現方法を指定する。
   有効な値は |usemag|、|nomag|、|nomag*| の何れか。
-  詳細は\ref{ssec:magstyle}節を参照。
+  \Note 詳細については\ref{ssec:magstyle}節を参照。
 \item |geometry=|\Meta{値}\Means
   \Pkg{geometry}パッケージの読込に対する制御。
   \begin{itemize}
@@ -864,7 +886,7 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   |\bf| 等の“二文字フォント命令”の使用を許容する。
 \item |nooldfontcommands|（既定）\Means
   “二文字フォント命令”の使用に対して警告を出す。
-  詳細については\ref{sec:Old-font-commands}節を参照されたい。
+  \Note 詳細については\ref{sec:Old-font-commands}節を参照。
 \item |fancyhdr=|\Meta{真偽値}\Means
   \Pkg{fancyhdr}パッケージの機能に対する補正を行うか。
   真の場合、以下の補正が行われる。既定値は真。
@@ -888,11 +910,11 @@ JSクラスには無くBXJSクラスで追加されたクラスオプション�
   を行うか否か。
   既定値は真。
 \item |jaspace-cmd=|\Meta{真偽値}\Means
-  以下に挙げる和文空白命令を定義するか否か。
-  （詳しくは\ref{ssec:ja-settings}節を参照。）
+  以下に挙げる和文空白命令
+  （\ref{ssec:ja-settings}節を参照）を定義するか否か。
   \begin{quote}
     |\jaenspace|、|\jathinspace|、|\>|、
-    |\|\JSS（|\|\,+\,全角空白）
+    |\|\JSS（|\|\,+\,全角空白）、|\jaspace|
   \end{quote}
   既定値は真。
 \item |fix-at-cmd=|\Meta{真偽値}\Means
@@ -1186,7 +1208,7 @@ keyval形式（例えば|magstyle=nomag*|）で書くこともできる。}
   当然、NFSSのパッチのせいで別の不具合が起こる可能性はある。
 \end{itemize}
 
-\Note Lua{\TeX}の0.87版以降では（PDF出力時の）「mag設定」の機能が
+\Note Lua{\TeX}の0.87版以降では「PDF出力時のmag設定」の機能が
 廃止されている。
 そのため、そのようなエンジンでは |usemag| はサポートされない
 （エラーになる）。
@@ -1225,10 +1247,10 @@ BXJSクラスでは様々なエンジンについて、そのエンジンおよ�
 \item pandoc和文ドライバ\Means
 「Pandocモード」で使用される和文ドライバ。
 standardドライバの機能を継承するが、
-「Pandocの既定のlatexテンプレート」が使われることを前提として、
+「Pandocの既定の |latex| テンプレート」が使われることを前提として、
 それとBXJSの設定を整合させるための措置を加えている。
 \Note 本マニュアルで「standard和文ドライバの場合」という場合、
-特に明示がない限りはpandoc和文ドライバも含まれる。
+特に明示されない限りはpandoc和文ドライバも含まれる。
 \end{itemize}
 
 和文ドライバは自分で作製することも可能である。
@@ -1242,21 +1264,18 @@ standardドライバの機能を継承するが、
 ）の名前のファイルに実装コードを書いてそのファイルを配置すると、
 |ja=XXX| のオプション指定でその和文ドライバを利用できる。
 
-なお、和文ドライバ指定（|ja| オプション）の既定値は |minimal|
-である。
-現実には、ほとんど全ての場合に |standard| が用いられると思われるが、
-種々の理由があって、これを既定値にはしていない。
+なお、和文ドライバの指定（|ja| オプション）は\jemph{必須}である。
+現状では |minimal| が既定値となっているが、
+2.0版より省略は\jemph{非推奨}の扱いであり、
+% （既に1.8版で明示指定が推奨されていた。）
+3.0版で\jemph{禁止}される予定である。
 
 \Note ただし、(u){\pLaTeX}については、日本語処理機能がエンジン自体に
-備わっていて不可分なため少し異なる扱いになっている。
+備わっていて不可分なため例外的な扱いになっていて、
 \footnote{JSクラスの実装から分離した「日本語処理関連」のコードを
 minimalに配置している。}%
-|minimal| を用いる意義がほとんどないため、
+和文ドライバ指定は省略可能で %
 |standard| が既定値になっている。
-
-\Note 2.0版より、(u){\pLaTeX}以外のエンジンについては、
-和文ドライバ指定を省略することは非推奨の扱いとなった。
-（既に1.8版で明示指定が推奨されていた。）
 
 %-------------------
 \subsection{standardドライバで用いられる日本語処理機構}
@@ -1266,7 +1285,7 @@ minimalに配置している。}%
 \item \pLaTeX、\upLaTeX（および{\pLaTeX-ng}）の場合\Means
   エンジン自体が日本語処理の能力を持っているので
   それが常に用いられる。
-\item \pdfLaTeX{}の場合\Means
+\item (pdf){\LaTeX}の場合\Means
   \Pkg{bxcjkjatype}パッケージが |whole| と |autotilde| の
   オプション付で読み込まれる。
 \item \XeLaTeX{}の場合\Means
@@ -1288,50 +1307,49 @@ minimalに配置している。}%
 明朝・ゴシックのファミリとして用いられる物理フォントの
 割当（マッピング）は以下のようになる：
 \begin{itemize}
-\item \pLaTeX、\upLaTeX{}\Means
+\item \pLaTeX、{\upLaTeX}の場合\Means
   クラスでは何もマッピングを設定しない。
   従って、DVIウェアでの設定が適用される。
-\item \pdfLaTeX\Means
+\item pdf{\LaTeX}の場合\Means
   \Pkg{bxcjkjatype}パッケージの既定設定となり、
   従って、Type1形式のIPAexフォント（\Pkg{ipaex-type1}で提供される）
   が使用される。
-\item \XeLaTeX\Means
+\item \XeLaTeX{}の場合\Means
   「原ノ味フォント」が使用される。
   \Pkg{zxjafont}パッケージの |haranoaji| プリセットの
   単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
-\item \LuaLaTeX\Means
+\item \LuaLaTeX{}の場合\Means
   「原ノ味フォント」が使用される。
   \Pkg{luatexja-preset}パッケージの |haranoaji| プリセットの
   単ウェイト使用と同等であるが、パッケージが読み込まれるわけではない。
 \end{itemize}
 
-\Note {\TeX} Live 2019（およびその前の数年間）では、DVIウェアにおける
-和文フォントマッピングの既定設定は「IPAexフォント」であった。
-（つまり、(u){\pLaTeX}では既定で「IPAexフォント」が使われる。）
-これに合わせる形で、{\XeLaTeX}・{\LuaLaTeX}での既定設定も、
-以前は「IPAexフォント」としていた。
-ところが、{\TeX} Live 2020において、DVIウェアの既定のマッピングが
+\Note DVIウェアにおける既定の和文フォントマッピング
+（すなわち(u){\pLaTeX}における既定の和文フォント）
+の設定は、昔は「IPAexフォント」であったが
+{\TeX} Live 2020において
 「原ノ味フォント」に変更された。
-従って、{\XeLaTeX}・{\LuaLaTeX}での既定設定についても、
+これに追随する形で、
+BXJSクラスの{\XeLaTeX}・{\LuaLaTeX}での既定設定についても、
 2.0版より「原ノ味フォント」に変更された。
 ただしType1形式の原ノ味フォントは存在しないため、
-{\pdfLaTeX}では\Pkg{ipaex-type1}のフォントが引き続き使用される。
+(pdf){\LaTeX}では\Pkg{ipaex-type1}のフォントが引き続き使用される。
 \par\medskip
 
 和文フォントプリセット（|jafont|）を指定した場合、
 具体的には以下のように処理される：
 \begin{itemize}
-\item \pLaTeX、\upLaTeX\Means
-  \Pkg{pxchfon}パッケージが「|jafont| の値」をオプション
-  に指定した形で読み込まれる。
-\item \pdfLaTeX\Means
-  \Pkg{bxcjkjatype}のオプションに「|jafont| の値」が指定される。
-\item \XeLaTeX\Means
-  \Pkg{zxjafont}パッケージが「|jafont| の値」をオプション
-  に指定した形で読み込まれる。
-\item \LuaLaTeX\Means
-  \Pkg{luatexja-preset}パッケージが「|jafont| の値」をオプション
-  に指定した形で読み込まれる。
+\item \pLaTeX、{\upLaTeX}の場合\Means
+  「|jafont| の値」をオプションにして
+  \Pkg{pxchfon}パッケージを読み込む。
+\item (pdf){\LaTeX}の場合\Means
+  \Pkg{bxcjkjatype}のオプションに「|jafont| の値」を追加する。
+\item \XeLaTeX{}の場合\Means
+  「|jafont| の値」をオプションにして
+  \Pkg{zxjafont}パッケージを読み込む。
+\item \LuaLaTeX{}の場合\Means
+  「|jafont| の値」をオプションにして
+  \Pkg{luatexja-preset}パッケージを読み込む。
 \end{itemize}
 
 ただし、|jafont| の値として |auto| は特別な意味をもち、
@@ -1370,6 +1388,52 @@ minimalに配置している。}%
 \end{verbatim}\end{quote}
 
 minimal和文ドライバには有効な和文ドライバパラメタは存在しない。
+
+\paragraph{和文ドライバパラメタの代替表記}
+Pandoc（の{\LaTeX}出力の既定テンプレート）では、
+|classoption| というパラメタで任意のクラスオプションを指定できるが、
+この際に波括弧 |{…}| の扱いがしばしば厄介なことになる。
+例えば和文パラメタ指定の
+\begin{quote}\small\begin{verbatim}
+japaram={jis2004}
+\end{verbatim}\end{quote}
+という値をYAMLメタデータブロックで指定したいとする。
+この場合、単純に
+\begin{quote}\small\begin{verbatim}
+classoption: japaram={jis2004}
+\end{verbatim}\end{quote}
+と書いたのでは、
+|{jis2004}| の部分が |\{jis2004\}| のように“エスケープ”されて
+しまって失敗する。
+所望の指定をするには代わりに
+\begin{quote}\small\begin{verbatim}
+classoption: "`japaram={jis2004}`{=latex}"
+\end{verbatim}\end{quote}
+のような複雑怪奇な書き方をする必要がある。%
+\footnote{YAMLメタデータブロックで指定された
+  文字列（YAMLの文字列型の値）について、Pandocでは
+  「Markdownソースとして解釈される」
+  という奇妙な仕様を（歴史的経緯のため）採用している。
+  このため、|{jis2004}| は
+  「Markdown→{\LaTeX}の変換」
+  が適用されて |\{jis2004\}| となってしまう。
+  余計な変換を回避するためにはPandoc MarkdownのRawInLine要素を
+  利用して |`japaram={jis2004}`{=latex}| と書く必要がある。
+  さらに、YAMLの文法規則として、
+  文字列が |`| で始まる場合には |"…"| で全体を囲わなければならない。}
+
+この問題に対処するため、2.9版において
+「和文ドライバパラメタ代替表記」をサポートすることにした。
+クラスオプションに |ja:| で始まる文字列を書くと、
+以下のように解釈される。
+\begin{itemize}
+\item |ja:XXX| と書くと、|japaram={XXX}| を指定したことになる。
+\item |ja:XXX=YYY| と書くと、|japaram={XXX=YYY}| を指定したことになる。
+\end{itemize}
+代替表記を利用すると、先ほどの例は以下のように書くことができる。
+\begin{quote}\small\begin{verbatim}
+classoption: ja:jis2004
+\end{verbatim}\end{quote}
 
 %-------------------
 \subsection{standard和文ドライバの場合}
@@ -1433,9 +1497,9 @@ standard用のものに加えて、以下の和文ドライバパラメタが存
   和文フォントを単ウェイトで用いている場合、生の |\textbf| は体裁
   が悪い（ゴシックの和文とセリフの欧文の組み合わせになる）ため、
   |\strong| に移譲して調整ができるようにしている。
-  \footnote{|\strong| に適用される書体は、|strong| パラメタで選択
-    できるが、その他に（{\XeLaTeX}・{\LuaLaTeX}の場合は）
-    \Pkg{fontspec}の |\strongfontdeclare| 命令でも設定できる。}
+  \footnote{|\strong| に適用される書体は |strong| パラメタで選択
+    できるが、|\strongfontdeclare| 命令
+    （\ref{ssec:markup}節）でも設定できる。}
   \Note |\bfseries| 命令の動作は変わらない。
 \item |fix-code=|\Meta{真偽値}\Means
   |\texttt| 命令と周囲の和文の間に和欧文間空白が常に入るようにするか。
@@ -1539,6 +1603,7 @@ vscale=0.944, vmarginratio=1:1
 
 %-------------------
 \subsection{構造マークアップ関連}
+\label{ssec:markup}
 
 \begin{itemize}
 \item |\subtitle{|\Meta{テキスト}|}|\Means
@@ -1632,16 +1697,16 @@ vscale=0.944, vmarginratio=1:1
 \item |\zw|\Means
   |\jsZw| の別名。
   \footnote{\Pkg{\LuaTeX-ja}では「実際の全角幅」を表す
-    命令 |\zw|（{\pLaTeX}の |zw| と本当に等価）が規定されている。
-    |lualatex| エンジン指定かつ和文ドライバが |standard| の場合は
+    長さ命令 |\zw|（{\pLaTeX}の |zw| と本当に等価）が規定されている。
+    |lualatex| エンジン指定かつ和文ドライバがstandardの場合は
     この |\zw| の定義がそのまま使われる。
-    （従って |use-zw| は実質的に意味を持たない。）
+    （従って |use-zw| は実質的に無意味である。）
     なお、|\jsZw| は「規約上の全角幅」であり、「実際の全角幅」と本来は
     一致するはずだが、実際には計算誤差のせいで僅かに値が異なる。}%
   ただし |use-zw=false| 指定時は定義されない。
 \item |\zwspace|\Means
   全角（|\jsZw|）幅の水平空き。
-\item |\|\JSS（|\|\,の後に全角空白文字）\Means
+\item |\|\JSS（|\|\,+\,全角空白）\Means
   |\zwspace| の別名。
   全角幅の水平空き。
   \Note \Pkg{jlreq}クラスと互換の命令。
@@ -1649,11 +1714,54 @@ vscale=0.944, vmarginratio=1:1
   この命令は単純に |\hspace|\wbr|{\jsZw}| と等価である。
 \item |\jaenspace|\Means
   半角（0.5\,|\jsZw|）幅の水平空き。
+\item |\jathinspace|\Means
+  和欧文間空白を挿入する。
+\item |\>|\Means
+  （非数式モードで
+  \footnote{|\>| という命令名は、plain {\TeX}では数式中の空白
+    （{\LaTeX}の |\:| と同等）を表す。
+    このため、実際には{\LaTeX}でも |\>| は |\:| と同等の命令として
+    定義されている。
+    この「plain互換の |\>|」を利用したコードが影響を受けるのを避ける
+    ため、数式中では |\>| は従来通り |\:| と同等の動作を行う。}%
+    ）和欧文間空白を挿入する。
+\item |\jaspace{|\Meta{値}|}|\Means
+  引数の値に応じて水平空きを挿入する。%
+  \footnote{\Pkg{jlreq}クラスに同様の命令が実装されているが、
+  なぜかundocumentedになっている。}%
+  可能な値は以下の通り：
+  \begin{itemize}
+  \item |zenkaku|\Means 全角幅。（|\zwspace| と同じ。）
+  \item |nibu|\Means 半角幅。（|\jaenspace| と同じ。）
+  \item |shibu|\Means 四分幅（0.25\,|\jsZw|）。%
+    \footnote{和欧文間空白（|\jathinspace|）とは必ずしも
+    一致\jemph{しない}ことに注意。}
+  \end{itemize}
+  \Note ただし |jaspace-cmd=false| 指定時は |\|\JSS・
+  |\jaenspace|・|\jathinspace|・|\>|・|\jaspace|
+  は定義されない。%
+  \footnote{ただし |\>| については注意が必要で、
+    standard和文ドライバで自動的に読み込まれる
+    \Pkg{zxjatype}や\Pkg{bxcjkjatype}のパッケージは、
+    それ自体が同様の機能の |\>| を提供する。}
 \item |\allowoldfontcommands|\Means
   これ以降に実行される二文字フォント命令を警告の対象にしない。
 \item |\disallowoldfontcommands|\Means
   これ以降に実行される二文字フォント命令を警告の対象にする。
-\Note 詳細については\ref{sec:Old-font-commands}節を参照されたい。
+  \Note 詳細については\ref{sec:Old-font-commands}節を参照。
+\item |\jQ|、|\jH|、|\trueQ|、|\trueH|\Means
+  それぞれ{\pLaTeX}の単位Q、H、true\,Q、true\,Hに相当する長さ命令。
+\item |\ascQ|\Means
+  1\,true\,Qを和文スケール値で割った長さを表す長さ命令。
+  \footnote{命令名は“anti-scaled Q”の略。}%
+  \Note 例えば、|\fontsize{10\ascQ}{16\trueH}|
+  で和文のサイズが10\,Qになる。%
+  \footnote{1.5c版で導入された |\jafontsize| 命令を用いて %
+    |\jafontsize{10trueQ}{16trueH}| としてもよい。}
+\item |\ascpt|\Means
+  1\,true\,ptを和文スケール値で割った長さを表す長さ命令。
+  \Note 例えば、|\fontsize{9\ascpt}{13truept}|
+  で和文のサイズが9ポイントになる。
 \item \mbox{\pLaTeX}カーネルで規定される
   「基底フォントサイズパラメタ」の
   長さ命令 |\Cwd|\JSl|\Cht|\JSl|\Cdp|\JSl|\Cvs|\JSl|\Chs| が
@@ -1664,7 +1772,7 @@ vscale=0.944, vmarginratio=1:1
 
 \subsubsection{standard和文ドライバで追加される命令}
 
-standard和文ドライバ（およびそれを継承するドライバ）では和文に関連する
+standard和文ドライバでは和文に関連する
 文書ソース記述をエンジンに依らずに共通になることを目指している。
 従って、和文関連の組版パラメタの設定についても
 「共通の命令」が提供される。
@@ -1679,19 +1787,6 @@ standard和文ドライバ（およびそれを継承するドライバ）では
   \footnote{ちなみに、(u){\pLaTeX}の既定ではこの連動は起こらない。}%
   に、|\rmfamily| で和文が「明朝」、
   |\sffamily| および |\ttfamily| で和文が「ゴシック」に変更される。
-\item |\jQ|、|\jH|、|\trueQ|、|\trueH|\Means
-  それぞれ{\pLaTeX}の単位Q、H、true\,Q、true\,Hに相当する長さ。
-\item |\ascQ|\Means
-  1\,true\,Qを和文スケール値で割った長さ。
-  \footnote{命令名は“anti-scaled Q”の略。}%
-  例えば、|\fontsize{10\ascQ}{16\trueH}|
-  で和文のサイズが10\,Qになる。%
-  \footnote{1.5c版で導入された |\jafontsize| 命令を用いて %
-    |\jafontsize{10trueQ}{16trueH}| としてもよい。}
-\item |\ascpt|\Means
-  1\,true\,ptを和文スケール値で割った長さ。
-  例えば、|\fontsize{9\ascpt}{13truept}|
-  で和文のサイズが9ポイントになる。
 \item |\setxkanjiskip{|\Meta{長さ}|}|\Means
   和欧文間空白の量を指定する。
   {\pLaTeX}での %
@@ -1718,21 +1813,6 @@ standard和文ドライバ（およびそれを継承するドライバ）では
 \item |\autospacing|\JSl|\noautospacing|\Means
   和文間空白の挿入を有効／無効にする。
   {\pLaTeX}の同名の命令と同等。
-\item |\jathinspace|\Means
-  和欧文間空白を挿入する。
-\item |\>|\Means
-  （非数式モードで
-  \footnote{|\>| という命令名は、plain {\TeX}では数式中の空白
-    （{\LaTeX}の |\:| と同等）を表す。
-    このため、実際には{\LaTeX}でも |\>| は |\:| と同等の命令として
-    定義されている。
-    この「plain互換の |\>|」を利用したコードが影響を受けるのを避ける
-    ため、数式中では |\>| は従来通り |\:| と同等の動作を行う。}%
-    ）和欧文間空白を挿入する。
-  \Note |jaspace-cmd=false| 指定時は定義されない。%
-  \footnote{ただし、standard和文ドライバで自動的に読み込まれる
-    \Pkg{zxjatype}や\Pkg{bxcjkjatype}のパッケージは、
-    それ自体が同様の機能の |\>| を提供することにも注意を要する。}
 \item |\jachar{|\Meta{文字1つ}|}|\Means
   指定の文字を和文文字として（現在の和文フォントで）出力する。
 \item |\jafontsize{|\Meta{フォントサイズ\xast}|}{|\Meta{行送り\xast}|}|\Means
