@@ -12,8 +12,8 @@
 \bxtexlogoimport{*}
 \usepackage{shortvrb}
 \MakeShortVerb{\|}
-\newcommand{\PkgVersion}{2.9a}
-\newcommand{\PkgDate}{2023/08/02}
+\newcommand{\PkgVersion}{2.9b}
+\newcommand{\PkgDate}{2024/01/22}
 \newcommand{\Pkg}[1]{\textsf{#1}}
 \newcommand{\Meta}[1]{$\langle$\mbox{}\nobr#1\nobr\mbox{}$\rangle$}
 \newcommand{\Note}{\par\noindent ※}
@@ -1826,6 +1826,12 @@ standard和文ドライバでは和文に関連する
 \item 欧文数式フォント命令での和文の連動\Means
   |\mathrm| で和文が「明朝」、
   |\mathsf| および |\mathtt| で和文が「ゴシック」に指定される。
+  \footnote{和文連動の対象となる欧文数式フォント命令を
+    \Pkg{bm}パッケージの |\bm| 命令の中で使う
+    （例えば |\bm{\mathsf{A}}| 等）
+    と正常に動作しないことが判明している。
+    暫定対処として、2.9b版以降では\Pkg{bm}パッケージが読み込まれて
+    いる場合には欧文数式フォント命令の和文連動が無効になる。}%
   \Note JSクラスとは異なり、連動の組合せは
   テキストと同一であることに注意。
 \end{itemize}
