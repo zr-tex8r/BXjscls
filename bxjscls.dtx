@@ -11122,9 +11122,11 @@
   \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
   \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\reDeclareMathAlphabet\@undefined\else
+    \@ifpackageloaded{bm}{}{%else
       \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
       \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
       \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
+    }%
     \fi}
 \fi
 %    \end{macrocode}
