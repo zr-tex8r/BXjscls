@@ -5515,6 +5515,20 @@
 %
 % \section{文書のマークアップ}
 %
+% \begin{ZRnote}
+% \begin{macro}{\bxjs@phantomsection}
+% |hyperref| が読み込まれている場合に |\phantomsection| を実行する。
+%    \begin{macrocode}
+\let\bxjs@phantomsection\relax
+\g@addto@macro\bxjs@begin@document@hook{%
+  \@ifpackageloaded{hyperref}{%
+    \let\bxjs@phantomsection\phantomsection
+  }{}%
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{ZRnote}
+%
 % \subsection{表題}
 %
 % \begin{macro}{\title}
@@ -8288,8 +8302,15 @@
     \fi
     \columnseprule.4pt \columnsep 2\jsZw
     \ifx\multicols\@undefined
-%<book|report>      \twocolumn[\@makeschapterhead{\indexname}%
-%<book|report>      \addcontentsline{toc}{chapter}{\indexname}]%
+%    \end{macrocode}
+% \begin{ZRnote}
+% |hyperref| 使用時に索引へのリンクが正常に作られるように、
+% |hyperref| の説明書の解説に従って |\phantomsection| を配置した。
+% \end{ZRnote}
+%    \begin{macrocode}
+%<book|report>      \twocolumn[\bxjs@phantomsection
+%<book|report>        \addcontentsline{toc}{chapter}{\indexname}%
+%<book|report>        \@makeschapterhead{\indexname}]%
 %<!book&!report>      \def\presectionname{}\def\postsectionname{}%
 %<!book&!report>      \twocolumn[\section*{\indexname}]%
     \else
