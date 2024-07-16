@@ -10847,6 +10847,56 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \paragraph{bmパッケージ対策}
+%
+% |\reDeclareMathAlphabet| を適用した数式英字フォント命令は
+% 通常の場合とは定義文の形が異なる。
+% このため |bm| パッケージを利用して |\bm{\mathrm{A}}| を
+% 実行するとエラーが発生する。
+% これを回避するため、
+% 「|\bm| の引数中では数式英字フォントの和文連動を無効にする」
+% ことにする。
+%
+% |\reDeclareMathAlphabet| の適用により例えば |\mathrm| は
+% 以下のように変更される。
+% \begin{itemize}
+% \item 適用前は |\mathrm| の一回展開は %
+%   |\protect\|[|mathrm|\verb*| |] である。
+% \item 適用後は |\mathrm| の一回展開が %
+%   |\protect\|[|mathrm|\verb*|  |] になる。
+% \item |\|[|mathrm|\verb*|  |] の一回展開は以下のようになる。\\
+%   |\DualLang@mathalph@bet{\RDMAorg@mathrm}{\RDMAorg@mathmc}|
+% \item |\RDMAorg@mathrm| の一回展開は |\|[|mathrm|\verb*| |] になる。
+% \end{itemize}
+%
+% \begin{macro}{\bxjs@patch@RDMA@for@bm}
+% |\reDeclareMathAlphabet| の機能に対して |bm| パッケージ対策の
+% パッチを当てる。
+%    \begin{macrocode}
+\@onlypreamble\bxjs@patch@RDMA@for@bm
+\def\bxjs@patch@RDMA@for@bm{%
+%    \end{macrocode}
+% 実際に改変するのは |\DualLang@mathalph@bet| である。
+%    \begin{macrocode}
+  \let\bxjs@org@DualLang@mathalph@bet\DualLang@mathalph@bet
+  \def\DualLang@mathalph@bet{%
+%    \end{macrocode}
+% |\bm| の引数の中
+% （そこでは |\bm| が |\@firstofone| に等置されているので
+% これを判定に利用する）
+% では、|\DualLang@mathalph@bet| を |\@firstoftwo| の動作に変える。
+% これにより、|\mathrm| の
+% （|\protect| を無視する場合の）
+% 先頭完全展開形が、「適用」前のものと一致する。
+% このため |\bm| は「適用」の影響を受けずに正常動作できる。
+%    \begin{macrocode}
+    \ifx\bm\@firstofone \expandafter\@firstoftwo
+    \else \expandafter\bxjs@org@DualLang@mathalph@bet
+    \fi}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
 %^^A----------------
 % \subsection{{\pTeX}用設定}
 %
@@ -11124,19 +11174,12 @@
   \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\reDeclareMathAlphabet\@undefined\else
 %    \end{macrocode}
-% |\reDeclareMathAlphabet| を適用した数式英字フォント命令は{\LaTeX}の
-% 通常の命令とは定義文の形が異なる。
-% このため |bm| パッケージを読み込んで |\bm{\mathrm{A}}| を
-% 実行するとエラーが発生する。
-% これを回避するための暫定対応として、|bm| が読み込まれた場合は
-% 数式英字フォントの和文連動を無効にする。
-% \TODO ユーザが数式英字フォントの和文連動を制御できるようにする。
+% |bm| パッケージが読込済であればパッチを適用する。
 %    \begin{macrocode}
-    \@ifpackageloaded{bm}{}{%else
+      \@ifpackageloaded{bm}{\bxjs@patch@RDMA@for@bm}{}%
       \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
       \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
       \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
-    }%
     \fi}
 \fi
 %    \end{macrocode}
@@ -11544,6 +11587,7 @@
   \@ltj@match@familytrue
 \fi
 \g@addto@macro\bxjs@begin@document@hook{%
+  \@ifpackageloaded{bm}{\bxjs@patch@RDMA@for@bm}{}%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}%
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
   \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%
