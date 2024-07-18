@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsslide}
-  [2024/01/22 v2.9b BXJS document classes]
+  [2024/07/19 v2.9c BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsslide}
 \newif\ifjsc@needsp@tch
@@ -1428,6 +1428,12 @@
   \let\@mkboth\@gobbletwo
   \let\sectionmark\@gobble
   \let\subsectionmark\@gobble
+}
+\let\bxjs@phantomsection\relax
+\g@addto@macro\bxjs@begin@document@hook{%
+  \@ifpackageloaded{hyperref}{%
+    \let\bxjs@phantomsection\phantomsection
+  }{}%
 }
 \newcommand*{\jsSubtitle}[1]{\gdef\bxjs@subtitle{#1}}
 \renewcommand*{\title}[1]{\bxjs@decl@subtitle\gdef\@title{#1}}

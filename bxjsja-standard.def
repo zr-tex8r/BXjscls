@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2024/01/22 v2.9b BXJS document classes]
+  [2024/07/19 v2.9c BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -240,6 +240,14 @@
     \DeclareHookRule{shipout/firstpage}{pxjahyper/enc}{<}{hyperref}%
     \global\let\bxjs@urgent@special@a\relax}
 \fi
+\@onlypreamble\bxjs@patch@RDMA@for@bm
+\def\bxjs@patch@RDMA@for@bm{%
+  \let\bxjs@org@DualLang@mathalph@bet\DualLang@mathalph@bet
+  \def\DualLang@mathalph@bet{%
+    \ifx\bm\@firstofone \expandafter\@firstoftwo
+    \else \expandafter\bxjs@org@DualLang@mathalph@bet
+    \fi}%
+}
 \if j\jsEngine
 \newcommand*{\setkanjiskip}{\jsSetKanjiSkip}
 \newcommand*{\getkanjiskip}{\jsGetKanjiSkip}
@@ -386,11 +394,10 @@
   \DeclareMathAlphabet{\mathgt}{\jsc@JYn}{gt}{m}{n}
   \g@addto@macro\bxjs@begin@document@hook{%
     \ifx\reDeclareMathAlphabet\@undefined\else
-    \@ifpackageloaded{bm}{}{%else
+      \@ifpackageloaded{bm}{\bxjs@patch@RDMA@for@bm}{}%
       \reDeclareMathAlphabet{\mathrm}{\@mathrm}{\@mathmc}%
       \reDeclareMathAlphabet{\mathbf}{\@mathbf}{\@mathgt}%
       \reDeclareMathAlphabet{\mathsf}{\@mathsf}{\@mathgt}%
-    }%
     \fi}
 \fi
 \else\if \if p\jsEngine T\else\if n\jsEngine T\else F\fi\fi T
@@ -606,6 +613,7 @@
   \@ltj@match@familytrue
 \fi
 \g@addto@macro\bxjs@begin@document@hook{%
+  \@ifpackageloaded{bm}{\bxjs@patch@RDMA@for@bm}{}%
   \reDeclareMathAlphabet{\mathrm}{\mathrm}{\mathmc}%
   \reDeclareMathAlphabet{\mathbf}{\mathbf}{\mathgt}%
   \reDeclareMathAlphabet{\mathsf}{\mathsf}{\mathgt}}%

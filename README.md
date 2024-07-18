@@ -102,6 +102,7 @@ This package is distributed under the BSD 2-Clause License.
 Revision History
 ----------------
 
+  * Version 2.9c 〈2024/07/19〉
   * Version 2.9b 〈2024/01/22〉
   * Version 2.9a 〈2023/08/02〉
   * Version 2.9  〈2023/07/17〉

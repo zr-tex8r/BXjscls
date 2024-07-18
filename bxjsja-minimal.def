@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2024/01/22 v2.9b BXJS document classes]
+  [2024/07/19 v2.9c BXJS document classes]
 %% このファイルは日本語文字を含みます
 \let\bxjs@tmpa\relax
 \ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
