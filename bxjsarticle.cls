@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsarticle}
-  [2024/07/19 v2.9c BXJS document classes]
+  [2025/06/06 v2.9d BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsarticle}
 \newif\ifjsc@needsp@tch
@@ -335,6 +335,7 @@
 \DeclareOption{twocolumn}{\@twocolumntrue}
 \DeclareOption{titlepage}{\@titlepagetrue}
 \DeclareOption{notitlepage}{\@titlepagefalse}
+\providecommand\dollardollar@begin{$$}
 \def\eqnarray{%
    \stepcounter{equation}%
    \def\@currentlabel{\p@equation\theequation}%
@@ -344,7 +345,7 @@
    \global\@eqcnt\z@
    \tabskip\@centering
    \let\\\@eqncr
-   $$\everycr{}\halign to\displaywidth\bgroup
+   \dollardollar@begin\everycr{}\halign to\displaywidth\bgroup
        \hskip\@centering$\displaystyle\tabskip\z@skip{##}$\@eqnsel
       &\global\@eqcnt\@ne \hfil$\displaystyle{{}##{}}$\hfil
       &\global\@eqcnt\tw@ $\displaystyle{##}$\hfil\tabskip\@centering
@@ -369,7 +370,7 @@
     \setlength\belowdisplayskip{\abovedisplayskip}%
     \setlength\belowdisplayshortskip{\abovedisplayskip}%
     \setlength\abovedisplayshortskip{\abovedisplayskip}%
-    $$\everycr{}\halign to\linewidth% $$
+    \dollardollar@begin\everycr{}\halign to\linewidth% $$
     \bgroup
       \hskip\@centering$\displaystyle\tabskip\z@skip{##}$\@eqnsel
       &\global\@eqcnt\@ne \hfil$\displaystyle{{}##{}}$\hfil
@@ -2267,8 +2268,9 @@
       \futurelet\jsc@next\jsc@fo@t}
 \def\jsc@fo@t{\ifcat\bgroup\noexpand\jsc@next \let\jsc@next\jsc@f@@t
                                 \else \let\jsc@next\jsc@f@t\fi \jsc@next}
-\def\jsc@f@@t{\bgroup\aftergroup\jsc@@foot\let\jsc@next}
-\def\jsc@f@t#1{#1\jsc@@foot}
+\def\jsc@f@@t@prefix{\inhibitglue\ignorespaces}
+\def\jsc@f@@t{\bgroup\aftergroup\jsc@@foot\afterassignment\jsc@f@@t@prefix\let\jsc@next}
+\def\jsc@f@t#1{\jsc@f@@t@prefix#1\jsc@@foot}
 \def\jsc@@foot{\@finalstrut\strutbox\color@endgroup\egroup
   \ifx\pltx@foot@penalty\@undefined\else
     \ifhmode\null\fi

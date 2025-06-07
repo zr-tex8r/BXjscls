@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-pandoc.def}
-  [2024/07/19 v2.9c BXJS document classes]
+  [2025/06/06 v2.9d BXJS document classes]
 \if x\jsEngine
   \PassOptionsToPackage{nospace}{xeCJK}
 \fi
