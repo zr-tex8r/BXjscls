@@ -839,6 +839,24 @@
 % \end{macro}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@add@class@option}
+% グローバルオプションを追加する。
+% \Note 2021/06/01版以降の{\LaTeX}カーネルでは従来の |\@classoptionslist|
+% に加えて「無加工のクラスオプションリスト」を格納する
+% ための |\@raw@classoptionslist| が用意されているので、その場合はその
+% リストにも追加する。
+%    \begin{macrocode}
+\def\bxjs@add@class@option#1{%
+  \edef\bxjs@args{{#1}}%
+  \expandafter\bxjs@add@class@option@a\bxjs@args}
+\def\bxjs@add@class@option@a#1{%
+  \g@addto@macro\@classoptionslist{,#1}%
+  \ifx\@raw@classoptionslist\@undefined\else
+    \g@addto@macro\@raw@classoptionslist{,#1}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\jsSetQHLength}
 % |\jsSetQHLength\CS{|\Meta{長さ式}|}|\Means
 % |\setlength| の変種で、通常の |calc| の長さ式の代わりに、
@@ -2533,9 +2551,9 @@
 % グローバルオプションに加える。
 %    \begin{macrocode}
   \ifx j\bxjs@engine@given
-    \g@addto@macro\@classoptionslist{,platex}
+    \bxjs@add@class@option{platex}
   \else\ifx u\bxjs@engine@given
-    \g@addto@macro\@classoptionslist{,uplatex}
+    \bxjs@add@class@option{uplatex}
   \fi\fi
 \fi
 \ifx\bxjs@engine@given\@undefined\else
@@ -2550,7 +2568,7 @@
 % 追加する。
 %    \begin{macrocode}
 \ifjsWithpTeXng
-  \g@addto@macro\@classoptionslist{,uplatex}
+  \bxjs@add@class@option{uplatex}
 \fi
 %    \end{macrocode}
 %
@@ -2618,12 +2636,8 @@
 % （グローバルオプションに |XXX| を追加する。）
 %    \begin{macrocode}
   \ifbxjs@dvi@opt
-    \edef\bxjs@next{%
-      \let\noexpand\bxjs@driver@given
-       \csname bxjs@dvidriver@@\bxjs@driver@opt\endcsname
-      \noexpand\g@addto@macro\noexpand\@classoptionslist
-       {,\bxjs@driver@opt}%
-    }\bxjs@next
+    \bxjs@csletcs{bxjs@driver@given}{bxjs@dvidriver@@\bxjs@driver@opt}
+    \bxjs@add@class@option{\bxjs@driver@opt}
   \fi
 \fi
 %    \end{macrocode}
@@ -2637,7 +2651,7 @@
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \let\bxjs@platexng@nodrv\@undefined
   \else\ifx t\bxjs@platexng@nodrv\else
-    \g@addto@macro\@classoptionslist{,dvipdfmx}
+    \bxjs@add@class@option{dvipdfmx}
   \fi\fi
 \fi
 %    \end{macrocode}
@@ -2787,7 +2801,7 @@
 % BXJSクラスでは余計なので無効にしておく。
 % このため、グローバルで |nosetpagesize| を設定しておく。
 %    \begin{macrocode}
-\g@addto@macro\@classoptionslist{,nosetpagesize}
+\bxjs@add@class@option{nosetpagesize}
 %    \end{macrocode}
 %
 % |oldfontcommands| オプション指定時は |\allowoldfontcommands|
@@ -10558,7 +10572,7 @@
 %    \begin{macrocode}
 \@onlypreamble\bxjs@apply@mmiv
 \def\bxjs@apply@mmiv{%
-  \g@addto@macro\@classoptionslist{,jis2004}
+  \bxjs@add@class@option{jis2004}
 % \@ifpackagewith 判定への対策
   \PassOptionsToPackage{jis2004}{otf}
   \global\let\bxjs@apply@mmiv\relax}
