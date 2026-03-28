@@ -613,6 +613,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\bxjs@nclong}
+% |*|無しの |\newcommand| で定義した引数無しマクロが |\long| 付に
+% なるならば |\long|、|\long| 無になるなら |\relax| と等価になる。
+% \Note カーネルの2025/11/01版において当該のマクロ定義が |\long| 無に
+% なるように仕様変更された。
+%    \begin{macrocode}
+\newcommand\bxjs@nclong{}\long\def\bxjs@tmpa{}
+\ifx\bxjs@nclong\bxjs@tmpa \let\bxjs@nclong\long
+\else \let\bxjs@nclong\relax
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
 % \paragraph{依存パッケージ読込 \ZRX}
 % \mbox{}
 %
@@ -1176,10 +1189,10 @@
 %    \begin{macrocode}
   \jsSetQHLength\@tempdima{#1}%
   \edef\bxjs@param@basefontsize{\the\@tempdima}%
-  \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
-  \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
-  \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
-  \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
+  \ifdim\@tempdima=10pt         \renewcommand\@ptsize{0}%
+  \else\ifdim\@tempdima=10.95pt \renewcommand\@ptsize{1}%
+  \else\ifdim\@tempdima=12pt    \renewcommand\@ptsize{2}%
+  \else \bxjs@nclong\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
 %    \end{macrocode}
 %
 % \TODO 恐らく |14pt| と |base=14.4pt| 等の関係も全く等価であるべき。
@@ -4350,7 +4363,7 @@
 \edef\bxjs@textwidth@limit{\the\@tempdima}
 \ifdim\@tempdima=\jsTextWidthLimit\Cwd\else
   \bxjs@invscale\@tempdima{\strip@pt\Cwd}
-  \long\edef\jsTextWidthLimit{\strip@pt\@tempdima}
+  \bxjs@nclong\edef\jsTextWidthLimit{\strip@pt\@tempdima}
 \fi
 %</book>
 %    \end{macrocode}
@@ -6661,7 +6674,7 @@
 \ifx\bxjs@paragraph@mark\@empty
   \let\jsParagraphMark\@empty
 \else\ifx\bxjs@paragraph@mark\@undefined\else
-  \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
+  \bxjs@nclong\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
 \fi\fi
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%
@@ -9741,7 +9754,7 @@
 % |\familydefault| の定義が“|\sfdefault|”である場合に
 % 引数のコードを実行する。
 %    \begin{macrocode}
-\long\def\bxjs@@CSsfdefault{\sfdefault}%
+\bxjs@nclong\def\bxjs@@CSsfdefault{\sfdefault}%
 \@onlypreamble\bxjs@if@sf@default
 \def\bxjs@if@sf@default#1{%
   \ifx\familydefault\bxjs@@CSsfdefault#1\fi
@@ -10124,11 +10137,11 @@
 % 新しいものに置き換える。
 %    \begin{macrocode}
 % 古い \@makefnmark の定義
-\long\def\bxjs@tmpa{\hbox{%
+\bxjs@nclong\def\bxjs@tmpa{\hbox{%
   !ifydir \@textsuperscript{\normalfont\@thefnmark}%
   !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}}
 \ifx\@makefnmark\bxjs@tmpa
-\long\gdef\@makefnmark{%
+\bxjs@nclong\gdef\@makefnmark{%
   !ifydir \hbox{}\hbox{\@textsuperscript{\normalfont\@thefnmark}}\hbox{}%
   !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}
 \fi
@@ -11612,7 +11625,7 @@
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 }
-\long\def\jttdefault{\gtdefault}
+\bxjs@nclong\def\jttdefault{\gtdefault}
 \unless\ifx\@ltj@match@familytrue\@undefined
   \@ltj@match@familytrue
 \fi
@@ -13697,7 +13710,7 @@ FE70,FFF0,%
 % もしここで |\newcommand\pandocLdots{\ldots}| という定義である場合は
 % 置き換えない。
 %    \begin{macrocode}
-  \long\def\bxjsp@tmpa{\ldots}%
+  \bxjs@nclong\def\bxjsp@tmpa{\ldots}%
   \ifx\pandocLdots\bxjsp@tmpa\else
 %    \end{macrocode}
 % |english| オプションが指定されていてかつBabelが読み込まれていない場合も
