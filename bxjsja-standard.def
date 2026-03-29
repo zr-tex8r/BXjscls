@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-standard.def}
-  [2025/06/06 v2.9d BXJS document classes]
+  [2026/03/29 v2.9e BXJS document classes]
 %% このファイルは日本語文字を含みます
 \input{bxjsja-minimal.def}
 \bxjs@simplejasetupfalse
@@ -52,7 +52,7 @@
 \let\jafontsize\jsJaFontSize
 \@onlypreamble\bxjs@apply@mmiv
 \def\bxjs@apply@mmiv{%
-  \g@addto@macro\@classoptionslist{,jis2004}
+  \bxjs@add@class@option{jis2004}
   \PassOptionsToPackage{jis2004}{otf}
   \global\let\bxjs@apply@mmiv\relax}
 \ifbxjs@jp@jismmiv \bxjs@apply@mmiv \fi
@@ -608,7 +608,7 @@
   {\not@math@alphabet\ttfamily\mathtt
    \romanfamily\ttdefault\kanjifamily\gtdefault\selectfont}
 }
-\long\def\jttdefault{\gtdefault}
+\bxjs@nclong\def\jttdefault{\gtdefault}
 \unless\ifx\@ltj@match@familytrue\@undefined
   \@ltj@match@familytrue
 \fi

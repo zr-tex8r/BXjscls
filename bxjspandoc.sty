@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bxjspandoc}
-  [2025/06/06 v2.9d BXJS document classes]
+  [2026/03/29 v2.9e BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjsp@pkgname{bxjspandoc}
 \let\bxjsp@engine=n
@@ -81,7 +81,7 @@
 \let\bxjsp@org@ldots\ldots
 \g@addto@macro\bxjsp@begin@document@hook{%
   \let\bxjsp@org@ldots\ldots
-  \long\def\bxjsp@tmpa{\ldots}%
+  \bxjs@nclong\def\bxjsp@tmpa{\ldots}%
   \ifx\pandocLdots\bxjsp@tmpa\else
     \ifnum0\ifbxjsp@english\ifbxjsp@babel@used\else1\fi\fi=0
       \let\ldots\pandocLdots

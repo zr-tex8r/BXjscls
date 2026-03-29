@@ -22,7 +22,7 @@
 %% in the same archive or directory.)
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{bxjsreport}
-  [2025/06/06 v2.9d BXJS document classes]
+  [2026/03/29 v2.9e BXJS document classes]
 %% このファイルは日本語文字を含みます.
 \def\bxjs@clsname{bxjsreport}
 \newif\ifjsc@needsp@tch
@@ -96,6 +96,10 @@
 \fi
 \newif\ifbxjs@old@hook@system
 \bxjs@if@format@at@least{2020/10/01}{}{\bxjs@old@hook@systemtrue}
+\newcommand\bxjs@nclong{}\long\def\bxjs@tmpa{}
+\ifx\bxjs@nclong\bxjs@tmpa \let\bxjs@nclong\long
+\else \let\bxjs@nclong\relax
+\fi
 \RequirePackage{calc}
 \RequirePackage{keyval}
 \IfFileExists{iftex.sty}{%
@@ -167,6 +171,14 @@
   \def\bxjs@new@count#1{\chardef#1\z@}
   \let\bxjs@advance@count\bxjs@advance@qc
 \fi
+\def\bxjs@add@class@option#1{%
+  \edef\bxjs@args{{#1}}%
+  \expandafter\bxjs@add@class@option@a\bxjs@args}
+\def\bxjs@add@class@option@a#1{%
+  \g@addto@macro\@classoptionslist{,#1}%
+  \ifx\@raw@classoptionslist\@undefined\else
+    \g@addto@macro\@raw@classoptionslist{,#1}%
+  \fi}
 \def\jsSetQHLength#1#2{%
   \begingroup
     \bxjs@parse@qh{#2}%
@@ -279,10 +291,10 @@
 \def\bxjs@setbasefontsize#1{%
   \jsSetQHLength\@tempdima{#1}%
   \edef\bxjs@param@basefontsize{\the\@tempdima}%
-  \ifdim\@tempdima=10pt         \long\def\@ptsize{0}%
-  \else\ifdim\@tempdima=10.95pt \long\def\@ptsize{1}%
-  \else\ifdim\@tempdima=12pt    \long\def\@ptsize{2}%
-  \else \long\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
+  \ifdim\@tempdima=10pt         \renewcommand\@ptsize{0}%
+  \else\ifdim\@tempdima=10.95pt \renewcommand\@ptsize{1}%
+  \else\ifdim\@tempdima=12pt    \renewcommand\@ptsize{2}%
+  \else \bxjs@nclong\edef\@ptsize{\jsUnusualPtSize}\fi\fi\fi}
 \def\bxjs@setjbasefontsize#1{%
   \setkeys{bxjs}{jbase=#1}}
 \newif\ifjsc@mag
@@ -780,9 +792,9 @@
 \ifx *\bxjs@engine@given
   \let\bxjs@engine@given\bxjs@tmpb
   \ifx j\bxjs@engine@given
-    \g@addto@macro\@classoptionslist{,platex}
+    \bxjs@add@class@option{platex}
   \else\ifx u\bxjs@engine@given
-    \g@addto@macro\@classoptionslist{,uplatex}
+    \bxjs@add@class@option{uplatex}
   \fi\fi
 \fi
 \ifx\bxjs@engine@given\@undefined\else
@@ -792,7 +804,7 @@
   \fi
 \fi
 \ifjsWithpTeXng
-  \g@addto@macro\@classoptionslist{,uplatex}
+  \bxjs@add@class@option{uplatex}
 \fi
 \@tempswatrue
 \ifx \bxjs@driver@given\@undefined\else
@@ -837,19 +849,15 @@
     \fi
   \fi
   \ifbxjs@dvi@opt
-    \edef\bxjs@next{%
-      \let\noexpand\bxjs@driver@given
-       \csname bxjs@dvidriver@@\bxjs@driver@opt\endcsname
-      \noexpand\g@addto@macro\noexpand\@classoptionslist
-       {,\bxjs@driver@opt}%
-    }\bxjs@next
+    \bxjs@csletcs{bxjs@driver@given}{bxjs@dvidriver@@\bxjs@driver@opt}
+    \bxjs@add@class@option{\bxjs@driver@opt}
   \fi
 \fi
 \ifjsWithpTeXng
   \ifx\bxjs@driver@given\bxjs@driver@@dvipdfmx
     \let\bxjs@platexng@nodrv\@undefined
   \else\ifx t\bxjs@platexng@nodrv\else
-    \g@addto@macro\@classoptionslist{,dvipdfmx}
+    \bxjs@add@class@option{dvipdfmx}
   \fi\fi
 \fi
 \ifx\bxjs@driver@given\bxjs@driver@@none
@@ -920,7 +928,7 @@
 \def\bxjs@js@clsname{jsbook}
   \@namedef{ver@\bxjs@js@clsname.cls}{2001/01/01 (bxjs)}
 \fi
-\g@addto@macro\@classoptionslist{,nosetpagesize}
+\bxjs@add@class@option{nosetpagesize}
 \ifbxjs@oldfontcommands
   \AtEndOfClass{\allowoldfontcommands}
 \fi
@@ -1883,7 +1891,7 @@
 \ifx\bxjs@paragraph@mark\@empty
   \let\jsParagraphMark\@empty
 \else\ifx\bxjs@paragraph@mark\@undefined\else
-  \long\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
+  \bxjs@nclong\edef\jsParagraphMark{\noexpand\jsJaChar{\bxjs@paragraph@mark}}
 \fi\fi
 \if@twocolumn
   \newcommand{\paragraph}{\@startsection{paragraph}{4}{\z@}%

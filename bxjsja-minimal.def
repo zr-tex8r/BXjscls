@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \ProvidesFile{bxjsja-minimal.def}
-  [2025/06/06 v2.9d BXJS document classes]
+  [2026/03/29 v2.9e BXJS document classes]
 %% このファイルは日本語文字を含みます
 \let\bxjs@tmpa\relax
 \ifx J\jsEngine \def\bxjs@tmpa{NTT-jTeX}\fi
@@ -48,7 +48,7 @@
         #2##1}%
   }%
 }
-\long\def\bxjs@@CSsfdefault{\sfdefault}%
+\bxjs@nclong\def\bxjs@@CSsfdefault{\sfdefault}%
 \@onlypreamble\bxjs@if@sf@default
 \def\bxjs@if@sf@default#1{%
   \ifx\familydefault\bxjs@@CSsfdefault#1\fi
@@ -272,11 +272,11 @@
   !else!ifydir y%
   !else ?%
   !fi!fi}
-\long\def\bxjs@tmpa{\hbox{%
+\bxjs@nclong\def\bxjs@tmpa{\hbox{%
   !ifydir \@textsuperscript{\normalfont\@thefnmark}%
   !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}}
 \ifx\@makefnmark\bxjs@tmpa
-\long\gdef\@makefnmark{%
+\bxjs@nclong\gdef\@makefnmark{%
   !ifydir \hbox{}\hbox{\@textsuperscript{\normalfont\@thefnmark}}\hbox{}%
   !else\hbox{\yoko\@textsuperscript{\normalfont\@thefnmark}}!fi}
 \fi
